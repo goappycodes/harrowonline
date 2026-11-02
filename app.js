@@ -51,6 +51,11 @@
     const s = slug.replace(/_/g, " ");
     return s.charAt(0).toUpperCase() + s.slice(1);
   };
+  // Some sources supply addresses in capitals; show them in title case.
+  const tidyAddress = (a) =>
+    a && a === a.toUpperCase() && /[A-Z]{3}/.test(a)
+      ? a.toLowerCase().replace(/\b([a-z])/g, (m) => m.toUpperCase())
+      : a;
   const groupLabel = (g) => GROUPS[g] || label(g);
   const areaLabel = (d) => (AREAS[d] ? `${d} · ${AREAS[d]}` : d);
   const initials = (n) => {
@@ -369,12 +374,12 @@
 
           <h2 class="section-title">Location</h2>
           <div id="detail-map" role="region" aria-label="Map"></div>
-          <p class="fine"><a href="https://www.google.com/maps/search/?api=1&query=${b.lat},${b.lng}" target="_blank" rel="noopener">Open in Google Maps</a></p>
+          <p class="map-link"><a href="https://www.google.com/maps/search/?api=1&query=${b.lat},${b.lng}" target="_blank" rel="noopener">Open in Google Maps</a></p>
         </article>
 
-        <aside>
+        <aside class="side">
           <div class="panel">
-            <h2 class="section-title" style="margin-top:0">Listing quality</h2>
+            <h2 class="section-title">Listing quality</h2>
             <div class="quality">
               <div>Data confidence <strong>${pct}%</strong></div>
               <div class="meter"><i style="width:${pct}%"></i></div>
@@ -383,8 +388,8 @@
               <div class="fine">Not yet verified by the owner. Spotted a mistake? <a href="#" id="report">Request a correction</a>.</div>
             </div>
           </div>
-          ${nearby.length ? `<div class="panel" style="margin-top:16px">
-            <h2 class="section-title" style="margin-top:0">Similar nearby · ${esc(label(b.s))}</h2>
+          ${nearby.length ? `<div class="panel">
+            <h2 class="section-title">Similar nearby · ${esc(label(b.s))}</h2>
             <div class="nearby">${nearby.map(({ x, d }) => `<a href="#/b/${encodeURIComponent(x.id)}"><span>${esc(x.n)}</span><small>${d < 1 ? Math.round(d * 1000) + " m" : d.toFixed(1) + " km"}</small></a>`).join("")}</div>
           </div>` : ""}
         </aside>
@@ -442,6 +447,7 @@
     .then((rows) => {
       DATA = rows.map((b) => ({
         ...b,
+        a: tidyAddress(b.a),
         _text: [b.n, b.c, b.s, b.g, GROUPS[b.g], b.a, b.pc, b.d, AREAS[b.d]].join(" ").toLowerCase().replace(/_/g, " "),
         _complete: [b.ph.length, b.w.length, b.e.length, b.so.length, b.a].filter(Boolean).length,
       }));
