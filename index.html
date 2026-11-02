@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="en-GB">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex, nofollow">
+  <title>Harrow Business Directory — Preview</title>
+  <meta name="description" content="Preview of the Harrow Online business directory: about 2,600 local businesses from Overture Maps open data.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet.markercluster/1.5.3/MarkerCluster.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet.markercluster/1.5.3/MarkerCluster.Default.min.css">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <header class="site-header">
+    <div class="topbar">
+      <div class="wrap topbar-inner">
+        <span>Harrow &amp; North West London</span>
+        <span class="preview-tag">Preview build · open data</span>
+      </div>
+    </div>
+    <div class="wrap brand-row">
+      <a class="brand" href="#/">
+        <span class="brand-mark">HARROW</span><span class="brand-online">ONLINE</span>
+        <span class="brand-sub">Business Directory</span>
+      </a>
+      <form class="search" id="search-form" role="search">
+        <label class="sr-only" for="q">Search businesses</label>
+        <input id="q" type="search" placeholder="Search businesses, categories or postcodes" autocomplete="off">
+        <button type="submit">Search</button>
+      </form>
+    </div>
+  </header>
+
+  <main id="app" class="wrap" aria-live="polite">
+    <p class="loading">Loading listings…</p>
+  </main>
+
+  <footer class="site-footer">
+    <div class="wrap">
+      <p><strong>Preview only.</strong> Listings are generated from open data and have not yet been checked or claimed by their owners.</p>
+      <p>Business data © <a href="https://overturemaps.org" target="_blank" rel="noopener">Overture Maps Foundation</a> and its sources:
+        BrightQuery, Meta, Microsoft, Uberall, DAC, PinMeTo (CDLA Permissive 2.0).
+        Map tiles © <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap contributors</a>.</p>
+    </div>
+  </footer>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet.markercluster/1.5.3/leaflet.markercluster.min.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>

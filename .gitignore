@@ -1,0 +1,6 @@
+*.duckdb
+*.duckdb.wal
+venv/
+__pycache__/
+.claude/
+.vercel/
