@@ -30,4 +30,4 @@ Needs Python with `duckdb`, `pandas` and `numpy`.
 
 ## Attribution
 
-Business data © Overture Maps Foundation and its sources (BrightQuery, Meta, Microsoft, Uberall, DAC, PinMeTo; CDLA Permissive 2.0). Map tiles © OpenStreetMap contributors.
+Business data © Overture Maps Foundation and its sources (BrightQuery, Meta, Microsoft, Uberall, DAC, PinMeTo; CDLA Permissive 2.0).
