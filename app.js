@@ -293,6 +293,7 @@
       toggle.setAttribute("aria-expanded", String(open));
     };
     searchInput.value = state.q;
+    markActiveNav(navKey());
   }
 
   function resetFilters() {
@@ -393,27 +394,73 @@
             <div class="nearby">${nearby.map(({ x, d }) => `<a href="#/b/${encodeURIComponent(x.id)}"><span>${esc(x.n)}</span><small>${d < 1 ? Math.round(d * 1000) + " m" : d.toFixed(1) + " km"}</small></a>`).join("")}</div>
           </div>` : ""}
         </aside>
-      </div>
-      <dialog id="demo-dialog">
-        <h2 id="dlg-title">Coming in the live directory</h2>
-        <p id="dlg-body"></p>
-        <form method="dialog"><button class="btn">OK</button></form>
-      </dialog>`;
+      </div>`;
 
     map = L.map("detail-map", { scrollWheelZoom: false }).setView([b.lat, b.lng], 16);
     tiles(map);
     L.marker([b.lat, b.lng], { title: b.n }).addTo(map);
 
-    const dlg = document.getElementById("demo-dialog");
-    const show = (text) => { document.getElementById("dlg-body").textContent = text; dlg.showModal(); };
-    document.getElementById("claim").onclick = () =>
-      show("Owners will verify by email or phone, then manage their profile and choose a free or paid package. This preview only shows the listings.");
+    document.getElementById("claim").onclick = () => showInfo("claim");
     document.getElementById("report").onclick = (e) => {
       e.preventDefault();
-      show("Owners and visitors will be able to request corrections or removal from each listing page.");
+      showInfo("report");
     };
+    markActiveNav(null);
     window.scrollTo(0, 0);
   }
+
+  // ---------- header ----------
+  const INFO = {
+    claim: ["Claim your listing", "Owners will verify by email or phone, then manage their profile and choose a free or paid package. This preview only shows the listings."],
+    "claim-info": ["Claim your listing", "Find your business, open its page and choose “Claim this business”. Claiming is free and lets you update details, opening hours and photos."],
+    add: ["Add your business", "Businesses that aren’t listed will be able to submit a new listing, checked by the Harrow Online team before it goes live."],
+    report: ["Request a correction", "Owners and visitors will be able to request corrections or removal from each listing page."],
+  };
+  function showInfo(key) {
+    const [title, body] = INFO[key];
+    document.getElementById("info-title").textContent = title;
+    document.getElementById("info-body").textContent = body;
+    document.getElementById("info-dialog").showModal();
+  }
+
+  function markActiveNav(key) {
+    document.querySelectorAll("[data-nav]").forEach((a) => {
+      if (a.dataset.nav === key) a.setAttribute("aria-current", "page");
+      else a.removeAttribute("aria-current");
+    });
+  }
+  const navKey = () => (state.view === "map" ? "map" : state.g || (state.q || state.s || state.area ? null : "home"));
+
+  const drawer = document.getElementById("drawer");
+  const scrim = document.getElementById("drawer-scrim");
+  const menuBtn = document.getElementById("menu-open");
+  document.getElementById("drawer-menu").innerHTML =
+    document.getElementById("menu").innerHTML + '<li><a href="#" data-action="add">Add your business</a></li>';
+  function setDrawer(open) {
+    drawer.hidden = scrim.hidden = !open;
+    menuBtn.setAttribute("aria-expanded", String(open));
+    document.body.style.overflow = open ? "hidden" : "";
+    if (open) document.getElementById("menu-close").focus();
+  }
+  menuBtn.onclick = () => setDrawer(true);
+  document.getElementById("menu-close").onclick = () => setDrawer(false);
+  scrim.onclick = () => setDrawer(false);
+  drawer.addEventListener("click", (e) => { if (e.target.closest("a")) setDrawer(false); });
+  document.addEventListener("keydown", (e) => { if (e.key === "Escape" && !drawer.hidden) setDrawer(false); });
+
+  document.addEventListener("click", (e) => {
+    const a = e.target.closest("[data-action]");
+    if (!a) return;
+    e.preventDefault();
+    showInfo(a.dataset.action);
+  });
+  document.getElementById("search-jump").onclick = () => {
+    searchInput.scrollIntoView({ block: "center" });
+    searchInput.focus();
+  };
+  document.getElementById("hdr-date").textContent = new Date().toLocaleDateString("en-GB", {
+    weekday: "long", day: "numeric", month: "long", year: "numeric",
+  });
 
   // ---------- routing ----------
   function route() {
