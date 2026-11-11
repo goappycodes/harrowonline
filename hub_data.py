@@ -150,8 +150,31 @@ def load_listings():
             "lng": r["lng"],
             "sources": r["src"],
         })
+    for c in load_claimed():
+        base = slugify(f'{c["name"]} {AREA_BY_SLUG[c["area"]][1]}')
+        slug, i = base, 2
+        while slug in used:
+            slug, i = f"{base}-{i}", i + 1
+        used.add(slug)
+        raw_phone = re.sub(r"[^\d+]", "", c["phone"])
+        out.append({
+            "id": "sample-" + slug, "slug": slug, "name": c["name"], "cat": c["cat"], "sub": c["sub"], "area": c["area"],
+            "address": c["address"], "postcode": c["postcode"], "phone": [c["phone"]], "phone_raw": [raw_phone],
+            "web": [], "email": [], "social": c.get("social", []), "lat": None, "lng": None, "sources": [],
+            "tier": c["tier"], "claimed": c,
+        })
     out.sort(key=lambda x: x["name"].lower())
     return out
+
+
+TIER_RANK = {"partner": 0, "premium": 0, "enhanced": 1, "basic": 2, "unclaimed": 3}
+TIER_LABEL = {"partner": "Local Partner", "premium": "Premium", "enhanced": "Enhanced", "basic": "Basic", "unclaimed": "Unclaimed"}
+
+
+def load_claimed():
+    """Sample claimed businesses (data/claimed.json): full profiles with offers and events."""
+    p = ROOT / "data/claimed.json"
+    return json.loads(p.read_text(encoding="utf-8"))["businesses"] if p.exists() else []
 
 
 if __name__ == "__main__":

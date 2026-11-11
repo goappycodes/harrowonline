@@ -45,6 +45,11 @@ To refresh the listing data, run `scripts/1_fetch_overture.py`, `2_filter_export
 ## Content in this preview
 
 - **Real:** the 2,590 business listings (Overture Maps open data). All are shown as **Unclaimed** and `noindex, follow`, as brief 03 requires for imported listings.
+- **Claimed samples:** 12 fictional claimed businesses in `data/claimed.json` (Basic, Enhanced, Premium and Local Partner)
+  with complete profiles, Local Offers and events. `gen_claimed.py` turns them into profiles laid out per plan, ranks them
+  above unclaimed listings, and builds the Offers page list. Phone numbers use Ofcom's reserved drama range; each profile
+  carries a "Sample listing" badge. Add or edit businesses there, then run `python build.py` (and `tools/gen_events.py`
+  if you add events to the What's On calendar).
 - **Samples:** featured businesses (Hill Street Kitchen, Wealdstone Fitness Studio, etc.), offers, events, classes, the signed-in account and all figures.
 - Categories and areas are drafts for the client to approve (brief 01, 6.1). Areas come from the nearest area centre to each map pin, so a few edge cases will need moving.
 

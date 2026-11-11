@@ -180,6 +180,20 @@
       const tier = x.t || "unclaimed";
       const badge = tier === "unclaimed" ? `<span class="badge badge--unclaimed">Unclaimed</span>` :
         `<span class="badge badge--verified">${ICON("verified")}Verified</span>`;
+      if (tier !== "unclaimed") {
+        // Claimed listing: photo, tagline, verified; Premium and Local Partner are featured (brief 01, 6.2)
+        const top = tier === "premium" || tier === "partner";
+        return `<article class="biz-row${top ? " biz-row--featured" : ""}">
+        <div class="ph">${ICON(x.i || "store")}</div>
+        <div class="biz-row__main">
+          <span class="biz-card__cat">${esc(cat.n || "")}${x.s ? ` · <span class="muted">${esc(x.s)}</span>` : ""}</span>
+          <h3 class="biz-row__title"><a href="${BASE}/business/${x.k}.html">${esc(x.n)}</a></h3>
+          <p class="card__meta"><span>${ICON("pin")}${esc(x.ad ? x.ad + ", " : "")}${esc(x.pc)}</span><span>${esc(area)}</span></p>
+          ${x.tg ? `<p class="card__text">${esc(x.tg)}</p>` : ""}
+        </div>
+        <div class="biz-row__side"><div class="cluster">${top ? `<span class="badge badge--featured">${ICON("star")}Featured</span>` : ""}${badge}</div>${x.p ? `<a class="ho-btn ho-btn--sm ho-btn--outline" href="tel:${esc(x.p)}">${ICON("phone")}Call</a>` : ""}</div>
+      </article>`;
+      }
       return `<article class="biz-row biz-row--mono${tier === "unclaimed" ? " biz-row--unclaimed" : ""}">
         <span class="mono mono--soft" aria-hidden="true">${esc(initials)}</span>
         <div class="biz-row__main">

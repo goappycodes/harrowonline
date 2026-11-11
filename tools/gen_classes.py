@@ -37,7 +37,6 @@ title: Classes and activities in Harrow: kids' clubs, fitness, dance and worksho
 description: Weekly classes and activities across Harrow: children's clubs, fitness classes, dance schools, workshops and evening courses. Filter by age, area and day.
 nav: classes
 hubnav: events
-css: hub-b
 body: page-classes
 -->
 <nav class="crumbs ho-container" aria-label="Breadcrumb">

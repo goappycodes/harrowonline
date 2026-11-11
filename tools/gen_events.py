@@ -40,6 +40,15 @@ EVENTS = [
      "A gentle two-hour walk with a local ranger. Meet at the car park."),
     (D(2026,11,16), "7.30am", 7.5, "Harrow Business Breakfast", "Community", "Hill Street Kitchen", "Harrow on the Hill", "&pound;12", "Adults", "briefcase", False, ""),
     (D(2026,11,17), "2pm", 14.0, "Pinner Repair Caf&eacute;", "Community", "Pinner Methodist Hall", "Pinner", "Free", "All ages", "wrench", False, ""),
+    # Events posted by claimed Hub businesses (data/claimed.json)
+    (D(2026,11,17), "9am to 1pm", 9.0, "Flu Jab Drop-in", "Community", "Kenton Road Pharmacy", "Kenton", "Free for eligible adults", "Ages 18+", "medical", False,
+     "No appointment needed. Bring your NHS number if you have it."),
+    (D(2026,11,21), "10am", 10.02, "Bike Maintenance for Beginners", "Community", "Pinner Cycle Workshop", "Pinner", "&pound;15", "Ages 12+", "wrench", False,
+     "Learn to fix a puncture, adjust your brakes and keep your chain running smoothly."),
+    (D(2026,11,26), "7pm", 19.0, "Curry and Quiz Night", "Food and drink", "Rayners Lane Spice House", "Rayners Lane", "&pound;20 with dinner", "Adults", "food", False,
+     "Teams of up to six. Dinner included, with prizes for the top three."),
+    (D(2026,11,28), "10am", 10.02, "Children&rsquo;s Brushing Workshop", "Family", "Stanmore Family Dental", "Stanmore", "Free", "Ages 3 to 10", "medical", False,
+     "A fun half hour on looking after teeth, with a free toothbrush for every child."),
     (D(2026,11,19), "7pm", 19.0, "Wine Tasting: Wines for Christmas", "Food and drink", "Hill Street Kitchen", "Harrow on the Hill", "&pound;25", "Ages 18+", "food", False, ""),
     (D(2026,11,20), "7pm", 19.0, "Film Night: It&rsquo;s a Wonderful Life", "Arts", "Harrow Arts Centre", "Hatch End", "&pound;7", "All ages", "star", False, ""),
     (D(2026,11,21), "10am", 10.0, "Christmas Craft Fair", "Arts", "Headstone Manor &amp; Museum", "Headstone", "Free entry", "All ages", "gift", True, ""),
@@ -155,7 +164,6 @@ title: What's On in Harrow: events this week and weekend
 description: Events, things to do and classes across Harrow this week and weekend: family days out, live music, markets, community events and more. Free to list your event.
 nav: events
 hubnav: events
-css: hub-b
 body: page-events
 -->
 <nav class="crumbs ho-container" aria-label="Breadcrumb">
@@ -337,7 +345,6 @@ title: What's On in Harrow: November 2026 calendar
 description: Month calendar of events and classes in Harrow for November 2026: Christmas lights, markets, fireworks, live music and weekly classes.
 nav: events
 hubnav: events
-css: hub-b
 body: page-events
 -->
 <nav class="crumbs ho-container" aria-label="Breadcrumb">

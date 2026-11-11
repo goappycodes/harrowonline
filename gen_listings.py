@@ -11,9 +11,10 @@ Called by build.py before the hand-written pages are built.
 """
 import json
 from collections import Counter, defaultdict
-from html import escape as e
+from html import escape as e, unescape
 from urllib.parse import quote
 
+import gen_claimed as C
 import hub_data as H
 
 PARTIALS = H.ROOT / "src/partials"
@@ -54,6 +55,8 @@ def crumbs(items):
 
 
 def biz_row(x):
+    if x.get("tier"):
+        return C.row(x)
     phone = x["phone_raw"][0] if x["phone_raw"] else ""
     sub = f' · <span class="muted">{e(x["sub"])}</span>' if x["sub"] else ""
     call = f'<a class="ho-btn ho-btn--sm ho-btn--outline" href="tel:{e(phone)}">{icon("phone")}Call</a>' if phone else ""
@@ -72,6 +75,13 @@ def biz_row(x):
 # ---------------------------------------------------------------- profile
 def profile(x, related):
     from build import render
+    if x.get("tier"):
+        crumb = crumbs([("Hub", "/"), (cat_name(x["cat"]), f"/category/{x['cat']}.html"), (area_name(x["area"]), f"/area/{x['area']}.html"), (x["name"], "")])
+        rel = "".join(biz_row(r) for r in related) or '<p class="muted">No other listings in this area yet.</p>'
+        meta = {"title": f'{x["name"]} in {area_name(x["area"])}',
+                "description": f'{x["name"]}: {x["sub"].lower()} in {area_name(x["area"])}, Harrow. Opening hours, offers, events and contact details.',
+                "hubnav": "directory"}
+        return render(meta, C.profile_body(x, rel, crumb))
     cat, area = x["cat"], x["area"]
     maps = f'https://www.google.com/maps/search/?api=1&query={quote(x["name"] + " " + x["postcode"])}'
     info = []
@@ -235,7 +245,7 @@ _LISTINGS = None
 def listings():
     global _LISTINGS
     if _LISTINGS is None:
-        _LISTINGS = H.load_listings()
+        _LISTINGS = sorted(H.load_listings(), key=lambda x: (H.TIER_RANK[x.get("tier", "unclaimed")], x["name"].lower()))
     return _LISTINGS
 
 
@@ -258,9 +268,13 @@ def write_partials(cat_counts, area_counts):
         f'<a class="tile tile--area" href="/area/{s}.html"><span><span class="tile__name">{e(n)}</span><br><span class="tile__count">{area_counts[s]:,} businesses</span></span>{icon("chevron")}</a>'
         for s, n, _a, _b in sorted(H.AREAS, key=lambda a: a[1]))
     (PARTIALS / "gen-area-tiles.html").write_text(f'<div class="grid grid-4">{atiles}</div>', encoding="utf-8")
+    offers = C.all_offers(listings())
+    (PARTIALS / "gen-offers.html").write_text("\n".join(C.offer_card(x, o, heading="h2") for x, o in offers), encoding="utf-8")
+    (PARTIALS / "gen-offers-home.html").write_text("\n".join(C.offer_card(x, o) for x, o in offers[:3]), encoding="utf-8")
+    (PARTIALS / "gen-offer-count.html").write_text(str(len(offers)), encoding="utf-8")
     (PARTIALS / "gen-count.html").write_text(f"{len(listings()):,}", encoding="utf-8")
     # A few real listings for "recently added" style blocks (alphabetical sample with websites)
-    sample = [x for x in listings() if x["web"] and x["phone"]][::97][:6]
+    sample = [x for x in listings() if x.get("tier") in ("premium", "partner")][:3] + [x for x in listings() if x["web"] and x["phone"] and not x.get("tier")][::97][:3]
     (PARTIALS / "gen-recent-rows.html").write_text("".join(biz_row(x) for x in sample), encoding="utf-8")
 
 
@@ -303,8 +317,10 @@ def build_all():
         "items": [
             {k: v for k, v in {
                 "k": x["slug"], "n": x["name"], "c": x["cat"], "s": x["sub"], "a": x["area"],
-                "ad": x["address"], "pc": x["postcode"], "p": x["phone_raw"][0] if x["phone_raw"] else "",
+                "ad": unescape(x["address"]), "pc": x["postcode"], "p": x["phone_raw"][0] if x["phone_raw"] else "",
                 "w": 1 if x["web"] else 0,
+                "t": x.get("tier", ""), "i": x["claimed"].get("icon", "") if x.get("claimed") else "",
+                "tg": unescape(x["claimed"]["tagline"]) if x.get("claimed") else "",
             }.items() if v not in ("", 0)}
             for x in L
         ],

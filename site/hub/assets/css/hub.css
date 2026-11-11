@@ -1324,3 +1324,5 @@ body.ho-lock { overflow: hidden; }
 .compare-wrap, .table-wrap, .chips, .tabs, .hub-bar__nav, .dash-nav ul, .cal { position: relative; }
 @media (max-width: 640px) { .ho-btn { white-space: normal; text-align: center; } }
 @media (max-width: 1018px) { .hub-bar__link { display: none !important; } .hub-bar__nav { flex: 1 1 auto; min-width: 0; } }
+.profile-cover .ph { aspect-ratio: auto; height: 260px; }
+@media (max-width: 767px) { .profile-cover .ph { height: 160px; } }
