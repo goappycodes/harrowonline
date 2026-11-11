@@ -1,0 +1,21 @@
+<section class="ho-container" aria-label="Newsletter sign-up">
+  <div class="ho-nl ho-nl--strip">
+    <div>
+      <p class="ho-nl__title">Harrow in your inbox, every morning</p>
+      <p class="ho-nl__text">The day&rsquo;s local news, what&rsquo;s on and the best Local Offers. Free, from Harrow Online Newsletter.</p>
+    </div>
+    <form class="ho-nl__form" action="https://harrowonline.org/wp-json/ho/v1/subscribe" method="post" data-nl-form>
+      <input type="hidden" name="signup_source" value="hub-strip">
+      <label class="ho-sr" for="nl-email">Email address</label>
+      <input class="ho-nl__input" id="nl-email" type="email" name="email" placeholder="Your email address" autocomplete="email" required>
+      <button class="ho-btn ho-btn--on-red ho-nl__btn" type="submit">Sign up free</button>
+      <fieldset class="ho-nl__editions">
+        <legend class="ho-sr">Editions</legend>
+        <label><input type="checkbox" name="editions[]" value="daily" checked> Daily</label>
+        <label><input type="checkbox" name="editions[]" value="weekend"> The Weekend (Thu)</label>
+        <label><input type="checkbox" name="editions[]" value="business"> Harrow Business (Mon)</label>
+      </fieldset>
+      <p class="ho-nl__msg" role="status" aria-live="polite"></p>
+    </form>
+  </div>
+</section>

@@ -1,0 +1,199 @@
+<!--
+title: Plan and billing
+description: Your Harrow Online Hub plan, invoices and payment details.
+body: is-logged-in
+hubnav: account
+robots: noindex, nofollow
+nl: off
+css: hub-c
+-->
+<div class="ho-container dash">
+<!--@dashnav:billing-->
+
+  <div class="dash-main">
+    <div class="dash-head">
+      <div>
+        <h1>Plan and billing</h1>
+        <p>Station Road Barbers. Payments are handled securely by Stripe.</p>
+      </div>
+      <a class="ho-btn ho-btn--outline" href="#stripe-portal"><svg class="ho-icon"><use href="#i-card"/></svg>Manage billing</a>
+    </div>
+
+    <!-- Example state: shown only after invoice.payment_failed, until invoice.paid. Hidden in normal use. -->
+    <div class="example-state mb-5">
+      <p class="example-state__label">Example state: failed payment</p>
+      <div class="notice notice--warn">
+        <svg class="ho-icon"><use href="#i-alert"/></svg>
+        <div>
+          <p><strong>We couldn&rsquo;t take your last payment.</strong> Update your card to keep Enhanced features. We&rsquo;ll try again automatically over the next few days.</p>
+          <p><a href="#stripe-portal">Update your card</a></p>
+        </div>
+      </div>
+    </div>
+
+    <section class="plan-card" aria-labelledby="cur-plan">
+      <div>
+        <span class="eyebrow">Current plan</span>
+        <h2 id="cur-plan">Enhanced, paid monthly</h2>
+        <p class="mb-0">&pound;19 a month &middot; renews on 2 December 2026 &middot; <span class="status status--active">Active</span></p>
+        <p class="small mb-0 mt-2">Switch to annual billing and pay &pound;190 a year, saving &pound;38.</p>
+      </div>
+      <div class="plan-card__actions">
+        <a class="ho-btn ho-btn--primary ho-btn--sm" href="#stripe-portal">Switch to annual</a>
+        <a class="ho-btn ho-btn--outline ho-btn--sm" href="#stripe-portal">Manage billing</a>
+      </div>
+    </section>
+    <p class="help mt-2"><strong>Manage billing</strong> opens the Stripe customer portal, where you can update your card, download invoices, switch between monthly and annual, change plan or cancel.</p>
+    <!-- WP: #stripe-portal = POST to our endpoint, create a Customer Portal session for this customer, redirect to session.url.
+         Return URL: /hub/account/billing/. Plan changes arrive by webhook (customer.subscription.updated). -->
+
+    <section class="mt-6" aria-labelledby="plans-title" data-billing="monthly">
+      <div class="split mb-4">
+        <div>
+          <h2 class="sec-title" id="plans-title">Change plan</h2>
+          <p class="sec-sub">Upgrade or downgrade any time. Stripe works out the difference for the rest of this billing period.</p>
+        </div>
+        <div class="billing-toggle" role="group" aria-label="Billing period">
+          <button type="button" data-billing-set="monthly" aria-pressed="true">Monthly</button>
+          <button type="button" data-billing-set="annual" aria-pressed="false">Annual <span class="save">2 months free</span></button>
+        </div>
+      </div>
+
+      <div class="plans">
+        <div class="plan">
+          <h3 class="plan__name">Basic</h3>
+          <p class="plan__for">Your verified listing, free.</p>
+          <p class="plan__price">&pound;0</p>
+          <p class="plan__note">Free for ever</p>
+          <a class="ho-btn ho-btn--outline ho-btn--block ho-btn--sm" href="#stripe-portal">Downgrade</a>
+          <ul class="ticks small">
+            <li>Verified badge</li>
+            <li>Description and hours</li>
+            <li>1 photo</li>
+            <li class="is-off">Offers and events</li>
+          </ul>
+        </div>
+        <div class="plan plan--popular">
+          <span class="plan__flag">Your plan</span>
+          <h3 class="plan__name">Enhanced</h3>
+          <p class="plan__for">More photos, offers and events.</p>
+          <p class="plan__price"><span class="price-monthly">&pound;19<small>/month</small></span><span class="price-annual">&pound;190<small>/year</small></span></p>
+          <p class="plan__note"><span class="price-monthly">or &pound;190 a year</span><span class="price-annual">Save &pound;38</span></p>
+          <span class="ho-btn ho-btn--dark ho-btn--block ho-btn--sm is-disabled" aria-disabled="true">Current plan</span>
+          <ul class="ticks small">
+            <li>5 photos</li>
+            <li>1 offer a month</li>
+            <li>2 events a month</li>
+            <li>Social links</li>
+          </ul>
+        </div>
+        <div class="plan">
+          <h3 class="plan__name">Premium</h3>
+          <p class="plan__for">Top of your category and on the Hub homepage.</p>
+          <p class="plan__price"><span class="price-monthly">&pound;49<small>/month</small></span><span class="price-annual">&pound;490<small>/year</small></span></p>
+          <p class="plan__note"><span class="price-monthly">or &pound;490 a year</span><span class="price-annual">Save &pound;98</span></p>
+          <a class="ho-btn ho-btn--primary ho-btn--block ho-btn--sm" href="#stripe-portal">Change plan</a>
+          <ul class="ticks small">
+            <li>Featured in your category</li>
+            <li>No competitor listings on your page</li>
+            <li>More photos, offers and events</li>
+            <li>Featured events and classes</li>
+            <li>Business of the Week rotation</li>
+          </ul>
+        </div>
+        <div class="plan plan--partner">
+          <h3 class="plan__name">Local Partner</h3>
+          <p class="plan__for">Premium plus newsletter, Facebook and a spotlight article.</p>
+          <p class="plan__price"><span class="price-monthly">&pound;149<small>/month</small></span><span class="price-annual">&pound;1,490<small>/year</small></span></p>
+          <p class="plan__note"><span class="price-monthly">or &pound;1,490 a year</span><span class="price-annual">Save &pound;298</span></p>
+          <a class="ho-btn ho-btn--outline ho-btn--block ho-btn--sm" href="#stripe-portal">Change plan</a>
+          <ul class="ticks small">
+            <li>Everything in Premium</li>
+            <li>Monthly newsletter feature</li>
+            <li>Facebook Group post every month</li>
+            <li>Quarterly spotlight article</li>
+          </ul>
+        </div>
+      </div>
+      <p class="help mt-4">Your new plan switches on as soon as payment goes through. <a href="/pricing.html">See everything in each plan</a>.</p>
+      <!-- WP: existing subscribers change plan in the Portal (subscription update flow, prorated).
+           Listings with no subscription (Basic) show "Upgrade" instead, which opens Stripe Checkout (#stripe-checkout) for the chosen Price ID. -->
+    </section>
+
+    <div class="grid grid-2 mt-6">
+      <section class="panel" aria-labelledby="pm-title">
+        <h2 class="panel__title" id="pm-title">Payment method</h2>
+        <div class="cluster cluster--lg">
+          <span class="mono mono--sm mono--soft" aria-hidden="true"><svg class="ho-icon"><use href="#i-card"/></svg></span>
+          <div>
+            <strong>Visa ending 4242</strong>
+            <p class="small muted mb-0">Expires 08/2028</p>
+          </div>
+        </div>
+        <p class="help mt-4">Shown from Stripe. We never see or store your full card number.</p>
+        <a class="ho-btn ho-btn--sm ho-btn--outline mt-2" href="#stripe-portal">Update card in Stripe</a>
+      </section>
+      <section class="panel panel--soft" aria-labelledby="disc-title">
+        <h2 class="panel__title" id="disc-title">Have a discount code?</h2>
+        <p class="small">Enter it on the Stripe payment page when you upgrade. Codes work on Hub memberships only, not on featured spots or sponsor slots.</p>
+        <p class="small mb-0">Already paying? <a href="https://harrowonline.org/contact-us/">Contact us</a> and we&rsquo;ll apply it to your next invoice.</p>
+      </section>
+    </div>
+
+    <section class="mt-6" aria-labelledby="inv-title">
+      <h2 class="sec-title mb-4" id="inv-title">Invoices and receipts</h2>
+      <div class="table-wrap">
+        <table class="table table--stack">
+          <thead>
+            <tr><th scope="col">Date</th><th scope="col">Invoice</th><th scope="col">For</th><th scope="col">Amount</th><th scope="col">Status</th><th scope="col"><span class="ho-sr">Download</span></th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td data-label="Date">10 Nov 2026</td><td data-label="Invoice">HOHUB-0006</td><td data-label="For">Feature this: &pound;5 off a skin fade, 7 days</td><td data-label="Amount">&pound;15.00</td>
+              <td data-label="Status"><span class="status status--paid">Paid</span></td>
+              <td><div class="table__actions"><a class="ho-btn ho-btn--sm ho-btn--ghost" href="#invoice-pdf"><svg class="ho-icon"><use href="#i-download"/></svg>PDF</a></div></td>
+            </tr>
+            <tr>
+              <td data-label="Date">5 Nov 2026</td><td data-label="Invoice">HOHUB-0005</td><td data-label="For">Sponsor slot: The Weekend, 3 Dec</td><td data-label="Amount">&pound;60.00</td>
+              <td data-label="Status"><span class="status status--paid">Paid</span></td>
+              <td><div class="table__actions"><a class="ho-btn ho-btn--sm ho-btn--ghost" href="#invoice-pdf"><svg class="ho-icon"><use href="#i-download"/></svg>PDF</a></div></td>
+            </tr>
+            <tr>
+              <td data-label="Date">2 Nov 2026</td><td data-label="Invoice">HOHUB-0004</td><td data-label="For">Enhanced, monthly</td><td data-label="Amount">&pound;19.00</td>
+              <td data-label="Status"><span class="status status--paid">Paid</span></td>
+              <td><div class="table__actions"><a class="ho-btn ho-btn--sm ho-btn--ghost" href="#invoice-pdf"><svg class="ho-icon"><use href="#i-download"/></svg>PDF</a></div></td>
+            </tr>
+            <tr>
+              <td data-label="Date">24 Oct 2026</td><td data-label="Invoice">HOHUB-0003</td><td data-label="For">Feature this: Half-term kids&rsquo; cuts, 7 days</td><td data-label="Amount">&pound;15.00</td>
+              <td data-label="Status"><span class="status status--paid">Paid</span></td>
+              <td><div class="table__actions"><a class="ho-btn ho-btn--sm ho-btn--ghost" href="#invoice-pdf"><svg class="ho-icon"><use href="#i-download"/></svg>PDF</a></div></td>
+            </tr>
+            <tr>
+              <td data-label="Date">2 Oct 2026</td><td data-label="Invoice">HOHUB-0002</td><td data-label="For">Enhanced, monthly</td><td data-label="Amount">&pound;19.00</td>
+              <td data-label="Status"><span class="status status--paid">Paid</span></td>
+              <td><div class="table__actions"><a class="ho-btn ho-btn--sm ho-btn--ghost" href="#invoice-pdf"><svg class="ho-icon"><use href="#i-download"/></svg>PDF</a></div></td>
+            </tr>
+            <tr>
+              <td data-label="Date">2 Sep 2026</td><td data-label="Invoice">HOHUB-0001</td><td data-label="For">Enhanced, monthly</td><td data-label="Amount">&pound;19.00</td>
+              <td data-label="Status"><span class="status status--paid">Paid</span></td>
+              <td><div class="table__actions"><a class="ho-btn ho-btn--sm ho-btn--ghost" href="#invoice-pdf"><svg class="ho-icon"><use href="#i-download"/></svg>PDF</a></div></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <p class="help mt-2">PDF invoices come from Stripe. Older invoices are in <a href="#stripe-portal">Manage billing</a>.</p>
+      <!-- WP: list from Stripe (invoices.list + one-off payment receipts) for this customer; PDF link = invoice.invoice_pdf -->
+    </section>
+
+    <section class="panel mt-6" aria-labelledby="cancel-title">
+      <h2 class="panel__title" id="cancel-title">If you cancel</h2>
+      <ul class="ticks ticks--dark small">
+        <li>You keep Enhanced until the end of the period you&rsquo;ve paid for (2 December 2026).</li>
+        <li>Then your listing moves to Basic. It stays verified and stays yours.</li>
+        <li>Nothing is deleted. Extra photos, social links and offers are hidden, and come back if you upgrade again.</li>
+        <li>Live offers end. Events stay published but lose any featured spot.</li>
+      </ul>
+      <a class="ho-btn ho-btn--sm ho-btn--outline mt-2" href="#stripe-portal">Cancel in Stripe</a>
+    </section>
+  </div>
+</div>

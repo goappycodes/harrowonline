@@ -1,0 +1,48 @@
+<!--
+title: Sign in
+description: Sign in to your Harrow Online Hub account to manage your listing, offers, events and classes.
+layout: bare
+robots: noindex
+hubnav: account
+-->
+<div class="auth">
+  <div class="auth__side">
+    <p class="eyebrow" style="color:#fff;opacity:.8">Harrow Online Hub</p>
+    <h2>One login for your business, offers and events</h2>
+    <p>Harrow Online reaches thousands of local readers every day. Your Hub account puts your business in front of them.</p>
+    <ul class="ticks mt-5">
+      <li>Claim your listing free and get a verified badge</li>
+      <li>Add Local Offers, events and weekly classes</li>
+      <li>Reach Harrow Online Newsletter readers with featured spots and sponsor slots</li>
+      <li>Schools, clubs and charities can list events and classes free</li>
+    </ul>
+  </div>
+
+  <div class="auth__main">
+    <div class="auth__card">
+      <h1>Sign in</h1>
+      <p>Welcome back. Sign in to manage your listing, offers and events.</p>
+
+      <!-- WP: posts to wp-login.php (or a custom login handler); show .field__error / .notice--error on failure -->
+      <form class="form mt-5" action="/account.html" method="post">
+        <div class="field">
+          <label for="si-email">Email address</label>
+          <input class="input" id="si-email" type="email" name="log" autocomplete="email" required>
+        </div>
+        <div class="field">
+          <div class="split">
+            <label class="field__label" for="si-pass">Password</label>
+            <a class="link-quiet" href="/forgot-password.html">Forgotten your password?</a>
+          </div>
+          <input class="input" id="si-pass" type="password" name="pwd" autocomplete="current-password" required>
+        </div>
+        <label class="check"><input type="checkbox" name="rememberme" value="forever"> Keep me signed in on this device</label>
+        <button class="ho-btn ho-btn--primary ho-btn--lg ho-btn--block" type="submit">Sign in</button>
+      </form>
+
+      <div class="divider-or mt-5">New to the Hub?</div>
+      <a class="ho-btn ho-btn--outline ho-btn--block mt-2" href="/register.html">Create an account</a>
+      <p class="help mt-4 center">Creating an account is free. You only pay if you choose a paid plan, a featured spot or a sponsor slot.</p>
+    </div>
+  </div>
+</div>

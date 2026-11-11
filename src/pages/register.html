@@ -1,0 +1,113 @@
+<!--
+title: Create an account
+description: Create a free Harrow Online Hub account to claim your business, or to list events and classes for your school, club or charity.
+layout: bare
+robots: noindex
+hubnav: account
+-->
+<div class="auth">
+  <div class="auth__side">
+    <p class="eyebrow" style="color:#fff;opacity:.8">Harrow Online Hub</p>
+    <h2>Free to join. Free to claim.</h2>
+    <p>One account covers everything you do on the Hub.</p>
+    <ul class="ticks mt-5">
+      <li>Claim your business free, or add one that isn&rsquo;t listed yet</li>
+      <li>Post Local Offers, events and weekly classes</li>
+      <li>Reach Harrow Online Newsletter readers with featured spots and sponsor slots</li>
+      <li>Schools, clubs and charities list events and classes at no cost</li>
+    </ul>
+  </div>
+
+  <div class="auth__main">
+    <div class="auth__card">
+      <h1>Create an account</h1>
+      <p>Already have one? <a href="/sign-in.html">Sign in</a></p>
+
+      <!-- WP: creates a Hub user. Role = business_owner or organiser from account_type.
+           If join_newsletter is ticked: POST to the Beehiiv subscribe endpoint (brief 02 N3) with editions as custom fields,
+           signup_source=hub-registration, plus area + account type as tags. -->
+      <form class="form mt-5" action="/account.html" method="post">
+        <fieldset class="fieldset">
+          <legend class="field__label">I&rsquo;m signing up because&hellip;</legend>
+          <div class="choice-grid">
+            <label class="choice">
+              <input type="radio" name="account_type" value="business" checked data-reveal="#reg-business-note">
+              <span>
+                <span class="choice__title"><svg class="ho-icon"><use href="#i-store"/></svg>I run a business</span>
+                <span class="choice__text">Claim or add your listing, choose a plan, and post offers and events.</span>
+              </span>
+            </label>
+            <label class="choice">
+              <input type="radio" name="account_type" value="organiser" data-reveal="#reg-organiser">
+              <span>
+                <span class="choice__title"><svg class="ho-icon"><use href="#i-people"/></svg>I organise events or classes</span>
+                <span class="choice__text">For schools, clubs, charities and community groups. Free. Submit events and classes only.</span>
+              </span>
+            </label>
+          </div>
+        </fieldset>
+
+        <div id="reg-business-note">
+          <p class="help">After you sign up, search for your business and press <strong>Claim this business</strong>, or add it if it isn&rsquo;t listed.</p>
+        </div>
+
+        <div class="field">
+          <label for="reg-name">Your name</label>
+          <input class="input" id="reg-name" type="text" name="name" autocomplete="name" required>
+        </div>
+        <div class="field">
+          <label for="reg-email">Email address</label>
+          <input class="input" id="reg-email" type="email" name="email" autocomplete="email" required>
+        </div>
+        <div class="field">
+          <label for="reg-pass">Password</label>
+          <input class="input" id="reg-pass" type="password" name="password" autocomplete="new-password" minlength="10" required aria-describedby="reg-pass-help">
+          <p class="help" id="reg-pass-help">At least 10 characters.</p>
+        </div>
+
+        <div id="reg-organiser" hidden>
+          <div class="field">
+            <label for="reg-org">Organisation name</label>
+            <input class="input" id="reg-org" type="text" name="organisation" autocomplete="organization" aria-describedby="reg-org-help">
+            <p class="help" id="reg-org-help">For example, Pinner Park Primary PTA or Harrow Weald Running Club. Shown on your events.</p>
+          </div>
+        </div>
+
+        <div class="field">
+          <label for="reg-area">Your area <span class="opt">(optional)</span></label>
+          <select class="select" id="reg-area" name="area" aria-describedby="reg-area-help">
+            <option value="">Choose an area</option>
+            {{> gen-area-options}}
+          </select>
+          <p class="help" id="reg-area-help">Helps us send you news and events near you.</p>
+        </div>
+
+        <label class="check">
+          <input type="checkbox" name="terms" value="1" required>
+          <span>I agree to the <a href="/terms.html">terms of use</a> and have read the <a href="/privacy.html">privacy notice</a>.</span>
+        </label>
+
+        <div class="panel panel--soft">
+          <label class="check">
+            <input type="checkbox" name="join_newsletter" value="1" checked data-reveal="#reg-editions">
+            <span><strong>Join the Harrow Online Newsletter</strong><small>Free local news, what&rsquo;s on and offers. Unsubscribe any time.</small></span>
+          </label>
+          <div id="reg-editions" class="mt-4">
+            <fieldset class="fieldset">
+              <legend class="ho-sr">Editions</legend>
+              <div class="stack">
+                <label class="check"><input type="checkbox" name="editions[]" value="daily" checked> <span>Daily<small>Every morning</small></span></label>
+                <label class="check"><input type="checkbox" name="editions[]" value="weekend"> <span>The Weekend<small>Thursdays: what&rsquo;s on this weekend</small></span></label>
+                <label class="check"><input type="checkbox" name="editions[]" value="business"> <span>Harrow Business<small>Mondays: local business news</small></span></label>
+              </div>
+            </fieldset>
+          </div>
+          <input type="hidden" name="signup_source" value="hub-registration">
+        </div>
+
+        <input class="hp" type="text" name="website_url" tabindex="-1" autocomplete="off" aria-hidden="true">
+        <button class="ho-btn ho-btn--primary ho-btn--lg ho-btn--block" type="submit">Create my account</button>
+      </form>
+    </div>
+  </div>
+</div>

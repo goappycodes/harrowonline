@@ -1,0 +1,175 @@
+<!--
+title: Claim your business
+description: Claim your free business listing on Harrow Online Hub. Prove you own it and manage your details, hours and photos.
+hubnav: directory
+robots: noindex, follow
+body: page-claim is-logged-in
+css: hub-a
+-->
+<nav class="crumbs ho-container" aria-label="Breadcrumb"><ol><li><a href="/">Hub</a></li><li><a href="/search.html">Businesses</a></li><li><span aria-current="page">Claim a business</span></li></ol></nav>
+
+<header class="page-head ho-container">
+  <h1 class="page-head__title">Claim your business</h1>
+  <p class="page-head__lead">Show us you own or manage this business and it&rsquo;s yours to update, free. It takes about two minutes.</p>
+</header>
+
+<div class="ho-container">
+  <ol class="progress" aria-label="Claim steps">
+    <li class="is-done"><span>Step 1</span>Sign in</li>
+    <li class="is-current" aria-current="step"><span>Step 2</span>Prove ownership</li>
+    <li><span>Step 3</span>Admin check</li>
+    <li><span>Step 4</span>Done</li>
+  </ol>
+
+  <div class="layout-aside">
+    <form class="form" action="/claim-submitted.html" method="get">
+      <section class="form-card" aria-labelledby="claiming-title">
+        <h2 class="form-card__title" id="claiming-title">You&rsquo;re claiming</h2>
+        <p class="form-card__sub">Not the right business? <a href="/search.html">Search again</a>.</p>
+        <div class="biz-card__head">
+          <span class="mono mono--soft" aria-hidden="true"><svg class="ho-icon"><use href="#i-store"/></svg></span>
+          <div>
+            <span class="biz-card__cat" data-listing-field="cat">Restaurants</span>
+            <h3 class="panel__title mb-0"><a href="/sample-premium.html" data-listing-field="link"><span data-listing-field="n">Hill Street Kitchen</span></a></h3>
+            <p class="card__meta mt-2"><span><svg class="ho-icon"><use href="#i-pin"/></svg><span data-listing-field="ad">14 High Street</span>, <span data-listing-field="pc">HA1 3LE</span></span><span data-listing-field="area">Harrow on the Hill</span></p>
+          </div>
+        </div>
+      </section>
+
+      <section class="form-card" aria-labelledby="method-title">
+        <fieldset class="fieldset">
+          <legend id="method-title">How can we check it&rsquo;s yours?</legend>
+          <p class="help mb-4">Pick the quickest option for you. We list them fastest first.</p>
+          <div class="choice-grid">
+            <label class="choice">
+              <input type="radio" name="method" value="email" data-reveal="#m-email" checked>
+              <span>
+                <span class="choice__title">Email on the business website <span class="badge">Fastest</span></span>
+                <span class="choice__text">Use an email address on the business&rsquo;s own website domain. We send a link, you click it, and we can usually approve the same day.</span>
+              </span>
+            </label>
+            <div class="panel panel--soft" id="m-email">
+              <div class="field">
+                <label for="c-email">Your email at the business</label>
+                <div class="input-group input-group--end">
+                  <input class="input" id="c-email" type="text" name="email_local" placeholder="yourname" autocomplete="off" aria-describedby="c-email-help">
+                  <span class="input-group__addon">@hillstreetkitchen.co.uk</span>
+                </div>
+                <p class="help" id="c-email-help">The domain comes from the website on the listing. We&rsquo;ll email a confirmation link to this address.</p>
+              </div>
+            </div>
+
+            <label class="choice">
+              <input type="radio" name="method" value="phone" data-reveal="#m-phone">
+              <span>
+                <span class="choice__title">We phone the business</span>
+                <span class="choice__text">A member of the Harrow Online team calls the number on the listing and asks for you by name. Usually within 2 working days.</span>
+              </span>
+            </label>
+            <div class="panel panel--soft" id="m-phone" hidden>
+              <div class="stack">
+                <p class="small mb-0">We&rsquo;ll call <strong>020 7946 0321</strong>, the number on the listing. If that number is wrong, choose the document option instead.</p>
+                <div class="field">
+                  <label for="c-askfor">Who should we ask for?</label>
+                  <input class="input" id="c-askfor" type="text" name="ask_for" autocomplete="name" placeholder="Your name">
+                </div>
+                <fieldset class="fieldset">
+                  <legend class="field__label">Best times to call <span class="opt">(choose any)</span></legend>
+                  <ul class="check-list">
+                    <li><label><input type="checkbox" name="call_times[]" value="weekday-morning"> Weekday mornings, 9am to 12pm</label></li>
+                    <li><label><input type="checkbox" name="call_times[]" value="weekday-afternoon"> Weekday afternoons, 12pm to 5pm</label></li>
+                    <li><label><input type="checkbox" name="call_times[]" value="saturday"> Saturday, 10am to 1pm</label></li>
+                  </ul>
+                </fieldset>
+              </div>
+            </div>
+
+            <label class="choice">
+              <input type="radio" name="method" value="document" data-reveal="#m-doc">
+              <span>
+                <span class="choice__title">Upload a document</span>
+                <span class="choice__text">A recent utility bill, business rates bill or Companies House record showing the business name and address. Only Harrow Online admins can see it.</span>
+              </span>
+            </label>
+            <div class="panel panel--soft" id="m-doc" hidden>
+              <div class="stack">
+                <div class="field">
+                  <label for="c-doctype">Type of document</label>
+                  <select class="select" id="c-doctype" name="doc_type">
+                    <option value="utility">Utility bill (last 3 months)</option>
+                    <option value="rates">Business rates bill</option>
+                    <option value="companies-house">Companies House record</option>
+                  </select>
+                </div>
+                <label class="dropzone" for="c-doc">
+                  <svg class="ho-icon"><use href="#i-upload"/></svg>
+                  <strong>Choose a file or drag it here</strong>
+                  <p>PDF, JPG or PNG, up to 10MB. The business name and address must be readable.</p>
+                  <input class="ho-sr" id="c-doc" type="file" name="document" accept=".pdf,.jpg,.jpeg,.png">
+                </label>
+                <p class="help"><svg class="ho-icon ho-icon--sm"><use href="#i-lock"/></svg> Private. Your document is never shown on the Hub and only our admin team can open it.</p>
+              </div>
+            </div>
+          </div>
+        </fieldset>
+      </section>
+
+      <section class="form-card" aria-labelledby="about-you-title">
+        <h2 class="form-card__title" id="about-you-title">About you</h2>
+        <p class="form-card__sub">Signed in as <strong>sam.taylor@example.com</strong>. <a href="/sign-in.html">Not you?</a></p>
+        <div class="row row-2">
+          <div class="field">
+            <label for="c-role">Your role <span class="req" aria-hidden="true">*</span></label>
+            <select class="select" id="c-role" name="role" required>
+              <option value="">Choose one</option>
+              <option value="owner">Owner</option>
+              <option value="manager">Manager</option>
+              <option value="staff">Staff member allowed to manage the listing</option>
+              <option value="agency">Marketing agency acting for the owner</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="c-phone">Your phone <span class="opt">(optional)</span></label>
+            <input class="input" id="c-phone" type="tel" name="phone" autocomplete="tel" placeholder="07700 900123">
+            <p class="help">Only used if we have a question about your claim.</p>
+          </div>
+        </div>
+        <div class="field mt-5">
+          <label for="c-note">Anything we should know? <span class="opt">(optional)</span></label>
+          <textarea class="textarea" id="c-note" name="note" maxlength="500" data-counter placeholder="For example, the business has a new name, or someone else claimed it by mistake."></textarea>
+        </div>
+        <label class="check mt-5">
+          <input type="checkbox" name="declaration" value="1" required>
+          <span>I confirm I own or manage this business, or have permission to manage its listing, and I agree to the <a href="/terms.html">terms</a>. <small>False claims are rejected and may be reported.</small></span>
+        </label>
+        <div class="form-actions mt-5">
+          <button class="ho-btn ho-btn--primary ho-btn--lg" type="submit">Submit claim</button>
+          <a class="ho-btn ho-btn--ghost" href="/search.html">Cancel</a>
+        </div>
+      </section>
+    </form>
+
+    <aside class="sticky">
+      <div class="claim-box">
+        <h2>Free on the Basic plan</h2>
+        <p>Once we approve your claim, you control the listing at Basic, free for as long as you like.</p>
+        <ul class="ticks">
+          <li>Verified badge</li>
+          <li>Edit your name, address, phone and website</li>
+          <li>Add a description and opening hours</li>
+          <li>Add a photo</li>
+          <li>Ranked above unclaimed listings</li>
+        </ul>
+      </div>
+      <div class="panel mt-4">
+        <h3 class="panel__title">Want to stand out?</h3>
+        <p class="small">Claiming is the only step we check by hand. Paid upgrades go live as soon as your payment succeeds, with more photos, Local Offers, events and a place at the top of your category.</p>
+        <a class="link-arrow" href="/pricing.html">Compare plans <svg class="ho-icon"><use href="#i-arrow"/></svg></a>
+      </div>
+      <div class="panel panel--soft">
+        <h3 class="panel__title">Need help?</h3>
+        <p class="small mb-0">Email <a href="mailto:hub@harrowonline.org">hub@harrowonline.org</a> and tell us the business name. We reply within 2 working days.</p>
+      </div>
+    </aside>
+  </div>
+</div>

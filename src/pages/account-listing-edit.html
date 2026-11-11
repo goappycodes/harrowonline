@@ -1,0 +1,231 @@
+<!--
+title: Edit listing
+description: Edit your business listing on Harrow Online Hub.
+body: is-logged-in
+hubnav: account
+robots: noindex, nofollow
+nl: off
+css: hub-c
+-->
+<div class="ho-container dash">
+<!--@dashnav:listings-->
+
+  <div class="dash-main">
+    <nav class="crumbs mb-4" aria-label="Breadcrumb">
+      <ol><li><a href="/account-listings.html">My listings</a></li><li aria-current="page">Station Road Barbers</li></ol>
+    </nav>
+    <div class="dash-head">
+      <div>
+        <h1>Edit listing</h1>
+        <p>Station Road Barbers &middot; <span class="badge badge--dark">Enhanced</span> <span class="badge badge--verified"><svg class="ho-icon"><use href="#i-verified"/></svg>Verified</span></p>
+      </div>
+      <a class="ho-btn ho-btn--outline" href="/sample-premium.html"><svg class="ho-icon"><use href="#i-external"/></svg>View listing</a>
+    </div>
+
+    <div class="notice mb-5">
+      <svg class="ho-icon"><use href="#i-info"/></svg>
+      <div>
+        <p><strong>Showing up in Google.</strong> We only ask search engines to list Hub pages that are filled in: a description of at least 50 words, plus opening hours or a photo. Yours meets this.</p>
+        <p>Google decides if and where it shows any page, so we can&rsquo;t promise a ranking. A full, accurate listing gives you the best chance.</p>
+      </div>
+    </div>
+    <!-- WP: index/noindex rule from brief 03 (thresholds editable in admin). If the listing doesn't meet it, swap this for .notice--warn: "Your listing is hidden from search engines until it has..." -->
+
+    <form class="form-card form" action="#" method="post">
+      <fieldset class="fieldset">
+        <legend>Business details</legend>
+        <div class="stack">
+          <div class="field">
+            <label for="le-name">Business name</label>
+            <input class="input" id="le-name" type="text" name="name" value="Station Road Barbers" aria-describedby="le-name-help" required>
+            <p class="help" id="le-name-help">Changing the name sends it to our team to check first. Your current name stays live until it&rsquo;s approved.</p>
+          </div>
+          <div class="row row-3">
+            <div class="field">
+              <label for="le-cat">Main category</label>
+              <!-- WP: render the category list with the listing's current category selected -->
+              <select class="select" id="le-cat" name="category">
+                <option value="hair-and-beauty" selected>Hair and beauty</option>
+                {{> gen-cat-options}}
+              </select>
+            </div>
+            <div class="field">
+              <label for="le-cat2">Second category <span class="opt">(optional)</span></label>
+              <select class="select" id="le-cat2" name="category_extra[]">
+                <option value="">None</option>
+                {{> gen-cat-options}}
+              </select>
+            </div>
+            <div class="field">
+              <label for="le-cat3">Third category <span class="opt">(optional)</span></label>
+              <select class="select" id="le-cat3" name="category_extra[]">
+                <option value="">None</option>
+                {{> gen-cat-options}}
+              </select>
+            </div>
+          </div>
+          <p class="help mt-2">Pick one main category and up to two more. You appear in all of them.</p>
+        </div>
+      </fieldset>
+
+      <fieldset class="fieldset">
+        <legend>Address</legend>
+        <div class="stack">
+          <div class="field">
+            <label for="le-ad1">Address line 1</label>
+            <input class="input" id="le-ad1" type="text" name="address_1" value="48 Station Road" autocomplete="address-line1" required>
+          </div>
+          <div class="field">
+            <label for="le-ad2">Address line 2 <span class="opt">(optional)</span></label>
+            <input class="input" id="le-ad2" type="text" name="address_2" autocomplete="address-line2">
+          </div>
+          <div class="row row-3">
+            <div class="field">
+              <label for="le-town">Town</label>
+              <input class="input" id="le-town" type="text" name="town" value="Harrow" autocomplete="address-level2">
+            </div>
+            <div class="field">
+              <label for="le-pc">Postcode</label>
+              <input class="input" id="le-pc" type="text" name="postcode" value="HA1 2RS" autocomplete="postal-code" required>
+            </div>
+            <div class="field">
+              <label for="le-area">Area</label>
+              <input class="input" id="le-area" type="text" value="Harrow Town Centre" readonly aria-describedby="le-area-help">
+              <p class="help" id="le-area-help">Set by our team from your postcode. <a href="/report.html">Tell us if it&rsquo;s wrong</a>.</p>
+            </div>
+          </div>
+        </div>
+      </fieldset>
+
+      <fieldset class="fieldset">
+        <legend>Contact details</legend>
+        <div class="stack">
+          <div class="row row-2">
+            <div class="field">
+              <label for="le-phone">Phone</label>
+              <input class="input" id="le-phone" type="tel" name="phone" value="020 8427 0000" autocomplete="tel">
+            </div>
+            <div class="field">
+              <label for="le-email">Public email <span class="opt">(optional)</span></label>
+              <input class="input" id="le-email" type="email" name="email" value="bookings@stationroadbarbers.co.uk" aria-describedby="le-email-help">
+              <p class="help" id="le-email-help">Shown on your listing. Account emails go to the address in <a href="/account-settings.html">Settings</a>.</p>
+            </div>
+          </div>
+          <div class="field">
+            <label for="le-web">Website <span class="opt">(optional)</span></label>
+            <input class="input" id="le-web" type="url" name="website" value="https://stationroadbarbers.co.uk" placeholder="https://">
+          </div>
+        </div>
+      </fieldset>
+
+      <fieldset class="fieldset">
+        <legend>Description</legend>
+        <div class="field">
+          <label for="le-desc">About your business</label>
+          <textarea class="textarea" id="le-desc" name="description" maxlength="1500" data-counter aria-describedby="le-desc-help">Family-run barbers on Station Road since 2009. We do classic cuts, skin fades, hot towel shaves and beard trims, with walk-ins welcome six days a week and online booking for evenings. Kids are welcome, and we offer a quieter chair for anyone who finds busy shops hard. Three experienced barbers, a fresh coffee while you wait, and five minutes from Harrow-on-the-Hill station.</textarea>
+          <p class="help" id="le-desc-help">Say what you do, who for, and what makes you different. At least 50 words helps you show up in search.</p>
+        </div>
+      </fieldset>
+
+      <fieldset class="fieldset">
+        <legend>Opening hours</legend>
+        <div class="hours-edit">
+          <span class="day">Monday</span>
+          <label class="ho-sr" for="h-mon-o">Monday opens</label><input class="input input--sm" id="h-mon-o" type="time" name="hours[mon][open]" value="09:00">
+          <label class="ho-sr" for="h-mon-c">Monday closes</label><input class="input input--sm" id="h-mon-c" type="time" name="hours[mon][close]" value="19:00">
+          <label class="check"><input type="checkbox" name="hours[mon][closed]" value="1"> Closed</label>
+
+          <span class="day">Tuesday</span>
+          <label class="ho-sr" for="h-tue-o">Tuesday opens</label><input class="input input--sm" id="h-tue-o" type="time" name="hours[tue][open]" value="09:00">
+          <label class="ho-sr" for="h-tue-c">Tuesday closes</label><input class="input input--sm" id="h-tue-c" type="time" name="hours[tue][close]" value="19:00">
+          <label class="check"><input type="checkbox" name="hours[tue][closed]" value="1"> Closed</label>
+
+          <span class="day">Wednesday</span>
+          <label class="ho-sr" for="h-wed-o">Wednesday opens</label><input class="input input--sm" id="h-wed-o" type="time" name="hours[wed][open]" value="09:00">
+          <label class="ho-sr" for="h-wed-c">Wednesday closes</label><input class="input input--sm" id="h-wed-c" type="time" name="hours[wed][close]" value="19:00">
+          <label class="check"><input type="checkbox" name="hours[wed][closed]" value="1"> Closed</label>
+
+          <span class="day">Thursday</span>
+          <label class="ho-sr" for="h-thu-o">Thursday opens</label><input class="input input--sm" id="h-thu-o" type="time" name="hours[thu][open]" value="09:00">
+          <label class="ho-sr" for="h-thu-c">Thursday closes</label><input class="input input--sm" id="h-thu-c" type="time" name="hours[thu][close]" value="20:00">
+          <label class="check"><input type="checkbox" name="hours[thu][closed]" value="1"> Closed</label>
+
+          <span class="day">Friday</span>
+          <label class="ho-sr" for="h-fri-o">Friday opens</label><input class="input input--sm" id="h-fri-o" type="time" name="hours[fri][open]" value="09:00">
+          <label class="ho-sr" for="h-fri-c">Friday closes</label><input class="input input--sm" id="h-fri-c" type="time" name="hours[fri][close]" value="20:00">
+          <label class="check"><input type="checkbox" name="hours[fri][closed]" value="1"> Closed</label>
+
+          <span class="day">Saturday</span>
+          <label class="ho-sr" for="h-sat-o">Saturday opens</label><input class="input input--sm" id="h-sat-o" type="time" name="hours[sat][open]" value="08:30">
+          <label class="ho-sr" for="h-sat-c">Saturday closes</label><input class="input input--sm" id="h-sat-c" type="time" name="hours[sat][close]" value="18:00">
+          <label class="check"><input type="checkbox" name="hours[sat][closed]" value="1"> Closed</label>
+
+          <span class="day">Sunday</span>
+          <label class="ho-sr" for="h-sun-o">Sunday opens</label><input class="input input--sm" id="h-sun-o" type="time" name="hours[sun][open]" disabled>
+          <label class="ho-sr" for="h-sun-c">Sunday closes</label><input class="input input--sm" id="h-sun-c" type="time" name="hours[sun][close]" disabled>
+          <label class="check"><input type="checkbox" name="hours[sun][closed]" value="1" checked> Closed</label>
+        </div>
+        <p class="help mt-4">Tick Closed for days you don&rsquo;t open. Hours show on your listing with today highlighted.</p>
+      </fieldset>
+
+      <fieldset class="fieldset" id="photos">
+        <legend>Photos</legend>
+        <div class="stack">
+          <div class="usage">
+            <div class="usage__label"><span>3 of 5 photos used on Enhanced</span><a class="small" href="/account-billing.html">Get more with Premium</a></div>
+            <div class="usage__bar"><i style="width:60%"></i></div>
+          </div>
+          <label class="dropzone" for="le-photos">
+            <svg class="ho-icon"><use href="#i-upload"/></svg>
+            <strong>Drop photos here or choose files</strong>
+            <p>JPG or PNG, up to 8MB each. The first photo is your main image.</p>
+            <input class="ho-sr" id="le-photos" type="file" name="photos[]" accept="image/jpeg,image/png" multiple>
+          </label>
+          <div class="thumbs">
+            <div class="thumb"><div class="ph"><svg class="ho-icon"><use href="#i-scissors"/></svg></div><button type="button" aria-label="Remove photo 1"><svg class="ho-icon"><use href="#i-close"/></svg></button></div>
+            <div class="thumb"><div class="ph"><svg class="ho-icon"><use href="#i-scissors"/></svg></div><button type="button" aria-label="Remove photo 2"><svg class="ho-icon"><use href="#i-close"/></svg></button></div>
+            <div class="thumb"><div class="ph"><svg class="ho-icon"><use href="#i-store"/></svg></div><button type="button" aria-label="Remove photo 3"><svg class="ho-icon"><use href="#i-close"/></svg></button></div>
+            <div class="thumb thumb--empty"><div class="ph"><svg class="ho-icon"><use href="#i-plus"/></svg></div><span class="ho-sr">Empty photo slot</span></div>
+            <div class="thumb thumb--empty"><div class="ph"><svg class="ho-icon"><use href="#i-plus"/></svg></div><span class="ho-sr">Empty photo slot</span></div>
+            <div class="thumb thumb--locked" data-plan="Premium"><div class="ph"><svg class="ho-icon"><use href="#i-lock"/></svg></div><span class="ho-sr">Locked: more photos on Premium</span></div>
+            <div class="thumb thumb--locked" data-plan="Premium"><div class="ph"><svg class="ho-icon"><use href="#i-lock"/></svg></div><span class="ho-sr">Locked: more photos on Premium</span></div>
+          </div>
+          <p class="help">If your plan ends, your first photo stays on your listing and the rest are hidden, not deleted. They come back if you upgrade again.</p>
+        </div>
+      </fieldset>
+
+      <fieldset class="fieldset">
+        <legend>Social links</legend>
+        <div class="stack">
+          <p class="help"><span class="badge badge--outline">Paid plans only</span> Social links show on Enhanced, Premium and Local Partner listings. They&rsquo;re on for you.</p>
+          <div class="row row-2">
+            <div class="field">
+              <label for="le-fb">Facebook</label>
+              <div class="input-group"><span class="input-group__addon">facebook.com/</span><input class="input" id="le-fb" type="text" name="social[facebook]" value="stationroadbarbers"></div>
+            </div>
+            <div class="field">
+              <label for="le-ig">Instagram</label>
+              <div class="input-group"><span class="input-group__addon">instagram.com/</span><input class="input" id="le-ig" type="text" name="social[instagram]" value="stationroadbarbers"></div>
+            </div>
+            <div class="field">
+              <label for="le-tt">TikTok <span class="opt">(optional)</span></label>
+              <div class="input-group"><span class="input-group__addon">tiktok.com/@</span><input class="input" id="le-tt" type="text" name="social[tiktok]"></div>
+            </div>
+            <div class="field">
+              <label for="le-x">X <span class="opt">(optional)</span></label>
+              <div class="input-group"><span class="input-group__addon">x.com/</span><input class="input" id="le-x" type="text" name="social[x]"></div>
+            </div>
+          </div>
+        </div>
+      </fieldset>
+
+      <div class="form-actions form-actions--sticky form-actions--between">
+        <p class="help mb-0">Most changes go live straight away. A new name is checked by our team first.</p>
+        <div class="cluster">
+          <a class="ho-btn ho-btn--ghost" href="/account-listings.html">Cancel</a>
+          <button class="ho-btn ho-btn--primary" type="submit"><svg class="ho-icon"><use href="#i-check"/></svg>Save changes</button>
+        </div>
+      </div>
+    </form>
+  </div>
+</div>

@@ -1,0 +1,69 @@
+<!--
+title: Search Harrow businesses
+description: Search 2,500+ local businesses in Harrow by name, category and area on Harrow Online Hub.
+hubnav: directory
+robots: noindex, follow
+body: page-search
+-->
+<nav class="crumbs ho-container" aria-label="Breadcrumb"><ol><li><a href="/">Hub</a></li><li><span aria-current="page">Search</span></li></ol></nav>
+
+<header class="page-head ho-container">
+  <h1 class="page-head__title">Find a local business</h1>
+  <p class="page-head__lead mb-5">Search {{> gen-count}} Harrow businesses by name, service, category or area.</p>
+
+  <div class="searchbar searchbar--inline" role="search">
+    <div class="searchbar__field">
+      <svg class="ho-icon"><use href="#i-search"/></svg>
+      <label class="ho-sr" for="s-q">What are you looking for?</label>
+      <input id="s-q" type="search" name="q" form="filters" placeholder="Plumber, Indian restaurant, dentist&hellip;" autocomplete="off">
+    </div>
+    <div class="searchbar__field">
+      <svg class="ho-icon"><use href="#i-pin"/></svg>
+      <label class="ho-sr" for="s-area">Area</label>
+      <select id="s-area" name="area" form="filters"><option value="">All of Harrow</option>{{> gen-area-options}}</select>
+    </div>
+    <button class="ho-btn ho-btn--primary" type="submit" form="filters">Search</button>
+  </div>
+</header>
+
+<div class="ho-container">
+  <div class="layout-filters">
+    <form class="filters" id="filters" data-directory-form action="/search.html" method="get">
+      <div class="filters__head"><h2>Filter results</h2><button class="ho-header__icon-btn filters__close" type="button" data-filters-close aria-label="Close filters"><svg class="ho-icon"><use href="#i-close"/></svg></button></div>
+      <div class="filters__group">
+        <div class="field"><label for="f-cat">Category</label><select class="select" id="f-cat" name="cat"><option value="">All categories</option>{{> gen-cat-options}}</select></div>
+      </div>
+      <fieldset class="filters__group"><legend>Contact details</legend>
+        <ul class="check-list">
+          <li><label><input type="checkbox" name="web" value="1"> Has a website</label></li>
+          <li><label><input type="checkbox" name="phone" value="1"> Has a phone number</label></li>
+        </ul>
+      </fieldset>
+      <div class="filters__group">
+        <div class="field"><label for="f-sort">Sort by</label><select class="select" id="f-sort" name="sort"><option value="relevance">Best match</option><option value="name">Name (A to Z)</option></select></div>
+        <p class="help mt-2">Paid and claimed listings always show first, then unclaimed ones.</p>
+      </div>
+      <div class="filters__foot"><a class="ho-btn ho-btn--ghost" href="/search.html">Clear</a><button class="ho-btn ho-btn--primary" type="submit">Show results</button></div>
+    </form>
+
+    <div data-directory data-page-size="20">
+      <div class="toolbar">
+        <p class="toolbar__count" data-count><strong>{{> gen-count}}</strong> businesses</p>
+        <div class="toolbar__right"><button class="ho-btn ho-btn--sm ho-btn--outline filters-toggle" type="button" data-filters-open aria-controls="filters" aria-expanded="false"><svg class="ho-icon"><use href="#i-filter"/></svg>Filters</button></div>
+      </div>
+      <div class="active-filters" data-active hidden></div>
+      <div data-results>{{> gen-recent-rows}}</div>
+      <nav class="pager" data-pager aria-label="Pages"></nav>
+
+      <div class="limited-note mt-6">
+        <svg class="ho-icon"><use href="#i-info"/></svg>
+        <p class="mb-0">Can&rsquo;t find a business? <a href="/add-business.html">Add it to the Hub</a>. If it&rsquo;s yours, you can claim it free once it&rsquo;s listed.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="cta-band mt-6">
+    <div><h2>Run a business in Harrow?</h2><p>Find your listing and claim it free, or add a missing business. It takes two minutes.</p></div>
+    <div class="cta-band__actions"><a class="ho-btn ho-btn--primary" href="/add-business.html">List your business</a><a class="ho-btn ho-btn--outline" href="/pricing.html">See plans</a></div>
+  </div>
+</div>

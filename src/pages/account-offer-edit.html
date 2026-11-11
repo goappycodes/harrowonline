@@ -1,0 +1,139 @@
+<!--
+title: Add an offer
+description: Add a Local Offer to Harrow Online Hub.
+body: is-logged-in
+hubnav: account
+robots: noindex, nofollow
+nl: off
+css: hub-c
+-->
+<div class="ho-container dash">
+<!--@dashnav:offers-->
+
+  <div class="dash-main">
+    <nav class="crumbs mb-4" aria-label="Breadcrumb">
+      <ol><li><a href="/account-offers.html">Offers</a></li><li aria-current="page">Add an offer</li></ol>
+    </nav>
+    <div class="dash-head">
+      <div>
+        <h1>Add an offer</h1>
+        <p>For Station Road Barbers. Your November offer is used, so this one can start on 1 December or later.</p>
+      </div>
+    </div>
+
+    <div class="layout-aside">
+      <form class="form-card form" action="#" method="post">
+        <fieldset class="fieldset">
+          <legend>The offer</legend>
+          <div class="stack">
+            <div class="field">
+              <label for="of-title">Offer title</label>
+              <input class="input" id="of-title" type="text" name="title" maxlength="70" data-counter value="Free beard trim with any haircut" required aria-describedby="of-title-help">
+              <p class="help" id="of-title-help">Lead with the deal, for example &ldquo;20% off&rdquo; or &ldquo;2-for-1 lunches&rdquo;.</p>
+            </div>
+            <div class="field">
+              <label for="of-desc">Description</label>
+              <textarea class="textarea" id="of-desc" name="description" maxlength="280" data-counter aria-describedby="of-desc-help">Book any haircut in December and we&rsquo;ll tidy up your beard for free. Walk-ins and online bookings.</textarea>
+              <p class="help" id="of-desc-help">How to claim it, and when it applies.</p>
+            </div>
+            <div class="field">
+              <span class="field__label" id="of-img-label">Image <span class="opt">(optional)</span></span>
+              <label class="dropzone" for="of-img">
+                <svg class="ho-icon"><use href="#i-upload"/></svg>
+                <strong>Choose an image</strong>
+                <p>Square works best. JPG or PNG, up to 5MB. If you skip this we use your main listing photo.</p>
+                <input class="ho-sr" id="of-img" type="file" name="image" accept="image/jpeg,image/png" aria-labelledby="of-img-label">
+              </label>
+            </div>
+          </div>
+        </fieldset>
+
+        <fieldset class="fieldset">
+          <legend>Dates and listing</legend>
+          <div class="stack">
+            <div class="row row-2">
+              <div class="field">
+                <label for="of-start">Starts</label>
+                <input class="input" id="of-start" type="date" name="start" value="2026-12-01" min="2026-12-01" required>
+              </div>
+              <div class="field">
+                <label for="of-end">Ends</label>
+                <input class="input" id="of-end" type="date" name="end" value="2026-12-31" required aria-describedby="of-end-help">
+                <p class="help" id="of-end-help">The offer disappears from the Hub after this date.</p>
+              </div>
+            </div>
+            <div class="field">
+              <label for="of-listing">Show on listing</label>
+              <select class="select" id="of-listing" name="listing">
+                <option value="station-road-barbers" selected>Station Road Barbers, Harrow Town Centre</option>
+                <option value="station-road-barbers-kenton" disabled>Station Road Barbers Kenton (claim pending)</option>
+              </select>
+            </div>
+          </div>
+        </fieldset>
+
+        <fieldset class="fieldset">
+          <legend>Who can see it</legend>
+          <div class="stack">
+            <label class="choice">
+              <input type="checkbox" name="subscriber_only" value="1">
+              <span>
+                <span class="choice__title"><svg class="ho-icon"><use href="#i-lock"/></svg>Subscriber-only</span>
+                <span class="choice__text">Everyone sees the title and your business name. The details and code are hidden until a reader enters their email to unlock it. New readers join the Harrow Online Newsletter in one click, so it&rsquo;s a good way to reward loyal locals. The full offer also goes in the newsletter.</span>
+              </span>
+            </label>
+            <div class="row row-2">
+              <div class="field">
+                <label for="of-code">Offer code <span class="opt">(optional)</span></label>
+                <input class="input" id="of-code" type="text" name="code" maxlength="20" placeholder="e.g. BEARD24" data-case="upper" aria-describedby="of-code-help">
+                <p class="help" id="of-code-help">Leave blank if customers just mention the offer.</p>
+              </div>
+              <div class="field">
+                <label for="of-terms">Terms <span class="opt">(optional)</span></label>
+                <input class="input" id="of-terms" type="text" name="terms" maxlength="120" value="One per customer. Not with other offers.">
+              </div>
+            </div>
+          </div>
+        </fieldset>
+
+        <div class="form-actions form-actions--sticky form-actions--between">
+          <button class="ho-btn ho-btn--ghost" type="submit" name="action" value="draft">Save draft</button>
+          <button class="ho-btn ho-btn--primary" type="submit" name="action" value="submit"><svg class="ho-icon"><use href="#i-check"/></svg>Submit for approval</button>
+        </div>
+      </form>
+
+      <aside class="stack sticky" aria-label="Preview and options">
+        <div>
+          <p class="eyebrow">Preview</p>
+          <article class="offer">
+            <div class="ph"><svg class="ho-icon"><use href="#i-scissors"/></svg></div>
+            <div class="offer__body">
+              <h3 class="offer__title">Free beard trim with any haircut</h3>
+              <span class="offer__biz">Station Road Barbers &middot; Harrow Town Centre</span>
+              <p class="offer__text">Book any haircut in December and we&rsquo;ll tidy up your beard for free. Walk-ins and online bookings.</p>
+              <div class="offer__foot"><span><svg class="ho-icon ho-icon--sm"><use href="#i-calendar"/></svg> Ends 31 Dec</span><span>No code needed</span></div>
+            </div>
+          </article>
+          <p class="help mt-2">How it looks on Local Offers and your listing. There&rsquo;s no separate offer page.</p>
+        </div>
+
+        <div class="notice notice--plain">
+          <svg class="ho-icon"><use href="#i-clock"/></svg>
+          <div>
+            <p><strong>Checked before it goes live</strong></p>
+            <p>Our team reviews every offer, usually within 2 working days. We&rsquo;ll email you when it&rsquo;s approved, or tell you what to change.</p>
+          </div>
+        </div>
+
+        <div class="panel">
+          <h2 class="panel__title"><svg class="ho-icon"><use href="#i-star"/></svg> Feature this offer</h2>
+          <p class="small">Show it first on Local Offers and at the top of the newsletter&rsquo;s offers section, with a Featured label.</p>
+          <p class="mb-2"><strong class="price-inline">&pound;15</strong> <span class="muted small">for 7 days, one-off payment</span></p>
+          <a class="ho-btn ho-btn--dark ho-btn--sm ho-btn--block" href="#stripe-checkout">Feature this offer</a>
+          <p class="help mt-2">You can pay now. The 7 days start when the offer is approved and live.</p>
+        </div>
+        <!-- WP: #stripe-checkout = one-off Checkout Session (mode=payment) for the "Featured offer, 7 days" price; brief 02 N7 -->
+      </aside>
+    </div>
+  </div>
+</div>

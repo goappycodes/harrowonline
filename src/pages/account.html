@@ -1,0 +1,141 @@
+<!--
+title: My account
+description: Your Harrow Online Hub dashboard.
+body: is-logged-in
+hubnav: account
+robots: noindex, nofollow
+nl: off
+css: hub-c
+-->
+<div class="ho-container dash">
+<!--@dashnav:overview-->
+
+  <div class="dash-main">
+    <div class="dash-head">
+      <div>
+        <h1>Good morning, Sam</h1>
+        <p>Here&rsquo;s how Station Road Barbers is doing on the Hub.</p>
+      </div>
+      <div class="cluster">
+        <a class="ho-btn ho-btn--outline" href="/sample-premium.html"><svg class="ho-icon"><use href="#i-external"/></svg>View my listing</a>
+        <a class="ho-btn ho-btn--primary" href="/account-listing-edit.html"><svg class="ho-icon"><use href="#i-edit"/></svg>Edit listing</a>
+      </div>
+    </div>
+
+    <div class="notice notice--warn mb-5">
+      <svg class="ho-icon"><use href="#i-alert"/></svg>
+      <div>
+        <p><strong>One offer needs changes.</strong> &ldquo;Kids&rsquo; cuts &pound;10 on weekdays&rdquo; wasn&rsquo;t approved. Our team left a note on what to fix.</p>
+        <p><a href="/account-offers.html">See the note and edit the offer</a></p>
+      </div>
+    </div>
+
+    <div class="grid grid-2">
+      <section class="panel" aria-labelledby="todo-title">
+        <h2 class="panel__title" id="todo-title">Get the most from your listing</h2>
+        <p class="small muted">4 of 6 done</p>
+        <div class="usage mb-4"><div class="usage__bar"><i style="width:67%"></i></div></div>
+        <ul class="todo">
+          <li class="is-done"><span class="tick"><svg class="ho-icon"><use href="#i-check"/></svg></span><span>Claim your listing</span></li>
+          <li class="is-done"><span class="tick"><svg class="ho-icon"><use href="#i-check"/></svg></span><span>Add a description</span></li>
+          <li><span class="tick"></span><span>Add photos <span class="muted small">(3 of 5)</span></span><a href="/account-listing-edit.html#photos">Add photos</a></li>
+          <li class="is-done"><span class="tick"><svg class="ho-icon"><use href="#i-check"/></svg></span><span>Add opening hours</span></li>
+          <li class="is-done"><span class="tick"><svg class="ho-icon"><use href="#i-check"/></svg></span><span>Post your first offer</span></li>
+          <li><span class="tick"></span><span>Post your first event or class</span><a href="/account-event-edit.html">Add an event</a></li>
+        </ul>
+      </section>
+
+      <div class="stack">
+        <section class="plan-card" aria-labelledby="plan-title">
+          <div>
+            <span class="eyebrow">Your plan</span>
+            <h2 id="plan-title">Enhanced</h2>
+            <p class="mb-0 small">&pound;19 a month. Renews on 2 December 2026.</p>
+          </div>
+          <div class="plan-card__actions">
+            <a class="ho-btn ho-btn--primary ho-btn--sm" href="#stripe-checkout">Upgrade to Premium</a>
+            <a class="ho-btn ho-btn--outline ho-btn--sm" href="#stripe-portal">Manage billing</a>
+          </div>
+        </section>
+        <!-- WP: #stripe-checkout = create a Stripe Checkout Session for the Premium price, then redirect. #stripe-portal = create a Customer Portal session, then redirect. -->
+
+        <section class="panel" aria-labelledby="usage-title">
+          <h2 class="panel__title" id="usage-title">Your plan this month</h2>
+          <div class="stack">
+            <div class="usage">
+              <div class="usage__label"><span>Photos</span><strong>3 of 5</strong></div>
+              <div class="usage__bar"><i style="width:60%"></i></div>
+            </div>
+            <div class="usage">
+              <div class="usage__label"><span>Offers starting in November</span><strong>1 of 1</strong></div>
+              <div class="usage__bar"><i style="width:100%"></i></div>
+            </div>
+            <div class="usage">
+              <div class="usage__label"><span>Events starting in November</span><strong>1 of 2</strong></div>
+              <div class="usage__bar"><i style="width:50%"></i></div>
+            </div>
+          </div>
+          <p class="help mt-4">Need more? Premium has higher limits, plus featured placement at the top of your category. <a href="/account-billing.html">Compare plans</a></p>
+        </section>
+      </div>
+    </div>
+
+    <section class="mt-6" aria-labelledby="stats-title">
+      <div class="split mb-4">
+        <h2 class="sec-title" id="stats-title">Your listing</h2>
+        <span class="small muted">Last 30 days</span>
+      </div>
+      <div class="stats">
+        <div class="stat"><p class="stat__label">Profile views</p><p class="stat__value">1,284</p><p class="stat__delta">Up 18% on the 30 days before</p></div>
+        <div class="stat"><p class="stat__label">Calls</p><p class="stat__value">46</p><p class="stat__delta">Up 9%</p></div>
+        <div class="stat"><p class="stat__label">Website clicks</p><p class="stat__value">132</p><p class="stat__delta">Up 22%</p></div>
+        <div class="stat"><p class="stat__label">Offer unlocks</p><p class="stat__value">58</p><p class="stat__delta">New subscribers who unlocked your offer</p></div>
+      </div>
+      <p class="help mt-2">Calls and website clicks count taps on the buttons on your Hub listing.</p>
+    </section>
+
+    <div class="grid grid-2 mt-6">
+      <section class="panel" aria-labelledby="wait-title">
+        <h2 class="panel__title" id="wait-title">Waiting for approval</h2>
+        <p class="small muted">Our team usually checks submissions within 2 working days. We&rsquo;ll email you either way.</p>
+        <ul class="summary">
+          <li><span><strong>Free beard trim with any haircut</strong><br><span class="small muted">Offer &middot; starts 1 Dec</span></span><span class="status status--pending">Pending</span></li>
+          <li><span><strong>Christmas charity cut-a-thon</strong><br><span class="small muted">Event &middot; Sun 13 Dec</span></span><span class="status status--pending">Pending</span></li>
+          <li><span><strong>Station Road Barbers Kenton</strong><br><span class="small muted">Claim &middot; we&rsquo;ll phone the listed number</span></span><span class="status status--pending">Pending</span></li>
+        </ul>
+      </section>
+
+      <section class="panel" aria-labelledby="act-title">
+        <h2 class="panel__title" id="act-title">Recent activity</h2>
+        <ul class="summary">
+          <li><span>&ldquo;Kids&rsquo; cuts &pound;10 on weekdays&rdquo; needs changes</span><span class="small muted nowrap">Today</span></li>
+          <li><span>&ldquo;&pound;5 off a skin fade&rdquo; is featured until 18 Nov</span><span class="small muted nowrap">11 Nov</span></li>
+          <li><span>&ldquo;Beard care workshop&rdquo; was approved</span><span class="small muted nowrap">9 Nov</span></li>
+          <li><span>Payment of &pound;19.00 received for Enhanced</span><span class="small muted nowrap">2 Nov</span></li>
+          <li><span>&ldquo;Half-term kids&rsquo; cuts&rdquo; ended</span><span class="small muted nowrap">31 Oct</span></li>
+        </ul>
+      </section>
+    </div>
+
+    <section class="mt-6" aria-labelledby="quick-title">
+      <h2 class="sec-title mb-4" id="quick-title">Quick actions</h2>
+      <div class="grid grid-3">
+        <a class="tile" href="/account-offer-edit.html">
+          <span class="tile__icon"><svg class="ho-icon"><use href="#i-tag"/></svg></span>
+          <span class="tile__name">Add an offer</span>
+          <span class="tile__count">Your next one can start on 1 December</span>
+        </a>
+        <a class="tile" href="/account-event-edit.html">
+          <span class="tile__icon"><svg class="ho-icon"><use href="#i-calendar"/></svg></span>
+          <span class="tile__name">Add an event or class</span>
+          <span class="tile__count">1 left this month</span>
+        </a>
+        <a class="tile" href="/sample-premium.html">
+          <span class="tile__icon"><svg class="ho-icon"><use href="#i-store"/></svg></span>
+          <span class="tile__name">View my listing</span>
+          <span class="tile__count">See it as customers do</span>
+        </a>
+      </div>
+    </section>
+  </div>
+</div>

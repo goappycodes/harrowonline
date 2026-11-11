@@ -1,11 +1,21 @@
 {
+  "buildCommand": "echo 'Static site: pages are prebuilt into site/ by python build.py'",
+  "outputDirectory": "site",
+  "redirects": [
+    { "source": "/", "destination": "/hub/", "permanent": false },
+    { "source": "/hub", "destination": "/hub/", "permanent": false }
+  ],
   "headers": [
     {
       "source": "/(.*)",
       "headers": [{ "key": "X-Robots-Tag", "value": "noindex, nofollow" }]
     },
     {
-      "source": "/data/(.*)",
+      "source": "/hub/data/(.*)",
+      "headers": [{ "key": "Cache-Control", "value": "public, max-age=3600" }]
+    },
+    {
+      "source": "/hub/assets/(.*)",
       "headers": [{ "key": "Cache-Control", "value": "public, max-age=3600" }]
     }
   ]

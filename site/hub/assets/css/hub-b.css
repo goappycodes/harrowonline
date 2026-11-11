@@ -1,0 +1,49 @@
+/* ==========================================================================
+   Harrow Online Hub: extra styles for offers, events, classes, sponsor booking
+   and legal pages. Merged into hub.css before hand-off.
+   ========================================================================== */
+
+/* Filter bar (offers, classes): selects in a row above the results */
+.filter-bar { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)) auto; gap: var(--ho-s3); align-items: end; padding: var(--ho-s4); background: var(--ho-soft); border: 1px solid var(--ho-line); border-radius: var(--ho-radius-lg); }
+.filter-bar--4 { grid-template-columns: repeat(4, minmax(0, 1fr)) auto; }
+.filter-bar .field > label { font-size: 13px; }
+.filter-bar .check { align-self: center; min-height: 40px; align-items: center; }
+@media (max-width: 1018px) { .filter-bar, .filter-bar--4 { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (max-width: 520px) { .filter-bar, .filter-bar--4 { grid-template-columns: 1fr; } }
+
+/* Subscriber-only offer: small print under the unlock form */
+.offer__lock .offer__lock-note { display: block; font: 400 12px/1.45 var(--ho-font-body); color: var(--ho-red-dark); }
+
+/* Month calendar: agenda fallback (small screens) */
+.cal__agenda .day-group__title { margin-top: var(--ho-s5); font-size: 17px; border-bottom-width: 1px; }
+.cal__agenda .cal__ev { white-space: normal; margin-top: 6px; padding: 8px 10px; font-size: 14px; }
+.cal__agenda .is-past { opacity: .6; }
+
+/* Sponsor booking: weekday headers and key for the slot picker */
+.slots__dow { padding: 2px 0; font: 700 11px/1.2 var(--ho-font-ui); text-transform: uppercase; letter-spacing: .06em; color: var(--ho-muted); text-align: center; }
+.cal-legend i.a { background: #fff; box-shadow: inset 0 0 0 1px var(--ho-line-2); }
+.cal-legend i.t { background: var(--ho-soft); box-shadow: inset 0 0 0 1px var(--ho-line); }
+.cal-legend i.h { background: var(--ho-warn-tint); box-shadow: inset 0 0 0 1px var(--ho-warn); }
+
+/* Sponsor booking: newsletter preview ("Presented by" block) */
+.nl-preview { border: 1px solid var(--ho-line); border-radius: var(--ho-radius-lg); background: #fff; overflow: hidden; box-shadow: var(--ho-shadow); }
+.nl-preview__mast { display: flex; align-items: center; justify-content: space-between; gap: var(--ho-s2); padding: 12px 16px; background: var(--ho-ink); color: #fff; font: 900 16px/1.2 var(--ho-font-head); }
+.nl-preview__mast small { font: 600 11px/1.2 var(--ho-font-ui); color: rgba(255, 255, 255, .7); }
+.nl-preview__body { padding: 14px 16px 16px; }
+.nl-preview__sponsor { display: grid; grid-template-columns: 40px minmax(0, 1fr) auto; gap: 10px; align-items: center; padding: 10px 12px; border-radius: 8px; background: var(--ho-soft); font-size: 12px; line-height: 1.5; color: var(--ho-muted); }
+.nl-preview__sponsor .ph { aspect-ratio: 1; border-radius: 6px; background-size: 8px 8px; }
+.nl-preview__sponsor .ph .ho-icon { width: 18px; height: 18px; }
+.nl-preview__sponsor strong { color: var(--ho-ink); }
+.nl-preview__sponsor a { color: var(--ho-red); font-weight: 600; text-decoration: none; }
+.nl-preview__tag { font-size: 10px; letter-spacing: .1em; text-transform: uppercase; color: #9A9A9A; }
+.nl-preview__hello { margin: 14px 0 6px; font: 900 18px/1.3 var(--ho-font-head); color: var(--ho-ink); }
+.nl-preview__line { height: 8px; margin-top: 8px; border-radius: 4px; background: var(--ho-line); }
+.nl-preview__line:nth-child(odd) { width: 86%; }
+
+/* Legal pages: draft banner sits above the prose */
+.legal-draft { margin-bottom: var(--ho-s5); }
+.prose .toc { margin: var(--ho-s5) 0; }
+
+/* 404 */
+.big-404 + h1 { margin-top: var(--ho-s3); }
+.searchbar--center { margin: var(--ho-s5) auto 0; text-align: left; }

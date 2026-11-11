@@ -1,0 +1,125 @@
+<!--
+title: Harrow Online Hub: local businesses, offers and what's on in Harrow
+description: Find 2,500+ local businesses in Harrow, plus Local Offers, What's On events and classes. Harrow Online Hub, powered by Harrow Online Newsletter.
+nav: hub
+body: page-home
+-->
+<section class="hero">
+  <div class="ho-container">
+    <p class="eyebrow" style="color:#fff;opacity:.8">Harrow Online Hub</p>
+    <h1 class="hero__title">Find the best of <em>local Harrow</em></h1>
+    <p class="hero__lead">Shops, places to eat, trades and services across the borough, plus Local Offers and what&rsquo;s on this week. Free to use, and free for businesses to claim.</p>
+
+    <form class="searchbar" action="/search.html" method="get" role="search">
+      <div class="searchbar__field">
+        <svg class="ho-icon"><use href="#i-search"/></svg>
+        <label class="ho-sr" for="hero-q">What are you looking for?</label>
+        <input id="hero-q" type="search" name="q" placeholder="Plumber, Indian restaurant, dentist&hellip;" autocomplete="off">
+      </div>
+      <div class="searchbar__field">
+        <svg class="ho-icon"><use href="#i-pin"/></svg>
+        <label class="ho-sr" for="hero-area">Area</label>
+        <select id="hero-area" name="area"><option value="">All of Harrow</option>{{> gen-area-options}}</select>
+      </div>
+      <button class="ho-btn ho-btn--primary" type="submit">Search</button>
+    </form>
+
+    <div class="popular">
+      <span>Popular:</span>
+      <a href="/category/restaurants.html">Restaurants</a>
+      <a href="/category/hair-and-beauty.html">Hair and beauty</a>
+      <a href="/category/trades-and-home-services.html">Trades</a>
+      <a href="/category/doctors-dentists-and-clinics.html">Dentists</a>
+      <a href="/category/motoring.html">MOT and garages</a>
+    </div>
+
+    <div class="hero__stats">
+      <div><strong>{{> gen-count}}</strong>local businesses</div>
+      <div><strong>19</strong>Harrow areas</div>
+      <div><strong>Free</strong>to claim your listing</div>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="categories" aria-labelledby="cats-title">
+  <div class="ho-container">
+    <div class="sec-head">
+      <div><h2 class="sec-title" id="cats-title">Browse by category</h2><p class="sec-sub">Every listing, sorted the way Harrow shops.</p></div>
+      <a class="link-arrow hide-mobile" href="/search.html">All businesses <svg class="ho-icon"><use href="#i-arrow"/></svg></a>
+    </div>
+    {{> gen-cat-tiles}}
+  </div>
+</section>
+
+<section class="section section--soft" aria-labelledby="feat-title">
+  <div class="ho-container">
+    <div class="sec-head">
+      <div><h2 class="sec-title" id="feat-title">Featured local businesses</h2><p class="sec-sub">Premium members, hand-picked by the Harrow Online team.</p></div>
+      <a class="link-arrow hide-mobile" href="/pricing.html">Get featured <svg class="ho-icon"><use href="#i-arrow"/></svg></a>
+    </div>
+    <div class="grid grid-4">
+      {{> sample-featured-cards}}
+    </div>
+  </div>
+</section>
+
+<section class="section" aria-labelledby="wknd-title">
+  <div class="ho-container">
+    <div class="sec-head">
+      <div><h2 class="sec-title" id="wknd-title">This weekend in Harrow</h2><p class="sec-sub">Friday 13 to Sunday 15 November</p></div>
+      <a class="link-arrow" href="/events.html">All events <svg class="ho-icon"><use href="#i-arrow"/></svg></a>
+    </div>
+    <div class="grid grid-4">
+      {{> sample-weekend-cards}}
+    </div>
+    <div class="cluster mt-5">
+      <a class="chip" href="/events.html?when=weekend">This weekend</a>
+      <a class="chip" href="/classes.html">Classes and activities</a>
+      <a class="chip" href="/events.html?cat=family">Family</a>
+      <a class="chip" href="/events.html?cat=music">Music</a>
+      <a class="chip" href="/events.html?cat=food-and-drink">Food and drink</a>
+      <a class="chip" href="/events.html?cat=community">Community</a>
+    </div>
+  </div>
+</section>
+
+<section class="section section--soft" aria-labelledby="offers-title">
+  <div class="ho-container">
+    <div class="sec-head">
+      <div><h2 class="sec-title" id="offers-title">Local Offers</h2><p class="sec-sub">Deals from Harrow businesses. Some are just for newsletter subscribers.</p></div>
+      <a class="link-arrow" href="/offers.html">All offers <svg class="ho-icon"><use href="#i-arrow"/></svg></a>
+    </div>
+    <div class="grid grid-3">
+      {{> sample-offers-3}}
+    </div>
+  </div>
+</section>
+
+<section class="section" id="areas" aria-labelledby="areas-title">
+  <div class="ho-container">
+    <div class="sec-head">
+      <div><h2 class="sec-title" id="areas-title">Explore by area</h2><p class="sec-sub">From Pinner to Edgware, find what&rsquo;s near you.</p></div>
+    </div>
+    {{> gen-area-tiles}}
+  </div>
+</section>
+
+<section class="section section--soft" aria-labelledby="biz-title">
+  <div class="ho-container">
+    <div class="sec-head">
+      <div><p class="eyebrow">For businesses</p><h2 class="sec-title" id="biz-title">Get found by Harrow</h2><p class="sec-sub">Harrow Online reaches thousands of local readers every day. Put your business in front of them.</p></div>
+    </div>
+    <ol class="steps">
+      <li><h3>Find or add your business</h3><p>Most Harrow businesses are already listed. Search for yours, or add it in two minutes.</p></li>
+      <li><h3>Claim it free</h3><p>Prove you own it, then add your description, opening hours and a photo. You get a verified badge.</p></li>
+      <li><h3>Upgrade when you&rsquo;re ready</h3><p>Paid plans put you at the top of your category, add Local Offers and events, and feature you in the newsletter.</p></li>
+    </ol>
+    <div class="cta-band mt-6">
+      <div><h2>Plans from free to Local Partner</h2><p>Monthly or annual billing. Upgrade, downgrade or cancel any time.</p></div>
+      <div class="cta-band__actions">
+        <a class="ho-btn ho-btn--primary" href="/search.html">Find your business</a>
+        <a class="ho-btn ho-btn--outline" href="/pricing.html">See plans and prices</a>
+      </div>
+    </div>
+  </div>
+</section>

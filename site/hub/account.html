@@ -1,0 +1,335 @@
+<!doctype html>
+<html lang="en-GB" data-base="/hub">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>My account | Harrow Online Hub</title>
+<meta name="description" content="Your Harrow Online Hub dashboard.">
+<meta name="robots" content="noindex, nofollow">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Merriweather:wght@700;900&family=Open+Sans:ital,wght@0,400;0,600;0,700;1,400&display=swap">
+<link rel="stylesheet" href="/hub/assets/css/hub.css">
+<script src="/hub/assets/js/hub.js" defer></script>
+<link rel="stylesheet" href="/hub/assets/css/hub-c.css">
+</head>
+<body class="site-hub is-logged-in">
+<a class="ho-skip" href="#main">Skip to content</a>
+
+<header class="ho-header" id="ho-header">
+  <div class="ho-container ho-header__inner">
+    <button class="ho-header__icon-btn ho-header__burger" type="button" aria-controls="ho-drawer" aria-expanded="false" aria-label="Open menu" data-drawer-open>
+      <svg class="ho-icon"><use href="/hub/assets/img/icons.svg#i-menu"/></svg>
+    </button>
+
+    <div class="hub-logo">
+      <a class="hub-logo__link" href="/hub/" rel="home">
+        <img src="https://harrowonline.org/wp-content/uploads/2020/08/Website-Logo-Small-1.png" width="233" height="90" alt="Harrow Online">
+        <span class="hub-logo__word">Hub</span>
+      </a>
+      <a class="hub-logo__strap" href="https://harrowonline.org/newsletter/">powered by Harrow Online Newsletter</a>
+    </div>
+    
+
+    <nav class="ho-nav" aria-label="Main">
+      <ul class="ho-nav__list">
+        <li><a href="https://harrowonline.org/">News</a></li>
+        <li><a href="/hub/events.html">What&rsquo;s On</a></li>
+        <li><a href="/hub/classes.html">Classes</a></li>
+        <li><a href="/hub/offers.html">Offers</a></li>
+        <li class="current-menu-item"><a href="/hub/" aria-current="page">Hub</a></li>
+        <li><a href="https://harrowonline.org/newsletter/">Newsletter</a></li>
+      </ul>
+    </nav>
+
+    <div class="ho-header__actions">
+      <a class="ho-btn ho-btn--primary ho-header__cta" href="https://harrowonline.org/newsletter/">
+        <svg class="ho-icon"><use href="/hub/assets/img/icons.svg#i-mail"/></svg><span>Newsletter</span>
+      </a>
+      <a class="ho-header__icon-btn ho-header__account" href="/hub/account.html" aria-label="My account">
+        <svg class="ho-icon"><use href="/hub/assets/img/icons.svg#i-user"/></svg>
+      </a>
+      <button class="ho-header__icon-btn" type="button" aria-controls="ho-search" aria-expanded="false" aria-label="Search" data-search-toggle>
+        <svg class="ho-icon"><use href="/hub/assets/img/icons.svg#i-search"/></svg>
+      </button>
+    </div>
+  </div>
+
+  <div class="ho-search" id="ho-search" hidden>
+    <div class="ho-container">
+      <form class="ho-search__form" role="search" method="get" action="/hub/search.html">
+        <label class="ho-sr" for="ho-search-input">Search the Hub</label>
+        <input class="ho-search__input" id="ho-search-input" type="search" name="q" placeholder="Search businesses, offers and events&hellip;" autocomplete="off">
+        <button class="ho-btn ho-btn--primary" type="submit">Search</button>
+      </form>
+      
+    </div>
+  </div>
+</header>
+
+<div class="ho-drawer" id="ho-drawer" hidden>
+  <div class="ho-drawer__backdrop" data-drawer-close></div>
+  <div class="ho-drawer__panel" role="dialog" aria-modal="true" aria-label="Menu">
+    <div class="ho-drawer__head">
+      <a class="ho-drawer__logo" href="/hub/"><img src="https://harrowonline.org/wp-content/uploads/2020/08/Website-Logo-Small-1.png" width="233" height="90" alt="Harrow Online" loading="lazy"></a>
+      <button class="ho-header__icon-btn" type="button" aria-label="Close menu" data-drawer-close><svg class="ho-icon"><use href="/hub/assets/img/icons.svg#i-close"/></svg></button>
+    </div>
+    <form class="ho-drawer__search" role="search" method="get" action="/hub/search.html">
+      <label class="ho-sr" for="ho-drawer-search">Search</label>
+      <input id="ho-drawer-search" type="search" name="q" placeholder="Search the Hub&hellip;" autocomplete="off">
+      <button type="submit" aria-label="Search"><svg class="ho-icon"><use href="/hub/assets/img/icons.svg#i-search"/></svg></button>
+    </form>
+    <nav aria-label="Mobile">
+      <ul class="ho-drawer__list">
+        <li><a href="https://harrowonline.org/">News</a></li>
+        <li><a href="/hub/events.html">What&rsquo;s On</a></li>
+        <li><a href="/hub/classes.html">Classes</a></li>
+        <li><a href="/hub/offers.html">Offers</a></li>
+        <li><a href="/hub/">Hub</a></li>
+        <li><a href="https://harrowonline.org/newsletter/">Newsletter</a></li>
+      </ul>
+    </nav>
+    <p class="ho-drawer__label">For businesses</p>
+    <ul class="ho-drawer__list ho-drawer__list--small">
+      <li><a href="/hub/add-business.html">List your business</a></li>
+      <li><a href="/hub/pricing.html">Plans and pricing</a></li>
+      <li><a href="/hub/account.html">My account</a></li>
+    </ul>
+    <a class="ho-btn ho-btn--primary ho-btn--block" href="https://harrowonline.org/newsletter/"><svg class="ho-icon"><use href="/hub/assets/img/icons.svg#i-mail"/></svg><span>Get the newsletter</span></a>
+    <p class="ho-drawer__label">Follow Harrow Online</p>
+    <ul class="ho-social ho-social--dark">
+      <li><a class="ho-social__link" href="https://www.facebook.com/harrowonline" target="_blank" rel="noopener" aria-label="Facebook"><svg class="ho-icon"><use href="/hub/assets/img/icons.svg#i-facebook"/></svg></a></li>
+      <li><a class="ho-social__link" href="https://twitter.com/harrowonline" target="_blank" rel="noopener" aria-label="X (Twitter)"><svg class="ho-icon"><use href="/hub/assets/img/icons.svg#i-x"/></svg></a></li>
+      <li><a class="ho-social__link" href="https://www.instagram.com/harrowonline1/" target="_blank" rel="noopener" aria-label="Instagram"><svg class="ho-icon"><use href="/hub/assets/img/icons.svg#i-instagram"/></svg></a></li>
+      <li><a class="ho-social__link" href="https://www.tiktok.com/@harrowonline" target="_blank" rel="noopener" aria-label="TikTok"><svg class="ho-icon"><use href="/hub/assets/img/icons.svg#i-tiktok"/></svg></a></li>
+      <li><a class="ho-social__link" href="https://whatsapp.com/channel/0029Va9qE38HgZWZQVM1jc3S" target="_blank" rel="noopener" aria-label="WhatsApp Channel"><svg class="ho-icon"><use href="/hub/assets/img/icons.svg#i-whatsapp"/></svg></a></li>
+    </ul>
+
+  </div>
+</div>
+
+<div class="hub-bar">
+  <div class="ho-container hub-bar__inner">
+    <nav class="hub-bar__nav" aria-label="Hub">
+      <a href="/hub/search.html">Businesses</a>
+      <a href="/hub/#categories">Categories</a>
+      <a href="/hub/#areas">Areas</a>
+      <a href="/hub/offers.html">Offers</a>
+      <a href="/hub/events.html">What&rsquo;s On</a>
+      <a href="/hub/pricing.html">Pricing</a>
+    </nav>
+    <div class="hub-bar__actions">
+      <a class="hub-bar__link hub-bar__out" href="/hub/sign-in.html">Sign in</a>
+      <a class="hub-bar__link hub-bar__in" href="/hub/account.html" aria-current="page"><svg class="ho-icon"><use href="/hub/assets/img/icons.svg#i-user"/></svg>My account</a>
+      <a class="ho-btn ho-btn--sm ho-btn--dark" href="/hub/add-business.html"><svg class="ho-icon"><use href="/hub/assets/img/icons.svg#i-plus"/></svg>List your business</a>
+    </div>
+  </div>
+</div>
+
+<div class="preview-note"><div class="ho-container">Design preview. The 2,590 business listings are real open data (Overture Maps). Featured businesses, offers, events and accounts are samples.</div></div>
+
+<main id="main">
+<div class="ho-container dash">
+<!--@dashnav:overview-->
+
+  <div class="dash-main">
+    <div class="dash-head">
+      <div>
+        <h1>Good morning, Sam</h1>
+        <p>Here&rsquo;s how Station Road Barbers is doing on the Hub.</p>
+      </div>
+      <div class="cluster">
+        <a class="ho-btn ho-btn--outline" href="/hub/sample-premium.html"><svg class="ho-icon"><use href="/hub/assets/img/icons.svg#i-external"/></svg>View my listing</a>
+        <a class="ho-btn ho-btn--primary" href="/hub/account-listing-edit.html"><svg class="ho-icon"><use href="/hub/assets/img/icons.svg#i-edit"/></svg>Edit listing</a>
+      </div>
+    </div>
+
+    <div class="notice notice--warn mb-5">
+      <svg class="ho-icon"><use href="/hub/assets/img/icons.svg#i-alert"/></svg>
+      <div>
+        <p><strong>One offer needs changes.</strong> &ldquo;Kids&rsquo; cuts &pound;10 on weekdays&rdquo; wasn&rsquo;t approved. Our team left a note on what to fix.</p>
+        <p><a href="/hub/account-offers.html">See the note and edit the offer</a></p>
+      </div>
+    </div>
+
+    <div class="grid grid-2">
+      <section class="panel" aria-labelledby="todo-title">
+        <h2 class="panel__title" id="todo-title">Get the most from your listing</h2>
+        <p class="small muted">4 of 6 done</p>
+        <div class="usage mb-4"><div class="usage__bar"><i style="width:67%"></i></div></div>
+        <ul class="todo">
+          <li class="is-done"><span class="tick"><svg class="ho-icon"><use href="/hub/assets/img/icons.svg#i-check"/></svg></span><span>Claim your listing</span></li>
+          <li class="is-done"><span class="tick"><svg class="ho-icon"><use href="/hub/assets/img/icons.svg#i-check"/></svg></span><span>Add a description</span></li>
+          <li><span class="tick"></span><span>Add photos <span class="muted small">(3 of 5)</span></span><a href="/hub/account-listing-edit.html#photos">Add photos</a></li>
+          <li class="is-done"><span class="tick"><svg class="ho-icon"><use href="/hub/assets/img/icons.svg#i-check"/></svg></span><span>Add opening hours</span></li>
+          <li class="is-done"><span class="tick"><svg class="ho-icon"><use href="/hub/assets/img/icons.svg#i-check"/></svg></span><span>Post your first offer</span></li>
+          <li><span class="tick"></span><span>Post your first event or class</span><a href="/hub/account-event-edit.html">Add an event</a></li>
+        </ul>
+      </section>
+
+      <div class="stack">
+        <section class="plan-card" aria-labelledby="plan-title">
+          <div>
+            <span class="eyebrow">Your plan</span>
+            <h2 id="plan-title">Enhanced</h2>
+            <p class="mb-0 small">&pound;19 a month. Renews on 2 December 2026.</p>
+          </div>
+          <div class="plan-card__actions">
+            <a class="ho-btn ho-btn--primary ho-btn--sm" href="#stripe-checkout">Upgrade to Premium</a>
+            <a class="ho-btn ho-btn--outline ho-btn--sm" href="#stripe-portal">Manage billing</a>
+          </div>
+        </section>
+        <!-- WP: #stripe-checkout = create a Stripe Checkout Session for the Premium price, then redirect. #stripe-portal = create a Customer Portal session, then redirect. -->
+
+        <section class="panel" aria-labelledby="usage-title">
+          <h2 class="panel__title" id="usage-title">Your plan this month</h2>
+          <div class="stack">
+            <div class="usage">
+              <div class="usage__label"><span>Photos</span><strong>3 of 5</strong></div>
+              <div class="usage__bar"><i style="width:60%"></i></div>
+            </div>
+            <div class="usage">
+              <div class="usage__label"><span>Offers starting in November</span><strong>1 of 1</strong></div>
+              <div class="usage__bar"><i style="width:100%"></i></div>
+            </div>
+            <div class="usage">
+              <div class="usage__label"><span>Events starting in November</span><strong>1 of 2</strong></div>
+              <div class="usage__bar"><i style="width:50%"></i></div>
+            </div>
+          </div>
+          <p class="help mt-4">Need more? Premium has higher limits, plus featured placement at the top of your category. <a href="/hub/account-billing.html">Compare plans</a></p>
+        </section>
+      </div>
+    </div>
+
+    <section class="mt-6" aria-labelledby="stats-title">
+      <div class="split mb-4">
+        <h2 class="sec-title" id="stats-title">Your listing</h2>
+        <span class="small muted">Last 30 days</span>
+      </div>
+      <div class="stats">
+        <div class="stat"><p class="stat__label">Profile views</p><p class="stat__value">1,284</p><p class="stat__delta">Up 18% on the 30 days before</p></div>
+        <div class="stat"><p class="stat__label">Calls</p><p class="stat__value">46</p><p class="stat__delta">Up 9%</p></div>
+        <div class="stat"><p class="stat__label">Website clicks</p><p class="stat__value">132</p><p class="stat__delta">Up 22%</p></div>
+        <div class="stat"><p class="stat__label">Offer unlocks</p><p class="stat__value">58</p><p class="stat__delta">New subscribers who unlocked your offer</p></div>
+      </div>
+      <p class="help mt-2">Calls and website clicks count taps on the buttons on your Hub listing.</p>
+    </section>
+
+    <div class="grid grid-2 mt-6">
+      <section class="panel" aria-labelledby="wait-title">
+        <h2 class="panel__title" id="wait-title">Waiting for approval</h2>
+        <p class="small muted">Our team usually checks submissions within 2 working days. We&rsquo;ll email you either way.</p>
+        <ul class="summary">
+          <li><span><strong>Free beard trim with any haircut</strong><br><span class="small muted">Offer &middot; starts 1 Dec</span></span><span class="status status--pending">Pending</span></li>
+          <li><span><strong>Christmas charity cut-a-thon</strong><br><span class="small muted">Event &middot; Sun 13 Dec</span></span><span class="status status--pending">Pending</span></li>
+          <li><span><strong>Station Road Barbers Kenton</strong><br><span class="small muted">Claim &middot; we&rsquo;ll phone the listed number</span></span><span class="status status--pending">Pending</span></li>
+        </ul>
+      </section>
+
+      <section class="panel" aria-labelledby="act-title">
+        <h2 class="panel__title" id="act-title">Recent activity</h2>
+        <ul class="summary">
+          <li><span>&ldquo;Kids&rsquo; cuts &pound;10 on weekdays&rdquo; needs changes</span><span class="small muted nowrap">Today</span></li>
+          <li><span>&ldquo;&pound;5 off a skin fade&rdquo; is featured until 18 Nov</span><span class="small muted nowrap">11 Nov</span></li>
+          <li><span>&ldquo;Beard care workshop&rdquo; was approved</span><span class="small muted nowrap">9 Nov</span></li>
+          <li><span>Payment of &pound;19.00 received for Enhanced</span><span class="small muted nowrap">2 Nov</span></li>
+          <li><span>&ldquo;Half-term kids&rsquo; cuts&rdquo; ended</span><span class="small muted nowrap">31 Oct</span></li>
+        </ul>
+      </section>
+    </div>
+
+    <section class="mt-6" aria-labelledby="quick-title">
+      <h2 class="sec-title mb-4" id="quick-title">Quick actions</h2>
+      <div class="grid grid-3">
+        <a class="tile" href="/hub/account-offer-edit.html">
+          <span class="tile__icon"><svg class="ho-icon"><use href="/hub/assets/img/icons.svg#i-tag"/></svg></span>
+          <span class="tile__name">Add an offer</span>
+          <span class="tile__count">Your next one can start on 1 December</span>
+        </a>
+        <a class="tile" href="/hub/account-event-edit.html">
+          <span class="tile__icon"><svg class="ho-icon"><use href="/hub/assets/img/icons.svg#i-calendar"/></svg></span>
+          <span class="tile__name">Add an event or class</span>
+          <span class="tile__count">1 left this month</span>
+        </a>
+        <a class="tile" href="/hub/sample-premium.html">
+          <span class="tile__icon"><svg class="ho-icon"><use href="/hub/assets/img/icons.svg#i-store"/></svg></span>
+          <span class="tile__name">View my listing</span>
+          <span class="tile__count">See it as customers do</span>
+        </a>
+      </div>
+    </section>
+  </div>
+</div>
+</main>
+<footer class="ho-footer">
+  <div class="ho-container ho-footer__grid">
+    <div class="ho-footer__brand">
+      <a class="ho-footer__logo" href="/hub/"><img src="https://harrowonline.org/wp-content/uploads/2020/08/bottomlogo.png" width="231" height="90" alt="Harrow Online" loading="lazy"></a>
+      <p class="ho-footer__tagline">Harrow Online Hub: local businesses, offers and what&rsquo;s on, powered by Harrow Online Newsletter.</p>
+      <ul class="ho-social ho-social--light">
+        <li><a class="ho-social__link" href="https://www.facebook.com/harrowonline" target="_blank" rel="noopener" aria-label="Facebook"><svg class="ho-icon"><use href="/hub/assets/img/icons.svg#i-facebook"/></svg></a></li>
+        <li><a class="ho-social__link" href="https://twitter.com/harrowonline" target="_blank" rel="noopener" aria-label="X (Twitter)"><svg class="ho-icon"><use href="/hub/assets/img/icons.svg#i-x"/></svg></a></li>
+        <li><a class="ho-social__link" href="https://www.instagram.com/harrowonline1/" target="_blank" rel="noopener" aria-label="Instagram"><svg class="ho-icon"><use href="/hub/assets/img/icons.svg#i-instagram"/></svg></a></li>
+        <li><a class="ho-social__link" href="https://www.tiktok.com/@harrowonline" target="_blank" rel="noopener" aria-label="TikTok"><svg class="ho-icon"><use href="/hub/assets/img/icons.svg#i-tiktok"/></svg></a></li>
+        <li><a class="ho-social__link" href="https://whatsapp.com/channel/0029Va9qE38HgZWZQVM1jc3S" target="_blank" rel="noopener" aria-label="WhatsApp Channel"><svg class="ho-icon"><use href="/hub/assets/img/icons.svg#i-whatsapp"/></svg></a></li>
+      </ul>
+    </div>
+
+    <nav aria-label="Hub">
+      <p class="ho-footer__title">Hub</p>
+      <ul class="ho-footer__links">
+        <li><a href="/hub/search.html">Find a business</a></li>
+        <li><a href="/hub/offers.html">Local Offers</a></li>
+        <li><a href="/hub/events.html">What&rsquo;s On</a></li>
+        <li><a href="/hub/classes.html">Classes and activities</a></li>
+        <li><a href="/hub/add-business.html">List your business</a></li>
+        <li><a href="/hub/pricing.html">Plans and pricing</a></li>
+      </ul>
+    </nav>
+
+    <nav aria-label="Harrow Online">
+      <p class="ho-footer__title">Harrow Online</p>
+      <ul class="ho-footer__links">
+        <li><a href="https://harrowonline.org/">Latest news</a></li>
+        <li><a href="https://harrowonline.org/about-us/">About us</a></li>
+        <li><a href="/hub/news-advertise.html">Advertise</a></li>
+        <li><a href="/hub/news-support.html">Support us</a></li>
+        <li><a href="https://harrowonline.org/contact-us/">Contact us</a></li>
+      </ul>
+    </nav>
+
+    <nav aria-label="Legal">
+      <p class="ho-footer__title">Legal</p>
+      <ul class="ho-footer__links">
+        <li><a href="/hub/privacy.html">Privacy</a></li>
+        <li><a href="/hub/terms.html">Terms of use</a></li>
+        <li><a href="/hub/data-sources.html">Data sources</a></li>
+        <li><a href="https://harrowonline.org/complaints-procedure/">Complaints procedure</a></li>
+      </ul>
+    </nav>
+
+    <div class="ho-footer__news">
+      <p class="ho-footer__title">Newsletter</p>
+      <p class="ho-footer__text">Harrow&rsquo;s local news, free in your inbox.</p>
+      <a class="ho-btn ho-btn--primary" href="https://harrowonline.org/newsletter/"><svg class="ho-icon"><use href="/hub/assets/img/icons.svg#i-mail"/></svg><span>Sign up free</span></a>
+      <a class="ho-footer__wa" href="https://whatsapp.com/channel/0029Va9qE38HgZWZQVM1jc3S" target="_blank" rel="noopener"><svg class="ho-icon"><use href="/hub/assets/img/icons.svg#i-whatsapp"/></svg><span>Follow our WhatsApp Channel</span></a>
+    </div>
+  </div>
+
+  <div class="ho-footer__bottom">
+    <div class="ho-container ho-footer__bottom-inner">
+      <ul class="ho-badges" aria-label="Accreditations">
+        <li><a class="ho-badge" href="https://www.impressorg.com/" target="_blank" rel="noopener" title="Regulated by IMPRESS"><img src="https://harrowonline.org/wp-content/uploads/2023/03/IMPRESS-Regulated-Member-Trustmark_White_RGB-300x300.png" width="300" height="300" alt="Regulated by IMPRESS" loading="lazy"></a></li>
+        <li><a class="ho-badge" href="https://www.communityjournalism.co.uk/" target="_blank" rel="noopener" title="Proud member of the Independent Community News Network (ICNN)"><img src="https://harrowonline.org/wp-content/uploads/2020/08/Untitled-design-60-1-300x166.png" width="300" height="166" alt="Proud member of the Independent Community News Network (ICNN)" loading="lazy"></a></li>
+      </ul>
+      <div class="ho-footer__legal">
+        <p>&copy; 2026 Harrow Online Ltd. All rights reserved.</p>
+        <p>Harrow Online Ltd is registered in England and Wales. Company number: 16370670. Registered office: 79 College Road, Harrow, HA1 1BD.</p>
+        <p>Business listings include data from <a href="/hub/data-sources.html">Overture Maps Foundation</a>, used under its open licences.</p>
+      </div>
+    </div>
+  </div>
+</footer>
+</body>
+</html>

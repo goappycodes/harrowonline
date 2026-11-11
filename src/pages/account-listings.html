@@ -1,0 +1,90 @@
+<!--
+title: My listings
+description: Manage your business listings on Harrow Online Hub.
+body: is-logged-in
+hubnav: account
+robots: noindex, nofollow
+nl: off
+css: hub-c
+-->
+<div class="ho-container dash">
+<!--@dashnav:listings-->
+
+  <div class="dash-main">
+    <div class="dash-head">
+      <div>
+        <h1>My listings</h1>
+        <p>Businesses you own or have asked to claim.</p>
+      </div>
+      <div class="cluster">
+        <a class="ho-btn ho-btn--outline" href="/search.html"><svg class="ho-icon"><use href="#i-search"/></svg>Claim another listing</a>
+        <a class="ho-btn ho-btn--primary" href="/add-business.html"><svg class="ho-icon"><use href="#i-plus"/></svg>Add a business</a>
+      </div>
+    </div>
+
+    <div class="table-wrap">
+      <table class="table table--stack">
+        <thead>
+          <tr><th scope="col">Business</th><th scope="col">Plan</th><th scope="col">Status</th><th scope="col">Last updated</th><th scope="col"><span class="ho-sr">Actions</span></th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>
+              <div class="table__item">
+                <span class="mono mono--sm" aria-hidden="true">SR</span>
+                <div><strong>Station Road Barbers</strong><span>Hair and beauty &middot; Harrow Town Centre</span></div>
+              </div>
+            </td>
+            <td data-label="Plan"><span class="badge badge--dark">Enhanced</span></td>
+            <td data-label="Status">
+              <span class="status status--published">Claimed</span>
+              <div class="mt-2"><span class="badge badge--verified"><svg class="ho-icon"><use href="#i-verified"/></svg>Verified</span></div>
+            </td>
+            <td data-label="Last updated">4 Nov 2026</td>
+            <td>
+              <div class="table__actions">
+                <a class="ho-btn ho-btn--sm ho-btn--outline" href="/account-listing-edit.html"><svg class="ho-icon"><use href="#i-edit"/></svg>Edit</a>
+                <a class="ho-btn ho-btn--sm ho-btn--ghost" href="/sample-premium.html"><svg class="ho-icon"><use href="#i-external"/></svg>View</a>
+              </div>
+            </td>
+          </tr>
+          <tr>
+            <td>
+              <div class="table__item">
+                <span class="mono mono--sm mono--soft" aria-hidden="true">SR</span>
+                <div><strong>Station Road Barbers Kenton</strong><span>Hair and beauty &middot; Kenton</span></div>
+              </div>
+            </td>
+            <td data-label="Plan"><span class="badge badge--unclaimed">Not claimed yet</span></td>
+            <td data-label="Status">
+              <span class="status status--pending">Claim pending</span>
+              <p class="help mt-2">Sent 9 Nov. We&rsquo;ll phone the number on the listing to check you own it.</p>
+            </td>
+            <td data-label="Last updated">9 Nov 2026</td>
+            <td>
+              <div class="table__actions">
+                <!-- WP: add a View link to the unclaimed profile /hub/business/{slug}/ -->
+                <a class="ho-btn ho-btn--sm ho-btn--ghost" href="#cancel-claim">Withdraw claim</a>
+              </div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="grid grid-2 mt-6">
+      <div class="panel">
+        <h2 class="panel__title">Own another business?</h2>
+        <p class="small">Most Harrow businesses are already on the Hub. Find yours and press <strong>Claim this business</strong>. If it isn&rsquo;t listed, add it and our team will check it.</p>
+        <div class="cluster">
+          <a class="ho-btn ho-btn--sm ho-btn--dark" href="/search.html">Find a business to claim</a>
+          <a class="ho-btn ho-btn--sm ho-btn--outline" href="/add-business.html">Add a new business</a>
+        </div>
+      </div>
+      <div class="panel panel--soft">
+        <h2 class="panel__title">Plans are per listing</h2>
+        <p class="small mb-0">Each listing has its own plan. When your Kenton claim is approved it starts on Basic (free), and you can upgrade it separately from <a href="/account-billing.html">Plan and billing</a>.</p>
+      </div>
+    </div>
+  </div>
+</div>

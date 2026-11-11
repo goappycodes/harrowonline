@@ -1,0 +1,161 @@
+<!--
+title: Add your business
+description: Add a missing Harrow business to Harrow Online Hub. Free to list, checked by our team before it goes live.
+hubnav: directory
+robots: noindex, follow
+body: page-add-business is-logged-in
+-->
+<nav class="crumbs ho-container" aria-label="Breadcrumb"><ol><li><a href="/">Hub</a></li><li><a href="/account.html">My account</a></li><li><span aria-current="page">Add a business</span></li></ol></nav>
+
+<header class="page-head ho-container ho-container--mid">
+  <h1 class="page-head__title">Add your business</h1>
+  <p class="page-head__lead">Not on the Hub yet? Add it free. Most Harrow businesses are already listed, so <a href="/search.html">search first</a> and claim yours if it&rsquo;s there.</p>
+</header>
+
+<div class="ho-container ho-container--mid">
+  <div class="notice mb-5">
+    <svg class="ho-icon"><use href="#i-info"/></svg>
+    <div>
+      <p><strong>New listings are checked before they go live.</strong></p>
+      <p>Your listing stays pending until a member of the Harrow Online team approves it, usually within 2 working days. We&rsquo;ll email you either way. You can see its status in <a href="/account.html">your account</a>.</p>
+    </div>
+  </div>
+
+  <form class="form form-card" action="/account.html" method="get">
+    <fieldset class="fieldset">
+      <legend>The basics</legend>
+      <div class="stack">
+        <div class="field">
+          <label for="a-name">Business name <span class="req" aria-hidden="true">*</span></label>
+          <input class="input" id="a-name" type="text" name="name" required value="Ancona Italian Coffee House" autocomplete="organization">
+          <p class="help">The name on your sign, without the area. For example, &ldquo;Station Road Barbers&rdquo;.</p>
+        </div>
+        <div class="field">
+          <label for="a-cat">Main category <span class="req" aria-hidden="true">*</span></label>
+          <select class="select" id="a-cat" name="cat" required><option value="">Choose a category</option>{{> gen-cat-options}}</select>
+        </div>
+        <div class="row row-2">
+          <div class="field">
+            <label for="a-cat2">Extra category <span class="opt">(optional)</span></label>
+            <select class="select" id="a-cat2" name="cat_extra[]"><option value="">None</option>{{> gen-cat-options}}</select>
+          </div>
+          <div class="field">
+            <label for="a-cat3">Another extra category <span class="opt">(optional)</span></label>
+            <select class="select" id="a-cat3" name="cat_extra[]"><option value="">None</option>{{> gen-cat-options}}</select>
+          </div>
+        </div>
+        <p class="help">One main category and up to 2 extra ones. People find you under all three.</p>
+      </div>
+    </fieldset>
+
+    <hr class="mt-0 mb-0">
+
+    <fieldset class="fieldset">
+      <legend>Where you are</legend>
+      <div class="stack">
+        <div class="field">
+          <label for="a-addr">Street address <span class="req" aria-hidden="true">*</span></label>
+          <input class="input" id="a-addr" type="text" name="address" required autocomplete="address-line1" placeholder="309 Station Road">
+        </div>
+        <div class="row row-2">
+          <div class="field">
+            <label for="a-pc">Postcode <span class="req" aria-hidden="true">*</span></label>
+            <input class="input" id="a-pc" type="text" name="postcode" required value="HA1 2TA" autocomplete="postal-code">
+          </div>
+          <div class="field">
+            <label for="a-area">Area <span class="req" aria-hidden="true">*</span></label>
+            <select class="select" id="a-area" name="area" required><option value="">Choose an area</option>{{> gen-area-options}}</select>
+            <p class="help">We suggest one from your postcode. Our team can change it.</p>
+          </div>
+        </div>
+
+        <div class="notice notice--warn" role="status">
+          <svg class="ho-icon"><use href="#i-alert"/></svg>
+          <div>
+            <p><strong>A business with the same name and postcode is already listed:</strong> <a href="/business/ancona-italian-coffee-house-harrow-town-centre.html">Ancona Italian Coffee House</a>, 309 Station Rd, HA1 2TA.</p>
+            <p>Is this yours? <a href="/claim.html?listing=ancona-italian-coffee-house-harrow-town-centre">Claim it instead</a>. It&rsquo;s quicker and keeps one listing for your business. If it&rsquo;s a different business, carry on.</p>
+          </div>
+        </div>
+      </div>
+    </fieldset>
+
+    <hr class="mt-0 mb-0">
+
+    <fieldset class="fieldset">
+      <legend>How people contact you</legend>
+      <div class="row row-3">
+        <div class="field">
+          <label for="a-phone">Phone <span class="req" aria-hidden="true">*</span></label>
+          <input class="input" id="a-phone" type="tel" name="phone" required autocomplete="tel" placeholder="020 8123 4567">
+        </div>
+        <div class="field">
+          <label for="a-web">Website <span class="opt">(optional)</span></label>
+          <input class="input" id="a-web" type="url" name="website" autocomplete="url" placeholder="https://">
+        </div>
+        <div class="field">
+          <label for="a-email">Public email <span class="opt">(optional)</span></label>
+          <input class="input" id="a-email" type="email" name="email" autocomplete="email" placeholder="hello@yourbusiness.co.uk">
+        </div>
+      </div>
+      <div class="limited-note mt-4">
+        <svg class="ho-icon"><use href="#i-lock"/></svg>
+        <p class="mb-0">Social links (Instagram, Facebook, TikTok and others) show on paid plans. You can add them from your account once the listing is live. <a href="/pricing.html">See plans</a>.</p>
+      </div>
+    </fieldset>
+
+    <hr class="mt-0 mb-0">
+
+    <fieldset class="fieldset">
+      <legend>About your business</legend>
+      <div class="field">
+        <label for="a-desc">Description <span class="req" aria-hidden="true">*</span></label>
+        <textarea class="textarea" id="a-desc" name="description" maxlength="750" required data-counter aria-describedby="a-desc-help" placeholder="What you do, what makes you different and who you serve. Plain and friendly works best."></textarea>
+        <p class="help" id="a-desc-help">Up to 750 characters. Please don&rsquo;t add prices or offers here; paid plans can post Local Offers.</p>
+      </div>
+    </fieldset>
+
+    <hr class="mt-0 mb-0">
+
+    <fieldset class="fieldset">
+      <legend>Opening hours</legend>
+      <div class="hours-edit">
+        <span class="day">Monday</span><input class="input input--sm" type="time" name="hours[mon][open]" value="09:00" aria-label="Monday opening time"><input class="input input--sm" type="time" name="hours[mon][close]" value="17:30" aria-label="Monday closing time"><label class="check"><input type="checkbox" name="hours[mon][closed]" value="1"> Closed</label>
+        <span class="day">Tuesday</span><input class="input input--sm" type="time" name="hours[tue][open]" value="09:00" aria-label="Tuesday opening time"><input class="input input--sm" type="time" name="hours[tue][close]" value="17:30" aria-label="Tuesday closing time"><label class="check"><input type="checkbox" name="hours[tue][closed]" value="1"> Closed</label>
+        <span class="day">Wednesday</span><input class="input input--sm" type="time" name="hours[wed][open]" value="09:00" aria-label="Wednesday opening time"><input class="input input--sm" type="time" name="hours[wed][close]" value="17:30" aria-label="Wednesday closing time"><label class="check"><input type="checkbox" name="hours[wed][closed]" value="1"> Closed</label>
+        <span class="day">Thursday</span><input class="input input--sm" type="time" name="hours[thu][open]" value="09:00" aria-label="Thursday opening time"><input class="input input--sm" type="time" name="hours[thu][close]" value="17:30" aria-label="Thursday closing time"><label class="check"><input type="checkbox" name="hours[thu][closed]" value="1"> Closed</label>
+        <span class="day">Friday</span><input class="input input--sm" type="time" name="hours[fri][open]" value="09:00" aria-label="Friday opening time"><input class="input input--sm" type="time" name="hours[fri][close]" value="17:30" aria-label="Friday closing time"><label class="check"><input type="checkbox" name="hours[fri][closed]" value="1"> Closed</label>
+        <span class="day">Saturday</span><input class="input input--sm" type="time" name="hours[sat][open]" value="10:00" aria-label="Saturday opening time"><input class="input input--sm" type="time" name="hours[sat][close]" value="16:00" aria-label="Saturday closing time"><label class="check"><input type="checkbox" name="hours[sat][closed]" value="1"> Closed</label>
+        <span class="day">Sunday</span><input class="input input--sm" type="time" name="hours[sun][open]" aria-label="Sunday opening time"><input class="input input--sm" type="time" name="hours[sun][close]" aria-label="Sunday closing time"><label class="check"><input type="checkbox" name="hours[sun][closed]" value="1" checked> Closed</label>
+      </div>
+      <p class="help mt-4">Leave hours blank if they vary. You can add holiday hours later from your account.</p>
+    </fieldset>
+
+    <hr class="mt-0 mb-0">
+
+    <fieldset class="fieldset">
+      <legend>Photo</legend>
+      <label class="dropzone" for="a-photo">
+        <svg class="ho-icon"><use href="#i-upload"/></svg>
+        <strong>Add one photo</strong>
+        <p>Your shop front, your team or your work. JPG or PNG, at least 1200 pixels wide, up to 8MB.</p>
+        <input class="ho-sr" id="a-photo" type="file" name="photo" accept=".jpg,.jpeg,.png">
+      </label>
+      <p class="help mt-2">Free listings show 1 photo. Paid plans add a gallery and a cover photo.</p>
+    </fieldset>
+
+    <hr class="mt-0 mb-0">
+
+    <label class="check">
+      <input type="checkbox" name="declaration" value="1" required>
+      <span>I own or manage this business, or have permission to list it, and the details are correct. I agree to the <a href="/terms.html">terms</a>. <small>You&rsquo;ll manage the listing at Basic, free, once it&rsquo;s approved.</small></span>
+    </label>
+
+    <div class="form-actions form-actions--sticky form-actions--between">
+      <a class="ho-btn ho-btn--ghost" href="/account.html">Cancel</a>
+      <div class="cluster">
+        <button class="ho-btn ho-btn--outline" type="submit" name="save" value="draft">Save as draft</button>
+        <button class="ho-btn ho-btn--primary" type="submit" name="save" value="pending">Submit for approval</button>
+      </div>
+    </div>
+  </form>
+</div>
