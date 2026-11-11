@@ -53,6 +53,33 @@ header = swap(header,
               '<a class="ho-drawer__logo{{site:hub}} ho-drawer__logo--hub{{/site}}" href="{{site:hub}}/{{/site}}{{site:news}}https://harrowonline.org/{{/site}}">')
 header = swap(header, LOGO_LAZY,
               '{{site:hub}}<img src="/assets/img/hub-logo.png" width="269" height="90" alt="Harrow Online Hub" loading="lazy">{{/site}}{{site:news}}' + LOGO_LAZY + '{{/site}}')
+# Hub pages use the shared main menu from brief 01, section 3 (News, What's On, Classes, Offers, Hub, Newsletter),
+# in the live menu's markup and styling. News-site mock pages keep the live menu.
+HUB_MENU = [
+    ("news", "https://harrowonline.org/category/news/", "News"),
+    ("events", "/events.html", "What&rsquo;s On"),
+    ("classes", "/classes.html", "Classes"),
+    ("offers", "/offers.html", "Offers"),
+    ("hub", "/", "Hub"),
+    ("newsletter", "https://harrowonline.org/newsletter/", "Newsletter"),
+]
+
+
+def hub_menu():
+    return "\n".join(
+        f'<li class="menu-item{"{{navcls:" + key + "}}"}"><a href="{href}"{"{{navaria:" + key + "}}"}>{label}</a></li>'
+        for key, href, label in HUB_MENU)
+
+
+def menu_swap(text, ul_id):
+    import re
+    m = re.search(rf'(<ul id="{ul_id}" class="[^"]+">)(.*?)(</ul>)', text, flags=re.S)
+    assert m, ul_id
+    return text[:m.start(2)] + "{{site:hub}}" + hub_menu() + "{{/site}}{{site:news}}" + m.group(2) + "{{/site}}" + text[m.end(2):]
+
+
+header = menu_swap(header, "ho-menu")
+header = menu_swap(header, "ho-menu-mobile")
 (PARTIALS / "header.html").write_text(header, encoding="utf-8", newline="\n")
 
 # ---- footer
@@ -62,6 +89,9 @@ footer = swap(footer,
               '<a class="ho-footer__logo{{site:hub}} ho-footer__logo--hub{{/site}}" href="{{site:hub}}/{{/site}}{{site:news}}https://harrowonline.org/{{/site}}">')
 footer = swap(footer, FOOT_LOGO,
               '{{site:hub}}<img src="/assets/img/hub-logo-white.png" width="269" height="90" alt="Harrow Online Hub" loading="lazy">{{/site}}{{site:news}}' + FOOT_LOGO + '{{/site}}')
+# Footer "Events" goes to the Hub calendar on Hub pages (it replaces the Evvnt page at launch: brief 01, section 3)
+footer = swap(footer, '<li><a href="https://harrowonline.org/events/">Events</a></li>',
+              '<li><a href="{{site:hub}}/events.html{{/site}}{{site:news}}https://harrowonline.org/events/{{/site}}">Events</a></li>')
 legal_end = 'Registered office: 79 College Road, Harrow, HA1 1BD.</p>'
 footer = swap(footer, legal_end, legal_end +
               '\n                    {{site:hub}}<p>Hub business listings include data from <a href="/data-sources.html">Overture Maps Foundation</a>. '

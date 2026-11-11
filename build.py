@@ -90,6 +90,7 @@ def render(meta, body):
     nav = meta.get("nav", "hub" if site == "hub" else "news")
     hubnav = meta.get("hubnav", "")
     html = re.sub(r"\{\{nav:([\w-]+)\}\}", lambda m: ' class="current-menu-item"' if m.group(1) == nav else "", html)
+    html = re.sub(r"\{\{navcls:([\w-]+)\}\}", lambda m: " current-menu-item" if m.group(1) == nav else "", html)
     html = re.sub(r"\{\{navaria:([\w-]+)\}\}", lambda m: ' aria-current="page"' if m.group(1) == nav else "", html)
     html = re.sub(r"\{\{hubnav:([\w-]+)\}\}", lambda m: ' aria-current="page"' if m.group(1) == hubnav else "", html)
     html = html.replace('href="#i-', 'href="/assets/img/icons.svg#i-')
