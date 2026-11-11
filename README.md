@@ -60,3 +60,13 @@ To refresh the listing data, run `scripts/1_fetch_overture.py`, `2_filter_export
 ## Attribution
 
 Business data © Overture Maps Foundation and its sources (BrightQuery, Meta, Microsoft, Uberall, DAC, PinMeTo; CDLA Permissive 2.0). See `/data-sources.html`.
+
+## Header, footer and logo
+
+- `src/partials/header.html` and `footer.html` are copied verbatim from the live harrowonline.org markup by
+  `tools/sync_live_chrome.py`. On Hub pages the only differences are the Hub logo (linking to the Hub homepage), an account
+  icon in the header, and one footer line with the Overture Maps attribution and the Hub privacy/terms links. Re-run it
+  if the live header or footer changes.
+- `site/hub/assets/img/hub-logo.png` and `hub-logo-white.png` are the live logos with a red "HUB" block beside "HARROW",
+  made by `tools/make_hub_logo.py` (2x images, displayed at the live logo's height).
+- The Hub bar under the header (Businesses, Categories, Areas, Offers, What's On, Pricing) is the Hub's own menu.

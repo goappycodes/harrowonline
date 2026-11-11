@@ -18,7 +18,7 @@
     drawer.hidden = false;
     requestAnimationFrame(() => drawer.classList.add("is-open"));
     document.body.classList.add("ho-lock");
-    $$("[data-drawer-open]").forEach((b) => b.setAttribute("aria-expanded", "true"));
+    $$("[data-ho-drawer-open]").forEach((b) => b.setAttribute("aria-expanded", "true"));
     const first = $("input, a, button", $(".ho-drawer__panel", drawer));
     first && first.focus();
   };
@@ -26,15 +26,15 @@
     if (!drawer || drawer.hidden) return;
     drawer.classList.remove("is-open");
     document.body.classList.remove("ho-lock");
-    $$("[data-drawer-open]").forEach((b) => b.setAttribute("aria-expanded", "false"));
+    $$("[data-ho-drawer-open]").forEach((b) => b.setAttribute("aria-expanded", "false"));
     setTimeout(() => { drawer.hidden = true; }, 200);
     lastFocus && lastFocus.focus();
   };
-  $$("[data-drawer-open]").forEach((b) => b.addEventListener("click", openDrawer));
-  $$("[data-drawer-close]").forEach((b) => b.addEventListener("click", closeDrawer));
+  $$("[data-ho-drawer-open]").forEach((b) => b.addEventListener("click", openDrawer));
+  $$("[data-ho-drawer-close]").forEach((b) => b.addEventListener("click", closeDrawer));
 
   /* 2. Header search panel */
-  $$("[data-search-toggle]").forEach((btn) => btn.addEventListener("click", () => {
+  $$("[data-ho-search-toggle]").forEach((btn) => btn.addEventListener("click", () => {
     const panel = document.getElementById(btn.getAttribute("aria-controls"));
     if (!panel) return;
     panel.hidden = !panel.hidden;

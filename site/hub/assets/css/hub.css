@@ -193,16 +193,6 @@ body.ho-lock { overflow: hidden; }
 .ho-header__logo { display: block; flex: none; line-height: 0; }
 .ho-header__logo img { width: 176px; height: auto; display: block; }
 
-/* Hub lockup: Harrow Online logo + "Hub" + strapline (brief 01: name and strapline always together) */
-.hub-logo { flex: none; display: flex; flex-direction: column; gap: 2px; }
-.hub-logo__link { display: flex; align-items: center; gap: 10px; text-decoration: none; line-height: 0; }
-.hub-logo__link img { width: 150px; height: auto; display: block; }
-.hub-logo__word {
-  padding-left: 10px; border-left: 2px solid var(--ho-line);
-  font: 900 28px/1 var(--ho-font-head); color: var(--ho-red); letter-spacing: -0.02em;
-}
-.hub-logo__strap { font: 600 11px/1.2 var(--ho-font-ui); color: var(--ho-muted); text-decoration: none; letter-spacing: .02em; }
-.hub-logo__strap:hover { color: var(--ho-red); text-decoration: underline; }
 
 .ho-nav { flex: 1 1 auto; min-width: 0; }
 .ho-nav__list { display: flex; flex-wrap: wrap; align-items: center; gap: 2px; margin: 0; padding: 0; list-style: none; }
@@ -238,23 +228,15 @@ body.ho-lock { overflow: hidden; }
   .ho-nav__list > li > a { padding: 10px 8px; font-size: 15px; }
   .ho-header__cta span { display: none; }
   .ho-header__cta { padding: 10px 12px; }
-  .hub-logo__link img { width: 128px; }
-  .hub-logo__word { font-size: 24px; }
 }
 @media (max-width: 1018px) {
   .ho-nav, .ho-header__cta { display: none !important; }
   .ho-header__burger { display: inline-flex; }
   .ho-header__inner { min-height: 68px; gap: var(--ho-s2); justify-content: space-between; }
-  .ho-header__logo, .hub-logo { position: absolute; left: 50%; transform: translateX(-50%); align-items: center; }
   .ho-header__logo img { width: 138px; }
-  .hub-logo__link img { width: 112px; }
-  .hub-logo__word { font-size: 21px; padding-left: 8px; }
-  .hub-logo__strap { font-size: 10px; }
   .ho-header__actions { margin-left: 0; gap: 0; }
 }
 @media (max-width: 400px) {
-  .hub-logo__link img { width: 96px; }
-  .hub-logo__strap { display: none; }
 }
 
 /* Hub bar: secondary menu under the shared header (Hub pages only) */
@@ -281,6 +263,25 @@ body.ho-lock { overflow: hidden; }
   .hub-bar__nav { margin: 0 calc(var(--ho-gutter) * -1); padding: 0 var(--ho-gutter); }
 }
 
+
+/* Hub logo (269x90 image): same height as the live logo at every breakpoint */
+.ho-header__logo--hub img { width: 203px; }
+.ho-drawer__logo--hub img { width: 150px; }
+.ho-footer__logo--hub img { width: 196px; }
+
+/* Live site, tablet and phone: sticky compact header */
+@media (max-width: 1018px) {
+  html { scroll-padding-top: 68px; }
+  .ho-header { position: sticky; top: 0; z-index: 9990; }
+  .ho-header__inner { min-height: 56px; }
+  .ho-header__logo img { width: 112px; }
+  .ho-header__logo--hub img { width: 129px; }
+  .ho-header__icon-btn { width: 40px; height: 40px; }
+  .ho-header__icon-btn .ho-icon { width: 22px; height: 22px; }
+  .ho-search { position: absolute; left: 0; right: 0; top: 100%; box-shadow: 0 10px 20px -12px rgba(20, 20, 20, .25); }
+}
+/* Live site: phone menu drawer has no search box; the header search icon stays */
+@media (max-width: 767px) { .ho-drawer__search { display: none; } }
 
 /* Drawer */
 .ho-drawer { position: fixed; inset: 0; z-index: 100000; }
@@ -334,7 +335,7 @@ body.ho-lock { overflow: hidden; }
 .ho-footer__wa .ho-icon { width: 22px; height: 22px; }
 .ho-footer__bottom { border-top: 1px solid rgba(255, 255, 255, .12); }
 .ho-footer__bottom-inner { display: flex; align-items: center; gap: var(--ho-s5); padding-top: var(--ho-s4); padding-bottom: var(--ho-s4); }
-.ho-footer__bottom p { margin: 0 0 2px; font-size: var(--ho-fs-xs); color: rgba(255, 255, 255, .6); }
+.ho-footer__bottom p { margin: 0; font-size: var(--ho-fs-xs); color: rgba(255, 255, 255, .6); }
 .ho-footer__legal a { color: rgba(255, 255, 255, .78); }
 .ho-badges { display: flex; align-items: center; gap: var(--ho-s4); margin: 0; padding: 0; list-style: none; }
 .ho-badges li { margin: 0; line-height: 0; }
@@ -342,6 +343,14 @@ body.ho-lock { overflow: hidden; }
 .ho-badge:hover { opacity: 1; }
 .ho-badge img { display: block; width: auto; height: 44px; }
 .ho-badge img[height="166"] { border-radius: 4px; }
+/* Live site: footer topics (category hubs) and legal lines */
+.ho-footer__topics { padding: var(--ho-s5) 0; border-top: 1px solid rgba(255, 255, 255, .12); }
+.ho-footer__topics ul { display: flex; flex-wrap: wrap; gap: 8px; margin: 0; padding: 0; list-style: none; }
+.ho-footer__topics li { margin: 0; list-style: none; }
+.ho-footer .ho-footer__topics a { display: inline-block; padding: 6px 12px; border: 1px solid rgba(255, 255, 255, .2); border-radius: 999px; font: 600 13px/1.2 var(--ho-font-ui); color: rgba(255, 255, 255, .85); text-decoration: none; }
+.ho-footer .ho-footer__topics a:hover { background: var(--ho-red); border-color: var(--ho-red); color: #fff; }
+.ho-footer__legal { display: flex; flex-wrap: wrap; gap: var(--ho-s1) 40px; min-width: 0; }
+.ho-footer__legal p { line-height: 1.5; }
 @media (max-width: 1018px) {
   .ho-footer__grid { grid-template-columns: 1fr 1fr 1fr; }
   .ho-footer__brand, .ho-footer__news { grid-column: 1 / -1; }
