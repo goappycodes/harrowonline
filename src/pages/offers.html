@@ -1,5 +1,5 @@
 <!--
-title: Local Offers in Harrow: deals from local businesses
+title: Local Offers: deals from Harrow businesses
 description: Discounts and deals from Harrow businesses, from restaurants and cafés to gyms and barbers. Some offers are just for Harrow Online Newsletter subscribers.
 nav: offers
 hubnav: offers
@@ -29,12 +29,7 @@ body: page-offers
   </form>
 
   <div class="chips chips--scroll mt-4" aria-label="Popular categories">
-    <a class="chip" href="/offers.html" aria-current="page">All offers <span class="count">10</span></a>
-    <a class="chip" href="/offers.html?cat=restaurants">Restaurants <span class="count">2</span></a>
-    <a class="chip" href="/offers.html?cat=cafes-and-takeaways">Cafés <span class="count">2</span></a>
-    <a class="chip" href="/offers.html?cat=sport-and-fitness">Sport and fitness <span class="count">2</span></a>
-    <a class="chip" href="/offers.html?cat=hair-and-beauty">Hair and beauty <span class="count">2</span></a>
-    <a class="chip" href="/offers.html?cat=doctors-dentists-and-clinics">Dentists <span class="count">2</span></a>
+    {{> gen-offer-chips}}
   </div>
 
   <div class="notice mt-5">

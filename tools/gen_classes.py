@@ -33,7 +33,7 @@ for t, ty, when, area, age, price, icon, feat, prov, text in C:
 types = [("", "All classes", 11), ("childrens-activities", "Children&rsquo;s activities", 3), ("fitness", "Fitness", 4), ("dance-schools", "Dance schools", 2), ("workshops", "Workshops", 1), ("other", "Other regular classes", 1)]
 chips = "\n".join(f'    <a class="chip" href="/classes.html{"?type=" + s if s else ""}"{" aria-current=\"page\"" if not s else ""}>{n} <span class="count">{c}</span></a>' for s, n, c in types)
 body = f'''<!--
-title: Classes and activities in Harrow: kids' clubs, fitness, dance and workshops
+title: Classes and activities in Harrow
 description: Weekly classes and activities across Harrow: children's clubs, fitness classes, dance schools, workshops and evening courses. Filter by age, area and day.
 nav: classes
 hubnav: events
@@ -90,6 +90,7 @@ body: page-classes
     <a class="link-quiet" href="/events.html">See one-off events in What&rsquo;s On</a>
   </div>
 
+  <h2 class="ho-sr" id="classes-list">All classes and activities</h2>
   <div class="grid grid-3">
 {chr(10).join(cards)}
   </div>

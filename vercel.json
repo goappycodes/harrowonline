@@ -2,21 +2,210 @@
   "buildCommand": "echo 'Static site: pages are prebuilt into site/ by python build.py'",
   "outputDirectory": "site",
   "redirects": [
-    { "source": "/", "destination": "/hub/", "permanent": false },
-    { "source": "/hub", "destination": "/hub/", "permanent": false }
+    {
+      "source": "/",
+      "destination": "/hub/",
+      "permanent": false
+    },
+    {
+      "source": "/hub/search.html",
+      "destination": "/hub/search/",
+      "permanent": true
+    },
+    {
+      "source": "/hub/offers.html",
+      "destination": "/hub/offers/",
+      "permanent": true
+    },
+    {
+      "source": "/hub/events.html",
+      "destination": "/hub/events/",
+      "permanent": true
+    },
+    {
+      "source": "/hub/events-month.html",
+      "destination": "/hub/events/month/",
+      "permanent": true
+    },
+    {
+      "source": "/hub/event.html",
+      "destination": "/hub/events/harrow-christmas-lights-switch-on/",
+      "permanent": true
+    },
+    {
+      "source": "/hub/classes.html",
+      "destination": "/hub/events/classes/",
+      "permanent": true
+    },
+    {
+      "source": "/hub/class.html",
+      "destination": "/hub/events/saturday-kids-coding-club/",
+      "permanent": true
+    },
+    {
+      "source": "/hub/pricing.html",
+      "destination": "/hub/pricing/",
+      "permanent": true
+    },
+    {
+      "source": "/hub/add-business.html",
+      "destination": "/hub/add-business/",
+      "permanent": true
+    },
+    {
+      "source": "/hub/claim.html",
+      "destination": "/hub/claim/",
+      "permanent": true
+    },
+    {
+      "source": "/hub/claim-submitted.html",
+      "destination": "/hub/claim/submitted/",
+      "permanent": true
+    },
+    {
+      "source": "/hub/report.html",
+      "destination": "/hub/report/",
+      "permanent": true
+    },
+    {
+      "source": "/hub/advertise-newsletter.html",
+      "destination": "/hub/advertise/newsletter/",
+      "permanent": true
+    },
+    {
+      "source": "/hub/account.html",
+      "destination": "/hub/account/",
+      "permanent": true
+    },
+    {
+      "source": "/hub/account-listings.html",
+      "destination": "/hub/account/listings/",
+      "permanent": true
+    },
+    {
+      "source": "/hub/account-listing-edit.html",
+      "destination": "/hub/account/listings/edit/",
+      "permanent": true
+    },
+    {
+      "source": "/hub/account-offers.html",
+      "destination": "/hub/account/offers/",
+      "permanent": true
+    },
+    {
+      "source": "/hub/account-offer-edit.html",
+      "destination": "/hub/account/offers/edit/",
+      "permanent": true
+    },
+    {
+      "source": "/hub/account-events.html",
+      "destination": "/hub/account/events/",
+      "permanent": true
+    },
+    {
+      "source": "/hub/account-event-edit.html",
+      "destination": "/hub/account/events/edit/",
+      "permanent": true
+    },
+    {
+      "source": "/hub/account-bookings.html",
+      "destination": "/hub/account/newsletter/",
+      "permanent": true
+    },
+    {
+      "source": "/hub/account-billing.html",
+      "destination": "/hub/account/billing/",
+      "permanent": true
+    },
+    {
+      "source": "/hub/account-settings.html",
+      "destination": "/hub/account/settings/",
+      "permanent": true
+    },
+    {
+      "source": "/hub/sign-in.html",
+      "destination": "/hub/sign-in/",
+      "permanent": true
+    },
+    {
+      "source": "/hub/register.html",
+      "destination": "/hub/register/",
+      "permanent": true
+    },
+    {
+      "source": "/hub/forgot-password.html",
+      "destination": "/hub/forgot-password/",
+      "permanent": true
+    },
+    {
+      "source": "/hub/privacy.html",
+      "destination": "/hub/privacy/",
+      "permanent": true
+    },
+    {
+      "source": "/hub/terms.html",
+      "destination": "/hub/terms/",
+      "permanent": true
+    },
+    {
+      "source": "/hub/data-sources.html",
+      "destination": "/hub/data-sources/",
+      "permanent": true
+    },
+    {
+      "source": "/hub/pages.html",
+      "destination": "/hub/pages/",
+      "permanent": true
+    },
+    {
+      "source": "/hub/news-advertise.html",
+      "destination": "/hub/news-site/advertise/",
+      "permanent": true
+    },
+    {
+      "source": "/hub/news-support.html",
+      "destination": "/hub/news-site/support/",
+      "permanent": true
+    },
+    {
+      "source": "/hub/news-article.html",
+      "destination": "/hub/news-site/article/",
+      "permanent": true
+    },
+    {
+      "source": "/hub/:kind(business|category|area)/:slug.html",
+      "destination": "/hub/:kind/:slug/",
+      "permanent": true
+    }
   ],
   "headers": [
     {
       "source": "/(.*)",
-      "headers": [{ "key": "X-Robots-Tag", "value": "noindex, nofollow" }]
+      "headers": [
+        {
+          "key": "X-Robots-Tag",
+          "value": "noindex, nofollow"
+        }
+      ]
     },
     {
       "source": "/hub/data/(.*)",
-      "headers": [{ "key": "Cache-Control", "value": "public, max-age=3600" }]
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "public, max-age=3600"
+        }
+      ]
     },
     {
       "source": "/hub/assets/(.*)",
-      "headers": [{ "key": "Cache-Control", "value": "public, max-age=3600" }]
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "public, max-age=3600"
+        }
+      ]
     }
-  ]
+  ],
+  "trailingSlash": true
 }

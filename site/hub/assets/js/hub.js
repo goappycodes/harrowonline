@@ -132,7 +132,7 @@
     fetch(BASE + "/data/hub-index.json").then((r) => r.json()).then((d) => {
       const x = d.items.find((i) => i.k === listingSlug);
       if (!x) return;
-      const vals = { n: x.n, ad: x.ad || "", pc: x.pc, area: d.areas[x.a], cat: (d.cats[x.c] || {}).n, link: BASE + "/business/" + x.k + ".html" };
+      const vals = { n: x.n, ad: x.ad || "", pc: x.pc, area: d.areas[x.a], cat: (d.cats[x.c] || {}).n, link: BASE + "/business/" + x.k + "/" };
       $$("[data-listing-field]").forEach((el) => {
         const f = el.dataset.listingField;
         if (f === "link") el.setAttribute("href", vals.link);
@@ -187,7 +187,7 @@
         <div class="ph">${ICON(x.i || "store")}</div>
         <div class="biz-row__main">
           <span class="biz-card__cat">${esc(cat.n || "")}${x.s ? ` · <span class="muted">${esc(x.s)}</span>` : ""}</span>
-          <h3 class="biz-row__title"><a href="${BASE}/business/${x.k}.html">${esc(x.n)}</a></h3>
+          <h3 class="biz-row__title"><a href="${BASE}/business/${x.k}/">${esc(x.n)}</a></h3>
           <p class="card__meta"><span>${ICON("pin")}${esc(x.ad ? x.ad + ", " : "")}${esc(x.pc)}</span><span>${esc(area)}</span></p>
           ${x.tg ? `<p class="card__text">${esc(x.tg)}</p>` : ""}
         </div>
@@ -198,7 +198,7 @@
         <span class="mono mono--soft" aria-hidden="true">${esc(initials)}</span>
         <div class="biz-row__main">
           <span class="biz-card__cat">${esc(cat.n || "")}${x.s ? ` · <span class="muted">${esc(x.s)}</span>` : ""}</span>
-          <h3 class="biz-row__title"><a href="${BASE}/business/${x.k}.html">${esc(x.n)}</a></h3>
+          <h3 class="biz-row__title"><a href="${BASE}/business/${x.k}/">${esc(x.n)}</a></h3>
           <p class="card__meta"><span>${ICON("pin")}${esc(x.ad ? x.ad + ", " : "")}${esc(x.pc)}</span><span>${esc(area)}</span></p>
         </div>
         <div class="biz-row__side">${badge}${x.p ? `<a class="ho-btn ho-btn--sm ho-btn--outline" href="tel:${esc(x.p)}">${ICON("phone")}Call</a>` : ""}</div>
@@ -232,7 +232,7 @@
 
       if (countEl) countEl.innerHTML = `<strong>${total.toLocaleString("en-GB")}</strong> ${total === 1 ? "business" : "businesses"}${p.q ? ` for &ldquo;${esc(p.q)}&rdquo;` : ""}`;
       resultsEl.innerHTML = slice.length ? slice.map(row).join("") :
-        `<div class="empty">${ICON("search")}<h3>No businesses found</h3><p>Try a different word, or clear a filter. Can&rsquo;t find a business you know? Add it to the Hub.</p><a class="ho-btn ho-btn--primary" href="${BASE}/add-business.html">${ICON("plus")}Add a business</a></div>`;
+        `<div class="empty">${ICON("search")}<h3>No businesses found</h3><p>Try a different word, or clear a filter. Can&rsquo;t find a business you know? Add it to the Hub.</p><a class="ho-btn ho-btn--primary" href="${BASE}/add-business/">${ICON("plus")}Add a business</a></div>`;
 
       if (activeEl) {
         const chips = [];

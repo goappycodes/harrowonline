@@ -125,7 +125,7 @@ def event_row(ev):
     rep = f'<span class="badge">{icon("repeat")}Weekly class</span>' if ev.get("class") else ""
     feat = f'<span class="badge badge--featured">Featured</span>' if ev.get("featured") else ""
     return f'''<article class="event-row{" event-row--featured" if ev.get("featured") else ""}">
-          <span class="date-tile"><span class="date-tile__m">{ev["m"]}</span><span class="date-tile__d">{ev["d"]}</span><span class="date-tile__w">{ev["w"]}</span></span>
+          <time class="date-tile" datetime="2026-{ {"Oct": 10, "Nov": 11, "Dec": 12}.get(ev["m"], 11):02d}-{int(ev["d"]):02d}"><span class="date-tile__m">{ev["m"]}</span><span class="date-tile__d">{ev["d"]}</span><span class="date-tile__w">{ev["w"]}</span></time>
           <div class="ph">{icon("repeat" if ev.get("class") else "calendar")}</div>
           <div>
             <div class="cluster mb-2">{feat}{rep}</div>
@@ -172,7 +172,7 @@ def profile_body(x, related_html, crumbs_html):
         sections.append(f'<section class="profile-section"><div class="sec-head"><h2 class="mb-0">Upcoming events and classes</h2><a class="link-arrow" href="/events.html">What&rsquo;s On {icon("arrow")}</a></div><div>{rows}</div></section>')
 
     info = [
-        f'<li>{icon("pin")}<div>{c["address"]}, {e(area_name(area))}, {e(x["postcode"])}<br><a class="small" href="{maps}" target="_blank" rel="noopener">Get directions</a></div></li>',
+        f'<li>{icon("pin")}<div><address>{c["address"]}, {e(area_name(area))}, {e(x["postcode"])}</address><a class="small" href="{maps}" target="_blank" rel="noopener">Get directions</a></div></li>',
         f'<li>{icon("phone")}<a href="tel:{x["phone_raw"][0]}">{e(c["phone"])}</a></li>',
     ]
     sections.append(f'''<section class="profile-section"><h2>Contact and location</h2>
@@ -186,7 +186,7 @@ def profile_body(x, related_html, crumbs_html):
 
     if not top:  # brief 01, 6.2: paid Premium profiles show no competitor or related listings
         sections.append(f'''<section class="profile-section"><div class="sec-head"><h2 class="mb-0">More {e(cat_name(cat).lower())} in {e(area_name(area))}</h2>
-          <a class="link-arrow" href="/category/{cat}.html">See all {icon("arrow")}</a></div>{related_html}</section>''')
+          <a class="link-arrow" href="/category/{cat}.html">All {e(cat_name(cat).lower())} in Harrow {icon("arrow")}</a></div>{related_html}</section>''')
 
     today_cls = ' class="is-today"'
     hours = "".join(f'<tr{today_cls if i == TODAY else ""}><th scope="row">{d}</th><td>{h}</td></tr>' for i, (d, h) in enumerate(zip(DAYS, c["hours"])))
@@ -244,24 +244,4 @@ def profile_body(x, related_html, crumbs_html):
     <p class="mt-4"><a class="report-link" href="/report.html?listing={x["slug"]}">{icon("flag")}Report a mistake on this listing</a></p>
   </div>
   {aside}
-</div>
-{jsonld(x)}'''
-
-
-def jsonld(x):
-    import json
-    import re
-    c = x["claimed"]
-    strip = lambda s: re.sub(r"&rsquo;", "’", re.sub(r"&pound;", "£", re.sub(r"&amp;", "&", s)))
-    data = {
-        "@context": "https://schema.org", "@type": "LocalBusiness",
-        "@id": f"https://harrowonline.org/hub/business/{x['slug']}/#business",
-        "name": x["name"], "description": strip(" ".join(c["description"])),
-        "url": f"https://harrowonline.org/hub/business/{x['slug']}/",
-        "telephone": c["phone"],
-        "address": {"@type": "PostalAddress", "streetAddress": strip(c["address"]), "addressLocality": area_name(x["area"]),
-                    "addressRegion": "Harrow", "postalCode": x["postcode"], "addressCountry": "GB"},
-        "openingHoursSpecification": [
-            {"@type": "OpeningHoursSpecification", "dayOfWeek": d, "description": h} for d, h in zip(DAYS, c["hours"]) if h.lower() != "closed"],
-    }
-    return '<script type="application/ld+json">' + json.dumps(data, ensure_ascii=False) + "</script>"
+</div>'''

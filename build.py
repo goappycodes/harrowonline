@@ -2,7 +2,8 @@
 Harrow Online Hub: static front-end build.
 
 Assembles src/pages/*.html with the shared partials (head, header, footer, newsletter strip, icon sprite)
-into plain HTML files in site/. The output is what you open in a browser or hand over for the WordPress theme.
+into plain HTML files in site/hub/, one folder per production URL (site/hub/events/index.html = /hub/events/).
+SEO (canonical, social tags, JSON-LD, sitemaps, index rules) lives in seo.py and sitemap.py. The output is what you open in a browser or hand over for the WordPress theme.
 
     python build.py            # build once
     python build.py --watch    # rebuild when anything in src/ changes
@@ -12,7 +13,8 @@ Page front matter (first HTML comment in each page file), one "key: value" per l
     description  meta description
     nav          which main-menu item is current: news | events | classes | offers | hub | newsletter
     hubnav       which Hub sub-menu item is current: directory | offers | events | classes | pricing | account
-    robots       e.g. "noindex, follow" (mirrors the SEO brief 03 rules)
+    robots       e.g. "noindex, follow" (mirrors the SEO brief 03 rules); empty = indexable
+    schema       schema.org WebPage type (default from seo.PAGE_SCHEMA, else WebPage)
     body         extra <body> classes
     css          extra stylesheet name in site/assets/css/ (e.g. "hub-a"); merged into hub.css before hand-off
     layout       default | bare (bare = no Hub bar, no newsletter strip; used by auth pages)
@@ -26,6 +28,8 @@ import re
 import sys
 import time
 from pathlib import Path
+
+import seo
 
 ROOT = Path(__file__).parent
 SRC = ROOT / "src"
@@ -61,9 +65,10 @@ def parse(page_text):
 
 
 def render(meta, body):
+    """meta needs "path" (the page's URL under BASE, e.g. "/events/"); see seo.PAGE_PATHS."""
     title = meta.get("title", "Harrow Online Hub")
     if "Harrow Online" not in title:
-        title += " | Harrow Online Hub"
+        title += seo.TITLE_SUFFIX
     site = meta.get("site", "hub")
     layout = meta.get("layout", "default")
 
@@ -76,14 +81,15 @@ def render(meta, body):
     if layout != "bare" and meta.get("nl") != "off":
         parts.append(partial("nl-strip"))
     parts.append(partial("footer"))
+    if site == "hub" and layout != "bare":
+        parts.insert(-1, partial("tabbar"))   # phone-only bottom tab bar (CSS hides it from 768px)
     html = "\n".join(parts)
 
-    robots = meta.get("robots", "")
     css = meta.get("css", "")
     html = html.replace("</head>", (f'<link rel="stylesheet" href="/assets/css/{css}.css">\n' if css else "") + "</head>", 1)
-    html = html.replace("{{title}}", title)
-    html = html.replace("{{description}}", meta.get("description", "Harrow Online Hub: local businesses, offers, events and classes in Harrow, powered by Harrow Online Newsletter."))
-    html = html.replace("{{robots}}", f'<meta name="robots" content="{robots}">' if robots else "")
+    html = html.replace("{{title}}", seo.esc(title))
+    html = html.replace("{{description}}", seo.esc(seo.trim(meta.get("description", f"Harrow Online Hub: local businesses, offers, events and classes in Harrow, {seo.STRAPLINE}."))))
+    html = html.replace("{{seo}}", seo.head(meta, BASE, title))
     html = html.replace("{{body}}", " ".join(filter(None, ["site-" + site, meta.get("body", "")])))
 
     # Current menu items
@@ -93,9 +99,32 @@ def render(meta, body):
     html = re.sub(r"\{\{navcls:([\w-]+)\}\}", lambda m: " current-menu-item" if m.group(1) == nav else "", html)
     html = re.sub(r"\{\{navaria:([\w-]+)\}\}", lambda m: ' aria-current="page"' if m.group(1) == nav else "", html)
     html = re.sub(r"\{\{hubnav:([\w-]+)\}\}", lambda m: ' aria-current="page"' if m.group(1) == hubnav else "", html)
+    tab = "home" if meta.get("path") == "/" else {"directory": "search", "offers": "offers", "events": "events", "account": "account"}.get(hubnav, "")
+    html = re.sub(r"\{\{tab:([\w-]+)\}\}", lambda m: ' aria-current="page"' if m.group(1) == tab else "", html)
     html = html.replace('href="#i-', 'href="/assets/img/icons.svg#i-')
     html = re.sub(r"\{\{site:(\w+)\}\}(.*?)\{\{/site\}\}", lambda m: m.group(2) if m.group(1) == site else "", html, flags=re.S)
+
+    # Production URLs for internal links, then one JSON-LD graph in <head> (news-site mock-ups: Yoast does this there)
+    html = seo.rewrite_links(html)
+    if site == "hub":
+        html, ld = seo.graph(meta, html, BASE, title)
+    else:
+        ld = ""
+    html = html.replace("{{jsonld}}", ld)
     return with_base(html)
+
+
+def out_file(path):
+    """URL path under BASE → file in OUT ("/events/" → events/index.html)."""
+    rel = path.strip("/")
+    return OUT / rel if rel.endswith(".html") else (OUT / rel / "index.html" if rel else OUT / "index.html")
+
+
+def write(path, html):
+    seo.WRITTEN.append((path, html[:html.find("</head>")]))   # sitemap.py reads this instead of 2,700 files
+    f = out_file(path)
+    f.parent.mkdir(parents=True, exist_ok=True)
+    f.write_text(html, encoding="utf-8", newline="\n")
 
 
 def with_base(html):
@@ -111,15 +140,49 @@ def build(listings=True):
     import gen_listings
     OUT.mkdir(parents=True, exist_ok=True)
     if listings:
+        clean_html()
         gen_listings.build_all()
     else:
         gen_listings.write_partials_only()
     count = 0
     for page in sorted(PAGES.glob("*.html")):
         meta, body = parse(page.read_text(encoding="utf-8"))
-        (OUT / page.name).write_text(render(meta, body), encoding="utf-8", newline="\n")
+        stem = page.stem
+        meta["path"] = seo.clean_path(stem)
+        meta.setdefault("schema", seo.PAGE_SCHEMA.get(stem, "WebPage"))
+        if stem in seo.NEWS_CANONICAL:
+            meta["canonical"] = seo.NEWS_CANONICAL[stem]
+        write(meta["path"], render(meta, body))
         count += 1
+    import sitemap
+    sitemap.write_all(seo.WRITTEN if listings else None)
+    write_vercel()
     print(f"Built {count} pages into {OUT}")
+
+
+def write_vercel():
+    """Keep vercel.json in step with seo.PAGE_PATHS: old *.html preview links 301 to the clean URLs."""
+    import json
+    cfg_file = ROOT / "vercel.json"
+    cfg = json.loads(cfg_file.read_text(encoding="utf-8"))
+    cfg["trailingSlash"] = True
+    redirects = [{"source": "/", "destination": f"{BASE}/", "permanent": False}]
+    for stem, path in seo.PAGE_PATHS.items():
+        if stem not in ("404", "index"):
+            redirects.append({"source": f"{BASE}/{stem}.html", "destination": BASE + path, "permanent": True})
+    redirects.append({"source": f"{BASE}/:kind(business|category|area)/:slug.html", "destination": f"{BASE}/:kind/:slug/", "permanent": True})
+    cfg["redirects"] = redirects
+    cfg_file.write_text(json.dumps(cfg, indent=2) + "\n", encoding="utf-8", newline="\n")
+
+
+def clean_html():
+    """Remove previously built pages (everything .html outside assets/) so renamed URLs leave no stale copies."""
+    for f in OUT.rglob("*.html"):
+        if "assets" not in f.relative_to(OUT).parts:
+            f.unlink()
+    for d in sorted((p for p in OUT.rglob("*") if p.is_dir()), key=lambda p: -len(p.parts)):
+        if "assets" not in d.relative_to(OUT).parts and not any(d.iterdir()):
+            d.rmdir()
 
 
 def snapshot():

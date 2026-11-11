@@ -1,9 +1,9 @@
 """
 Generates the data-driven parts of the Hub from data/listings.json (via hub_data.py):
 
-  site/business/{slug}.html     one profile per listing (all imported listings are Unclaimed: noindex, follow)
-  site/category/{slug}.html     category archives
-  site/area/{slug}.html         area archives
+  site/hub/business/{slug}/     one profile per listing (unclaimed: noindex, follow; claimed + filled in: indexable)
+  site/hub/category/{slug}/     category archives (noindex until 5+ indexable listings and intro text)
+  site/hub/area/{slug}/         area archives
   site/data/hub-index.json      compact index used by the directory search (assets/js/hub.js)
   src/partials/gen-*.html       category/area tiles and <option> lists that hand-written pages include
 
@@ -16,6 +16,7 @@ from urllib.parse import quote
 
 import gen_claimed as C
 import hub_data as H
+import seo
 
 PARTIALS = H.ROOT / "src/partials"
 
@@ -73,20 +74,43 @@ def biz_row(x):
 
 
 # ---------------------------------------------------------------- profile
+def seo_meta(x, meta):
+    """URL, index rule (brief 03) and LocalBusiness schema for a profile."""
+    meta["path"] = f'/business/{x["slug"]}/'
+    if seo.listing_indexable(x):
+        meta.pop("robots", None)
+        a = H.AREA_BY_SLUG[x["area"]]
+        meta["ld"] = [seo.local_business(x, BASE(), area_name(x["area"]), cat_name(x["cat"]), C.DAYS, (a[2], a[3]))]
+    else:
+        meta["robots"] = "noindex, follow"
+    return meta
+
+
+def BASE():
+    from build import BASE as B
+    return B
+
+
+def short(text, n=155):
+    """Meta description trimmed at a word boundary."""
+    text = " ".join(text.split())
+    return text if len(text) <= n else text[:n].rsplit(" ", 1)[0].rstrip(",;:") + "…"
+
+
 def profile(x, related):
     from build import render
     if x.get("tier"):
         crumb = crumbs([("Hub", "/"), (cat_name(x["cat"]), f"/category/{x['cat']}.html"), (area_name(x["area"]), f"/area/{x['area']}.html"), (x["name"], "")])
         rel = "".join(biz_row(r) for r in related) or '<p class="muted">No other listings in this area yet.</p>'
         meta = {"title": f'{x["name"]} in {area_name(x["area"])}',
-                "description": f'{x["name"]}: {x["sub"].lower()} in {area_name(x["area"])}, Harrow. Opening hours, offers, events and contact details.',
+                "description": f'{x["name"]} ({x["sub"]}) in {area_name(x["area"])}, Harrow: opening hours, photos, Local Offers, events and contact details on Harrow Online Hub.',
                 "hubnav": "directory"}
-        return render(meta, C.profile_body(x, rel, crumb))
+        return render(seo_meta(x, meta), C.profile_body(x, rel, crumb))
     cat, area = x["cat"], x["area"]
     maps = f'https://www.google.com/maps/search/?api=1&query={quote(x["name"] + " " + x["postcode"])}'
     info = []
     addr = ", ".join(p for p in [x["address"], area_name(area), x["postcode"]] if p)
-    info.append(f'<li>{icon("pin")}<div>{e(addr)}<br><a class="small" href="{maps}" target="_blank" rel="noopener">Get directions</a></div></li>')
+    info.append(f'<li>{icon("pin")}<div><address>{e(addr)}</address><a class="small" href="{maps}" target="_blank" rel="noopener">Get directions</a></div></li>')
     for disp, raw in zip(x["phone"], x["phone_raw"]):
         info.append(f'<li>{icon("phone")}<a href="tel:{e(raw)}">{e(disp)}</a></li>')
     for w in x["web"][:1]:
@@ -139,7 +163,7 @@ def profile(x, related):
     </section>
 
     <section class="profile-section">
-      <div class="sec-head"><div><h2 class="mb-0">More {e(cat_name(cat).lower())} in {e(area_name(area))}</h2></div><a class="link-arrow" href="/category/{cat}.html">See all {icon("arrow")}</a></div>
+      <div class="sec-head"><div><h2 class="mb-0">More {e(cat_name(cat).lower())} in {e(area_name(area))}</h2></div><a class="link-arrow" href="/category/{cat}.html">All {e(cat_name(cat).lower())} in Harrow {icon("arrow")}</a></div>
       {rel_html}
     </section>
 
@@ -164,10 +188,10 @@ def profile(x, related):
     meta = {
         "title": f'{x["name"]} in {area_name(area)}',
         "description": f'{x["name"]}, {cat_name(cat).lower()} in {area_name(area)}, Harrow. Address, phone and directions on Harrow Online Hub.',
-        "robots": "noindex, follow",
+        "robots": "noindex, follow",   # brief 03: unclaimed/imported listings stay out of the index
         "hubnav": "directory",
     }
-    return render(meta, body)
+    return render(seo_meta(x, meta), body)
 
 
 # ---------------------------------------------------------------- archives
@@ -233,8 +257,13 @@ def archive(kind, slug, items, counts_other):
     <div class="cta-band__actions"><a class="ho-btn ho-btn--primary" href="/add-business.html">List your business</a><a class="ho-btn ho-btn--outline" href="/pricing.html">See plans</a></div>
   </div>
 </div>'''
-    # SEO brief 03: archives index only with 5+ indexable listings AND intro text. All imports are unclaimed → noindex for now.
-    meta = {"title": title, "description": lead[:155], "robots": "noindex, follow", "hubnav": "directory"}
+    # SEO brief 03: archives index only with 5+ indexable listings AND intro text; otherwise noindex, follow.
+    path = f"/category/{slug}/" if kind == "cat" else f"/area/{slug}/"
+    indexable = seo.archive_indexable(items, has_intro=(kind == "cat" and slug in CAT_INTRO))
+    meta = {"title": title, "description": short(lead), "hubnav": "directory", "path": path, "schema": "CollectionPage",
+            "ld": [seo.item_list(BASE(), seo.absolute(BASE(), path), items, title)]}
+    if not indexable:
+        meta["robots"] = "noindex, follow"
     return render(meta, body)
 
 
@@ -272,6 +301,11 @@ def write_partials(cat_counts, area_counts):
     (PARTIALS / "gen-offers.html").write_text("\n".join(C.offer_card(x, o, heading="h2") for x, o in offers), encoding="utf-8")
     (PARTIALS / "gen-offers-home.html").write_text("\n".join(C.offer_card(x, o) for x, o in offers[:3]), encoding="utf-8")
     (PARTIALS / "gen-offer-count.html").write_text(str(len(offers)), encoding="utf-8")
+    by_cat = Counter(x["cat"] for x, _o in offers)
+    chips = [f'<a class="chip" href="/offers.html" aria-current="page">All offers <span class="count">{len(offers)}</span></a>']
+    chips += [f'<a class="chip" href="/offers.html?cat={c}">{e(cat_name(c))} <span class="count">{n}</span></a>'
+              for c, n in sorted(by_cat.items(), key=lambda kv: (-kv[1], cat_name(kv[0])))]
+    (PARTIALS / "gen-offer-chips.html").write_text("\n    ".join(chips), encoding="utf-8")
     (PARTIALS / "gen-count.html").write_text(f"{len(listings()):,}", encoding="utf-8")
     # A few real listings for "recently added" style blocks (alphabetical sample with websites)
     sample = [x for x in listings() if x.get("tier") in ("premium", "partner")][:3] + [x for x in listings() if x["web"] and x["phone"] and not x.get("tier")][::97][:3]
@@ -297,19 +331,20 @@ def build_all():
         by_cat[x["cat"]].append(x)
         by_area[x["area"]].append(x)
 
-    for d in ("business", "category", "area", "data"):
+    from build import write
+    for d in ("data",):
         (SITE / d).mkdir(parents=True, exist_ok=True)
 
     for x in L:
         rel = [r for r in by_cat_area[(x["cat"], x["area"])] if r is not x][:4]
-        (SITE / "business" / f'{x["slug"]}.html').write_text(profile(x, rel), encoding="utf-8", newline="\n")
+        write(f'/business/{x["slug"]}/', profile(x, rel))
 
     for s, *_ in H.CATEGORIES:
         other = Counter(x["area"] for x in by_cat[s]).most_common()
-        (SITE / "category" / f"{s}.html").write_text(archive("cat", s, by_cat[s], other), encoding="utf-8", newline="\n")
+        write(f"/category/{s}/", archive("cat", s, by_cat[s], other))
     for s, *_ in H.AREAS:
         other = Counter(x["cat"] for x in by_area[s]).most_common()
-        (SITE / "area" / f"{s}.html").write_text(archive("area", s, by_area[s], other), encoding="utf-8", newline="\n")
+        write(f"/area/{s}/", archive("area", s, by_area[s], other))
 
     index = {
         "cats": {s: {"n": n, "i": i} for s, n, i, _r in H.CATEGORIES},

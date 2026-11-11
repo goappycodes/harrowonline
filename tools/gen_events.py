@@ -119,7 +119,7 @@ def event_row(x, day):
     when_icon = "repeat" if x["kind"] == "class" else "clock"
     desc = f'\n      <p class="card__text">{x["desc"]}</p>' if x["desc"] else ""
     return f'''    <article class="event-row{' event-row--featured' if x['featured'] else ''}">
-      <span class="date-tile"><span class="date-tile__m">{day.strftime('%b')}</span><span class="date-tile__d">{day.day}</span><span class="date-tile__w">{day.strftime('%a')}</span></span>
+      <time class="date-tile" datetime="{day.isoformat()}"><span class="date-tile__m">{day.strftime('%b')}</span><span class="date-tile__d">{day.day}</span><span class="date-tile__w">{day.strftime('%a')}</span></time>
       <div class="{ph_cls}">{I(x['icon'])}</div>
       <div>
         <div class="cluster mb-2">{''.join(badges)}</div>
@@ -345,6 +345,7 @@ title: What's On in Harrow: November 2026 calendar
 description: Month calendar of events and classes in Harrow for November 2026: Christmas lights, markets, fireworks, live music and weekly classes.
 nav: events
 hubnav: events
+robots: noindex, follow
 body: page-events
 -->
 <nav class="crumbs ho-container" aria-label="Breadcrumb">
