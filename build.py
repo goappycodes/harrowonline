@@ -72,8 +72,6 @@ def render(meta, body):
     parts = [partial("head"), partial("header")]
     if site == "hub" and layout != "bare":
         parts.append(partial("hubbar"))
-    if site == "hub":
-        parts.append(partial("preview-note"))
     parts.append('<main id="main">\n' + body + "\n</main>")
     if layout != "bare" and meta.get("nl") != "off":
         parts.append(partial("nl-strip"))

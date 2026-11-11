@@ -281,7 +281,6 @@ body.ho-lock { overflow: hidden; }
   .hub-bar__nav { margin: 0 calc(var(--ho-gutter) * -1); padding: 0 var(--ho-gutter); }
 }
 
-.preview-note { background: var(--ho-warn-tint); color: #5C3C00; font: 600 12px/1.4 var(--ho-font-ui); padding: 6px 0; text-align: center; }
 
 /* Drawer */
 .ho-drawer { position: fixed; inset: 0; z-index: 100000; }

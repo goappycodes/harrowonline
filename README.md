@@ -45,7 +45,7 @@ To refresh the listing data, run `scripts/1_fetch_overture.py`, `2_filter_export
 ## Content in this preview
 
 - **Real:** the 2,590 business listings (Overture Maps open data). All are shown as **Unclaimed** and `noindex, follow`, as brief 03 requires for imported listings.
-- **Samples:** featured businesses (Hill Street Kitchen, Wealdstone Fitness Studio, etc.), offers, events, classes, the signed-in account and all figures. A note under the Hub bar says so on every page.
+- **Samples:** featured businesses (Hill Street Kitchen, Wealdstone Fitness Studio, etc.), offers, events, classes, the signed-in account and all figures.
 - Categories and areas are drafts for the client to approve (brief 01, 6.1). Areas come from the nearest area centre to each map pin, so a few edge cases will need moving.
 
 ## Moving to WordPress
