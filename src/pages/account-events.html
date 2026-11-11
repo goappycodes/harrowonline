@@ -1,0 +1,149 @@
+<!--
+title: My events and classes
+description: Manage your events and classes on Harrow Online Hub.
+body: is-logged-in
+hubnav: account
+robots: noindex, nofollow
+nl: off
+css: hub-c
+-->
+<div class="ho-container dash">
+<!--@dashnav:events-->
+
+  <div class="dash-main">
+    <div class="dash-head">
+      <div>
+        <h1>Events and classes</h1>
+        <p>One-off events and regular classes. Each one is checked by our team before it goes on What&rsquo;s On.</p>
+      </div>
+      <a class="ho-btn ho-btn--primary" href="/account-event-edit.html"><svg class="ho-icon"><use href="#i-plus"/></svg>Add an event or class</a>
+    </div>
+
+    <div class="notice notice--plain mb-5">
+      <svg class="ho-icon"><use href="#i-info"/></svg>
+      <div>
+        <p><strong>1 of 2 events used for November</strong> on Enhanced. A weekly class counts once, in the month it starts.</p>
+      </div>
+    </div>
+
+    <nav class="tabs" aria-label="Filter events">
+      <a href="/account-events.html" aria-current="page">All <span class="count">5</span></a>
+      <a href="/account-events.html?status=published">Published <span class="count">2</span></a>
+      <a href="/account-events.html?status=pending">Pending <span class="count">1</span></a>
+      <a href="/account-events.html?status=draft">Draft <span class="count">1</span></a>
+      <a href="/account-events.html?status=ended">Ended <span class="count">1</span></a>
+    </nav>
+
+    <div class="table-wrap">
+      <table class="table table--stack">
+        <thead>
+          <tr><th scope="col">Event or class</th><th scope="col">Status</th><th scope="col">Next date</th><th scope="col">Featured</th><th scope="col"><span class="ho-sr">Actions</span></th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>
+              <div class="table__item">
+                <div class="ph"><svg class="ho-icon"><use href="#i-repeat"/></svg></div>
+                <div><strong>Barbering taster class</strong><span><span class="badge badge--outline">Weekly class</span> Tuesdays 6.30pm to 8pm</span></div>
+              </div>
+            </td>
+            <td data-label="Status"><span class="status status--published">Published</span></td>
+            <td data-label="Next date">Tue 17 Nov, 6.30pm</td>
+            <td data-label="Featured"><span class="badge badge--featured">Until 24 Nov</span></td>
+            <td>
+              <div class="table__actions">
+                <a class="ho-btn ho-btn--sm ho-btn--outline" href="/account-event-edit.html"><svg class="ho-icon"><use href="#i-edit"/></svg>Edit</a>
+                <a class="ho-btn ho-btn--sm ho-btn--ghost" href="/class.html"><svg class="ho-icon"><use href="#i-external"/></svg>View</a>
+              </div>
+            </td>
+          </tr>
+          <tr>
+            <td>
+              <div class="table__item">
+                <div class="ph"><svg class="ho-icon"><use href="#i-scissors"/></svg></div>
+                <div><strong>Beard care workshop</strong><span><span class="badge badge--outline">One-off</span> Approved 9 Nov</span></div>
+              </div>
+            </td>
+            <td data-label="Status"><span class="status status--published">Published</span></td>
+            <td data-label="Next date">Thu 26 Nov, 7pm</td>
+            <td data-label="Featured"><span class="muted">No</span></td>
+            <td>
+              <div class="table__actions">
+                <a class="ho-btn ho-btn--sm ho-btn--outline" href="/account-event-edit.html"><svg class="ho-icon"><use href="#i-edit"/></svg>Edit</a>
+                <a class="ho-btn ho-btn--sm ho-btn--ghost" href="#stripe-checkout"><svg class="ho-icon"><use href="#i-star"/></svg>Feature this</a>
+                <a class="ho-btn ho-btn--sm ho-btn--ghost" href="/event.html"><svg class="ho-icon"><use href="#i-external"/></svg>View</a>
+              </div>
+            </td>
+          </tr>
+          <tr>
+            <td>
+              <div class="table__item">
+                <div class="ph"><svg class="ho-icon"><use href="#i-heart"/></svg></div>
+                <div><strong>Christmas charity cut-a-thon</strong><span><span class="badge badge--outline">One-off</span> Sent for approval 10 Nov</span></div>
+              </div>
+            </td>
+            <td data-label="Status"><span class="status status--pending">Pending</span></td>
+            <td data-label="Next date">Sun 13 Dec, 10am</td>
+            <td data-label="Featured"><span class="muted">No</span></td>
+            <td>
+              <div class="table__actions">
+                <a class="ho-btn ho-btn--sm ho-btn--outline" href="/account-event-edit.html"><svg class="ho-icon"><use href="#i-edit"/></svg>Edit</a>
+                <a class="ho-btn ho-btn--sm ho-btn--ghost" href="#stripe-checkout"><svg class="ho-icon"><use href="#i-star"/></svg>Feature this</a>
+              </div>
+            </td>
+          </tr>
+          <tr>
+            <td>
+              <div class="table__item">
+                <div class="ph"><svg class="ho-icon"><use href="#i-family"/></svg></div>
+                <div><strong>Saturday kids&rsquo; cuts club</strong><span><span class="badge badge--outline">Weekly class</span> Not sent yet</span></div>
+              </div>
+            </td>
+            <td data-label="Status"><span class="status status--draft">Draft</span></td>
+            <td data-label="Next date"><span class="muted">From Sat 9 Jan 2027</span></td>
+            <td data-label="Featured"><span class="muted">No</span></td>
+            <td>
+              <div class="table__actions">
+                <a class="ho-btn ho-btn--sm ho-btn--outline" href="/account-event-edit.html"><svg class="ho-icon"><use href="#i-edit"/></svg>Edit</a>
+                <a class="ho-btn ho-btn--sm ho-btn--ghost" href="#delete-draft">Delete</a>
+              </div>
+            </td>
+          </tr>
+          <tr>
+            <td>
+              <div class="table__item">
+                <div class="ph"><svg class="ho-icon"><use href="#i-party"/></svg></div>
+                <div><strong>Halloween kids&rsquo; cuts</strong><span><span class="badge badge--outline">One-off</span> Ended automatically</span></div>
+              </div>
+            </td>
+            <td data-label="Status"><span class="status status--ended">Ended</span></td>
+            <td data-label="Next date"><span class="muted">Was Sat 31 Oct</span></td>
+            <td data-label="Featured"><span class="muted">Ended 31 Oct</span></td>
+            <td>
+              <div class="table__actions">
+                <a class="ho-btn ho-btn--sm ho-btn--ghost" href="/account-event-edit.html"><svg class="ho-icon"><use href="#i-repeat"/></svg>Copy as new</a>
+              </div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <!-- WP: one-off events move to Ended after their end date. Weekly classes stay published until their optional end date passes. -->
+
+    <div class="grid grid-2 mt-6">
+      <div class="panel panel--soft">
+        <h2 class="panel__title">Events and classes</h2>
+        <ul class="ticks ticks--dark small mb-0">
+          <li>One-off events leave What&rsquo;s On once they&rsquo;ve finished.</li>
+          <li>A weekly class keeps the same page. Update it whenever times change.</li>
+          <li>Upcoming events and classes also show on your listing.</li>
+        </ul>
+      </div>
+      <div class="panel">
+        <h2 class="panel__title"><svg class="ho-icon"><use href="#i-star"/></svg> Feature an event or class</h2>
+        <p class="small">Featured events and classes show first on What&rsquo;s On and in The Weekend newsletter, with a Featured label.</p>
+        <p class="small mb-0"><strong>&pound;15 for 7 days</strong>, one-off payment. Included free on Premium and Local Partner.</p>
+      </div>
+    </div>
+  </div>
+</div>
