@@ -1,0 +1,302 @@
+<!doctype html>
+<html lang="en-GB" data-base="/hub">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Data sources and attribution | Harrow Online Hub</title>
+<meta name="description" content="Where Harrow Online Hub business listings come from: Overture Maps Foundation open data, its sources and licences, how listings were filtered, and how to correct or remove a listing.">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Merriweather:wght@700;900&family=Open+Sans:ital,wght@0,400;0,600;0,700;1,400&display=swap">
+<link rel="stylesheet" href="/hub/assets/css/hub.css">
+<script src="/hub/assets/js/hub.js" defer></script>
+<link rel="stylesheet" href="/hub/assets/css/hub-b.css">
+</head>
+<body class="site-hub page-legal">
+<a class="ho-skip" href="#main">Skip to content</a>
+
+<header class="ho-header" id="ho-header">
+  <div class="ho-container ho-header__inner">
+    <button class="ho-header__icon-btn ho-header__burger" type="button" aria-controls="ho-drawer" aria-expanded="false" aria-label="Open menu" data-drawer-open>
+      <svg class="ho-icon"><use href="/hub/assets/img/icons.svg#i-menu"/></svg>
+    </button>
+
+    <div class="hub-logo">
+      <a class="hub-logo__link" href="/hub/" rel="home">
+        <img src="https://harrowonline.org/wp-content/uploads/2020/08/Website-Logo-Small-1.png" width="233" height="90" alt="Harrow Online">
+        <span class="hub-logo__word">Hub</span>
+      </a>
+      <a class="hub-logo__strap" href="https://harrowonline.org/newsletter/">powered by Harrow Online Newsletter</a>
+    </div>
+    
+
+    <nav class="ho-nav" aria-label="Main">
+      <ul class="ho-nav__list">
+        <li><a href="https://harrowonline.org/">News</a></li>
+        <li><a href="/hub/events.html">What&rsquo;s On</a></li>
+        <li><a href="/hub/classes.html">Classes</a></li>
+        <li><a href="/hub/offers.html">Offers</a></li>
+        <li class="current-menu-item"><a href="/hub/" aria-current="page">Hub</a></li>
+        <li><a href="https://harrowonline.org/newsletter/">Newsletter</a></li>
+      </ul>
+    </nav>
+
+    <div class="ho-header__actions">
+      <a class="ho-btn ho-btn--primary ho-header__cta" href="https://harrowonline.org/newsletter/">
+        <svg class="ho-icon"><use href="/hub/assets/img/icons.svg#i-mail"/></svg><span>Newsletter</span>
+      </a>
+      <a class="ho-header__icon-btn ho-header__account" href="/hub/account.html" aria-label="My account">
+        <svg class="ho-icon"><use href="/hub/assets/img/icons.svg#i-user"/></svg>
+      </a>
+      <button class="ho-header__icon-btn" type="button" aria-controls="ho-search" aria-expanded="false" aria-label="Search" data-search-toggle>
+        <svg class="ho-icon"><use href="/hub/assets/img/icons.svg#i-search"/></svg>
+      </button>
+    </div>
+  </div>
+
+  <div class="ho-search" id="ho-search" hidden>
+    <div class="ho-container">
+      <form class="ho-search__form" role="search" method="get" action="/hub/search.html">
+        <label class="ho-sr" for="ho-search-input">Search the Hub</label>
+        <input class="ho-search__input" id="ho-search-input" type="search" name="q" placeholder="Search businesses, offers and events&hellip;" autocomplete="off">
+        <button class="ho-btn ho-btn--primary" type="submit">Search</button>
+      </form>
+      
+    </div>
+  </div>
+</header>
+
+<div class="ho-drawer" id="ho-drawer" hidden>
+  <div class="ho-drawer__backdrop" data-drawer-close></div>
+  <div class="ho-drawer__panel" role="dialog" aria-modal="true" aria-label="Menu">
+    <div class="ho-drawer__head">
+      <a class="ho-drawer__logo" href="/hub/"><img src="https://harrowonline.org/wp-content/uploads/2020/08/Website-Logo-Small-1.png" width="233" height="90" alt="Harrow Online" loading="lazy"></a>
+      <button class="ho-header__icon-btn" type="button" aria-label="Close menu" data-drawer-close><svg class="ho-icon"><use href="/hub/assets/img/icons.svg#i-close"/></svg></button>
+    </div>
+    <form class="ho-drawer__search" role="search" method="get" action="/hub/search.html">
+      <label class="ho-sr" for="ho-drawer-search">Search</label>
+      <input id="ho-drawer-search" type="search" name="q" placeholder="Search the Hub&hellip;" autocomplete="off">
+      <button type="submit" aria-label="Search"><svg class="ho-icon"><use href="/hub/assets/img/icons.svg#i-search"/></svg></button>
+    </form>
+    <nav aria-label="Mobile">
+      <ul class="ho-drawer__list">
+        <li><a href="https://harrowonline.org/">News</a></li>
+        <li><a href="/hub/events.html">What&rsquo;s On</a></li>
+        <li><a href="/hub/classes.html">Classes</a></li>
+        <li><a href="/hub/offers.html">Offers</a></li>
+        <li><a href="/hub/">Hub</a></li>
+        <li><a href="https://harrowonline.org/newsletter/">Newsletter</a></li>
+      </ul>
+    </nav>
+    <p class="ho-drawer__label">For businesses</p>
+    <ul class="ho-drawer__list ho-drawer__list--small">
+      <li><a href="/hub/add-business.html">List your business</a></li>
+      <li><a href="/hub/pricing.html">Plans and pricing</a></li>
+      <li><a href="/hub/account.html">My account</a></li>
+    </ul>
+    <a class="ho-btn ho-btn--primary ho-btn--block" href="https://harrowonline.org/newsletter/"><svg class="ho-icon"><use href="/hub/assets/img/icons.svg#i-mail"/></svg><span>Get the newsletter</span></a>
+    <p class="ho-drawer__label">Follow Harrow Online</p>
+    <ul class="ho-social ho-social--dark">
+      <li><a class="ho-social__link" href="https://www.facebook.com/harrowonline" target="_blank" rel="noopener" aria-label="Facebook"><svg class="ho-icon"><use href="/hub/assets/img/icons.svg#i-facebook"/></svg></a></li>
+      <li><a class="ho-social__link" href="https://twitter.com/harrowonline" target="_blank" rel="noopener" aria-label="X (Twitter)"><svg class="ho-icon"><use href="/hub/assets/img/icons.svg#i-x"/></svg></a></li>
+      <li><a class="ho-social__link" href="https://www.instagram.com/harrowonline1/" target="_blank" rel="noopener" aria-label="Instagram"><svg class="ho-icon"><use href="/hub/assets/img/icons.svg#i-instagram"/></svg></a></li>
+      <li><a class="ho-social__link" href="https://www.tiktok.com/@harrowonline" target="_blank" rel="noopener" aria-label="TikTok"><svg class="ho-icon"><use href="/hub/assets/img/icons.svg#i-tiktok"/></svg></a></li>
+      <li><a class="ho-social__link" href="https://whatsapp.com/channel/0029Va9qE38HgZWZQVM1jc3S" target="_blank" rel="noopener" aria-label="WhatsApp Channel"><svg class="ho-icon"><use href="/hub/assets/img/icons.svg#i-whatsapp"/></svg></a></li>
+    </ul>
+
+  </div>
+</div>
+
+<div class="hub-bar">
+  <div class="ho-container hub-bar__inner">
+    <nav class="hub-bar__nav" aria-label="Hub">
+      <a href="/hub/search.html">Businesses</a>
+      <a href="/hub/#categories">Categories</a>
+      <a href="/hub/#areas">Areas</a>
+      <a href="/hub/offers.html">Offers</a>
+      <a href="/hub/events.html">What&rsquo;s On</a>
+      <a href="/hub/pricing.html">Pricing</a>
+    </nav>
+    <div class="hub-bar__actions">
+      <a class="hub-bar__link hub-bar__out" href="/hub/sign-in.html">Sign in</a>
+      <a class="hub-bar__link hub-bar__in" href="/hub/account.html"><svg class="ho-icon"><use href="/hub/assets/img/icons.svg#i-user"/></svg>My account</a>
+      <a class="ho-btn ho-btn--sm ho-btn--dark" href="/hub/add-business.html"><svg class="ho-icon"><use href="/hub/assets/img/icons.svg#i-plus"/></svg>List your business</a>
+    </div>
+  </div>
+</div>
+
+<div class="preview-note"><div class="ho-container">Design preview. The 2,590 business listings are real open data (Overture Maps). Featured businesses, offers, events and accounts are samples.</div></div>
+
+<main id="main">
+<nav class="crumbs ho-container ho-container--narrow" aria-label="Breadcrumb">
+  <ol><li><a href="/hub/">Hub</a></li><li><span aria-current="page">Data sources</span></li></ol>
+</nav>
+
+<header class="page-head ho-container ho-container--narrow">
+  <h1 class="page-head__title">Data sources</h1>
+  <p class="page-head__lead">Where our business listings come from, the licences we use them under, and how to fix or remove a listing.</p>
+  <p class="updated mt-4">Last updated: 11 November 2026</p>
+</header>
+
+<div class="ho-container ho-container--narrow">
+  <div class="panel panel--soft">
+    <p class="eyebrow mb-2">Attribution</p>
+    <p class="mb-0"><strong>Business data &copy; Overture Maps Foundation and its sources</strong> (BrightQuery, Meta, Microsoft, Uberall, DAC, PinMeTo), used under the <a href="https://cdla.dev/permissive-2-0/" rel="noopener">Community Data License Agreement, Permissive, Version 2.0</a> and, where applicable, the <a href="https://opendatacommons.org/licenses/odbl/" rel="noopener">Open Database License (ODbL)</a>.</p>
+  </div>
+
+  <nav class="toc mt-5" aria-labelledby="toc-title">
+    <h2 id="toc-title">On this page</h2>
+    <ol>
+      <li><a href="#overture">Overture Maps Places data</a></li>
+      <li><a href="#licences">Licences</a></li>
+      <li><a href="#filters">How we chose which businesses to list</a></li>
+      <li><a href="#updates">What changes after import</a></li>
+      <li><a href="#indexing">Imported listings and search engines</a></li>
+      <li><a href="#correct">Correcting or removing a listing</a></li>
+    </ol>
+  </nav>
+
+  <div class="prose mt-6">
+    <h2 id="overture">1. Overture Maps Places data</h2>
+    <p>Most listings on Harrow Online Hub started life as open data from the <a href="https://overturemaps.org" rel="noopener">Overture Maps Foundation</a>, a project that publishes free map data, including a worldwide dataset of places such as shops, restaurants and services.</p>
+    <p>Overture combines place data from several contributors. The Harrow listings we imported come from these sources:</p>
+    <ul>
+      <li>BrightQuery</li>
+      <li>Meta</li>
+      <li>Microsoft</li>
+      <li>Uberall</li>
+      <li>DAC</li>
+      <li>PinMeTo</li>
+    </ul>
+    <p>Each imported listing keeps its Overture ID and the date we imported it (visible to our team only), so we can update it from later Overture releases without creating duplicates.</p>
+
+    <h2 id="licences">2. Licences</h2>
+    <table>
+      <thead><tr><th scope="col">Licence</th><th scope="col">Applies to</th></tr></thead>
+      <tbody>
+        <tr><td><a href="https://cdla.dev/permissive-2-0/" rel="noopener">CDLA Permissive 2.0</a></td><td>Overture Places data from the sources listed above</td></tr>
+        <tr><td><a href="https://opendatacommons.org/licenses/odbl/" rel="noopener">ODbL 1.0</a></td><td>Any Overture data derived from OpenStreetMap, where it appears. &copy; OpenStreetMap contributors.</td></tr>
+      </tbody>
+    </table>
+    <p>Information added by business owners after they claim a listing (descriptions, photos, opening hours, offers and events) belongs to them and is not part of the open data.</p>
+
+    <h2 id="filters">3. How we chose which businesses to list</h2>
+    <p>We started with every place Overture lists in Harrow and kept only the ones most likely to be real, open and useful to local people. A business is listed when it is:</p>
+    <ul>
+      <li>inside the London Borough of Harrow, with a valid HA postcode and a phone number</li>
+      <li>not marked as permanently closed</li>
+      <li>a customer-facing business: we left out business-to-business services, corporate offices, car parks, parks, schools and government buildings</li>
+      <li>a confident match in Overture&rsquo;s data (a confidence score of 0.8 or more, or 0.95 for office-type businesses)</li>
+      <li>found in more than just one less reliable source (records that came only from Foursquare or AllThePlaces were left out)</li>
+      <li>not named after a person, and not a chain (the same name at three or more locations, or the same website used by three or more names)</li>
+      <li>not a duplicate: where two records had the same name and postcode, we kept one</li>
+    </ul>
+    <p>That left about 2,600 businesses. We then matched each one to one of our local categories and to an area (such as Pinner, Stanmore or Wealdstone) using its postcode and map pin.</p>
+
+    <h2 id="updates">4. What changes after import</h2>
+    <p>Once a business claims its listing, the owner can correct and add details. We approve changes to business names. We may re-import Overture data from time to time to add new businesses and update unclaimed ones. Claimed listings are never overwritten by an import.</p>
+
+    <h2 id="indexing">5. Imported listings and search engines</h2>
+    <p>Imported listings are basic, and the details haven&rsquo;t been confirmed by the business. So we ask search engines <strong>not to index them</strong> until the business has claimed the listing and filled it in. You can still find them by searching the Hub.</p>
+
+    <h2 id="correct">6. Correcting or removing a listing</h2>
+    <p>If you spot a mistake, or you run a business and don&rsquo;t want it listed, tell us using the <a href="/hub/report.html">correction and removal form</a>. You&rsquo;ll find a &ldquo;Report a problem&rdquo; link on every listing too. We aim to act within five working days.</p>
+    <p>If you own the business, the quickest way to fix it is to <a href="/hub/search.html">find your listing</a> and claim it for free. You can then edit the details yourself.</p>
+    <p>For more on how we handle personal information in listings, see our <a href="/hub/privacy.html#listings">privacy notice</a>.</p>
+  </div>
+</div>
+</main>
+<section class="ho-container" aria-label="Newsletter sign-up">
+  <div class="ho-nl ho-nl--strip">
+    <div>
+      <p class="ho-nl__title">Harrow in your inbox, every morning</p>
+      <p class="ho-nl__text">The day&rsquo;s local news, what&rsquo;s on and the best Local Offers. Free, from Harrow Online Newsletter.</p>
+    </div>
+    <form class="ho-nl__form" action="https://harrowonline.org/wp-json/ho/v1/subscribe" method="post" data-nl-form>
+      <input type="hidden" name="signup_source" value="hub-strip">
+      <label class="ho-sr" for="nl-email">Email address</label>
+      <input class="ho-nl__input" id="nl-email" type="email" name="email" placeholder="Your email address" autocomplete="email" required>
+      <button class="ho-btn ho-btn--on-red ho-nl__btn" type="submit">Sign up free</button>
+      <fieldset class="ho-nl__editions">
+        <legend class="ho-sr">Editions</legend>
+        <label><input type="checkbox" name="editions[]" value="daily" checked> Daily</label>
+        <label><input type="checkbox" name="editions[]" value="weekend"> The Weekend (Thu)</label>
+        <label><input type="checkbox" name="editions[]" value="business"> Harrow Business (Mon)</label>
+      </fieldset>
+      <p class="ho-nl__msg" role="status" aria-live="polite"></p>
+    </form>
+  </div>
+</section>
+
+<footer class="ho-footer">
+  <div class="ho-container ho-footer__grid">
+    <div class="ho-footer__brand">
+      <a class="ho-footer__logo" href="/hub/"><img src="https://harrowonline.org/wp-content/uploads/2020/08/bottomlogo.png" width="231" height="90" alt="Harrow Online" loading="lazy"></a>
+      <p class="ho-footer__tagline">Harrow Online Hub: local businesses, offers and what&rsquo;s on, powered by Harrow Online Newsletter.</p>
+      <ul class="ho-social ho-social--light">
+        <li><a class="ho-social__link" href="https://www.facebook.com/harrowonline" target="_blank" rel="noopener" aria-label="Facebook"><svg class="ho-icon"><use href="/hub/assets/img/icons.svg#i-facebook"/></svg></a></li>
+        <li><a class="ho-social__link" href="https://twitter.com/harrowonline" target="_blank" rel="noopener" aria-label="X (Twitter)"><svg class="ho-icon"><use href="/hub/assets/img/icons.svg#i-x"/></svg></a></li>
+        <li><a class="ho-social__link" href="https://www.instagram.com/harrowonline1/" target="_blank" rel="noopener" aria-label="Instagram"><svg class="ho-icon"><use href="/hub/assets/img/icons.svg#i-instagram"/></svg></a></li>
+        <li><a class="ho-social__link" href="https://www.tiktok.com/@harrowonline" target="_blank" rel="noopener" aria-label="TikTok"><svg class="ho-icon"><use href="/hub/assets/img/icons.svg#i-tiktok"/></svg></a></li>
+        <li><a class="ho-social__link" href="https://whatsapp.com/channel/0029Va9qE38HgZWZQVM1jc3S" target="_blank" rel="noopener" aria-label="WhatsApp Channel"><svg class="ho-icon"><use href="/hub/assets/img/icons.svg#i-whatsapp"/></svg></a></li>
+      </ul>
+    </div>
+
+    <nav aria-label="Hub">
+      <p class="ho-footer__title">Hub</p>
+      <ul class="ho-footer__links">
+        <li><a href="/hub/search.html">Find a business</a></li>
+        <li><a href="/hub/offers.html">Local Offers</a></li>
+        <li><a href="/hub/events.html">What&rsquo;s On</a></li>
+        <li><a href="/hub/classes.html">Classes and activities</a></li>
+        <li><a href="/hub/add-business.html">List your business</a></li>
+        <li><a href="/hub/pricing.html">Plans and pricing</a></li>
+      </ul>
+    </nav>
+
+    <nav aria-label="Harrow Online">
+      <p class="ho-footer__title">Harrow Online</p>
+      <ul class="ho-footer__links">
+        <li><a href="https://harrowonline.org/">Latest news</a></li>
+        <li><a href="https://harrowonline.org/about-us/">About us</a></li>
+        <li><a href="/hub/news-advertise.html">Advertise</a></li>
+        <li><a href="/hub/news-support.html">Support us</a></li>
+        <li><a href="https://harrowonline.org/contact-us/">Contact us</a></li>
+      </ul>
+    </nav>
+
+    <nav aria-label="Legal">
+      <p class="ho-footer__title">Legal</p>
+      <ul class="ho-footer__links">
+        <li><a href="/hub/privacy.html">Privacy</a></li>
+        <li><a href="/hub/terms.html">Terms of use</a></li>
+        <li><a href="/hub/data-sources.html">Data sources</a></li>
+        <li><a href="https://harrowonline.org/complaints-procedure/">Complaints procedure</a></li>
+      </ul>
+    </nav>
+
+    <div class="ho-footer__news">
+      <p class="ho-footer__title">Newsletter</p>
+      <p class="ho-footer__text">Harrow&rsquo;s local news, free in your inbox.</p>
+      <a class="ho-btn ho-btn--primary" href="https://harrowonline.org/newsletter/"><svg class="ho-icon"><use href="/hub/assets/img/icons.svg#i-mail"/></svg><span>Sign up free</span></a>
+      <a class="ho-footer__wa" href="https://whatsapp.com/channel/0029Va9qE38HgZWZQVM1jc3S" target="_blank" rel="noopener"><svg class="ho-icon"><use href="/hub/assets/img/icons.svg#i-whatsapp"/></svg><span>Follow our WhatsApp Channel</span></a>
+    </div>
+  </div>
+
+  <div class="ho-footer__bottom">
+    <div class="ho-container ho-footer__bottom-inner">
+      <ul class="ho-badges" aria-label="Accreditations">
+        <li><a class="ho-badge" href="https://www.impressorg.com/" target="_blank" rel="noopener" title="Regulated by IMPRESS"><img src="https://harrowonline.org/wp-content/uploads/2023/03/IMPRESS-Regulated-Member-Trustmark_White_RGB-300x300.png" width="300" height="300" alt="Regulated by IMPRESS" loading="lazy"></a></li>
+        <li><a class="ho-badge" href="https://www.communityjournalism.co.uk/" target="_blank" rel="noopener" title="Proud member of the Independent Community News Network (ICNN)"><img src="https://harrowonline.org/wp-content/uploads/2020/08/Untitled-design-60-1-300x166.png" width="300" height="166" alt="Proud member of the Independent Community News Network (ICNN)" loading="lazy"></a></li>
+      </ul>
+      <div class="ho-footer__legal">
+        <p>&copy; 2026 Harrow Online Ltd. All rights reserved.</p>
+        <p>Harrow Online Ltd is registered in England and Wales. Company number: 16370670. Registered office: 79 College Road, Harrow, HA1 1BD.</p>
+        <p>Business listings include data from <a href="/hub/data-sources.html">Overture Maps Foundation</a>, used under its open licences.</p>
+      </div>
+    </div>
+  </div>
+</footer>
+</body>
+</html>

@@ -1,0 +1,260 @@
+<!--
+title: Edit event or class
+description: Add or edit an event or class on Harrow Online Hub.
+body: is-logged-in
+hubnav: account
+robots: noindex, nofollow
+nl: off
+css: hub-c
+-->
+<div class="ho-container dash">
+  <aside class="dash-nav" aria-label="Account">
+    <div class="dash-nav__who">
+      <span class="mono mono--sm" aria-hidden="true">SR</span>
+      <div><strong>Station Road Barbers</strong><span>Enhanced plan</span></div>
+    </div>
+    <ul>
+      <li><a href="/account.html"><svg class="ho-icon"><use href="#i-home"/></svg>Overview</a></li>
+      <li><a href="/account-listings.html"><svg class="ho-icon"><use href="#i-store"/></svg>My listings</a></li>
+      <li><a href="/account-billing.html"><svg class="ho-icon"><use href="#i-card"/></svg>Plan and billing</a></li>
+      <li><a href="/account-offers.html"><svg class="ho-icon"><use href="#i-tag"/></svg>Offers<span class="num">1<span class="ho-sr"> offer needs changes</span></span></a></li>
+      <li><a href="/account-events.html" aria-current="true"><svg class="ho-icon"><use href="#i-calendar"/></svg>Events and classes</a></li>
+      <li><a href="/account-bookings.html"><svg class="ho-icon"><use href="#i-megaphone"/></svg>Newsletter and promotions</a></li>
+      <li><a href="/account-settings.html"><svg class="ho-icon"><use href="#i-settings"/></svg>Settings</a></li>
+    </ul>
+    <hr>
+    <ul>
+      <li><a href="/sign-in.html"><svg class="ho-icon"><use href="#i-logout"/></svg>Sign out</a></li>
+    </ul>
+  </aside>
+
+  <div class="dash-main">
+    <nav class="crumbs mb-4" aria-label="Breadcrumb">
+      <ol><li><a href="/account-events.html">Events and classes</a></li><li aria-current="page">Barbering taster class</li></ol>
+    </nav>
+    <div class="dash-head">
+      <div>
+        <h1>Edit event or class</h1>
+        <p>Barbering taster class &middot; <span class="status status--published">Published</span></p>
+      </div>
+      <a class="ho-btn ho-btn--outline" href="/class.html"><svg class="ho-icon"><use href="#i-external"/></svg>View on What&rsquo;s On</a>
+    </div>
+
+    <div class="notice notice--warn mb-5">
+      <svg class="ho-icon"><use href="#i-info"/></svg>
+      <div>
+        <p><strong>Edits to an approved class may need approval again.</strong> Your class stays live as it is while we check the changes.</p>
+      </div>
+    </div>
+    <!-- OPEN QUESTION (brief 01, 6.9 and 10): should edits to an approved class need re-approval? Copy above assumes yes, with the live version kept until approved. -->
+
+    <div class="layout-aside">
+      <form class="form-card form" action="#" method="post">
+        <fieldset class="fieldset">
+          <legend>About it</legend>
+          <div class="stack">
+            <div class="field">
+              <label for="ev-title">Title</label>
+              <input class="input" id="ev-title" type="text" name="title" maxlength="80" data-counter value="Barbering taster class" required>
+            </div>
+            <div class="field">
+              <label for="ev-desc">Description</label>
+              <textarea class="textarea" id="ev-desc" name="description" maxlength="2000" data-counter aria-describedby="ev-desc-help">Learn the basics of clipper work, fading and scissor-over-comb from our senior barbers. Small groups of six, all tools provided. Ideal if you&rsquo;re thinking about a career in barbering or just want to cut hair at home.</textarea>
+              <p class="help" id="ev-desc-help">What happens, who it&rsquo;s for, and what to bring.</p>
+            </div>
+            <div class="field">
+              <span class="field__label" id="ev-img-label">Image <span class="opt">(optional)</span></span>
+              <div class="thumbs">
+                <div class="thumb"><div class="ph"><svg class="ho-icon"><use href="#i-scissors"/></svg></div><button type="button" aria-label="Remove image"><svg class="ho-icon"><use href="#i-close"/></svg></button></div>
+              </div>
+              <label class="dropzone mt-2" for="ev-img">
+                <svg class="ho-icon"><use href="#i-upload"/></svg>
+                <strong>Replace image</strong>
+                <p>Landscape works best. JPG or PNG, up to 5MB.</p>
+                <input class="ho-sr" id="ev-img" type="file" name="image" accept="image/jpeg,image/png" aria-labelledby="ev-img-label">
+              </label>
+            </div>
+          </div>
+        </fieldset>
+
+        <fieldset class="fieldset">
+          <legend>Category</legend>
+          <div class="choice-grid choice-grid--3">
+            <label class="choice"><input type="radio" name="category" value="classes" checked data-reveal="#ev-classtype"><span class="choice__title">Classes and activities</span></label>
+            <label class="choice"><input type="radio" name="category" value="family"><span class="choice__title">Family</span></label>
+            <label class="choice"><input type="radio" name="category" value="music"><span class="choice__title">Music</span></label>
+            <label class="choice"><input type="radio" name="category" value="food-and-drink"><span class="choice__title">Food and drink</span></label>
+            <label class="choice"><input type="radio" name="category" value="nightlife"><span class="choice__title">Nightlife</span></label>
+            <label class="choice"><input type="radio" name="category" value="community"><span class="choice__title">Community</span></label>
+          </div>
+          <div id="ev-classtype" class="mt-4">
+            <div class="field">
+              <label for="ev-ctype">Type of class</label>
+              <select class="select" id="ev-ctype" name="class_type">
+                <option value="childrens-activities">Children&rsquo;s activities</option>
+                <option value="fitness">Fitness</option>
+                <option value="dance">Dance schools</option>
+                <option value="workshops" selected>Workshops</option>
+                <option value="other">Other regular classes</option>
+              </select>
+            </div>
+          </div>
+          <!-- WP: categories and class types are editable in admin -->
+        </fieldset>
+
+        <fieldset class="fieldset">
+          <legend>When</legend>
+          <div class="choice-grid choice-grid--2">
+            <label class="choice">
+              <input type="radio" name="recurrence" value="once" data-reveal="#ev-once">
+              <span><span class="choice__title"><svg class="ho-icon"><use href="#i-calendar"/></svg>One-off</span><span class="choice__text">A single date, like a workshop, gig or fair.</span></span>
+            </label>
+            <label class="choice">
+              <input type="radio" name="recurrence" value="weekly" checked data-reveal="#ev-weekly">
+              <span><span class="choice__title"><svg class="ho-icon"><use href="#i-repeat"/></svg>Weekly schedule</span><span class="choice__text">A class or club that runs every week, at one or more times.</span></span>
+            </label>
+          </div>
+
+          <div id="ev-once" class="mt-4" hidden>
+            <div class="row row-2">
+              <div class="field"><label for="ev-sd">Start date</label><input class="input" id="ev-sd" type="date" name="start_date"></div>
+              <div class="field"><label for="ev-st">Start time</label><input class="input" id="ev-st" type="time" name="start_time"></div>
+              <div class="field"><label for="ev-ed">End date</label><input class="input" id="ev-ed" type="date" name="end_date"></div>
+              <div class="field"><label for="ev-et">End time</label><input class="input" id="ev-et" type="time" name="end_time"></div>
+            </div>
+          </div>
+
+          <div id="ev-weekly" class="mt-4">
+            <div class="stack">
+              <div class="slot-row">
+                <div class="field">
+                  <label for="sl1-day">Day</label>
+                  <select class="select select--sm" id="sl1-day" name="slots[0][day]">
+                    <option>Monday</option><option selected>Tuesday</option><option>Wednesday</option><option>Thursday</option><option>Friday</option><option>Saturday</option><option>Sunday</option>
+                  </select>
+                </div>
+                <div class="field"><label for="sl1-s">Starts</label><input class="input input--sm" id="sl1-s" type="time" name="slots[0][start]" value="18:30"></div>
+                <div class="field"><label for="sl1-e">Ends</label><input class="input input--sm" id="sl1-e" type="time" name="slots[0][end]" value="20:00"></div>
+                <button class="ho-btn ho-btn--ghost ho-btn--sm" type="button" aria-label="Remove this time"><svg class="ho-icon"><use href="#i-close"/></svg></button>
+              </div>
+              <div class="slot-row">
+                <div class="field">
+                  <label for="sl2-day">Day</label>
+                  <select class="select select--sm" id="sl2-day" name="slots[1][day]">
+                    <option>Monday</option><option>Tuesday</option><option>Wednesday</option><option>Thursday</option><option>Friday</option><option selected>Saturday</option><option>Sunday</option>
+                  </select>
+                </div>
+                <div class="field"><label for="sl2-s">Starts</label><input class="input input--sm" id="sl2-s" type="time" name="slots[1][start]" value="16:00"></div>
+                <div class="field"><label for="sl2-e">Ends</label><input class="input input--sm" id="sl2-e" type="time" name="slots[1][end]" value="17:30"></div>
+                <button class="ho-btn ho-btn--ghost ho-btn--sm" type="button" aria-label="Remove this time"><svg class="ho-icon"><use href="#i-close"/></svg></button>
+              </div>
+              <div><button class="ho-btn ho-btn--outline ho-btn--sm" type="button"><svg class="ho-icon"><use href="#i-plus"/></svg>Add another time</button></div>
+              <div class="row row-2">
+                <div class="field"><label for="ev-from">First session</label><input class="input" id="ev-from" type="date" name="series_start" value="2026-09-08"></div>
+                <div class="field">
+                  <label for="ev-until">Last session <span class="opt">(optional)</span></label>
+                  <input class="input" id="ev-until" type="date" name="series_end" aria-describedby="ev-until-help">
+                  <p class="help" id="ev-until-help">Leave blank if it runs until further notice.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </fieldset>
+
+        <fieldset class="fieldset">
+          <legend>Where</legend>
+          <div class="stack">
+            <label class="check"><input type="checkbox" name="venue_is_listing" value="1" checked> <span>At my business<small>Station Road Barbers, 48 Station Road, Harrow HA1 2RS</small></span></label>
+            <div class="row row-2">
+              <div class="field"><label for="ev-venue">Venue name</label><input class="input" id="ev-venue" type="text" name="venue" value="Station Road Barbers"></div>
+              <div class="field">
+                <label for="ev-area">Area</label>
+                <select class="select" id="ev-area" name="area">
+                  <option value="harrow-town-centre" selected>Harrow Town Centre</option>
+                  {{> gen-area-options}}
+                </select>
+              </div>
+            </div>
+            <div class="row row-2">
+              <div class="field"><label for="ev-addr">Address</label><input class="input" id="ev-addr" type="text" name="venue_address" value="48 Station Road, Harrow"></div>
+              <div class="field"><label for="ev-pc">Postcode</label><input class="input" id="ev-pc" type="text" name="venue_postcode" value="HA1 2RS"></div>
+            </div>
+          </div>
+        </fieldset>
+
+        <fieldset class="fieldset">
+          <legend>Who and how much</legend>
+          <div class="stack">
+            <div>
+              <span class="field__label">Age range</span>
+              <div class="row row-3 mt-2">
+                <div class="field"><label class="small" for="ev-amin">From age</label><input class="input input--sm" id="ev-amin" type="number" name="age_min" min="0" max="99" value="16"></div>
+                <div class="field"><label class="small" for="ev-amax">To age <span class="opt">(optional)</span></label><input class="input input--sm" id="ev-amax" type="number" name="age_max" min="0" max="99"></div>
+                <label class="check check--end"><input type="checkbox" name="all_ages" value="1"> All ages</label>
+              </div>
+            </div>
+
+            <fieldset class="fieldset">
+              <legend class="field__label">Price</legend>
+              <div class="cluster cluster--lg">
+                <label class="radio"><input type="radio" name="price_type" value="free"> Free</label>
+                <label class="radio"><input type="radio" name="price_type" value="amount" checked data-reveal="#ev-price-amount"> Set price</label>
+                <label class="radio"><input type="radio" name="price_type" value="text" data-reveal="#ev-price-text"> Describe it</label>
+              </div>
+              <div id="ev-price-amount" class="mt-4">
+                <div class="field">
+                  <label for="ev-price">Price per person</label>
+                  <div class="input-group"><span class="input-group__addon">&pound;</span><input class="input" id="ev-price" type="number" name="price" min="0" step="0.50" value="25"></div>
+                </div>
+              </div>
+              <div id="ev-price-text" class="mt-4" hidden>
+                <div class="field">
+                  <label for="ev-ptext">Price details</label>
+                  <input class="input" id="ev-ptext" type="text" name="price_text" maxlength="60" placeholder="e.g. &pound;5 adults, children free">
+                </div>
+              </div>
+            </fieldset>
+
+            <div class="field">
+              <label for="ev-link">Booking or info link <span class="opt">(optional)</span></label>
+              <input class="input" id="ev-link" type="url" name="booking_url" value="https://stationroadbarbers.co.uk/taster" placeholder="https://">
+            </div>
+            <div class="field">
+              <label for="ev-org">Organiser listing <span class="opt">(optional)</span></label>
+              <select class="select" id="ev-org" name="organiser_listing" aria-describedby="ev-org-help">
+                <option value="">Don&rsquo;t link to a listing</option>
+                <option value="station-road-barbers" selected>Station Road Barbers</option>
+              </select>
+              <p class="help" id="ev-org-help">Linked events also show on that listing.</p>
+            </div>
+          </div>
+        </fieldset>
+
+        <div class="form-actions form-actions--sticky form-actions--between">
+          <button class="ho-btn ho-btn--ghost" type="submit" name="action" value="draft">Save draft</button>
+          <button class="ho-btn ho-btn--primary" type="submit" name="action" value="submit"><svg class="ho-icon"><use href="#i-check"/></svg>Submit for approval</button>
+        </div>
+      </form>
+
+      <aside class="stack sticky" aria-label="Approval and featuring">
+        <div class="notice notice--plain">
+          <svg class="ho-icon"><use href="#i-clock"/></svg>
+          <div>
+            <p><strong>Checked before it goes live</strong></p>
+            <p>Our team reviews every event and class, usually within 2 working days. We&rsquo;ll email you either way.</p>
+          </div>
+        </div>
+
+        <div class="panel">
+          <span class="badge badge--featured mb-2"><svg class="ho-icon"><use href="#i-star"/></svg>Featured until 16 Nov</span>
+          <h2 class="panel__title"><svg class="ho-icon"><use href="#i-star"/></svg> Feature this</h2>
+          <p class="small">Featured classes show first on What&rsquo;s On and Classes, and at the top of The Weekend newsletter.</p>
+          <p class="mb-2"><strong class="price-inline">&pound;15</strong> <span class="muted small">for 7 days, one-off payment</span></p>
+          <a class="ho-btn ho-btn--dark ho-btn--sm ho-btn--block" href="#stripe-checkout">Extend by 7 days</a>
+          <p class="help mt-2">Included free on Premium and Local Partner. <a href="/account-billing.html">Compare plans</a></p>
+        </div>
+        <!-- WP: #stripe-checkout = one-off Checkout Session for "Featured event, 7 days" (brief 02 N7). Flag clears when the period ends or the event ends. -->
+      </aside>
+    </div>
+  </div>
+</div>

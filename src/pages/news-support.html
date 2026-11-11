@@ -1,0 +1,86 @@
+<!--
+title: Support Harrow Online | Harrow Online
+description: Support independent local journalism in Harrow. Give £5, £10, £20 or £50 a month. No account needed, cancel any time.
+site: news
+nav: news
+nl: off
+-->
+<!-- harrowonline.org/support/ : a WordPress page on the news site (Newspaper theme). Payment = Stripe Checkout (subscription mode), no WP account. -->
+<header class="page-head page-head--soft">
+  <div class="ho-container ho-container--mid">
+    <p class="eyebrow">Support us</p>
+    <h1 class="page-head__title">Support independent local journalism</h1>
+    <p class="page-head__lead">Harrow Online is free to read and always will be. Readers who give a few pounds a month help us keep reporting on the council, schools, crime, planning and the people of Harrow.</p>
+  </div>
+</header>
+
+<div class="ho-container ho-container--mid section">
+  <div class="layout-aside">
+    <div>
+      <section aria-labelledby="why-title">
+        <h2 class="sec-title mb-4" id="why-title">Why it matters</h2>
+        <div class="prose">
+          <p>Local papers have closed across London. In many boroughs nobody sits in council meetings any more, or asks questions when a planning decision goes through. Harrow Online does that work every day, for free.</p>
+          <p>Advertising pays some of the bills, but not all of them. Your support pays for reporting time: going to meetings, checking facts and following stories that matter to Harrow, not just the ones that get clicks.</p>
+        </div>
+      </section>
+
+      <section class="panel mt-6" aria-labelledby="give-title">
+        <h2 class="panel__title" id="give-title">Choose a monthly amount</h2>
+        <!-- WP: POST to our endpoint, which creates a Stripe Checkout Session (mode=subscription) for the chosen Price, then redirects.
+             Return to /support/thank-you/. Readers manage or cancel through the Customer Portal link Stripe emails them. -->
+        <form action="#stripe-checkout" method="post">
+          <fieldset class="fieldset">
+            <legend class="ho-sr">Monthly amount</legend>
+            <div class="amounts">
+              <div class="amount"><input type="radio" name="amount" value="5" id="amt-5"><label for="amt-5"><b>&pound;5</b><small>a month</small></label></div>
+              <div class="amount"><input type="radio" name="amount" value="10" id="amt-10" checked><label for="amt-10"><b>&pound;10</b><small>a month</small></label></div>
+              <div class="amount"><input type="radio" name="amount" value="20" id="amt-20"><label for="amt-20"><b>&pound;20</b><small>a month</small></label></div>
+              <div class="amount"><input type="radio" name="amount" value="50" id="amt-50"><label for="amt-50"><b>&pound;50</b><small>a month</small></label></div>
+            </div>
+          </fieldset>
+          <button class="ho-btn ho-btn--primary ho-btn--lg ho-btn--block mt-5" type="submit"><svg class="ho-icon"><use href="#i-lock"/></svg>Continue to secure payment</button>
+          <p class="help mt-2 center">You&rsquo;ll pay on a secure Stripe page. No account needed. Cancel any time.</p>
+        </form>
+      </section>
+
+      <section class="mt-6" aria-labelledby="faq-title">
+        <h2 class="sec-title mb-4" id="faq-title">Questions</h2>
+        <div class="faq">
+          <details>
+            <summary>Do I need an account?</summary>
+            <div><p>No. Just choose an amount and pay on the Stripe page. You don&rsquo;t need a Harrow Online or Hub login.</p></div>
+          </details>
+          <details>
+            <summary>How do I change or cancel my support?</summary>
+            <div><p>Stripe emails you a receipt each month with a link to manage your support. Use it to update your card, change the amount or cancel. It takes a minute and there&rsquo;s no notice period.</p></div>
+          </details>
+          <details>
+            <summary>Is my payment secure?</summary>
+            <div><p>Yes. Payments are handled by Stripe, which is used by millions of businesses. We never see or store your card details.</p></div>
+          </details>
+          <details>
+            <summary>Does supporting change what I see?</summary>
+            <div><p>No. Harrow Online stays free for everyone. Supporters keep it that way, and nobody gets a say over what we report.</p></div>
+          </details>
+        </div>
+      </section>
+    </div>
+
+    <aside class="stack sticky" aria-label="About Harrow Online">
+      <div class="panel panel--dark">
+        <h2 class="panel__title">Why trust us</h2>
+        <ul class="ticks small mb-0">
+          <li>Independent local journalism, focused only on Harrow.</li>
+          <li>Regulated by IMPRESS, the independent press regulator, with a public complaints procedure.</li>
+          <li>Member of the Independent Community News Network.</li>
+          <li>Free to read, with no paywall.</li>
+        </ul>
+      </div>
+      <div class="panel panel--soft">
+        <h2 class="panel__title">Where your money goes</h2>
+        <p class="small mb-0">Reporting time on Harrow stories: council and planning meetings, courts, schools and community news.</p>
+      </div>
+    </aside>
+  </div>
+</div>

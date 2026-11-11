@@ -1,0 +1,131 @@
+<!--
+title: Independent shops back late-night Christmas shopping on Harrow on the Hill | Harrow Online
+description: Mock harrowonline.org article showing where the reader support box, Businesses mentioned and automatic related stories render.
+site: news
+nav: news
+nl: off
+-->
+<!-- Mock of a harrowonline.org single post (Newspaper theme). Shows where the new features render.
+     Ad slots are placeholders for Ad Inserter / Snack positions: they must not move. -->
+<div class="ho-container">
+  <nav class="crumbs" aria-label="Breadcrumb">
+    <ol><li><a href="https://harrowonline.org/">Home</a></li><li><a href="https://harrowonline.org/category/business/">Business</a></li><li aria-current="page">Late-night Christmas shopping</li></ol>
+  </nav>
+
+  <div class="layout-aside mt-5">
+    <article class="article">
+      <a class="article__cat" href="https://harrowonline.org/category/business/">Business</a>
+      <h1 class="article__title">Independent shops back late-night Christmas shopping on Harrow on the Hill</h1>
+      <p class="article__meta">By Harrow Online reporter &middot; Wednesday 11 November 2026 &middot; 3 min read</p>
+
+      <div class="ph ph--wide mt-4"><svg class="ho-icon"><use href="#i-news"/></svg></div>
+      <p class="xsmall muted mt-2">Harrow on the Hill high street. Image placeholder.</p>
+
+      <div class="article__body mt-5">
+        <!-- the_content starts -->
+        <p>Independent businesses on Harrow on the Hill will stay open until 9pm every Thursday in December, after traders agreed a joint plan to bring more evening shoppers to the area.</p>
+        <p>The late openings start on Thursday 3 December and run until Christmas Eve, with lights on the high street and a small market on the green on the first two evenings.</p>
+
+        <div class="ad-slot">Ad slot (Ad Inserter, unchanged)</div>
+
+        <p>Restaurant owners say evening trade has been slow since the summer, and hope that a shared effort will show customers the hill is open after six.</p>
+        <p>Hill Street Kitchen, one of the businesses taking part, will run a set Christmas menu on the late nights. Letting agents and other services on the hill have also agreed to keep their offices open to support the scheme.</p>
+        <p>Traders have asked the council to look at evening parking on the nights involved.</p>
+
+        <div class="ad-slot">Ad slot (Ad Inserter, unchanged)</div>
+
+        <p>Traders say they will review the scheme in January and may repeat it for the summer holidays if it works.</p>
+        <p>Do you run a business taking part? Tell us at <a href="mailto:news@harrowonline.org">news@harrowonline.org</a>.</p>
+
+        <div class="ad-slot">Ad slot (Ad Inserter, unchanged)</div>
+        <!-- the_content ends. Ad Inserter runs on the_content at priority 99 or below; nothing above this line changes. -->
+      </div>
+
+      <!-- NEW: renders after the_content at priority > 99 (or in the template after the content), so ad positions stay identical (brief 01, 6.14a) -->
+      <aside class="support-box" aria-labelledby="support-title">
+        <span class="support-box__icon"><svg class="ho-icon"><use href="#i-heart"/></svg></span>
+        <div>
+          <h2 id="support-title">Enjoy reading Harrow Online?</h2>
+          <p>Support independent local journalism from &pound;5 a month. No account needed.</p>
+        </div>
+        <a class="ho-btn ho-btn--primary" href="/news-support.html">Support us</a>
+      </aside>
+
+      <!-- NEW: "Businesses mentioned" (brief 01, 6.13). Editors pick Hub listings on the post edit screen; data from the cached Hub feed.
+           Renders after the_content priority > 99 / in template after content. Hidden if none picked or the Hub feed is unavailable. -->
+      <section class="mentioned" aria-labelledby="mentioned-title">
+        <h2 id="mentioned-title">Businesses mentioned</h2>
+        <div class="mentioned__list">
+          <div class="mentioned__item">
+            <span class="mono mono--sm" aria-hidden="true">HS</span>
+            <div><a href="/sample-premium.html">Hill Street Kitchen</a><span>Restaurant &middot; Harrow on the Hill</span></div>
+          </div>
+          <div class="mentioned__item">
+            <span class="mono mono--sm mono--soft" aria-hidden="true">1S</span>
+            <div><a href="/business/1-stop-letting-solutions-west-harrow.html">1 Stop Letting Solutions</a><span>Cleaning, laundry and hire &middot; West Harrow</span></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- NEW: automatic related stories (brief 01, 6.14c). Same area first, then same category, favouring recent; editor override wins.
+           Renders after the_content priority > 99 / in template after content. Cached per post (transient), cleared on update. Replaces the manual picks. -->
+      <section class="mt-6" aria-labelledby="related-title">
+        <h2 class="sec-title mb-4" id="related-title">More from Harrow on the Hill</h2>
+        <div class="news-link">
+          <div class="ph"><svg class="ho-icon"><use href="#i-news"/></svg></div>
+          <div>
+            <span class="news-link__cat">Community</span>
+            <h3 class="news-link__title"><a href="/news-article.html">Christmas lights switch-on returns to Harrow on the Hill green</a></h3>
+            <p class="news-link__date">6 November 2026</p>
+          </div>
+        </div>
+        <div class="news-link">
+          <div class="ph"><svg class="ho-icon"><use href="#i-news"/></svg></div>
+          <div>
+            <span class="news-link__cat">Business</span>
+            <h3 class="news-link__title"><a href="/news-article.html">New bakery opens on West Street after two-year wait</a></h3>
+            <p class="news-link__date">29 October 2026</p>
+          </div>
+        </div>
+        <p class="help mt-4">Chosen automatically: stories from the same area first, then the same category. Editors can pick two stories instead on the post edit screen.</p>
+      </section>
+
+      <!-- Newsletter sign-up (existing Beehiiv form, brief 02). signup_source=article-inline -->
+      <section class="ho-nl" aria-label="Newsletter sign-up">
+        <div>
+          <p class="ho-nl__title">Get Harrow&rsquo;s news every morning</p>
+          <p class="ho-nl__text">The day&rsquo;s local stories, what&rsquo;s on and Local Offers. Free from Harrow Online Newsletter.</p>
+        </div>
+        <form class="ho-nl__form" action="https://harrowonline.org/wp-json/ho/v1/subscribe" method="post" data-nl-form>
+          <input type="hidden" name="signup_source" value="article-inline">
+          <label class="ho-sr" for="art-nl-email">Email address</label>
+          <input class="ho-nl__input" id="art-nl-email" type="email" name="email" placeholder="Your email address" autocomplete="email" required>
+          <button class="ho-btn ho-btn--on-red ho-nl__btn" type="submit">Sign up free</button>
+          <fieldset class="ho-nl__editions">
+            <legend class="ho-sr">Editions</legend>
+            <label><input type="checkbox" name="editions[]" value="daily" checked> Daily</label>
+            <label><input type="checkbox" name="editions[]" value="weekend"> The Weekend (Thu)</label>
+            <label><input type="checkbox" name="editions[]" value="business"> Harrow Business (Mon)</label>
+          </fieldset>
+          <p class="ho-nl__msg" role="status" aria-live="polite"></p>
+        </form>
+      </section>
+    </article>
+
+    <aside class="stack" aria-label="Sidebar">
+      <!-- Existing Newspaper theme sidebar: unchanged -->
+      <div class="ad-slot">Sidebar ad slot (unchanged)</div>
+      <div class="panel">
+        <h2 class="panel__title">Latest news</h2>
+        <div class="news-link">
+          <div class="ph"><svg class="ho-icon"><use href="#i-news"/></svg></div>
+          <div><h3 class="news-link__title"><a href="/news-article.html">Council confirms new bin collection days from January</a></h3><p class="news-link__date">10 November 2026</p></div>
+        </div>
+        <div class="news-link">
+          <div class="ph"><svg class="ho-icon"><use href="#i-news"/></svg></div>
+          <div><h3 class="news-link__title"><a href="/news-article.html">Wealdstone fireworks draw record crowd</a></h3><p class="news-link__date">8 November 2026</p></div>
+        </div>
+      </div>
+    </aside>
+  </div>
+</div>

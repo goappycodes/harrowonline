@@ -1,0 +1,142 @@
+<!--
+title: Newsletter and promotions
+description: Your Harrow Online Newsletter sponsor bookings and featured items.
+body: is-logged-in
+hubnav: account
+robots: noindex, nofollow
+nl: off
+css: hub-c
+-->
+<div class="ho-container dash">
+  <aside class="dash-nav" aria-label="Account">
+    <div class="dash-nav__who">
+      <span class="mono mono--sm" aria-hidden="true">SR</span>
+      <div><strong>Station Road Barbers</strong><span>Enhanced plan</span></div>
+    </div>
+    <ul>
+      <li><a href="/account.html"><svg class="ho-icon"><use href="#i-home"/></svg>Overview</a></li>
+      <li><a href="/account-listings.html"><svg class="ho-icon"><use href="#i-store"/></svg>My listings</a></li>
+      <li><a href="/account-billing.html"><svg class="ho-icon"><use href="#i-card"/></svg>Plan and billing</a></li>
+      <li><a href="/account-offers.html"><svg class="ho-icon"><use href="#i-tag"/></svg>Offers<span class="num">1<span class="ho-sr"> offer needs changes</span></span></a></li>
+      <li><a href="/account-events.html"><svg class="ho-icon"><use href="#i-calendar"/></svg>Events and classes</a></li>
+      <li><a href="/account-bookings.html" aria-current="page"><svg class="ho-icon"><use href="#i-megaphone"/></svg>Newsletter and promotions</a></li>
+      <li><a href="/account-settings.html"><svg class="ho-icon"><use href="#i-settings"/></svg>Settings</a></li>
+    </ul>
+    <hr>
+    <ul>
+      <li><a href="/sign-in.html"><svg class="ho-icon"><use href="#i-logout"/></svg>Sign out</a></li>
+    </ul>
+  </aside>
+
+  <div class="dash-main">
+    <div class="dash-head">
+      <div>
+        <h1>Newsletter and promotions</h1>
+        <p>Sponsor slots in Harrow Online Newsletter, and offers or events you&rsquo;ve paid to feature.</p>
+      </div>
+      <a class="ho-btn ho-btn--primary" href="/advertise-newsletter.html"><svg class="ho-icon"><use href="#i-megaphone"/></svg>Book a sponsor slot</a>
+    </div>
+
+    <section aria-labelledby="sp-title">
+      <h2 class="sec-title mb-4" id="sp-title">Sponsor bookings</h2>
+      <div class="table-wrap">
+        <table class="table table--stack">
+          <thead>
+            <tr><th scope="col">Edition</th><th scope="col">Dates</th><th scope="col">Your advert</th><th scope="col">Amount</th><th scope="col"><span class="ho-sr">Actions</span></th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>
+                <div class="table__item">
+                  <span class="mono mono--sm mono--red" aria-hidden="true"><svg class="ho-icon"><use href="#i-mail"/></svg></span>
+                  <div><strong>Daily</strong><span>&ldquo;Presented by&rdquo; slot, Monday to Friday</span></div>
+                </div>
+              </td>
+              <td data-label="Dates">Mon 30 Nov to Fri 4 Dec 2026</td>
+              <td data-label="Your advert"><span class="status status--pending">In review</span><p class="help mt-2">We check every advert before it goes out.</p></td>
+              <td data-label="Amount">&pound;180.00</td>
+              <td><div class="table__actions"><a class="ho-btn ho-btn--sm ho-btn--outline" href="/advertise-newsletter.html"><svg class="ho-icon"><use href="#i-edit"/></svg>Edit advert</a></div></td>
+            </tr>
+            <tr>
+              <td>
+                <div class="table__item">
+                  <span class="mono mono--sm" aria-hidden="true"><svg class="ho-icon"><use href="#i-calendar"/></svg></span>
+                  <div><strong>The Weekend</strong><span>&ldquo;Presented by&rdquo; slot, 1 day</span></div>
+                </div>
+              </td>
+              <td data-label="Dates">Thu 3 Dec 2026</td>
+              <td data-label="Your advert"><span class="status status--published">Approved</span></td>
+              <td data-label="Amount">&pound;60.00</td>
+              <td><div class="table__actions"><a class="ho-btn ho-btn--sm ho-btn--ghost" href="#invoice-pdf"><svg class="ho-icon"><use href="#i-download"/></svg>Receipt</a></div></td>
+            </tr>
+            <tr>
+              <td>
+                <div class="table__item">
+                  <span class="mono mono--sm mono--soft" aria-hidden="true"><svg class="ho-icon"><use href="#i-briefcase"/></svg></span>
+                  <div><strong>Harrow Business</strong><span>&ldquo;Presented by&rdquo; slot, 1 day</span></div>
+                </div>
+              </td>
+              <td data-label="Dates">Mon 26 Oct 2026</td>
+              <td data-label="Your advert">
+                <span class="status status--rejected">Rejected, refunded</span>
+                <p class="reason"><strong>Note from our team:</strong> The logo was too small to read. We&rsquo;ve refunded &pound;50.00 to your card.</p>
+              </td>
+              <td data-label="Amount"><s>&pound;50.00</s></td>
+              <td><div class="table__actions"><a class="ho-btn ho-btn--sm ho-btn--ghost" href="/advertise-newsletter.html">Book again</a></div></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <p class="help mt-2">Your advert goes into the right issues automatically. If we can&rsquo;t approve it, we&rsquo;ll tell you why and refund you in full.</p>
+      <!-- WP: from the sponsor inventory table (edition + date unique). Creative status: In review / Approved / Rejected (admin reject triggers a Stripe refund). -->
+    </section>
+
+    <section class="mt-6" aria-labelledby="ft-title">
+      <h2 class="sec-title mb-4" id="ft-title">Featured offers and events</h2>
+      <div class="table-wrap">
+        <table class="table table--stack">
+          <thead>
+            <tr><th scope="col">Item</th><th scope="col">Featured</th><th scope="col">Amount</th><th scope="col">Status</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><div class="table__item"><div class="ph"><svg class="ho-icon"><use href="#i-tag"/></svg></div><div><strong>&pound;5 off a skin fade</strong><span>Offer</span></div></div></td>
+              <td data-label="Featured">11 Nov to 18 Nov 2026</td>
+              <td data-label="Amount">&pound;15.00</td>
+              <td data-label="Status"><span class="status status--active">Active</span></td>
+            </tr>
+            <tr>
+              <td><div class="table__item"><div class="ph"><svg class="ho-icon"><use href="#i-repeat"/></svg></div><div><strong>Barbering taster class</strong><span>Weekly class</span></div></div></td>
+              <td data-label="Featured">9 Nov to 16 Nov 2026</td>
+              <td data-label="Amount">&pound;15.00</td>
+              <td data-label="Status"><span class="status status--active">Active</span></td>
+            </tr>
+            <tr>
+              <td><div class="table__item"><div class="ph"><svg class="ho-icon"><use href="#i-party"/></svg></div><div><strong>Halloween kids&rsquo; cuts</strong><span>Event</span></div></div></td>
+              <td data-label="Featured">24 Oct to 31 Oct 2026</td>
+              <td data-label="Amount">&pound;15.00</td>
+              <td data-label="Status"><span class="status status--ended">Expired</span></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <p class="help mt-2">Feature an offer or event from <a href="/account-offers.html">Offers</a> or <a href="/account-events.html">Events and classes</a>. The Featured label comes off by itself when the paid period, the offer or the event ends.</p>
+    </section>
+
+    <section class="panel panel--dark mt-6" aria-labelledby="botw-title">
+      <span class="botw"><svg class="ho-icon"><use href="#i-star"/></svg>Business of the Week</span>
+      <h2 class="mt-4" id="botw-title">Get featured in the newsletter every few weeks</h2>
+      <p>Premium and Local Partner members take turns as Business of the Week. For a whole week your photo, a short description, your current offer and a link to your listing go out in the Daily and Harrow Business editions.</p>
+      <ul class="ticks small">
+        <li>Rotation is fair: whoever was featured longest ago goes next</li>
+        <li>Your listing needs a description and at least one photo (yours already has both)</li>
+        <li>No extra cost on Premium and Local Partner</li>
+      </ul>
+      <div class="cluster mt-4">
+        <a class="ho-btn ho-btn--primary" href="#stripe-portal">Upgrade to Premium</a>
+        <a class="ho-btn ho-btn--outline" href="/pricing.html">Compare plans</a>
+      </div>
+      <p class="help mt-4">You&rsquo;re on Enhanced. Business of the Week is part of Premium and Local Partner.</p>
+    </section>
+  </div>
+</div>

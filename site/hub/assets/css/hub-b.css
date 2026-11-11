@@ -47,3 +47,7 @@
 /* 404 */
 .big-404 + h1 { margin-top: var(--ho-s3); }
 .searchbar--center { margin: var(--ho-s5) auto 0; text-align: left; }
+
+/* Choice cards built from spans (labels may only hold phrasing content) */
+.choice span.choice__text { display: block; }
+.choice .choice__text strong { color: var(--ho-ink); }

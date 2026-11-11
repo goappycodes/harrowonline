@@ -143,7 +143,7 @@ def load_listings():
             "postcode": r["pc"],
             "phone": [phone_display(p) for p in r["ph"]],
             "phone_raw": [re.sub(r"[^\d+]", "", p) for p in r["ph"]],
-            "web": r["w"],
+            "web": [w if re.match(r"https?://", w) else "https://" + w.lstrip("/") for w in r["w"]],
             "email": r["e"],
             "social": r["so"],
             "lat": r["lat"],

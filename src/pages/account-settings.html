@@ -1,0 +1,125 @@
+<!--
+title: Account settings
+description: Your Harrow Online Hub account settings.
+body: is-logged-in
+hubnav: account
+robots: noindex, nofollow
+nl: off
+css: hub-c
+-->
+<div class="ho-container dash">
+  <aside class="dash-nav" aria-label="Account">
+    <div class="dash-nav__who">
+      <span class="mono mono--sm" aria-hidden="true">SR</span>
+      <div><strong>Station Road Barbers</strong><span>Enhanced plan</span></div>
+    </div>
+    <ul>
+      <li><a href="/account.html"><svg class="ho-icon"><use href="#i-home"/></svg>Overview</a></li>
+      <li><a href="/account-listings.html"><svg class="ho-icon"><use href="#i-store"/></svg>My listings</a></li>
+      <li><a href="/account-billing.html"><svg class="ho-icon"><use href="#i-card"/></svg>Plan and billing</a></li>
+      <li><a href="/account-offers.html"><svg class="ho-icon"><use href="#i-tag"/></svg>Offers<span class="num">1<span class="ho-sr"> offer needs changes</span></span></a></li>
+      <li><a href="/account-events.html"><svg class="ho-icon"><use href="#i-calendar"/></svg>Events and classes</a></li>
+      <li><a href="/account-bookings.html"><svg class="ho-icon"><use href="#i-megaphone"/></svg>Newsletter and promotions</a></li>
+      <li><a href="/account-settings.html" aria-current="page"><svg class="ho-icon"><use href="#i-settings"/></svg>Settings</a></li>
+    </ul>
+    <hr>
+    <ul>
+      <li><a href="/sign-in.html"><svg class="ho-icon"><use href="#i-logout"/></svg>Sign out</a></li>
+    </ul>
+  </aside>
+
+  <div class="dash-main">
+    <div class="dash-head">
+      <div>
+        <h1>Settings</h1>
+        <p>Your login details, emails and newsletter choices.</p>
+      </div>
+    </div>
+
+    <form class="form-card" action="#" method="post">
+      <h2 class="form-card__title">Your details</h2>
+      <p class="form-card__sub">Used for your login and for emails about your account. Not shown on your listing.</p>
+      <div class="stack">
+        <div class="row row-2">
+          <div class="field">
+            <label for="st-name">Your name</label>
+            <input class="input" id="st-name" type="text" name="name" value="Sam Reid" autocomplete="name">
+          </div>
+          <div class="field">
+            <label for="st-email">Email address</label>
+            <input class="input" id="st-email" type="email" name="email" value="sam@stationroadbarbers.co.uk" autocomplete="email" aria-describedby="st-email-help">
+            <p class="help" id="st-email-help">If you change it, we&rsquo;ll send a link to the new address to confirm.</p>
+          </div>
+        </div>
+        <div class="form-actions"><button class="ho-btn ho-btn--primary" type="submit">Save details</button></div>
+      </div>
+    </form>
+
+    <form class="form-card" action="#" method="post">
+      <h2 class="form-card__title">Change password</h2>
+      <p class="form-card__sub">At least 10 characters. You&rsquo;ll stay signed in on this device.</p>
+      <div class="stack">
+        <div class="field">
+          <label for="st-cur">Current password</label>
+          <input class="input" id="st-cur" type="password" name="current_password" autocomplete="current-password">
+        </div>
+        <div class="row row-2">
+          <div class="field">
+            <label for="st-new">New password</label>
+            <input class="input" id="st-new" type="password" name="new_password" minlength="10" autocomplete="new-password">
+          </div>
+          <div class="field">
+            <label for="st-new2">Confirm new password</label>
+            <input class="input" id="st-new2" type="password" name="new_password_2" minlength="10" autocomplete="new-password">
+          </div>
+        </div>
+        <div class="form-actions"><button class="ho-btn ho-btn--primary" type="submit">Change password</button></div>
+      </div>
+    </form>
+
+    <form class="form-card" action="#" method="post">
+      <h2 class="form-card__title">Email notifications</h2>
+      <p class="form-card__sub">Emails we send about your listing, offers and events.</p>
+      <div class="stack">
+        <label class="check"><input type="checkbox" name="notify[approved]" value="1" checked> <span>Approvals<small>When an offer, event, class or claim is approved</small></span></label>
+        <label class="check"><input type="checkbox" name="notify[rejected]" value="1" checked> <span>Changes needed<small>When something isn&rsquo;t approved, with our note on what to change</small></span></label>
+        <label class="check"><input type="checkbox" name="notify[ended]" value="1" checked> <span>Reminders<small>A few days before an offer ends or a featured spot runs out</small></span></label>
+        <label class="check"><input type="checkbox" checked disabled> <span>Receipts and billing<small>Always on. Payment receipts, failed payments and plan changes.</small></span></label>
+        <div class="form-actions"><button class="ho-btn ho-btn--primary" type="submit">Save notifications</button></div>
+      </div>
+    </form>
+
+    <form class="form-card" action="#" method="post">
+      <h2 class="form-card__title">Harrow Online Newsletter</h2>
+      <p class="form-card__sub">Free editions sent to sam@stationroadbarbers.co.uk. Untick all three to unsubscribe.</p>
+      <!-- WP: read and update the Beehiiv subscriber's edition custom fields (brief 02 N3) -->
+      <fieldset class="fieldset">
+        <legend class="ho-sr">Editions</legend>
+        <div class="stack">
+          <label class="check"><input type="checkbox" name="editions[]" value="daily" checked> <span>Daily<small>Every morning: the day&rsquo;s Harrow news, what&rsquo;s on and offers</small></span></label>
+          <label class="check"><input type="checkbox" name="editions[]" value="weekend"> <span>The Weekend<small>Thursdays: what&rsquo;s on in Harrow this weekend</small></span></label>
+          <label class="check"><input type="checkbox" name="editions[]" value="business" checked> <span>Harrow Business<small>Mondays: local business news, openings and new Hub members</small></span></label>
+        </div>
+      </fieldset>
+      <div class="form-actions mt-4"><button class="ho-btn ho-btn--primary" type="submit">Save newsletter choices</button></div>
+    </form>
+
+    <section class="form-card" aria-labelledby="close-title">
+      <h2 class="form-card__title" id="close-title">Close your account</h2>
+      <p class="form-card__sub">This can&rsquo;t be undone.</p>
+      <ul class="ticks ticks--dark small">
+        <li>Your listings go back to unclaimed. The business details stay on the Hub, but your photos, offers and events are removed.</li>
+        <li>Cancel your Enhanced plan in <a href="#stripe-portal">Manage billing</a> first. We can&rsquo;t close an account with an active plan.</li>
+        <li>Your newsletter subscription isn&rsquo;t affected. Change it above.</li>
+      </ul>
+      <div class="notice notice--warn mt-4">
+        <svg class="ho-icon"><use href="#i-alert"/></svg>
+        <p>You have an active Enhanced plan. Cancel it before closing your account.</p>
+      </div>
+      <div class="form-actions mt-4">
+        <button class="ho-btn ho-btn--outline is-disabled" type="button" disabled>Close my account</button>
+        <a class="link-quiet" href="https://harrowonline.org/contact-us/">Need help? Contact us</a>
+      </div>
+    </section>
+  </div>
+</div>

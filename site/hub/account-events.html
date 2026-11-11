@@ -130,7 +130,25 @@
 
 <main id="main">
 <div class="ho-container dash">
-<!--@dashnav:events-->
+  <aside class="dash-nav" aria-label="Account">
+    <div class="dash-nav__who">
+      <span class="mono mono--sm" aria-hidden="true">SR</span>
+      <div><strong>Station Road Barbers</strong><span>Enhanced plan</span></div>
+    </div>
+    <ul>
+      <li><a href="/hub/account.html"><svg class="ho-icon"><use href="/hub/assets/img/icons.svg#i-home"/></svg>Overview</a></li>
+      <li><a href="/hub/account-listings.html"><svg class="ho-icon"><use href="/hub/assets/img/icons.svg#i-store"/></svg>My listings</a></li>
+      <li><a href="/hub/account-billing.html"><svg class="ho-icon"><use href="/hub/assets/img/icons.svg#i-card"/></svg>Plan and billing</a></li>
+      <li><a href="/hub/account-offers.html"><svg class="ho-icon"><use href="/hub/assets/img/icons.svg#i-tag"/></svg>Offers<span class="num">1<span class="ho-sr"> offer needs changes</span></span></a></li>
+      <li><a href="/hub/account-events.html" aria-current="page"><svg class="ho-icon"><use href="/hub/assets/img/icons.svg#i-calendar"/></svg>Events and classes</a></li>
+      <li><a href="/hub/account-bookings.html"><svg class="ho-icon"><use href="/hub/assets/img/icons.svg#i-megaphone"/></svg>Newsletter and promotions</a></li>
+      <li><a href="/hub/account-settings.html"><svg class="ho-icon"><use href="/hub/assets/img/icons.svg#i-settings"/></svg>Settings</a></li>
+    </ul>
+    <hr>
+    <ul>
+      <li><a href="/hub/sign-in.html"><svg class="ho-icon"><use href="/hub/assets/img/icons.svg#i-logout"/></svg>Sign out</a></li>
+    </ul>
+  </aside>
 
   <div class="dash-main">
     <div class="dash-head">
@@ -166,12 +184,12 @@
             <td>
               <div class="table__item">
                 <div class="ph"><svg class="ho-icon"><use href="/hub/assets/img/icons.svg#i-repeat"/></svg></div>
-                <div><strong>Barbering taster class</strong><span><span class="badge badge--outline">Weekly class</span> Tuesdays 6.30pm to 8pm</span></div>
+                <div><strong>Barbering taster class</strong><span><span class="badge badge--outline">Weekly class</span> Tue 6.30pm, Sat 4pm</span></div>
               </div>
             </td>
             <td data-label="Status"><span class="status status--published">Published</span></td>
-            <td data-label="Next date">Tue 17 Nov, 6.30pm</td>
-            <td data-label="Featured"><span class="badge badge--featured">Until 24 Nov</span></td>
+            <td data-label="Next date">Sat 14 Nov, 4pm</td>
+            <td data-label="Featured"><span class="badge badge--featured">Until 16 Nov</span></td>
             <td>
               <div class="table__actions">
                 <a class="ho-btn ho-btn--sm ho-btn--outline" href="/hub/account-event-edit.html"><svg class="ho-icon"><use href="/hub/assets/img/icons.svg#i-edit"/></svg>Edit</a>

@@ -130,7 +130,25 @@
 
 <main id="main">
 <div class="ho-container dash">
-<!--@dashnav:overview-->
+  <aside class="dash-nav" aria-label="Account">
+    <div class="dash-nav__who">
+      <span class="mono mono--sm" aria-hidden="true">SR</span>
+      <div><strong>Station Road Barbers</strong><span>Enhanced plan</span></div>
+    </div>
+    <ul>
+      <li><a href="/hub/account.html" aria-current="page"><svg class="ho-icon"><use href="/hub/assets/img/icons.svg#i-home"/></svg>Overview</a></li>
+      <li><a href="/hub/account-listings.html"><svg class="ho-icon"><use href="/hub/assets/img/icons.svg#i-store"/></svg>My listings</a></li>
+      <li><a href="/hub/account-billing.html"><svg class="ho-icon"><use href="/hub/assets/img/icons.svg#i-card"/></svg>Plan and billing</a></li>
+      <li><a href="/hub/account-offers.html"><svg class="ho-icon"><use href="/hub/assets/img/icons.svg#i-tag"/></svg>Offers<span class="num">1<span class="ho-sr"> offer needs changes</span></span></a></li>
+      <li><a href="/hub/account-events.html"><svg class="ho-icon"><use href="/hub/assets/img/icons.svg#i-calendar"/></svg>Events and classes</a></li>
+      <li><a href="/hub/account-bookings.html"><svg class="ho-icon"><use href="/hub/assets/img/icons.svg#i-megaphone"/></svg>Newsletter and promotions</a></li>
+      <li><a href="/hub/account-settings.html"><svg class="ho-icon"><use href="/hub/assets/img/icons.svg#i-settings"/></svg>Settings</a></li>
+    </ul>
+    <hr>
+    <ul>
+      <li><a href="/hub/sign-in.html"><svg class="ho-icon"><use href="/hub/assets/img/icons.svg#i-logout"/></svg>Sign out</a></li>
+    </ul>
+  </aside>
 
   <div class="dash-main">
     <div class="dash-head">
@@ -155,15 +173,15 @@
     <div class="grid grid-2">
       <section class="panel" aria-labelledby="todo-title">
         <h2 class="panel__title" id="todo-title">Get the most from your listing</h2>
-        <p class="small muted">4 of 6 done</p>
-        <div class="usage mb-4"><div class="usage__bar"><i style="width:67%"></i></div></div>
+        <p class="small muted">5 of 6 done</p>
+        <div class="usage mb-4"><div class="usage__bar"><i style="width:83%"></i></div></div>
         <ul class="todo">
           <li class="is-done"><span class="tick"><svg class="ho-icon"><use href="/hub/assets/img/icons.svg#i-check"/></svg></span><span>Claim your listing</span></li>
           <li class="is-done"><span class="tick"><svg class="ho-icon"><use href="/hub/assets/img/icons.svg#i-check"/></svg></span><span>Add a description</span></li>
           <li><span class="tick"></span><span>Add photos <span class="muted small">(3 of 5)</span></span><a href="/hub/account-listing-edit.html#photos">Add photos</a></li>
           <li class="is-done"><span class="tick"><svg class="ho-icon"><use href="/hub/assets/img/icons.svg#i-check"/></svg></span><span>Add opening hours</span></li>
           <li class="is-done"><span class="tick"><svg class="ho-icon"><use href="/hub/assets/img/icons.svg#i-check"/></svg></span><span>Post your first offer</span></li>
-          <li><span class="tick"></span><span>Post your first event or class</span><a href="/hub/account-event-edit.html">Add an event</a></li>
+          <li class="is-done"><span class="tick"><svg class="ho-icon"><use href="/hub/assets/img/icons.svg#i-check"/></svg></span><span>Post your first event or class</span></li>
         </ul>
       </section>
 
@@ -175,11 +193,12 @@
             <p class="mb-0 small">&pound;19 a month. Renews on 2 December 2026.</p>
           </div>
           <div class="plan-card__actions">
-            <a class="ho-btn ho-btn--primary ho-btn--sm" href="#stripe-checkout">Upgrade to Premium</a>
+            <a class="ho-btn ho-btn--primary ho-btn--sm" href="#stripe-portal">Upgrade to Premium</a>
             <a class="ho-btn ho-btn--outline ho-btn--sm" href="#stripe-portal">Manage billing</a>
           </div>
         </section>
-        <!-- WP: #stripe-checkout = create a Stripe Checkout Session for the Premium price, then redirect. #stripe-portal = create a Customer Portal session, then redirect. -->
+        <!-- WP: this owner already has a subscription, so "Upgrade" opens the Customer Portal subscription-update flow (prorated).
+             A listing on Basic (no subscription) shows "Upgrade" as #stripe-checkout: create a Checkout Session for the chosen Price ID, then redirect. -->
 
         <section class="panel" aria-labelledby="usage-title">
           <h2 class="panel__title" id="usage-title">Your plan this month</h2>

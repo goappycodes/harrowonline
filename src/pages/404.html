@@ -1,0 +1,50 @@
+<!--
+title: Page not found
+description: Sorry, we couldn't find that page on Harrow Online Hub. Search for a local business or browse popular categories.
+nav: hub
+robots: noindex
+css: hub-b
+body: page-404
+-->
+<section class="section">
+  <div class="ho-container ho-container--narrow center">
+    <p class="big-404" aria-hidden="true">404</p>
+    <h1>Sorry, we can&rsquo;t find that page</h1>
+    <p class="page-head__lead" style="margin:0 auto">It may have moved, or the event or offer may have ended. Try a search, or pick a category below.</p>
+
+    <form class="searchbar searchbar--inline searchbar--center" action="/search.html" method="get" role="search">
+      <div class="searchbar__field">
+        <svg class="ho-icon"><use href="#i-search"/></svg>
+        <label class="ho-sr" for="nf-q">What are you looking for?</label>
+        <input id="nf-q" type="search" name="q" placeholder="Plumber, Indian restaurant, dentist&hellip;" autocomplete="off">
+      </div>
+      <div class="searchbar__field">
+        <svg class="ho-icon"><use href="#i-pin"/></svg>
+        <label class="ho-sr" for="nf-area">Area</label>
+        <select id="nf-area" name="area"><option value="">All of Harrow</option>{{> gen-area-options}}</select>
+      </div>
+      <button class="ho-btn ho-btn--primary" type="submit">Search</button>
+    </form>
+  </div>
+
+  <div class="ho-container ho-container--mid mt-7">
+    <h2 class="sec-title mb-5">Popular categories</h2>
+    <div class="grid grid-4">
+      <a class="tile" href="/category/restaurants.html"><span class="tile__icon"><svg class="ho-icon"><use href="#i-food"/></svg></span><span class="tile__name">Restaurants</span></a>
+      <a class="tile" href="/category/hair-and-beauty.html"><span class="tile__icon"><svg class="ho-icon"><use href="#i-scissors"/></svg></span><span class="tile__name">Hair and beauty</span></a>
+      <a class="tile" href="/category/trades-and-home-services.html"><span class="tile__icon"><svg class="ho-icon"><use href="#i-wrench"/></svg></span><span class="tile__name">Trades and home services</span></a>
+      <a class="tile" href="/category/doctors-dentists-and-clinics.html"><span class="tile__icon"><svg class="ho-icon"><use href="#i-medical"/></svg></span><span class="tile__name">Doctors, dentists and clinics</span></a>
+      <a class="tile" href="/category/cafes-and-takeaways.html"><span class="tile__icon"><svg class="ho-icon"><use href="#i-cup"/></svg></span><span class="tile__name">Cafés and takeaways</span></a>
+      <a class="tile" href="/category/motoring.html"><span class="tile__icon"><svg class="ho-icon"><use href="#i-car"/></svg></span><span class="tile__name">Motoring</span></a>
+      <a class="tile" href="/category/sport-and-fitness.html"><span class="tile__icon"><svg class="ho-icon"><use href="#i-dumbbell"/></svg></span><span class="tile__name">Sport and fitness</span></a>
+      <a class="tile" href="/category/food-shops-and-groceries.html"><span class="tile__icon"><svg class="ho-icon"><use href="#i-cart"/></svg></span><span class="tile__name">Food shops and groceries</span></a>
+    </div>
+
+    <div class="cluster cluster--lg mt-6" style="justify-content:center">
+      <a class="link-arrow" href="/">Hub homepage <svg class="ho-icon"><use href="#i-arrow"/></svg></a>
+      <a class="link-arrow" href="/events.html">What&rsquo;s On <svg class="ho-icon"><use href="#i-arrow"/></svg></a>
+      <a class="link-arrow" href="/offers.html">Local Offers <svg class="ho-icon"><use href="#i-arrow"/></svg></a>
+      <a class="link-arrow" href="https://harrowonline.org/">Latest Harrow news <svg class="ho-icon"><use href="#i-arrow"/></svg></a>
+    </div>
+  </div>
+</section>

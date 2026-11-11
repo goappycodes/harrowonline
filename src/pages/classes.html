@@ -1,0 +1,201 @@
+<!--
+title: Classes and activities in Harrow: kids' clubs, fitness, dance and workshops
+description: Weekly classes and activities across Harrow: children's clubs, fitness classes, dance schools, workshops and evening courses. Filter by age, area and day.
+nav: classes
+hubnav: events
+css: hub-b
+body: page-classes
+-->
+<nav class="crumbs ho-container" aria-label="Breadcrumb">
+  <ol><li><a href="/">Hub</a></li><li><a href="/events.html">What&rsquo;s On</a></li><li><span aria-current="page">Classes and activities</span></li></ol>
+</nav>
+
+<header class="page-head ho-container">
+  <h1 class="page-head__title">Classes and activities</h1>
+  <p class="page-head__lead">Regular classes that run every week across Harrow: kids&rsquo; clubs, fitness, dance schools, workshops and evening courses. Each class has one page that the provider keeps up to date.</p>
+</header>
+
+<div class="ho-container">
+  <div class="chips chips--scroll mb-4" aria-label="Class type">
+    <a class="chip" href="/classes.html" aria-current="page">All classes <span class="count">11</span></a>
+    <a class="chip" href="/classes.html?type=childrens-activities">Children&rsquo;s activities <span class="count">3</span></a>
+    <a class="chip" href="/classes.html?type=fitness">Fitness <span class="count">4</span></a>
+    <a class="chip" href="/classes.html?type=dance-schools">Dance schools <span class="count">2</span></a>
+    <a class="chip" href="/classes.html?type=workshops">Workshops <span class="count">1</span></a>
+    <a class="chip" href="/classes.html?type=other">Other regular classes <span class="count">1</span></a>
+  </div>
+
+  <form class="filter-bar" action="/classes.html" method="get" aria-label="Filter classes">
+    <div class="field">
+      <label for="c-age">Age</label>
+      <select class="select select--sm" id="c-age" name="age">
+        <option value="">Any age</option>
+        <option value="under-5">Under 5s</option>
+        <option value="5-11">5 to 11</option>
+        <option value="12-17">12 to 17</option>
+        <option value="adults">Adults</option>
+        <option value="60-plus">Over 60s</option>
+      </select>
+    </div>
+    <div class="field">
+      <label for="c-area">Area</label>
+      <select class="select select--sm" id="c-area" name="area"><option value="">All of Harrow</option>{{> gen-area-options}}</select>
+    </div>
+    <div class="field">
+      <label for="c-day">Day of the week</label>
+      <select class="select select--sm" id="c-day" name="day">
+        <option value="">Any day</option>
+        <option value="mon">Monday</option>
+        <option value="tue">Tuesday</option>
+        <option value="wed">Wednesday</option>
+        <option value="thu">Thursday</option>
+        <option value="fri">Friday</option>
+        <option value="sat">Saturday</option>
+        <option value="sun">Sunday</option>
+      </select>
+    </div>
+    <button class="ho-btn ho-btn--dark ho-btn--sm" type="submit">Show classes</button>
+  </form>
+
+  <div class="toolbar mt-6">
+    <p class="toolbar__count"><strong>11</strong> classes and activities</p>
+    <a class="link-quiet" href="/events.html">See one-off events in What&rsquo;s On</a>
+  </div>
+
+  <div class="grid grid-3">
+      <article class="card event-card card--featured">
+        <div class="card__badges"><span class="badge badge--featured"><svg class="ho-icon"><use href="#i-star"/></svg>Featured</span></div>
+        <div class="ph ph--dark"><svg class="ho-icon"><use href="#i-dumbbell"/></svg></div>
+        <div class="card__body">
+          <span class="biz-card__cat">Fitness</span>
+          <h3 class="card__title"><a href="/class.html">Weekend Bootcamp</a></h3>
+          <p class="card__meta"><span><svg class="ho-icon"><use href="#i-repeat"/></svg>Every Saturday, 9am</span><span><svg class="ho-icon"><use href="#i-pin"/></svg>Wealdstone</span></p>
+          <p class="card__meta"><span><svg class="ho-icon"><use href="#i-people"/></svg>Adults</span><span><svg class="ho-icon"><use href="#i-ticket"/></svg>&pound;10</span></p>
+          <p class="card__text">Circuits for every fitness level. First session free.</p>
+          <p class="card__meta mt-2"><span><svg class="ho-icon"><use href="#i-store"/></svg>Wealdstone Fitness Studio</span></p>
+        </div>
+      </article>
+      <article class="card event-card card--featured">
+        <div class="card__badges"><span class="badge badge--featured"><svg class="ho-icon"><use href="#i-star"/></svg>Featured</span></div>
+        <div class="ph ph--dark"><svg class="ho-icon"><use href="#i-dumbbell"/></svg></div>
+        <div class="card__body">
+          <span class="biz-card__cat">Fitness</span>
+          <h3 class="card__title"><a href="/class.html">Evening Yoga Flow</a></h3>
+          <p class="card__meta"><span><svg class="ho-icon"><use href="#i-repeat"/></svg>Every Friday, 6.30pm</span><span><svg class="ho-icon"><use href="#i-pin"/></svg>Wealdstone</span></p>
+          <p class="card__meta"><span><svg class="ho-icon"><use href="#i-people"/></svg>Adults</span><span><svg class="ho-icon"><use href="#i-ticket"/></svg>&pound;10</span></p>
+          <p class="card__text">An hour of vinyasa yoga to end the week. Mats provided.</p>
+          <p class="card__meta mt-2"><span><svg class="ho-icon"><use href="#i-store"/></svg>Wealdstone Fitness Studio</span></p>
+        </div>
+      </article>
+      <article class="card event-card">
+        <div class="ph"><svg class="ho-icon"><use href="#i-family"/></svg></div>
+        <div class="card__body">
+          <span class="biz-card__cat">Children&rsquo;s activities</span>
+          <h3 class="card__title"><a href="/class.html">Saturday Kids&rsquo; Coding Club</a></h3>
+          <p class="card__meta"><span><svg class="ho-icon"><use href="#i-repeat"/></svg>Every Saturday, 10am</span><span><svg class="ho-icon"><use href="#i-pin"/></svg>Kenton</span></p>
+          <p class="card__meta"><span><svg class="ho-icon"><use href="#i-people"/></svg>Ages 8 to 12</span><span><svg class="ho-icon"><use href="#i-ticket"/></svg>&pound;12</span></p>
+          <p class="card__text">Games and animations in Scratch and Python. Laptops provided.</p>
+          <p class="card__meta mt-2"><span><svg class="ho-icon"><use href="#i-store"/></svg>Bright Sparks Coding</span></p>
+        </div>
+      </article>
+      <article class="card event-card">
+        <div class="ph"><svg class="ho-icon"><use href="#i-cup"/></svg></div>
+        <div class="card__body">
+          <span class="biz-card__cat">Children&rsquo;s activities</span>
+          <h3 class="card__title"><a href="/class.html">Story Time</a></h3>
+          <p class="card__meta"><span><svg class="ho-icon"><use href="#i-repeat"/></svg>Every Saturday, 10.30am</span><span><svg class="ho-icon"><use href="#i-pin"/></svg>Hatch End</span></p>
+          <p class="card__meta"><span><svg class="ho-icon"><use href="#i-people"/></svg>Ages 3 to 6</span><span><svg class="ho-icon"><use href="#i-ticket"/></svg>Free</span></p>
+          <p class="card__text">Picture books, songs and a craft, with a babyccino for grown-ups.</p>
+          <p class="card__meta mt-2"><span><svg class="ho-icon"><use href="#i-store"/></svg>Hatch End Bookshop &amp; Caf&eacute;</span></p>
+        </div>
+      </article>
+      <article class="card event-card">
+        <div class="ph"><svg class="ho-icon"><use href="#i-music"/></svg></div>
+        <div class="card__body">
+          <span class="biz-card__cat">Dance schools</span>
+          <h3 class="card__title"><a href="/class.html">Junior Ballet</a></h3>
+          <p class="card__meta"><span><svg class="ho-icon"><use href="#i-repeat"/></svg>Every Saturday, 9.30am</span><span><svg class="ho-icon"><use href="#i-pin"/></svg>Pinner</span></p>
+          <p class="card__meta"><span><svg class="ho-icon"><use href="#i-people"/></svg>Ages 4 to 7</span><span><svg class="ho-icon"><use href="#i-ticket"/></svg>&pound;9</span></p>
+          <p class="card__text">Playful ballet for little dancers, working towards a summer show.</p>
+          <p class="card__meta mt-2"><span><svg class="ho-icon"><use href="#i-store"/></svg>Pinner Village Hall</span></p>
+        </div>
+      </article>
+      <article class="card event-card">
+        <div class="ph"><svg class="ho-icon"><use href="#i-music"/></svg></div>
+        <div class="card__body">
+          <span class="biz-card__cat">Dance schools</span>
+          <h3 class="card__title"><a href="/class.html">Street Dance for Teens</a></h3>
+          <p class="card__meta"><span><svg class="ho-icon"><use href="#i-repeat"/></svg>Every Friday, 6pm</span><span><svg class="ho-icon"><use href="#i-pin"/></svg>Rayners Lane</span></p>
+          <p class="card__meta"><span><svg class="ho-icon"><use href="#i-people"/></svg>Ages 12 to 16</span><span><svg class="ho-icon"><use href="#i-ticket"/></svg>&pound;7</span></p>
+          <p class="card__text">Hip hop and commercial routines. No experience needed.</p>
+          <p class="card__meta mt-2"><span><svg class="ho-icon"><use href="#i-store"/></svg>Rayners Lane Youth Hall</span></p>
+        </div>
+      </article>
+      <article class="card event-card">
+        <div class="ph"><svg class="ho-icon"><use href="#i-edit"/></svg></div>
+        <div class="card__body">
+          <span class="biz-card__cat">Workshops</span>
+          <h3 class="card__title"><a href="/class.html">Beginners&rsquo; Pottery</a></h3>
+          <p class="card__meta"><span><svg class="ho-icon"><use href="#i-repeat"/></svg>Tuesdays, 7pm (6 weeks)</span><span><svg class="ho-icon"><use href="#i-pin"/></svg>Hatch End</span></p>
+          <p class="card__meta"><span><svg class="ho-icon"><use href="#i-people"/></svg>Adults</span><span><svg class="ho-icon"><use href="#i-ticket"/></svg>&pound;150 course</span></p>
+          <p class="card__text">Learn to throw and glaze on the wheel. Clay and firing included.</p>
+          <p class="card__meta mt-2"><span><svg class="ho-icon"><use href="#i-store"/></svg>Harrow Arts Centre</span></p>
+        </div>
+      </article>
+      <article class="card event-card">
+        <div class="ph"><svg class="ho-icon"><use href="#i-family"/></svg></div>
+        <div class="card__body">
+          <span class="biz-card__cat">Children&rsquo;s activities</span>
+          <h3 class="card__title"><a href="/class.html">Toddler Rhyme Time</a></h3>
+          <p class="card__meta"><span><svg class="ho-icon"><use href="#i-repeat"/></svg>Every Thursday, 10.30am</span><span><svg class="ho-icon"><use href="#i-pin"/></svg>Stanmore</span></p>
+          <p class="card__meta"><span><svg class="ho-icon"><use href="#i-people"/></svg>Under 4s</span><span><svg class="ho-icon"><use href="#i-ticket"/></svg>Free</span></p>
+          <p class="card__text">Songs, rhymes and stories for little ones. Just turn up.</p>
+          <p class="card__meta mt-2"><span><svg class="ho-icon"><use href="#i-store"/></svg>Stanmore Library</span></p>
+        </div>
+      </article>
+      <article class="card event-card">
+        <div class="ph"><svg class="ho-icon"><use href="#i-dumbbell"/></svg></div>
+        <div class="card__body">
+          <span class="biz-card__cat">Fitness</span>
+          <h3 class="card__title"><a href="/class.html">Lunchtime Spin</a></h3>
+          <p class="card__meta"><span><svg class="ho-icon"><use href="#i-repeat"/></svg>Every Wednesday, 12.30pm</span><span><svg class="ho-icon"><use href="#i-pin"/></svg>Wealdstone</span></p>
+          <p class="card__meta"><span><svg class="ho-icon"><use href="#i-people"/></svg>Adults</span><span><svg class="ho-icon"><use href="#i-ticket"/></svg>&pound;8</span></p>
+          <p class="card__text">45 minutes of high-energy spin, back at your desk by 1.30pm.</p>
+          <p class="card__meta mt-2"><span><svg class="ho-icon"><use href="#i-store"/></svg>Wealdstone Fitness Studio</span></p>
+        </div>
+      </article>
+      <article class="card event-card">
+        <div class="ph"><svg class="ho-icon"><use href="#i-heart"/></svg></div>
+        <div class="card__body">
+          <span class="biz-card__cat">Fitness</span>
+          <h3 class="card__title"><a href="/class.html">Chair Yoga for Over-60s</a></h3>
+          <p class="card__meta"><span><svg class="ho-icon"><use href="#i-repeat"/></svg>Every Monday, 11am</span><span><svg class="ho-icon"><use href="#i-pin"/></svg>Headstone</span></p>
+          <p class="card__meta"><span><svg class="ho-icon"><use href="#i-people"/></svg>Ages 60+</span><span><svg class="ho-icon"><use href="#i-ticket"/></svg>&pound;3</span></p>
+          <p class="card__text">Gentle seated yoga to help with balance and movement.</p>
+          <p class="card__meta mt-2"><span><svg class="ho-icon"><use href="#i-store"/></svg>St George&rsquo;s Hall</span></p>
+        </div>
+      </article>
+      <article class="card event-card">
+        <div class="ph"><svg class="ho-icon"><use href="#i-people"/></svg></div>
+        <div class="card__body">
+          <span class="biz-card__cat">Other regular classes</span>
+          <h3 class="card__title"><a href="/class.html">Conversational Spanish</a></h3>
+          <p class="card__meta"><span><svg class="ho-icon"><use href="#i-repeat"/></svg>Every Thursday, 7pm</span><span><svg class="ho-icon"><use href="#i-pin"/></svg>North Harrow</span></p>
+          <p class="card__meta"><span><svg class="ho-icon"><use href="#i-people"/></svg>Adults</span><span><svg class="ho-icon"><use href="#i-ticket"/></svg>&pound;90 for 10 weeks</span></p>
+          <p class="card__text">A relaxed evening class for improvers. Join any week.</p>
+          <p class="card__meta mt-2"><span><svg class="ho-icon"><use href="#i-store"/></svg>North Harrow Community Library</span></p>
+        </div>
+      </article>
+  </div>
+
+  <div class="cta-band mt-7">
+    <div>
+      <h2>Run a class in Harrow?</h2>
+      <p>List it free. Schools, clubs and charities can open a free organiser account; businesses can add classes from their Hub dashboard. You keep one page up to date all year, and we check it before it goes live.</p>
+    </div>
+    <div class="cta-band__actions">
+      <a class="ho-btn ho-btn--primary" href="/register.html"><svg class="ho-icon"><use href="#i-plus"/></svg>List your class free</a>
+      <a class="ho-btn ho-btn--outline" href="/pricing.html">Get featured</a>
+    </div>
+  </div>
+</div>

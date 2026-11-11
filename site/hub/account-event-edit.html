@@ -1,0 +1,454 @@
+<!doctype html>
+<html lang="en-GB" data-base="/hub">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Edit event or class | Harrow Online Hub</title>
+<meta name="description" content="Add or edit an event or class on Harrow Online Hub.">
+<meta name="robots" content="noindex, nofollow">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Merriweather:wght@700;900&family=Open+Sans:ital,wght@0,400;0,600;0,700;1,400&display=swap">
+<link rel="stylesheet" href="/hub/assets/css/hub.css">
+<script src="/hub/assets/js/hub.js" defer></script>
+<link rel="stylesheet" href="/hub/assets/css/hub-c.css">
+</head>
+<body class="site-hub is-logged-in">
+<a class="ho-skip" href="#main">Skip to content</a>
+
+<header class="ho-header" id="ho-header">
+  <div class="ho-container ho-header__inner">
+    <button class="ho-header__icon-btn ho-header__burger" type="button" aria-controls="ho-drawer" aria-expanded="false" aria-label="Open menu" data-drawer-open>
+      <svg class="ho-icon"><use href="/hub/assets/img/icons.svg#i-menu"/></svg>
+    </button>
+
+    <div class="hub-logo">
+      <a class="hub-logo__link" href="/hub/" rel="home">
+        <img src="https://harrowonline.org/wp-content/uploads/2020/08/Website-Logo-Small-1.png" width="233" height="90" alt="Harrow Online">
+        <span class="hub-logo__word">Hub</span>
+      </a>
+      <a class="hub-logo__strap" href="https://harrowonline.org/newsletter/">powered by Harrow Online Newsletter</a>
+    </div>
+    
+
+    <nav class="ho-nav" aria-label="Main">
+      <ul class="ho-nav__list">
+        <li><a href="https://harrowonline.org/">News</a></li>
+        <li><a href="/hub/events.html">What&rsquo;s On</a></li>
+        <li><a href="/hub/classes.html">Classes</a></li>
+        <li><a href="/hub/offers.html">Offers</a></li>
+        <li class="current-menu-item"><a href="/hub/" aria-current="page">Hub</a></li>
+        <li><a href="https://harrowonline.org/newsletter/">Newsletter</a></li>
+      </ul>
+    </nav>
+
+    <div class="ho-header__actions">
+      <a class="ho-btn ho-btn--primary ho-header__cta" href="https://harrowonline.org/newsletter/">
+        <svg class="ho-icon"><use href="/hub/assets/img/icons.svg#i-mail"/></svg><span>Newsletter</span>
+      </a>
+      <a class="ho-header__icon-btn ho-header__account" href="/hub/account.html" aria-label="My account">
+        <svg class="ho-icon"><use href="/hub/assets/img/icons.svg#i-user"/></svg>
+      </a>
+      <button class="ho-header__icon-btn" type="button" aria-controls="ho-search" aria-expanded="false" aria-label="Search" data-search-toggle>
+        <svg class="ho-icon"><use href="/hub/assets/img/icons.svg#i-search"/></svg>
+      </button>
+    </div>
+  </div>
+
+  <div class="ho-search" id="ho-search" hidden>
+    <div class="ho-container">
+      <form class="ho-search__form" role="search" method="get" action="/hub/search.html">
+        <label class="ho-sr" for="ho-search-input">Search the Hub</label>
+        <input class="ho-search__input" id="ho-search-input" type="search" name="q" placeholder="Search businesses, offers and events&hellip;" autocomplete="off">
+        <button class="ho-btn ho-btn--primary" type="submit">Search</button>
+      </form>
+      
+    </div>
+  </div>
+</header>
+
+<div class="ho-drawer" id="ho-drawer" hidden>
+  <div class="ho-drawer__backdrop" data-drawer-close></div>
+  <div class="ho-drawer__panel" role="dialog" aria-modal="true" aria-label="Menu">
+    <div class="ho-drawer__head">
+      <a class="ho-drawer__logo" href="/hub/"><img src="https://harrowonline.org/wp-content/uploads/2020/08/Website-Logo-Small-1.png" width="233" height="90" alt="Harrow Online" loading="lazy"></a>
+      <button class="ho-header__icon-btn" type="button" aria-label="Close menu" data-drawer-close><svg class="ho-icon"><use href="/hub/assets/img/icons.svg#i-close"/></svg></button>
+    </div>
+    <form class="ho-drawer__search" role="search" method="get" action="/hub/search.html">
+      <label class="ho-sr" for="ho-drawer-search">Search</label>
+      <input id="ho-drawer-search" type="search" name="q" placeholder="Search the Hub&hellip;" autocomplete="off">
+      <button type="submit" aria-label="Search"><svg class="ho-icon"><use href="/hub/assets/img/icons.svg#i-search"/></svg></button>
+    </form>
+    <nav aria-label="Mobile">
+      <ul class="ho-drawer__list">
+        <li><a href="https://harrowonline.org/">News</a></li>
+        <li><a href="/hub/events.html">What&rsquo;s On</a></li>
+        <li><a href="/hub/classes.html">Classes</a></li>
+        <li><a href="/hub/offers.html">Offers</a></li>
+        <li><a href="/hub/">Hub</a></li>
+        <li><a href="https://harrowonline.org/newsletter/">Newsletter</a></li>
+      </ul>
+    </nav>
+    <p class="ho-drawer__label">For businesses</p>
+    <ul class="ho-drawer__list ho-drawer__list--small">
+      <li><a href="/hub/add-business.html">List your business</a></li>
+      <li><a href="/hub/pricing.html">Plans and pricing</a></li>
+      <li><a href="/hub/account.html">My account</a></li>
+    </ul>
+    <a class="ho-btn ho-btn--primary ho-btn--block" href="https://harrowonline.org/newsletter/"><svg class="ho-icon"><use href="/hub/assets/img/icons.svg#i-mail"/></svg><span>Get the newsletter</span></a>
+    <p class="ho-drawer__label">Follow Harrow Online</p>
+    <ul class="ho-social ho-social--dark">
+      <li><a class="ho-social__link" href="https://www.facebook.com/harrowonline" target="_blank" rel="noopener" aria-label="Facebook"><svg class="ho-icon"><use href="/hub/assets/img/icons.svg#i-facebook"/></svg></a></li>
+      <li><a class="ho-social__link" href="https://twitter.com/harrowonline" target="_blank" rel="noopener" aria-label="X (Twitter)"><svg class="ho-icon"><use href="/hub/assets/img/icons.svg#i-x"/></svg></a></li>
+      <li><a class="ho-social__link" href="https://www.instagram.com/harrowonline1/" target="_blank" rel="noopener" aria-label="Instagram"><svg class="ho-icon"><use href="/hub/assets/img/icons.svg#i-instagram"/></svg></a></li>
+      <li><a class="ho-social__link" href="https://www.tiktok.com/@harrowonline" target="_blank" rel="noopener" aria-label="TikTok"><svg class="ho-icon"><use href="/hub/assets/img/icons.svg#i-tiktok"/></svg></a></li>
+      <li><a class="ho-social__link" href="https://whatsapp.com/channel/0029Va9qE38HgZWZQVM1jc3S" target="_blank" rel="noopener" aria-label="WhatsApp Channel"><svg class="ho-icon"><use href="/hub/assets/img/icons.svg#i-whatsapp"/></svg></a></li>
+    </ul>
+
+  </div>
+</div>
+
+<div class="hub-bar">
+  <div class="ho-container hub-bar__inner">
+    <nav class="hub-bar__nav" aria-label="Hub">
+      <a href="/hub/search.html">Businesses</a>
+      <a href="/hub/#categories">Categories</a>
+      <a href="/hub/#areas">Areas</a>
+      <a href="/hub/offers.html">Offers</a>
+      <a href="/hub/events.html">What&rsquo;s On</a>
+      <a href="/hub/pricing.html">Pricing</a>
+    </nav>
+    <div class="hub-bar__actions">
+      <a class="hub-bar__link hub-bar__out" href="/hub/sign-in.html">Sign in</a>
+      <a class="hub-bar__link hub-bar__in" href="/hub/account.html" aria-current="page"><svg class="ho-icon"><use href="/hub/assets/img/icons.svg#i-user"/></svg>My account</a>
+      <a class="ho-btn ho-btn--sm ho-btn--dark" href="/hub/add-business.html"><svg class="ho-icon"><use href="/hub/assets/img/icons.svg#i-plus"/></svg>List your business</a>
+    </div>
+  </div>
+</div>
+
+<div class="preview-note"><div class="ho-container">Design preview. The 2,590 business listings are real open data (Overture Maps). Featured businesses, offers, events and accounts are samples.</div></div>
+
+<main id="main">
+<div class="ho-container dash">
+  <aside class="dash-nav" aria-label="Account">
+    <div class="dash-nav__who">
+      <span class="mono mono--sm" aria-hidden="true">SR</span>
+      <div><strong>Station Road Barbers</strong><span>Enhanced plan</span></div>
+    </div>
+    <ul>
+      <li><a href="/hub/account.html"><svg class="ho-icon"><use href="/hub/assets/img/icons.svg#i-home"/></svg>Overview</a></li>
+      <li><a href="/hub/account-listings.html"><svg class="ho-icon"><use href="/hub/assets/img/icons.svg#i-store"/></svg>My listings</a></li>
+      <li><a href="/hub/account-billing.html"><svg class="ho-icon"><use href="/hub/assets/img/icons.svg#i-card"/></svg>Plan and billing</a></li>
+      <li><a href="/hub/account-offers.html"><svg class="ho-icon"><use href="/hub/assets/img/icons.svg#i-tag"/></svg>Offers<span class="num">1<span class="ho-sr"> offer needs changes</span></span></a></li>
+      <li><a href="/hub/account-events.html" aria-current="true"><svg class="ho-icon"><use href="/hub/assets/img/icons.svg#i-calendar"/></svg>Events and classes</a></li>
+      <li><a href="/hub/account-bookings.html"><svg class="ho-icon"><use href="/hub/assets/img/icons.svg#i-megaphone"/></svg>Newsletter and promotions</a></li>
+      <li><a href="/hub/account-settings.html"><svg class="ho-icon"><use href="/hub/assets/img/icons.svg#i-settings"/></svg>Settings</a></li>
+    </ul>
+    <hr>
+    <ul>
+      <li><a href="/hub/sign-in.html"><svg class="ho-icon"><use href="/hub/assets/img/icons.svg#i-logout"/></svg>Sign out</a></li>
+    </ul>
+  </aside>
+
+  <div class="dash-main">
+    <nav class="crumbs mb-4" aria-label="Breadcrumb">
+      <ol><li><a href="/hub/account-events.html">Events and classes</a></li><li aria-current="page">Barbering taster class</li></ol>
+    </nav>
+    <div class="dash-head">
+      <div>
+        <h1>Edit event or class</h1>
+        <p>Barbering taster class &middot; <span class="status status--published">Published</span></p>
+      </div>
+      <a class="ho-btn ho-btn--outline" href="/hub/class.html"><svg class="ho-icon"><use href="/hub/assets/img/icons.svg#i-external"/></svg>View on What&rsquo;s On</a>
+    </div>
+
+    <div class="notice notice--warn mb-5">
+      <svg class="ho-icon"><use href="/hub/assets/img/icons.svg#i-info"/></svg>
+      <div>
+        <p><strong>Edits to an approved class may need approval again.</strong> Your class stays live as it is while we check the changes.</p>
+      </div>
+    </div>
+    <!-- OPEN QUESTION (brief 01, 6.9 and 10): should edits to an approved class need re-approval? Copy above assumes yes, with the live version kept until approved. -->
+
+    <div class="layout-aside">
+      <form class="form-card form" action="#" method="post">
+        <fieldset class="fieldset">
+          <legend>About it</legend>
+          <div class="stack">
+            <div class="field">
+              <label for="ev-title">Title</label>
+              <input class="input" id="ev-title" type="text" name="title" maxlength="80" data-counter value="Barbering taster class" required>
+            </div>
+            <div class="field">
+              <label for="ev-desc">Description</label>
+              <textarea class="textarea" id="ev-desc" name="description" maxlength="2000" data-counter aria-describedby="ev-desc-help">Learn the basics of clipper work, fading and scissor-over-comb from our senior barbers. Small groups of six, all tools provided. Ideal if you&rsquo;re thinking about a career in barbering or just want to cut hair at home.</textarea>
+              <p class="help" id="ev-desc-help">What happens, who it&rsquo;s for, and what to bring.</p>
+            </div>
+            <div class="field">
+              <span class="field__label" id="ev-img-label">Image <span class="opt">(optional)</span></span>
+              <div class="thumbs">
+                <div class="thumb"><div class="ph"><svg class="ho-icon"><use href="/hub/assets/img/icons.svg#i-scissors"/></svg></div><button type="button" aria-label="Remove image"><svg class="ho-icon"><use href="/hub/assets/img/icons.svg#i-close"/></svg></button></div>
+              </div>
+              <label class="dropzone mt-2" for="ev-img">
+                <svg class="ho-icon"><use href="/hub/assets/img/icons.svg#i-upload"/></svg>
+                <strong>Replace image</strong>
+                <p>Landscape works best. JPG or PNG, up to 5MB.</p>
+                <input class="ho-sr" id="ev-img" type="file" name="image" accept="image/jpeg,image/png" aria-labelledby="ev-img-label">
+              </label>
+            </div>
+          </div>
+        </fieldset>
+
+        <fieldset class="fieldset">
+          <legend>Category</legend>
+          <div class="choice-grid choice-grid--3">
+            <label class="choice"><input type="radio" name="category" value="classes" checked data-reveal="#ev-classtype"><span class="choice__title">Classes and activities</span></label>
+            <label class="choice"><input type="radio" name="category" value="family"><span class="choice__title">Family</span></label>
+            <label class="choice"><input type="radio" name="category" value="music"><span class="choice__title">Music</span></label>
+            <label class="choice"><input type="radio" name="category" value="food-and-drink"><span class="choice__title">Food and drink</span></label>
+            <label class="choice"><input type="radio" name="category" value="nightlife"><span class="choice__title">Nightlife</span></label>
+            <label class="choice"><input type="radio" name="category" value="community"><span class="choice__title">Community</span></label>
+          </div>
+          <div id="ev-classtype" class="mt-4">
+            <div class="field">
+              <label for="ev-ctype">Type of class</label>
+              <select class="select" id="ev-ctype" name="class_type">
+                <option value="childrens-activities">Children&rsquo;s activities</option>
+                <option value="fitness">Fitness</option>
+                <option value="dance">Dance schools</option>
+                <option value="workshops" selected>Workshops</option>
+                <option value="other">Other regular classes</option>
+              </select>
+            </div>
+          </div>
+          <!-- WP: categories and class types are editable in admin -->
+        </fieldset>
+
+        <fieldset class="fieldset">
+          <legend>When</legend>
+          <div class="choice-grid choice-grid--2">
+            <label class="choice">
+              <input type="radio" name="recurrence" value="once" data-reveal="#ev-once">
+              <span><span class="choice__title"><svg class="ho-icon"><use href="/hub/assets/img/icons.svg#i-calendar"/></svg>One-off</span><span class="choice__text">A single date, like a workshop, gig or fair.</span></span>
+            </label>
+            <label class="choice">
+              <input type="radio" name="recurrence" value="weekly" checked data-reveal="#ev-weekly">
+              <span><span class="choice__title"><svg class="ho-icon"><use href="/hub/assets/img/icons.svg#i-repeat"/></svg>Weekly schedule</span><span class="choice__text">A class or club that runs every week, at one or more times.</span></span>
+            </label>
+          </div>
+
+          <div id="ev-once" class="mt-4" hidden>
+            <div class="row row-2">
+              <div class="field"><label for="ev-sd">Start date</label><input class="input" id="ev-sd" type="date" name="start_date"></div>
+              <div class="field"><label for="ev-st">Start time</label><input class="input" id="ev-st" type="time" name="start_time"></div>
+              <div class="field"><label for="ev-ed">End date</label><input class="input" id="ev-ed" type="date" name="end_date"></div>
+              <div class="field"><label for="ev-et">End time</label><input class="input" id="ev-et" type="time" name="end_time"></div>
+            </div>
+          </div>
+
+          <div id="ev-weekly" class="mt-4">
+            <div class="stack">
+              <div class="slot-row">
+                <div class="field">
+                  <label for="sl1-day">Day</label>
+                  <select class="select select--sm" id="sl1-day" name="slots[0][day]">
+                    <option>Monday</option><option selected>Tuesday</option><option>Wednesday</option><option>Thursday</option><option>Friday</option><option>Saturday</option><option>Sunday</option>
+                  </select>
+                </div>
+                <div class="field"><label for="sl1-s">Starts</label><input class="input input--sm" id="sl1-s" type="time" name="slots[0][start]" value="18:30"></div>
+                <div class="field"><label for="sl1-e">Ends</label><input class="input input--sm" id="sl1-e" type="time" name="slots[0][end]" value="20:00"></div>
+                <button class="ho-btn ho-btn--ghost ho-btn--sm" type="button" aria-label="Remove this time"><svg class="ho-icon"><use href="/hub/assets/img/icons.svg#i-close"/></svg></button>
+              </div>
+              <div class="slot-row">
+                <div class="field">
+                  <label for="sl2-day">Day</label>
+                  <select class="select select--sm" id="sl2-day" name="slots[1][day]">
+                    <option>Monday</option><option>Tuesday</option><option>Wednesday</option><option>Thursday</option><option>Friday</option><option selected>Saturday</option><option>Sunday</option>
+                  </select>
+                </div>
+                <div class="field"><label for="sl2-s">Starts</label><input class="input input--sm" id="sl2-s" type="time" name="slots[1][start]" value="16:00"></div>
+                <div class="field"><label for="sl2-e">Ends</label><input class="input input--sm" id="sl2-e" type="time" name="slots[1][end]" value="17:30"></div>
+                <button class="ho-btn ho-btn--ghost ho-btn--sm" type="button" aria-label="Remove this time"><svg class="ho-icon"><use href="/hub/assets/img/icons.svg#i-close"/></svg></button>
+              </div>
+              <div><button class="ho-btn ho-btn--outline ho-btn--sm" type="button"><svg class="ho-icon"><use href="/hub/assets/img/icons.svg#i-plus"/></svg>Add another time</button></div>
+              <div class="row row-2">
+                <div class="field"><label for="ev-from">First session</label><input class="input" id="ev-from" type="date" name="series_start" value="2026-09-08"></div>
+                <div class="field">
+                  <label for="ev-until">Last session <span class="opt">(optional)</span></label>
+                  <input class="input" id="ev-until" type="date" name="series_end" aria-describedby="ev-until-help">
+                  <p class="help" id="ev-until-help">Leave blank if it runs until further notice.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </fieldset>
+
+        <fieldset class="fieldset">
+          <legend>Where</legend>
+          <div class="stack">
+            <label class="check"><input type="checkbox" name="venue_is_listing" value="1" checked> <span>At my business<small>Station Road Barbers, 48 Station Road, Harrow HA1 2RS</small></span></label>
+            <div class="row row-2">
+              <div class="field"><label for="ev-venue">Venue name</label><input class="input" id="ev-venue" type="text" name="venue" value="Station Road Barbers"></div>
+              <div class="field">
+                <label for="ev-area">Area</label>
+                <select class="select" id="ev-area" name="area">
+                  <option value="harrow-town-centre" selected>Harrow Town Centre</option>
+                  <option value="belmont">Belmont</option><option value="canons-park">Canons Park</option><option value="edgware">Edgware</option><option value="greenhill">Greenhill</option><option value="harrow-town-centre">Harrow Town Centre</option><option value="harrow-weald">Harrow Weald</option><option value="harrow-on-the-hill">Harrow on the Hill</option><option value="hatch-end">Hatch End</option><option value="headstone">Headstone</option><option value="kenton">Kenton</option><option value="north-harrow">North Harrow</option><option value="pinner">Pinner</option><option value="queensbury">Queensbury</option><option value="rayners-lane">Rayners Lane</option><option value="south-harrow">South Harrow</option><option value="stanmore">Stanmore</option><option value="sudbury-hill">Sudbury Hill and Roxeth</option><option value="wealdstone">Wealdstone</option><option value="west-harrow">West Harrow</option>
+                </select>
+              </div>
+            </div>
+            <div class="row row-2">
+              <div class="field"><label for="ev-addr">Address</label><input class="input" id="ev-addr" type="text" name="venue_address" value="48 Station Road, Harrow"></div>
+              <div class="field"><label for="ev-pc">Postcode</label><input class="input" id="ev-pc" type="text" name="venue_postcode" value="HA1 2RS"></div>
+            </div>
+          </div>
+        </fieldset>
+
+        <fieldset class="fieldset">
+          <legend>Who and how much</legend>
+          <div class="stack">
+            <div>
+              <span class="field__label">Age range</span>
+              <div class="row row-3 mt-2">
+                <div class="field"><label class="small" for="ev-amin">From age</label><input class="input input--sm" id="ev-amin" type="number" name="age_min" min="0" max="99" value="16"></div>
+                <div class="field"><label class="small" for="ev-amax">To age <span class="opt">(optional)</span></label><input class="input input--sm" id="ev-amax" type="number" name="age_max" min="0" max="99"></div>
+                <label class="check check--end"><input type="checkbox" name="all_ages" value="1"> All ages</label>
+              </div>
+            </div>
+
+            <fieldset class="fieldset">
+              <legend class="field__label">Price</legend>
+              <div class="cluster cluster--lg">
+                <label class="radio"><input type="radio" name="price_type" value="free"> Free</label>
+                <label class="radio"><input type="radio" name="price_type" value="amount" checked data-reveal="#ev-price-amount"> Set price</label>
+                <label class="radio"><input type="radio" name="price_type" value="text" data-reveal="#ev-price-text"> Describe it</label>
+              </div>
+              <div id="ev-price-amount" class="mt-4">
+                <div class="field">
+                  <label for="ev-price">Price per person</label>
+                  <div class="input-group"><span class="input-group__addon">&pound;</span><input class="input" id="ev-price" type="number" name="price" min="0" step="0.50" value="25"></div>
+                </div>
+              </div>
+              <div id="ev-price-text" class="mt-4" hidden>
+                <div class="field">
+                  <label for="ev-ptext">Price details</label>
+                  <input class="input" id="ev-ptext" type="text" name="price_text" maxlength="60" placeholder="e.g. &pound;5 adults, children free">
+                </div>
+              </div>
+            </fieldset>
+
+            <div class="field">
+              <label for="ev-link">Booking or info link <span class="opt">(optional)</span></label>
+              <input class="input" id="ev-link" type="url" name="booking_url" value="https://stationroadbarbers.co.uk/taster" placeholder="https://">
+            </div>
+            <div class="field">
+              <label for="ev-org">Organiser listing <span class="opt">(optional)</span></label>
+              <select class="select" id="ev-org" name="organiser_listing" aria-describedby="ev-org-help">
+                <option value="">Don&rsquo;t link to a listing</option>
+                <option value="station-road-barbers" selected>Station Road Barbers</option>
+              </select>
+              <p class="help" id="ev-org-help">Linked events also show on that listing.</p>
+            </div>
+          </div>
+        </fieldset>
+
+        <div class="form-actions form-actions--sticky form-actions--between">
+          <button class="ho-btn ho-btn--ghost" type="submit" name="action" value="draft">Save draft</button>
+          <button class="ho-btn ho-btn--primary" type="submit" name="action" value="submit"><svg class="ho-icon"><use href="/hub/assets/img/icons.svg#i-check"/></svg>Submit for approval</button>
+        </div>
+      </form>
+
+      <aside class="stack sticky" aria-label="Approval and featuring">
+        <div class="notice notice--plain">
+          <svg class="ho-icon"><use href="/hub/assets/img/icons.svg#i-clock"/></svg>
+          <div>
+            <p><strong>Checked before it goes live</strong></p>
+            <p>Our team reviews every event and class, usually within 2 working days. We&rsquo;ll email you either way.</p>
+          </div>
+        </div>
+
+        <div class="panel">
+          <span class="badge badge--featured mb-2"><svg class="ho-icon"><use href="/hub/assets/img/icons.svg#i-star"/></svg>Featured until 16 Nov</span>
+          <h2 class="panel__title"><svg class="ho-icon"><use href="/hub/assets/img/icons.svg#i-star"/></svg> Feature this</h2>
+          <p class="small">Featured classes show first on What&rsquo;s On and Classes, and at the top of The Weekend newsletter.</p>
+          <p class="mb-2"><strong class="price-inline">&pound;15</strong> <span class="muted small">for 7 days, one-off payment</span></p>
+          <a class="ho-btn ho-btn--dark ho-btn--sm ho-btn--block" href="#stripe-checkout">Extend by 7 days</a>
+          <p class="help mt-2">Included free on Premium and Local Partner. <a href="/hub/account-billing.html">Compare plans</a></p>
+        </div>
+        <!-- WP: #stripe-checkout = one-off Checkout Session for "Featured event, 7 days" (brief 02 N7). Flag clears when the period ends or the event ends. -->
+      </aside>
+    </div>
+  </div>
+</div>
+</main>
+<footer class="ho-footer">
+  <div class="ho-container ho-footer__grid">
+    <div class="ho-footer__brand">
+      <a class="ho-footer__logo" href="/hub/"><img src="https://harrowonline.org/wp-content/uploads/2020/08/bottomlogo.png" width="231" height="90" alt="Harrow Online" loading="lazy"></a>
+      <p class="ho-footer__tagline">Harrow Online Hub: local businesses, offers and what&rsquo;s on, powered by Harrow Online Newsletter.</p>
+      <ul class="ho-social ho-social--light">
+        <li><a class="ho-social__link" href="https://www.facebook.com/harrowonline" target="_blank" rel="noopener" aria-label="Facebook"><svg class="ho-icon"><use href="/hub/assets/img/icons.svg#i-facebook"/></svg></a></li>
+        <li><a class="ho-social__link" href="https://twitter.com/harrowonline" target="_blank" rel="noopener" aria-label="X (Twitter)"><svg class="ho-icon"><use href="/hub/assets/img/icons.svg#i-x"/></svg></a></li>
+        <li><a class="ho-social__link" href="https://www.instagram.com/harrowonline1/" target="_blank" rel="noopener" aria-label="Instagram"><svg class="ho-icon"><use href="/hub/assets/img/icons.svg#i-instagram"/></svg></a></li>
+        <li><a class="ho-social__link" href="https://www.tiktok.com/@harrowonline" target="_blank" rel="noopener" aria-label="TikTok"><svg class="ho-icon"><use href="/hub/assets/img/icons.svg#i-tiktok"/></svg></a></li>
+        <li><a class="ho-social__link" href="https://whatsapp.com/channel/0029Va9qE38HgZWZQVM1jc3S" target="_blank" rel="noopener" aria-label="WhatsApp Channel"><svg class="ho-icon"><use href="/hub/assets/img/icons.svg#i-whatsapp"/></svg></a></li>
+      </ul>
+    </div>
+
+    <nav aria-label="Hub">
+      <p class="ho-footer__title">Hub</p>
+      <ul class="ho-footer__links">
+        <li><a href="/hub/search.html">Find a business</a></li>
+        <li><a href="/hub/offers.html">Local Offers</a></li>
+        <li><a href="/hub/events.html">What&rsquo;s On</a></li>
+        <li><a href="/hub/classes.html">Classes and activities</a></li>
+        <li><a href="/hub/add-business.html">List your business</a></li>
+        <li><a href="/hub/pricing.html">Plans and pricing</a></li>
+      </ul>
+    </nav>
+
+    <nav aria-label="Harrow Online">
+      <p class="ho-footer__title">Harrow Online</p>
+      <ul class="ho-footer__links">
+        <li><a href="https://harrowonline.org/">Latest news</a></li>
+        <li><a href="https://harrowonline.org/about-us/">About us</a></li>
+        <li><a href="/hub/news-advertise.html">Advertise</a></li>
+        <li><a href="/hub/news-support.html">Support us</a></li>
+        <li><a href="https://harrowonline.org/contact-us/">Contact us</a></li>
+      </ul>
+    </nav>
+
+    <nav aria-label="Legal">
+      <p class="ho-footer__title">Legal</p>
+      <ul class="ho-footer__links">
+        <li><a href="/hub/privacy.html">Privacy</a></li>
+        <li><a href="/hub/terms.html">Terms of use</a></li>
+        <li><a href="/hub/data-sources.html">Data sources</a></li>
+        <li><a href="https://harrowonline.org/complaints-procedure/">Complaints procedure</a></li>
+      </ul>
+    </nav>
+
+    <div class="ho-footer__news">
+      <p class="ho-footer__title">Newsletter</p>
+      <p class="ho-footer__text">Harrow&rsquo;s local news, free in your inbox.</p>
+      <a class="ho-btn ho-btn--primary" href="https://harrowonline.org/newsletter/"><svg class="ho-icon"><use href="/hub/assets/img/icons.svg#i-mail"/></svg><span>Sign up free</span></a>
+      <a class="ho-footer__wa" href="https://whatsapp.com/channel/0029Va9qE38HgZWZQVM1jc3S" target="_blank" rel="noopener"><svg class="ho-icon"><use href="/hub/assets/img/icons.svg#i-whatsapp"/></svg><span>Follow our WhatsApp Channel</span></a>
+    </div>
+  </div>
+
+  <div class="ho-footer__bottom">
+    <div class="ho-container ho-footer__bottom-inner">
+      <ul class="ho-badges" aria-label="Accreditations">
+        <li><a class="ho-badge" href="https://www.impressorg.com/" target="_blank" rel="noopener" title="Regulated by IMPRESS"><img src="https://harrowonline.org/wp-content/uploads/2023/03/IMPRESS-Regulated-Member-Trustmark_White_RGB-300x300.png" width="300" height="300" alt="Regulated by IMPRESS" loading="lazy"></a></li>
+        <li><a class="ho-badge" href="https://www.communityjournalism.co.uk/" target="_blank" rel="noopener" title="Proud member of the Independent Community News Network (ICNN)"><img src="https://harrowonline.org/wp-content/uploads/2020/08/Untitled-design-60-1-300x166.png" width="300" height="166" alt="Proud member of the Independent Community News Network (ICNN)" loading="lazy"></a></li>
+      </ul>
+      <div class="ho-footer__legal">
+        <p>&copy; 2026 Harrow Online Ltd. All rights reserved.</p>
+        <p>Harrow Online Ltd is registered in England and Wales. Company number: 16370670. Registered office: 79 College Road, Harrow, HA1 1BD.</p>
+        <p>Business listings include data from <a href="/hub/data-sources.html">Overture Maps Foundation</a>, used under its open licences.</p>
+      </div>
+    </div>
+  </div>
+</footer>
+</body>
+</html>
