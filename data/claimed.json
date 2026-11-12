@@ -13,8 +13,9 @@
       ],
       "hours": ["Closed", "12pm to 10pm", "12pm to 10pm", "12pm to 10pm", "12pm to 11pm", "11am to 11pm", "12pm to 6pm"],
       "offers": [
-        {"title": "2-for-1 mains, Monday to Thursday", "text": "Order any two mains and the cheaper one is free. Dine in only. Show this offer when you order.", "ends": "30 November 2026", "code": "HILL241", "featured": true},
-        {"title": "Kids eat free on Sundays", "text": "One free children&rsquo;s meal with every adult Sunday roast. Under 12s.", "ends": "27 December 2026", "icon": "family"}
+        {"title": "2-for-1 mains, Monday to Thursday", "text": "Order any two mains and the cheaper one is free. Dine in only. Show this offer when you order.", "ends": "30 November 2026", "code": "HILL241", "featured": true, "redeem": "Show the code or this page when you order.", "terms": ["Monday to Thursday, dine in only.", "The cheaper of the two mains is free.", "One offer per table. Not with set menus or other offers."]},
+        {"title": "Bonfire Night set menu: 3 courses for &pound;25", "text": "A three-course set menu for Bonfire Night weekend, with a free mulled wine for the table.", "ends": "8 November 2026", "redeem": "Mention Harrow Online when you book.", "terms": ["Friday 6 to Sunday 8 November only.", "Booking needed."]},
+        {"title": "Kids eat free on Sundays", "text": "One free children&rsquo;s meal with every adult Sunday roast. Under 12s.", "ends": "27 December 2026", "icon": "family", "redeem": "Mention Harrow Online when you book or order.", "terms": ["Sundays only, while the roast is served.", "One free children&rsquo;s meal (under 12s) per adult roast.", "Dine in only."]}
       ],
       "events": [],
       "news": []
@@ -32,8 +33,8 @@
       ],
       "hours": ["6am to 9pm", "6am to 9pm", "6am to 9pm", "6am to 9pm", "6am to 8pm", "8am to 2pm", "9am to 1pm"],
       "offers": [
-        {"title": "A free week of classes", "text": "Seven days of unlimited classes for new members. Book online with the code below.", "ends": "14 December 2026", "code": "HOWEEK7", "featured": true, "sub": true},
-        {"title": "No joining fee in November", "text": "Save &pound;30 when you join on any monthly membership this month.", "ends": "30 November 2026"}
+        {"title": "A free week of classes", "text": "Seven days of unlimited classes for new members. Book online with the code below.", "ends": "14 December 2026", "code": "HOWEEK7", "featured": true, "sub": true, "redeem": "Book online and enter the code at checkout.", "terms": ["New members only, aged 16 and over.", "Seven days in a row from your first class.", "Classes are subject to availability."]},
+        {"title": "No joining fee in November", "text": "Save &pound;30 when you join on any monthly membership this month.", "ends": "30 November 2026", "redeem": "Ask at reception or join online.", "terms": ["Saves the &pound;30 joining fee.", "New monthly memberships only.", "Join by 30 November 2026."]}
       ],
       "events": [
         {"title": "Lunchtime Spin", "when": "Every Wednesday, 12.30pm", "d": "11", "m": "Nov", "w": "Wed", "price": "&pound;8", "href": "/class.html", "class": true},
@@ -55,8 +56,8 @@
       ],
       "hours": ["8am to 5pm", "8am to 5pm", "8am to 5pm", "8am to 5pm", "8am to 5pm", "9am to 5pm", "10am to 3pm"],
       "offers": [
-        {"title": "Free coffee with any slice of cake", "text": "Weekdays before 11am. One per customer per visit.", "ends": "31 December 2026"},
-        {"title": "10% off every book, all winter", "text": "New and second-hand books, in store only. Not valid on gift cards or events.", "ends": "31 January 2027", "code": "HOREAD10", "sub": true, "icon": "news"}
+        {"title": "Free coffee with any slice of cake", "text": "Weekdays before 11am. One per customer per visit.", "ends": "31 December 2026", "redeem": "Show this page at the counter.", "terms": ["Monday to Friday, before 11am.", "Filter coffee or americano.", "One per customer per visit."]},
+        {"title": "10% off every book, all winter", "text": "New and second-hand books, in store only. Not valid on gift cards or events.", "ends": "31 January 2027", "code": "HOREAD10", "sub": true, "icon": "news", "redeem": "Show the code at the till.", "terms": ["In store only.", "New and second-hand books.", "Not valid on gift cards, events or special orders."]}
       ],
       "events": [
         {"title": "Story Time", "when": "Every Saturday, 10.30am", "d": "14", "m": "Nov", "w": "Sat", "price": "Free", "href": "/class.html", "class": true}
@@ -76,8 +77,8 @@
       ],
       "hours": ["8.30am to 6pm", "8.30am to 6pm", "8.30am to 7pm", "8.30am to 6pm", "8.30am to 5pm", "9am to 1pm", "Closed"],
       "offers": [
-        {"title": "&pound;25 off your first hygienist visit", "text": "For new private patients. Mention Harrow Online when you book by phone or online.", "ends": "31 December 2026", "featured": true},
-        {"title": "Free electric toothbrush with a new patient exam", "text": "For adults joining as private patients. While stocks last.", "ends": "31 December 2026"}
+        {"title": "&pound;25 off your first hygienist visit", "text": "For new private patients. Mention Harrow Online when you book by phone or online.", "ends": "31 December 2026", "featured": true, "redeem": "Mention Harrow Online when you book by phone or online.", "terms": ["New private patients only.", "One visit per patient.", "Not with NHS treatment or other offers."]},
+        {"title": "Free electric toothbrush with a new patient exam", "text": "For adults joining as private patients. While stocks last.", "ends": "31 December 2026", "redeem": "Mention Harrow Online when you book your exam.", "terms": ["Adults joining as new private patients.", "One per patient, while stocks last."]}
       ],
       "events": [],
       "news": []
@@ -95,8 +96,8 @@
       ],
       "hours": ["9am to 7pm", "9am to 7pm", "9am to 7pm", "9am to 8pm", "9am to 8pm", "8am to 6pm", "10am to 4pm"],
       "offers": [
-        {"title": "20% off your first cut", "text": "Any cut or cut and beard trim, Monday to Friday. Show the code at the till.", "ends": "20 December 2026", "code": "HOCUT20", "sub": true},
-        {"title": "Student Tuesdays: &pound;15 cuts", "text": "Every Tuesday with a valid student card. Walk-ins welcome.", "ends": "15 December 2026"}
+        {"title": "20% off your first cut", "text": "Any cut or cut and beard trim, Monday to Friday. Show the code at the till.", "ends": "20 December 2026", "code": "HOCUT20", "sub": true, "redeem": "Show the code at the till.", "terms": ["First visit only.", "Monday to Friday.", "Any cut, or cut and beard trim."]},
+        {"title": "Student Tuesdays: &pound;15 cuts", "text": "Every Tuesday with a valid student card. Walk-ins welcome.", "ends": "17 November 2026", "redeem": "Show your student card at the till.", "terms": ["Tuesdays only.", "A valid student card is needed.", "Walk-ins only."]}
       ],
       "events": [],
       "news": []
@@ -127,7 +128,7 @@
       ],
       "hours": ["Closed", "Closed", "Closed", "Closed", "Closed", "9.30am to 1pm", "Closed"],
       "offers": [
-        {"title": "First session free", "text": "Try a Saturday club before you book the term. One free session per child.", "ends": "31 December 2026", "icon": "family"}
+        {"title": "First session free", "text": "Try a Saturday club before you book the term. One free session per child.", "ends": "31 December 2026", "icon": "family", "redeem": "Book a taster online and say you saw it on Harrow Online.", "terms": ["One free Saturday session per child.", "Ages 8 to 14.", "Spaces are limited."]}
       ],
       "events": [
         {"title": "Saturday Kids&rsquo; Coding Club", "when": "Every Saturday, 10am", "d": "14", "m": "Nov", "w": "Sat", "price": "&pound;12", "href": "/class.html", "class": true}
@@ -161,7 +162,7 @@
       ],
       "hours": ["5pm to 11pm", "5pm to 11pm", "5pm to 11pm", "5pm to 11pm", "5pm to 11.30pm", "12pm to 11.30pm", "12pm to 10pm"],
       "offers": [
-        {"title": "Free poppadoms and chutneys with any takeaway over &pound;20", "text": "Collection or delivery. Mention Harrow Online when you order.", "ends": "31 December 2026", "featured": true}
+        {"title": "Free poppadoms and chutneys with any takeaway over &pound;20", "text": "Collection or delivery. Mention Harrow Online when you order.", "ends": "31 December 2026", "featured": true, "redeem": "Mention Harrow Online when you order.", "terms": ["Takeaway orders over &pound;20, before delivery charges.", "Collection or delivery."]}
       ],
       "events": [],
       "news": []
@@ -179,7 +180,7 @@
       ],
       "hours": ["Closed", "9am to 6pm", "9am to 6pm", "9am to 6pm", "9am to 6pm", "9am to 5pm", "Closed"],
       "offers": [
-        {"title": "Free winter bike safety check", "text": "Brakes, lights and tyres checked while you wait. No booking needed.", "ends": "31 December 2026", "icon": "wrench"}
+        {"title": "Free winter bike safety check", "text": "Brakes, lights and tyres checked while you wait. No booking needed.", "ends": "31 December 2026", "icon": "wrench", "redeem": "Bring your bike in. No booking needed.", "terms": ["Brakes, lights and tyres only.", "Any repairs are quoted before we start."]}
       ],
       "events": [],
       "news": []
@@ -197,7 +198,7 @@
       ],
       "hours": ["9am to 7pm", "9am to 7pm", "9am to 7pm", "9am to 7pm", "9am to 7pm", "9am to 5pm", "Closed"],
       "offers": [
-        {"title": "Free blood pressure check", "text": "Walk in any weekday. Takes five minutes and you get a printed result.", "ends": "31 January 2027", "icon": "heart"}
+        {"title": "Free blood pressure check", "text": "Walk in any weekday. Takes five minutes and you get a printed result.", "ends": "31 January 2027", "icon": "heart", "redeem": "Walk in and ask at the counter.", "terms": ["Monday to Friday.", "Adults 18 and over."]}
       ],
       "events": [],
       "news": []
@@ -215,7 +216,7 @@
       ],
       "hours": ["8am to 6pm", "8am to 6pm", "8am to 6pm", "8am to 6pm", "8am to 6pm", "9am to 1pm", "Closed"],
       "offers": [
-        {"title": "&pound;20 off a boiler service", "text": "For homes in Harrow and Edgware. Book by phone and quote the code.", "ends": "31 December 2026", "code": "HOBOIL20", "sub": true, "icon": "wrench"}
+        {"title": "&pound;20 off a boiler service", "text": "For homes in Harrow and Edgware. Book by phone and quote the code.", "ends": "31 December 2026", "code": "HOBOIL20", "sub": true, "icon": "wrench", "redeem": "Quote the code when you book by phone.", "terms": ["Homes in Harrow and Edgware.", "Gas boilers only.", "One per household."]}
       ],
       "events": [],
       "news": []

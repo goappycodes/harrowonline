@@ -214,7 +214,7 @@
 
   /* 9. Share / copy link */
   $$("[data-copy]").forEach((b) => b.addEventListener("click", async () => {
-    try { await navigator.clipboard.writeText(b.dataset.copy || location.href); b.textContent = "Link copied"; } catch (_) { /* ignore */ }
+    try { await navigator.clipboard.writeText(b.dataset.copy || location.href); b.textContent = b.dataset.copied || "Link copied"; } catch (_) { /* ignore */ }
   }));
 
   /* 10. Choice cards that reveal a panel: <input data-reveal="#panel-id"> */

@@ -17,6 +17,7 @@ DAYS = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sun
 TODAY = 2  # Wednesday 11 November 2026 (preview date)
 PAID = ("enhanced", "premium", "partner")
 TOP = ("premium", "partner")
+SOON_DAYS = 7   # offers ending within a week get an "Ends soon" badge
 SOCIAL_LABEL = {"facebook": "Facebook", "instagram": "Instagram", "tiktok": "TikTok", "linkedin": "LinkedIn", "x": "X"}
 
 _uid = [0]
@@ -92,54 +93,287 @@ def row(x):
       </article>'''
 
 
-def offer_card(x, o, show_biz=True, heading="h3"):
-    """Offer card; same markup as the Offers page. Subscriber-only offers render locked with the unlock form."""
+def ends_label(o):
+    """'Ends 30 Nov', 'Ends in 6 days', 'Ends today' or 'Ended 8 Nov' (from hub_data.offer_dates)."""
+    d = o["days_left"]
+    if d < 0:
+        return f'Ended {o["ends_short"]}'
+    if d == 0:
+        return "Ends today"
+    if d == 1:
+        return "Ends tomorrow"
+    return f"Ends in {d} days" if d <= SOON_DAYS else f'Ends {o["ends_short"]}'
+
+
+def unlock_box(x, o, note=True):
+    """Subscriber-only unlock form. The code is never in the page: WordPress returns it after the reader confirms."""
     _uid[0] += 1
+    uid = f"unlock-{x['slug'][:20]}-{_uid[0]}"
+    note_html = '<span class="offer__lock-note">We&rsquo;ll email you a link to confirm. Already a subscriber? Use the email you signed up with.</span>' if note else ""
+    return f'''
+          <div class="offer__lock">
+            <p>{icon("lock", "ho-icon ho-icon--sm")}Subscriber-only. Enter your email to unlock.</p>
+            <form data-unlock action="/wp-json/ho/v1/unlock" method="post">
+              <input type="hidden" name="signup_source" value="subscriber-offer">
+              <input type="hidden" name="offer" value="{o["slug"]}">
+              <label class="ho-sr" for="{uid}">Email address</label>
+              <input id="{uid}" type="email" name="email" placeholder="Your email" autocomplete="email" required>
+              <button class="ho-btn ho-btn--sm ho-btn--primary" type="submit">Unlock</button>
+            </form>{note_html}
+          </div>'''
+
+
+def offer_card(x, o, show_biz=True, heading="h3"):
+    """Offer card; same markup on the Offers page, homepage and profiles. The title links to the offer's own page.
+    Subscriber-only offers render locked with the unlock form."""
     c = x["claimed"]
     featured = o.get("featured")
+    soon = 0 <= o["days_left"] <= SOON_DAYS
     cls = "offer" + (" offer--featured" if featured else "") + (" offer--locked" if o.get("sub") else "")
     badges = sample_badge() if is_sample(x) and not featured else ""
     if featured:
         badges += f'<span class="badge badge--featured">{icon("star")}Featured</span>'
     if o.get("sub"):
         badges += f'<span class="badge badge--sub">{icon("lock")}Subscriber-only</span>'
+    if soon:
+        badges += f'<span class="badge badge--soon">{icon("clock")}Ends soon</span>'
     badges += f'<span class="biz-card__cat">{e(cat_name(x["cat"]))}</span>'
     if o.get("sub"):
         # Never put a subscriber-only code in the page (it was only blurred). WordPress returns it after email confirmation.
         code = '<span class="offer__code offer__code--pending">Code shown after you confirm your email</span>' if o.get("code") else "<span>No code needed</span>"
     else:
         code = f'<span class="offer__code">{o["code"]}</span>' if o.get("code") else "<span>No code needed</span>"
-    lock = ""
-    if o.get("sub"):
-        uid = f"unlock-{x['slug'][:20]}-{_uid[0]}"
-        lock = f'''
-          <div class="offer__lock">
-            <p>{icon("lock", "ho-icon ho-icon--sm")}Subscriber-only. Enter your email to unlock.</p>
-            <form data-unlock action="/wp-json/ho/v1/unlock" method="post">
-              <input type="hidden" name="signup_source" value="subscriber-offer">
-              <label class="ho-sr" for="{uid}">Email address</label>
-              <input id="{uid}" type="email" name="email" placeholder="Your email" autocomplete="email" required>
-              <button class="ho-btn ho-btn--sm ho-btn--primary" type="submit">Unlock</button>
-            </form>
-            <span class="offer__lock-note">We&rsquo;ll email you a link to confirm. Already a subscriber? Use the email you signed up with.</span>
-          </div>'''
+    lock = unlock_box(x, o) if o.get("sub") else ""
     biz = f'<a class="offer__biz" href="/business/{x["slug"]}.html">{e(x["name"])} &middot; {e(area_name(x["area"]))}</a>' if show_biz else ""
     return f'''<article class="{cls}" data-cat="{x["cat"]}" data-area="{x["area"]}" data-sub="{1 if o.get("sub") else 0}">
         <div class="ph">{icon(o.get("icon", c.get("icon", "tag")))}</div>
         <div class="offer__body">
           <div class="cluster">{badges}</div>
-          <{heading} class="offer__title">{o["title"]}</{heading}>
+          <{heading} class="offer__title"><a href="{o["href"]}">{o["title"]}</a></{heading}>
           {biz}
           <p class="offer__text">{o["text"]}</p>
-          <div class="offer__foot"><span>{icon("calendar", "ho-icon ho-icon--sm")} Ends {o["ends"]}</span>{code}</div>{lock}
+          <div class="offer__foot"><span class="offer__ends{" offer__ends--soon" if soon else ""}">{icon("calendar", "ho-icon ho-icon--sm")} {ends_label(o)}</span>{code}</div>
+          <a class="offer__more" href="{o["href"]}">Terms and how to redeem {icon("arrow", "ho-icon ho-icon--sm")}</a>{lock}
         </div>
       </article>'''
 
 
 def all_offers(listings):
-    """Every offer from paid claimed listings: featured first, then in data order."""
+    """Every live offer from paid claimed listings: featured first, then by plan."""
     items = [(x, o) for x in listings if x.get("tier") in PAID for o in x["claimed"]["offers"]]
     return sorted(items, key=lambda p: (not p[1].get("featured"), H.TIER_RANK[p[0]["tier"]]))
+
+
+# ------------------------------------------------------------------ offer page: /offers/{slug}/
+ORIGIN = "https://harrowonline.org/hub"
+
+
+def plain(s):
+    return " ".join(H._unescape(s).split())
+
+
+def offer_page(x, o, live):
+    """(meta, body) for one offer. Shareable URL, clear terms and end date, the code (or unlock form), share links.
+    Ended offers keep their page (old newsletter and social links still land) but say so, hide the code and are noindexed."""
+    c = x["claimed"]
+    url = ORIGIN + o["href"]
+    ended = not o["live"]
+    title, name, area = o["title"], x["name"], area_name(x["area"])
+    end = o["end"]
+    end_long = f'{end.strftime("%A")} {end.day} {end.strftime("%B %Y")}'
+    sample = is_sample(x)
+    soon = 0 <= o["days_left"] <= SOON_DAYS
+
+    badges = ""
+    if o.get("featured") and not ended:
+        badges += f'<span class="badge badge--featured">{icon("star")}Featured</span>'
+    if o.get("sub"):
+        badges += f'<span class="badge badge--sub">{icon("lock")}Subscriber-only</span>'
+    if soon:
+        badges += f'<span class="badge badge--soon">{icon("clock")}Ends soon</span>'
+    if ended:
+        badges += '<span class="badge badge--unclaimed">Ended</span>'
+    if sample:
+        badges += sample_badge()
+    badges += f'<a class="badge badge--outline" href="/offers.html?cat={x["cat"]}">{e(cat_name(x["cat"]))}</a>'
+
+    if ended:
+        left = "This offer has ended"
+    elif o["days_left"] == 0:
+        left = "Last day today"
+    else:
+        left = f'{o["days_left"]} day{"s" if o["days_left"] != 1 else ""} left'
+    maps = "https://www.google.com/maps/search/?api=1&amp;query=" + quote(plain(f'{c["address"]} {x["postcode"]}'))
+    who = "Harrow Online Newsletter subscribers" if o.get("sub") else "Open to everyone"
+    who_sub = "Unlock with your newsletter email. Free to join." if o.get("sub") else "No sign-up needed."
+    facts = [
+        f'<li>{icon("calendar")}<div><strong>{"Ended on" if ended else "Ends"} {end_long}</strong><span>{left}. Offers come off the Hub automatically when they end.</span></div></li>',
+        f'<li>{icon("store")}<div><strong><a href="/business/{x["slug"]}.html">{e(name)}</a></strong><span>{c["address"]}, {e(area)}, {e(x["postcode"])}</span></div></li>',
+        f'<li>{icon("people")}<div><strong>{who}</strong><span>{who_sub}</span></div></li>',
+    ]
+
+    # The voucher: code + copy, "no code needed", the unlock form, or "ended"
+    if ended:
+        voucher_main = f'''<p class="voucher__label">Offer ended</p>
+          <p class="voucher__state">This offer has ended</p>
+          <p class="small mb-0">It ran until {end.day} {end.strftime("%B %Y")}. Any code for it no longer works.</p>
+          <a class="ho-btn ho-btn--primary ho-btn--block mt-4" href="/offers.html">See current offers</a>'''
+    elif o.get("sub"):
+        what = "The code appears here once you confirm your email." if o.get("code") else "Full details appear here once you confirm your email."
+        voucher_main = f'''<p class="voucher__label">{"Your code" if o.get("code") else "How to claim"}</p>
+          <p class="small mb-0">{what}</p>{unlock_box(x, o, note=False)}
+          <p class="help mt-2 mb-0">New to the newsletter? Unlocking signs you up to the free daily email. Unsubscribe any time.</p>'''
+    elif o.get("code"):
+        voucher_main = f'''<p class="voucher__label">Your code</p>
+          <p class="voucher__code">{o["code"]}</p>
+          <button class="ho-btn ho-btn--dark ho-btn--block" type="button" data-copy="{o["code"]}" data-copied="Code copied">Copy code</button>'''
+    else:
+        voucher_main = '''<p class="voucher__label">No code needed</p>
+          <p class="voucher__state">Just ask for the offer</p>'''
+    redeem = "" if ended else f'<div class="voucher__how"><strong>How to redeem</strong><p>{o.get("redeem", "Show this page when you pay.")}</p></div>'
+    voucher = f'''<div class="voucher{" voucher--ended" if ended else ""}" id="redeem">
+          {voucher_main}
+          {redeem}
+          <p class="voucher__ends">{icon("calendar", "ho-icon ho-icon--sm")}{"Ended" if ended else "Valid until"} {end.day} {end.strftime("%b %Y")} &middot; <a href="#terms">Terms</a></p>
+        </div>'''
+
+    terms = "".join(f"<li>{t}</li>" for t in o.get("terms", []))
+    terms += f'<li>{"Ended" if ended else "Ends"} at 11.59pm on {end_long}.</li>'
+    if o.get("code") and not o.get("sub"):
+        terms += f'<li>Use the code <strong>{o["code"]}</strong> where asked.</li>'
+    terms += f"<li>Run by {e(name)}. The business can end the offer early if it can no longer honour it.</li>"
+
+    more = [(y, p) for y, p in live if p is not o]
+    more.sort(key=lambda yp: (yp[0] is not x, yp[0]["cat"] != x["cat"], not yp[1].get("featured")))
+    more_html = ""
+    if more:
+        cards = "".join(offer_card(y, p) for y, p in more[:3])
+        more_html = f'''
+        <section class="profile-section" aria-labelledby="more-title">
+          <div class="sec-head">
+            <div><h2 class="sec-title" id="more-title">More Local Offers</h2></div>
+            <a class="link-arrow hide-mobile" href="/offers.html">All offers {icon("arrow")}</a>
+          </div>
+          <div class="stack">
+            {cards}
+          </div>
+        </section>'''
+
+    share = quote(f'{plain(title)} at {plain(name)}: {url}', safe="")
+    share_panel = "" if ended else f'''
+        <div class="panel">
+          <h2 class="panel__title">Share this offer</h2>
+          <div class="cluster">
+            <a class="ho-btn ho-btn--outline ho-btn--sm" href="https://wa.me/?text={share}" rel="noopener" target="_blank">{icon("whatsapp")}WhatsApp</a>
+            <a class="ho-btn ho-btn--outline ho-btn--sm" href="https://www.facebook.com/sharer/sharer.php?u={quote(url, safe="")}" rel="noopener" target="_blank">{icon("facebook")}Facebook</a>
+            <a class="ho-btn ho-btn--outline ho-btn--sm" href="https://x.com/intent/post?text={share}" rel="noopener" target="_blank">{icon("x")}X</a>
+            <a class="ho-btn ho-btn--outline ho-btn--sm" href="mailto:?subject={quote(plain(title))}&amp;body={quote(url, safe="")}">{icon("mail")}Email</a>
+          </div>
+          <label class="field__label copy-field__label" for="offer-link">Link to this offer</label>
+          <div class="copy-field">
+            <input class="input" id="offer-link" type="text" value="{url}" readonly>
+            <button class="ho-btn ho-btn--dark ho-btn--sm" type="button" data-copy="{url}">Copy link</button>
+          </div>
+          <p class="help mt-2 mb-0">The newsletter and our social posts use this same link, so everyone lands on this page.</p>
+        </div>'''
+    biz_panel = f'''
+        <div class="panel">
+          <p class="eyebrow mb-2">The business</p>
+          <div class="biz-card__head">
+            <span class="mono" aria-hidden="true">{initials(name)}</span>
+            <div>
+              <h2 class="panel__title mb-0"><a href="/business/{x["slug"]}.html">{e(name)}</a></h2>
+              <p class="card__meta mt-2"><span>{icon("pin")}{e(area)}</span>{sample_badge() if sample else ""}</p>
+            </div>
+          </div>
+          <p class="small mt-4">{c["tagline"]}</p>
+          <div class="cluster">
+            <a class="ho-btn ho-btn--dark ho-btn--sm" href="/business/{x["slug"]}.html">View profile</a>
+            <a class="ho-btn ho-btn--outline ho-btn--sm" href="tel:{x["phone_raw"][0]}">{icon("phone")}Call</a>
+            <a class="ho-btn ho-btn--outline ho-btn--sm" href="{maps}" rel="noopener" target="_blank">{icon("map")}Directions</a>
+          </div>
+        </div>'''
+
+    ended_note = f'''
+<div class="ho-container mt-4">
+  <div class="notice notice--warn">{icon("alert")}
+    <div><p><strong>This offer has ended.</strong> It ran until {end_long} and has come off Local Offers and the business profile.</p>
+    <p><a href="/offers.html">See current offers in Harrow</a></p></div>
+  </div>
+</div>''' if ended else ""
+    sample_note = f'''
+<div class="ho-container mt-4">
+  <div class="notice notice--sample">{icon("alert")}
+    <p><strong>Sample offer.</strong> Made up to show how offer pages work. It will be removed before launch.</p>
+  </div>
+</div>''' if sample else ""
+    pub = "Made-up sample for the preview." if sample else "Checked by Harrow Online."
+
+    body = f'''<nav class="crumbs ho-container" aria-label="Breadcrumb">
+  <ol>
+    <li><a href="/">Hub</a></li>
+    <li><a href="/offers.html">Local Offers</a></li>
+    <li><a href="/offers.html?cat={x["cat"]}">{e(cat_name(x["cat"]))}</a></li>
+    <li><span aria-current="page">{title}</span></li>
+  </ol>
+</nav>
+{ended_note}{sample_note}
+<article class="offer-page{" offer-page--ended" if ended else ""}">
+  <div class="ho-container offer-hero">
+    <div class="offer-hero__head">
+      <div class="cluster">{badges}</div>
+      <h1 class="offer-hero__title">{title}</h1>
+      <p class="offer-hero__biz">at <a href="/business/{x["slug"]}.html">{e(name)}</a>, {e(area)}</p>
+      <p class="offer-hero__text">{o["text"]}</p>
+    </div>
+    {voucher}
+    <ul class="facts offer-hero__facts">
+      {"".join(facts)}
+    </ul>
+  </div>
+
+  <div class="ho-container">
+    <div class="layout-aside">
+      <div>
+        <section class="profile-section" id="terms" aria-labelledby="terms-title">
+          <h2 id="terms-title">Terms and conditions</h2>
+          <ul class="terms-list">{terms}</ul>
+        </section>
+{more_html}
+      </div>
+
+      <aside class="sticky stack">{share_panel}{biz_panel}
+        <p class="small muted">{pub} Offers are run by the business, so check the terms with them before you buy. <a class="report-link" href="/report.html">{icon("flag")}Report a problem</a></p>
+      </aside>
+    </div>
+  </div>
+</article>
+'''
+    import json
+    node = {
+        "@type": "Offer", "@id": url + "#offer", "name": plain(title), "description": plain(o["text"]), "url": url,
+        "validThrough": end.isoformat() + "T23:59:00", "availability": "https://schema.org/" + ("Discontinued" if ended else "InStock"),
+        "offeredBy": {"@type": "LocalBusiness", "name": plain(name), "url": f'{ORIGIN}/business/{x["slug"]}/'},
+    }
+    ld = json.dumps({"@context": "https://schema.org", "@graph": [node]}, indent=2, ensure_ascii=False)
+    body += f'\n<script type="application/ld+json">\n{ld}\n</script>\n'
+    desc = plain(f'{title} at {name}, {area}. {o["text"]} {"Ended" if ended else "Ends"} {end.day} {end.strftime("%B %Y")}.')
+    meta = {"title": plain(f"{title} at {name}"), "description": desc, "nav": "offers", "hubnav": "offers",
+            "body": "page-offer", "schema": "ItemPage", "path": o["href"]}
+    if ended or sample:
+        meta["robots"] = "noindex, follow"   # ended offers leave the index; samples never enter it
+    return meta, body
+
+
+def offer_pages(listings):
+    """[(meta, body)] for every offer on a paid plan, live and ended. build.py renders and writes them."""
+    live = all_offers(listings)
+    out = []
+    for x in listings:
+        if x.get("tier") in PAID and x.get("claimed"):
+            for o in x["claimed"]["offers"] + x["claimed"].get("ended_offers", []):
+                out.append(offer_page(x, o, live))
+    return out
 
 
 def event_row(ev, sample=False):

@@ -166,6 +166,9 @@ def build(listings=True):
     for meta, body in gen_events.event_pages():
         write(meta["path"], render(meta, body))
         count += 1
+    for meta, body in gen_listings.offer_pages():   # one shareable page per Local Offer: /offers/{slug}/
+        write(meta["path"], render(meta, body))
+        count += 1
     import sitemap
     sitemap.write_all(seo.WRITTEN if listings else None)
     write_vercel()

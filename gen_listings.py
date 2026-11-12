@@ -316,6 +316,11 @@ def write_partials(cat_counts, area_counts):
     (PARTIALS / "gen-recent-rows.html").write_text("".join(biz_row(x) for x in sample), encoding="utf-8")
 
 
+def offer_pages():
+    """One page per Local Offer, live and ended (gen_claimed.offer_page)."""
+    return C.offer_pages(listings())
+
+
 def write_partials_only():
     L = listings()
     write_partials(Counter(x["cat"] for x in L), Counter(x["area"] for x in L))

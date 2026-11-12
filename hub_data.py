@@ -185,10 +185,29 @@ def load_claimed():
     for ev in load_events():
         if ev.get("org") and ev["day"] >= PREVIEW_TODAY:
             by_org.setdefault(ev["org"], []).append(ev)
+    used = set()
     for c in businesses:
         classes = [x for x in c.get("events", []) if x.get("class")]
         c["events"] = [profile_event(ev) for ev in by_org.get(c["name"], [])] + classes
+        live, ended = [], []
+        for o in c.get("offers", []):
+            o.update(offer_dates(o["ends"]))
+            base = slugify(_unescape(o["title"]))
+            slug = base if base not in used else slugify(f'{_unescape(o["title"])} {c["name"]}')
+            used.add(slug)
+            o["slug"], o["href"] = slug, f"/offers/{slug}/"
+            (live if o["live"] else ended).append(o)
+        # Automatic removal: ended offers drop off every list (Offers page, homepage, profiles, schema).
+        # Their own page stays up, marked as ended and noindexed, so old newsletter and social links still land.
+        c["offers"], c["ended_offers"] = live, ended
     return businesses
+
+
+def offer_dates(ends):
+    """'30 November 2026' → end date, days left from the preview's today, live flag and short label."""
+    end = _dt.datetime.strptime(_unescape(ends).strip(), "%d %B %Y").date()
+    days = (end - PREVIEW_TODAY).days
+    return {"end": end, "days_left": days, "live": days >= 0, "ends_short": f"{end.day} {end.strftime('%b')}"}
 
 
 # ------------------------------------------------------------------ events (data/events.json)

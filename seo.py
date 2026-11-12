@@ -360,7 +360,8 @@ def local_business(x, base, area_name, cat_name, days, area_centre):
         node["sameAs"] = same
     if c.get("offers"):
         node["makesOffer"] = [{"@type": "Offer", "name": text(o["title"]), "description": text(o.get("text", "")),
-                               "url": absolute(base, "/offers/")} for o in c["offers"] if o.get("title")]
+                               "url": absolute(base, o.get("href", "/offers/")),
+                               **({"validThrough": o["end"].isoformat()} if o.get("end") else {})} for o in c["offers"] if o.get("title")]
     return node
 
 

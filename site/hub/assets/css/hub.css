@@ -487,6 +487,7 @@ address { font-style: normal; }
 }
 
 /* Notices */
+.notice[hidden] { display: none; }
 .notice {
   display: flex; gap: var(--ho-s3); align-items: flex-start; padding: var(--ho-s4); border-radius: var(--ho-radius);
   background: var(--ho-info-tint); color: #17365F; font-size: 15px; line-height: 1.5;
@@ -639,6 +640,51 @@ address { font-style: normal; }
 .offer.is-unlocked .offer__text, .offer.is-unlocked .offer__code { filter: none; }
 .offer.is-unlocked .offer__lock { display: none; }
 @media (max-width: 520px) { .offer { grid-template-columns: 72px minmax(0, 1fr); gap: var(--ho-s3); } }
+.offer__title a { color: inherit; text-decoration: none; }
+.offer__title a:hover { color: var(--ho-red); text-decoration: underline; }
+.offer__ends { display: inline-flex; align-items: center; gap: 4px; }
+.offer__ends--soon { color: var(--ho-red-dark); font-weight: 700; }
+.offer__more { display: inline-flex; align-items: center; gap: 4px; align-self: flex-start; font: 700 13px/1.3 var(--ho-font-ui); color: var(--ho-red); text-decoration: none; }
+.offer__more:hover { text-decoration: underline; }
+.badge--soon { background: #FFF1E0; color: #7A3E00; }
+
+/* Offer page: /offers/{slug}/ */
+.offer-hero { display: grid; grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr); grid-template-areas: "head voucher" "facts voucher"; column-gap: var(--ho-s7); align-items: start; padding-top: var(--ho-s5); padding-bottom: var(--ho-s6); }
+.offer-hero__head { grid-area: head; }
+.offer-hero .voucher { grid-area: voucher; }
+.offer-hero__facts { grid-area: facts; }
+.offer-hero__title { margin: var(--ho-s3) 0 var(--ho-s2); font-size: 38px; line-height: 1.15; letter-spacing: -0.02em; }
+.offer-hero__biz { margin: 0 0 var(--ho-s3); font: 600 16px/1.4 var(--ho-font-ui); color: var(--ho-muted); }
+.offer-hero__biz a { color: var(--ho-ink); font-weight: 700; }
+.offer-hero__text { margin: 0 0 var(--ho-s4); font-size: 18px; line-height: 1.55; color: var(--ho-text); }
+.voucher {
+  position: relative; padding: var(--ho-s5); background: #fff; border: 2px dashed var(--ho-red); border-radius: var(--ho-radius-lg);
+  box-shadow: var(--ho-shadow);
+}
+.voucher__label { margin: 0 0 var(--ho-s2); font: 700 12px/1.2 var(--ho-font-ui); text-transform: uppercase; letter-spacing: .08em; color: var(--ho-red); }
+.voucher__code {
+  margin: 0 0 var(--ho-s3); padding: 14px var(--ho-s3); border-radius: var(--ho-radius); background: var(--ho-soft); text-align: center;
+  font: 700 30px/1.1 ui-monospace, "SFMono-Regular", Consolas, monospace; letter-spacing: .12em; color: var(--ho-ink); word-break: break-all;
+}
+.voucher__state { margin: 0 0 var(--ho-s2); font: 700 22px/1.25 var(--ho-font-head); color: var(--ho-ink); }
+.voucher__how { margin-top: var(--ho-s4); padding-top: var(--ho-s4); border-top: 1px solid var(--ho-line); }
+.voucher__how strong { display: block; font: 700 14px/1.3 var(--ho-font-ui); color: var(--ho-ink); }
+.voucher__how p { margin: 4px 0 0; font-size: 15px; }
+.voucher__ends { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; margin: var(--ho-s4) 0 0; font-size: 13px; color: var(--ho-muted); }
+.voucher .offer__lock { margin-top: var(--ho-s3); }
+.voucher--ended { border-color: var(--ho-line-2); box-shadow: none; }
+.voucher--ended .voucher__label { color: var(--ho-muted); }
+.offer-page--ended .offer-hero__title, .offer-page--ended .offer-hero__text { color: var(--ho-muted); }
+.terms-list { margin: 0; padding-left: 20px; }
+.terms-list li { margin: 0 0 var(--ho-s2); padding-left: 4px; }
+.copy-field__label { display: block; margin-top: var(--ho-s4); }
+.copy-field { display: flex; gap: var(--ho-s2); margin-top: 6px; }
+.copy-field .input { flex: 1; min-width: 0; height: 36px; font: 13px/1.2 ui-monospace, "SFMono-Regular", Consolas, monospace; background: var(--ho-soft-2); }
+@media (max-width: 860px) {
+  .offer-hero { grid-template-columns: minmax(0, 1fr); grid-template-areas: "head" "voucher" "facts"; row-gap: var(--ho-s5); }
+  .offer-hero__title { font-size: 28px; }
+  .offer-hero__text { font-size: 16px; }
+}
 
 /* Event card + date tile */
 .date-tile {
