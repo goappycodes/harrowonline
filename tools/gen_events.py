@@ -8,8 +8,8 @@ From that one list it builds:
   /events/{slug}/                one page per event (build.py calls event_pages() and writes them)
 Business profiles pick up the same events by organiser ("org") in hub_data.load_claimed().
 
-Sample content rule (client feedback, 12 Nov 2026): anything with "sample": true carries a Sample badge and is never
-shown as Featured. Weekly classes below are all samples.
+Sample content rule: anything with "sample": true carries a Sample badge (alongside Featured where set, to demo
+featured placement). Weekly classes below are all samples.
 
     python tools/gen_events.py   # regenerate the list, month and weekend partial (build.py also runs this)
 """
@@ -47,16 +47,15 @@ SAMPLE = f'<span class="badge badge--sample" title="Made-up content for the prev
 
 def event_badges(x, extra=""):
     b = []
-    if x.get("sample"):
-        b.append(SAMPLE)
-    elif x.get("featured"):
+    if x.get("featured"):
         b.append(f'<span class="badge badge--featured">{I("star")}Featured</span>')
+    elif x.get("sample"):
+        b.append(SAMPLE)   # Sample only where no Featured badge shows
     return "".join(b) + extra
 
 
 def is_featured(x):
-    """Only confirmed (non-sample) items may take a Featured position."""
-    return bool(x.get("featured")) and not x.get("sample")
+    return bool(x.get("featured"))
 
 
 # Weekly classes: weekday (0 = Mon), time, sort, title, venue, area, price, age, icon, featured, type. All samples.
@@ -100,7 +99,7 @@ def items_on(day):
         for c in CLASSES:
             if c[0] == day.weekday():
                 out.append(dict(kind="class", time=c[1], sort=c[2], title=c[3], cat="Classes and activities", venue=c[4], area=c[5], price=c[6],
-                                age=c[7], icon=c[8], featured=False, sample=True, desc=CLASS_DESC.get(c[3], ""), href="/class.html", ctype=c[10]))
+                                age=c[7], icon=c[8], featured=c[9], sample=True, desc=CLASS_DESC.get(c[3], ""), href="/class.html", ctype=c[10]))
     out.sort(key=lambda x: (not x["featured"], x["sort"]))
     return out
 

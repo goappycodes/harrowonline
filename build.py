@@ -17,8 +17,8 @@ Page front matter (first HTML comment in each page file), one "key: value" per l
     schema       schema.org WebPage type (default from seo.PAGE_SCHEMA, else WebPage)
     body         extra <body> classes
     css          extra stylesheet name in site/assets/css/ (e.g. "hub-a"); merged into hub.css before hand-off
-    layout       default | bare (bare = no Hub bar, no newsletter strip; used by auth pages)
-    site         hub | news (news = page belongs to harrowonline.org; hides the Hub bar and uses the news header CTA)
+    layout       default | bare (bare = no newsletter strip or phone tab bar; used by auth pages)
+    site         hub | news (news = page belongs to harrowonline.org; uses the live news menu and header CTA)
     nl           off = hide the newsletter strip
 
 Inside page bodies:
@@ -73,15 +73,14 @@ def render(meta, body):
     layout = meta.get("layout", "default")
 
     body = INC_RE.sub(lambda m: partial(m.group(1)), body)
-    if meta.get("hubnav") == "account":
+    if "is-logged-in" in meta.get("body", ""):   # signed-in dashboard pages only (not sign-in / register)
         # Preview only: the signed-in account, its bookings, statuses, invoices and figures are made up.
-        body = ('<div class="ho-container mt-4"><div class="notice notice--sample"><svg class="ho-icon"><use href="#i-alert"/></svg>'
+        body = ('<div class="ho-container mt-4 mb-4"><div class="notice notice--sample"><svg class="ho-icon"><use href="#i-alert"/></svg>'
                 '<p><strong>Sample account.</strong> The business, bookings, statuses, invoices and figures on this page are made up '
                 'to show how the dashboard works. None of it is real, and it will be removed before launch.</p></div></div>\n') + body
 
+    # Hub navigation lives in the header: a "Hub" dropdown on desktop, a Hub section in the phone drawer (no separate Hub bar).
     parts = [partial("head"), partial("header")]
-    if site == "hub" and layout != "bare":
-        parts.append(partial("hubbar"))
     parts.append('<main id="main">\n' + body + "\n</main>")
     if layout != "bare" and meta.get("nl") != "off":
         parts.append(partial("nl-strip"))
@@ -100,6 +99,8 @@ def render(meta, body):
     # Current menu items
     nav = meta.get("nav", "hub" if site == "hub" else "news")
     hubnav = meta.get("hubnav", "")
+    if hubnav == "directory":
+        nav = "businesses"   # search, category, area and profile pages: "Businesses" in the main menu
     html = re.sub(r"\{\{nav:([\w-]+)\}\}", lambda m: ' class="current-menu-item"' if m.group(1) == nav else "", html)
     html = re.sub(r"\{\{navcls:([\w-]+)\}\}", lambda m: " current-menu-item" if m.group(1) == nav else "", html)
     html = re.sub(r"\{\{navaria:([\w-]+)\}\}", lambda m: ' aria-current="page"' if m.group(1) == nav else "", html)

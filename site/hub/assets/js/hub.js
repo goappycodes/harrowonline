@@ -53,6 +53,36 @@
     $$("[data-filters-open]").forEach((o) => o.setAttribute("aria-expanded", "false"));
   }));
 
+  /* 3b. Main menu dropdowns (the "Hub" item). Hover and keyboard focus open it in CSS; the chevron button
+         toggles it for touch screens. Escape or a click elsewhere closes it. */
+  const closeSubs = (except) => $$(".menu-item-has-children.is-open").forEach((li) => {
+    if (li === except) return;
+    li.classList.remove("is-open");
+    const t = $("[data-ho-sub-toggle]", li);
+    if (t) t.setAttribute("aria-expanded", "false");
+  });
+  $$("[data-ho-sub-toggle]").forEach((btn) => btn.addEventListener("click", (e) => {
+    e.stopPropagation();
+    const li = btn.closest(".menu-item-has-children");
+    const open = !li.classList.contains("is-open");
+    closeSubs(li);
+    li.classList.toggle("is-open", open);
+    li.classList.toggle("is-dismissed", !open);   // closing beats :focus-within while the button keeps focus
+    btn.setAttribute("aria-expanded", String(open));
+  }));
+  $$(".menu-item-has-children").forEach((li) => {
+    // Once focus or the pointer leaves the item, it can open again on hover or focus.
+    li.addEventListener("focusout", (e) => { if (!li.contains(e.relatedTarget)) li.classList.remove("is-dismissed"); });
+    li.addEventListener("mouseleave", () => li.classList.remove("is-dismissed"));
+  });
+  document.addEventListener("click", (e) => { if (!e.target.closest(".menu-item-has-children")) closeSubs(); });
+  document.addEventListener("keydown", (e) => {
+    if (e.key !== "Escape") return;
+    const li = document.activeElement && document.activeElement.closest(".menu-item-has-children");
+    closeSubs();
+    if (li) { li.classList.add("is-dismissed"); const t = $("[data-ho-sub-toggle]", li); if (t) t.focus(); }
+  });
+
   document.addEventListener("keydown", (e) => {
     if (e.key !== "Escape") return;
     closeDrawer();
@@ -88,6 +118,36 @@
     const email = esc(($("input[type=email]", form) || {}).value || "your inbox");
     lock.innerHTML = `<p role="status">${ICON("mail", "ho-icon ho-icon--sm")}Check ${email} and tap the confirmation link. Your code appears here once you have confirmed.</p>`;
   }));
+
+  /* 6a. Local Offers page: filter by ?cat=, ?area= and ?sub=1 (chips and the filter form both send these).
+        WordPress filters server-side with the same parameters. */
+  const offerList = $("[data-offers-list]");
+  if (offerList) {
+    const q = new URLSearchParams(location.search);
+    const cat = q.get("cat") || "", area = q.get("area") || "", sub = q.get("sub") === "1";
+    let n = 0;
+    $$(".offer", offerList).forEach((o) => {
+      const on = (!cat || o.dataset.cat === cat) && (!area || o.dataset.area === area) && (!sub || o.dataset.sub === "1");
+      o.hidden = !on;
+      o.style.display = on ? "" : "none";
+      if (on) n += 1;
+    });
+    const catSel = $("#o-cat"), areaSel = $("#o-area"), subBox = $("#o-sub");
+    if (catSel) catSel.value = cat;
+    if (areaSel) areaSel.value = area;
+    if (subBox) subBox.checked = sub;
+    $$(".chip[data-cat]").forEach((c) => c.toggleAttribute("aria-current", c.dataset.cat === cat));
+    if (cat || area || sub) {
+      const parts = [];
+      if (cat && catSel && catSel.selectedOptions[0]) parts.push(catSel.selectedOptions[0].textContent.trim().toLowerCase());
+      if (sub) parts.push("subscriber-only");
+      const where = area && areaSel && areaSel.selectedOptions[0] ? `in ${areaSel.selectedOptions[0].textContent.trim()}` : "across Harrow";
+      const count = $("[data-offers-count]");
+      if (count) count.innerHTML = `<strong>${n}</strong> ${esc(parts.join(" "))}${parts.length ? " " : ""}${n === 1 ? "offer" : "offers"} ${esc(where)}`;
+      const empty = $("[data-offers-empty]");
+      if (empty) empty.hidden = n > 0;
+    }
+  }
 
   /* 6b. What's On list: date filter from ?when=today|weekend|7days|date (&date=YYYY-MM-DD).
         The preview has a fixed "today" (data-today); WordPress filters server-side with the same parameters. */
@@ -217,6 +277,7 @@
       const area = INDEX.areas[x.a] || "";
       const initials = x.n.replace(/[^A-Za-z0-9 ]/g, "").split(/\s+/).filter(Boolean).slice(0, 2).map((w) => w[0]).join("").toUpperCase() || "?";
       const tier = x.t || "unclaimed";
+      // Claimed listings (sample or real) show Verified; Featured for Premium and Local Partner
       const badge = tier === "unclaimed" ? `<span class="badge badge--unclaimed">Unclaimed</span>` :
         `<span class="badge badge--verified">${ICON("verified")}Verified</span>`;
       if (tier !== "unclaimed") {

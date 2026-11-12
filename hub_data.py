@@ -233,7 +233,7 @@ def profile_event(ev):
     d = ev["day"]
     return {"title": ev["title"], "when": f'{d.strftime("%a")} {d.day} {d.strftime("%b")}, {ev["time"]}', "d": str(d.day),
             "m": d.strftime("%b"), "w": d.strftime("%a"), "price": ev["price"], "href": ev["href"],
-            "featured": ev.get("featured") and not ev.get("sample"), "sample": ev.get("sample", False)}
+            "featured": bool(ev.get("featured")), "sample": ev.get("sample", False)}
 
 
 if __name__ == "__main__":
