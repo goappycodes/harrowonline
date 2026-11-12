@@ -1,69 +1,65 @@
-"""Generates src/pages/events.html and src/pages/events-month.html from one event list (prototype data)."""
-import datetime as dt
-from pathlib import Path
+"""
+What's On generator. One event source: data/events.json (loaded by hub_data.load_events()).
 
-PAGES = Path(__file__).resolve().parent.parent / "src/pages"
+From that one list it builds:
+  src/pages/events.html          list view (7 days from the preview's "today"; hub.js filters by ?when=)
+  src/pages/events-month.html    month calendar
+  src/partials/gen-weekend-cards.html   homepage "This weekend in Harrow"
+  /events/{slug}/                one page per event (build.py calls event_pages() and writes them)
+Business profiles pick up the same events by organiser ("org") in hub_data.load_claimed().
+
+Sample content rule (client feedback, 12 Nov 2026): anything with "sample": true carries a Sample badge and is never
+shown as Featured. Weekly classes below are all samples.
+
+    python tools/gen_events.py   # regenerate the list, month and weekend partial (build.py also runs this)
+"""
+import datetime as dt
+import html
+import re
+import sys
+from pathlib import Path
+from urllib.parse import quote, quote_plus
+
+ROOT = Path(__file__).resolve().parent.parent
+sys.path.insert(0, str(ROOT))
+import hub_data as H  # noqa: E402
+
+PAGES = ROOT / "src/pages"
+PARTIALS = ROOT / "src/partials"
 D = dt.date
-TODAY = D(2026, 11, 11)
+TODAY = H.PREVIEW_TODAY
+WEEKEND = (D(2026, 11, 13), D(2026, 11, 15))      # Friday to Sunday after TODAY
+LIST_DAYS = 7                                       # list view: Wednesday 11 to Tuesday 17 November
+ORIGIN = "https://harrowonline.org/hub"
+
 
 def I(name, cls="ho-icon"):
     return f'<svg class="{cls}"><use href="#i-{name}"/></svg>'
 
-# One-off events: date, time label, sort key, title, category, venue, area, price, age, icon, featured, desc
-EVENTS = [
-    (D(2026,10,31), "5pm", 17.0, "Halloween Lantern Trail", "Family", "Headstone Manor &amp; Museum", "Headstone", "&pound;4", "All ages", "family", False, ""),
-    (D(2026,11,1), "11am", 11.0, "Autumn Apple Day", "Family", "Headstone Manor &amp; Museum", "Headstone", "Free", "All ages", "leaf", False, ""),
-    (D(2026,11,3), "7pm", 19.0, "Local History Talk: Harrow Weald", "Community", "Headstone Manor &amp; Museum", "Headstone", "&pound;5", "Adults", "news", False, ""),
-    (D(2026,11,5), "6pm", 18.0, "Bonfire Night Lantern Walk", "Family", "Harrow Weald Common", "Harrow Weald", "Free", "All ages", "family", False, ""),
-    (D(2026,11,7), "6pm", 18.0, "Canons Park Fireworks", "Family", "Canons Park", "Canons Park", "&pound;6", "All ages", "party", True, ""),
-    (D(2026,11,8), "10.45am", 10.75, "Remembrance Sunday Service", "Community", "Harrow Civic Centre", "Harrow Town Centre", "Free", "All ages", "flag", False, ""),
-    (D(2026,11,8), "2pm", 14.0, "Diwali Family Celebration", "Family", "Harrow Arts Centre", "Hatch End", "Free", "All ages", "party", False, ""),
-    (D(2026,11,11), "10.45am", 10.75, "Armistice Day Silence", "Community", "Harrow Civic Centre, Station Road", "Harrow Town Centre", "Free", "All ages", "flag", False,
-     "Join the two-minute silence at 11am, followed by a short wreath-laying."),
-    (D(2026,11,11), "7.30pm", 19.5, "Charity Quiz Night", "Community", "St George&rsquo;s Hall", "Headstone", "&pound;5 a head", "Adults", "people", False,
-     "Teams of up to six, with a raffle. Money raised goes to the Headstone food bank."),
-    (D(2026,11,12), "6pm to 9pm", 18.0, "Museum Lates: A Victorian Christmas", "Arts", "Headstone Manor &amp; Museum", "Headstone", "&pound;6", "Ages 16+", "home", False,
-     "Candlelit tours of the manor, short talks and festive crafts after hours."),
-    (D(2026,11,12), "7.30pm", 19.5, "Open Mic Night", "Music", "Harrow Arts Centre", "Hatch End", "&pound;4", "Ages 14+", "music", False,
-     "Singers, poets and comics welcome. Sign up on the door from 7pm."),
-    (D(2026,11,13), "4pm to 8pm", 16.0, "Harrow Christmas Lights Switch-On", "Community", "St Ann&rsquo;s Road", "Harrow Town Centre", "Free", "All ages", "party", True,
-     "Live music, a lantern parade, food stalls and the big switch-on at 6pm."),
-    (D(2026,11,13), "8pm", 20.0, "Friday Night Comedy", "Nightlife", "Harrow Arts Centre", "Hatch End", "&pound;15", "Ages 18+", "people", False,
-     "Four stand-up acts from the London circuit, hosted by a local favourite."),
-    (D(2026,11,14), "10am to 1pm", 10.0, "Canons Park Tree Planting", "Community", "Canons Park", "Canons Park", "Free, book a place", "Ages 8+ with an adult", "leaf", False,
-     "Help plant 200 native trees. Tools and gloves provided, bring wellies."),
-    (D(2026,11,14), "7.30pm", 19.5, "Live Jazz Supper Club", "Music", "Hill Street Kitchen", "Harrow on the Hill", "&pound;35 with dinner", "Adults", "music", False,
-     "A three-course supper with the Hill Street Trio. Booking essential."),
-    (D(2026,11,15), "10am to 2pm", 10.0, "Pinner Farmers&rsquo; Market", "Food and drink", "Pinner High Street", "Pinner", "Free entry", "All ages", "cart", False,
-     "Around 30 stalls of local produce, bread, cheese and hot food."),
-    (D(2026,11,15), "10am to 12pm", 10.01, "Harrow Weald Common Guided Walk", "Community", "Harrow Weald Common", "Harrow Weald", "Free", "All ages", "leaf", False,
-     "A gentle two-hour walk with a local ranger. Meet at the car park."),
-    (D(2026,11,16), "7.30am", 7.5, "Harrow Business Breakfast", "Community", "Hill Street Kitchen", "Harrow on the Hill", "&pound;12", "Adults", "briefcase", False, ""),
-    (D(2026,11,17), "2pm", 14.0, "Pinner Repair Caf&eacute;", "Community", "Pinner Methodist Hall", "Pinner", "Free", "All ages", "wrench", False, ""),
-    # Events posted by claimed Hub businesses (data/claimed.json)
-    (D(2026,11,17), "9am to 1pm", 9.0, "Flu Jab Drop-in", "Community", "Kenton Road Pharmacy", "Kenton", "Free for eligible adults", "Ages 18+", "medical", False,
-     "No appointment needed. Bring your NHS number if you have it."),
-    (D(2026,11,21), "10am", 10.02, "Bike Maintenance for Beginners", "Community", "Pinner Cycle Workshop", "Pinner", "&pound;15", "Ages 12+", "wrench", False,
-     "Learn to fix a puncture, adjust your brakes and keep your chain running smoothly."),
-    (D(2026,11,26), "7pm", 19.0, "Curry and Quiz Night", "Food and drink", "Rayners Lane Spice House", "Rayners Lane", "&pound;20 with dinner", "Adults", "food", False,
-     "Teams of up to six. Dinner included, with prizes for the top three."),
-    (D(2026,11,28), "10am", 10.02, "Children&rsquo;s Brushing Workshop", "Family", "Stanmore Family Dental", "Stanmore", "Free", "Ages 3 to 10", "medical", False,
-     "A fun half hour on looking after teeth, with a free toothbrush for every child."),
-    (D(2026,11,19), "7pm", 19.0, "Wine Tasting: Wines for Christmas", "Food and drink", "Hill Street Kitchen", "Harrow on the Hill", "&pound;25", "Ages 18+", "food", False, ""),
-    (D(2026,11,20), "7pm", 19.0, "Film Night: It&rsquo;s a Wonderful Life", "Arts", "Harrow Arts Centre", "Hatch End", "&pound;7", "All ages", "star", False, ""),
-    (D(2026,11,21), "10am", 10.0, "Christmas Craft Fair", "Arts", "Headstone Manor &amp; Museum", "Headstone", "Free entry", "All ages", "gift", True, ""),
-    (D(2026,11,21), "7pm", 19.0, "Winter Choir Concert", "Music", "St George&rsquo;s Hall", "Headstone", "&pound;10", "All ages", "music", False, ""),
-    (D(2026,11,22), "11am", 11.0, "Christmas Tree Festival", "Community", "St George&rsquo;s Hall", "Headstone", "Free", "All ages", "gift", False, ""),
-    (D(2026,11,25), "5pm", 17.0, "Pinner Late-Night Shopping", "Community", "Pinner High Street", "Pinner", "Free", "All ages", "cart", False, ""),
-    (D(2026,11,27), "7pm", 19.0, "Panto: Jack and the Beanstalk", "Family", "Harrow Arts Centre", "Hatch End", "From &pound;15", "All ages", "party", False, ""),
-    (D(2026,11,28), "10am", 10.0, "Stanmore Christmas Market", "Food and drink", "Stanmore Broadway", "Stanmore", "Free entry", "All ages", "cart", True, ""),
-    (D(2026,11,28), "2pm", 14.0, "Panto: Jack and the Beanstalk", "Family", "Harrow Arts Centre", "Hatch End", "From &pound;15", "All ages", "party", False, ""),
-    (D(2026,11,29), "6pm", 18.0, "Advent Carols by Candlelight", "Music", "St George&rsquo;s Hall", "Headstone", "Free", "All ages", "music", False, ""),
-    (D(2026,11,30), "7.30pm", 19.5, "St Andrew&rsquo;s Day Ceilidh", "Music", "Harrow Arts Centre", "Hatch End", "&pound;12", "All ages", "music", False, ""),
-    (D(2026,12,5), "11am", 11.0, "Wealdstone Christmas Fair", "Community", "Wealdstone High Street", "Wealdstone", "Free", "All ages", "gift", False, ""),
-]
 
-# Weekly classes: weekday (0 = Mon), time, sort, title, venue, area, price, age, icon, featured, type
+def plain(s):
+    """Text for URLs, JSON and calendar files: no tags, no entities."""
+    return html.unescape(re.sub(r"<[^>]+>", "", s or ""))
+
+
+SAMPLE = f'<span class="badge badge--sample" title="Made-up content for the preview. Removed before launch.">{I("alert")}Sample</span>'
+
+
+def event_badges(x, extra=""):
+    b = []
+    if x.get("sample"):
+        b.append(SAMPLE)
+    elif x.get("featured"):
+        b.append(f'<span class="badge badge--featured">{I("star")}Featured</span>')
+    return "".join(b) + extra
+
+
+def is_featured(x):
+    """Only confirmed (non-sample) items may take a Featured position."""
+    return bool(x.get("featured")) and not x.get("sample")
+
+
+# Weekly classes: weekday (0 = Mon), time, sort, title, venue, area, price, age, icon, featured, type. All samples.
 CLASSES = [
     (0, "11am", 11.0, "Chair Yoga for Over-60s", "St George&rsquo;s Hall", "Headstone", "&pound;3", "Ages 60+", "heart", False, "Fitness"),
     (1, "7pm", 19.0, "Beginners&rsquo; Pottery", "Harrow Arts Centre", "Hatch End", "&pound;150 for 6 weeks", "Adults", "edit", False, "Workshops"),
@@ -89,76 +85,86 @@ CLASS_DESC = {
     "Story Time": "Picture books, songs and a craft. Free, with a babyccino for the grown-ups.",
 }
 DAYNAMES = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"]
-ORG_LINKS = {"Hill Street Kitchen": "/sample-premium.html", "Wealdstone Fitness Studio": "/sample-premium.html",
-             "Hatch End Bookshop &amp; Caf&eacute;": "/sample-premium.html"}
+
+EVENTS = H.load_events()
+
 
 def items_on(day):
     out = []
     for e in EVENTS:
-        if e[0] == day:
-            out.append(dict(kind="event", time=e[1], sort=e[2], title=e[3], cat=e[4], venue=e[5], area=e[6], price=e[7], age=e[8],
-                            icon=e[9], featured=e[10], desc=e[11], href="/event.html"))
+        if e["day"] == day:
+            out.append(dict(kind="event", time=e["time"], sort=e["start"].hour + e["start"].minute / 60, title=e["title"], cat=e["cat"],
+                            venue=e["venue"], area=e["area"], price=e["price"], age=e["age"], icon=e["icon"], featured=is_featured(e),
+                            sample=e.get("sample", False), desc=e["desc"], href=e["href"]))
     if day.month == 11 or day <= D(2026, 12, 12):
         for c in CLASSES:
             if c[0] == day.weekday():
                 out.append(dict(kind="class", time=c[1], sort=c[2], title=c[3], cat="Classes and activities", venue=c[4], area=c[5], price=c[6],
-                                age=c[7], icon=c[8], featured=c[9], desc=CLASS_DESC.get(c[3], ""), href="/class.html", ctype=c[10]))
+                                age=c[7], icon=c[8], featured=False, sample=True, desc=CLASS_DESC.get(c[3], ""), href="/class.html", ctype=c[10]))
     out.sort(key=lambda x: (not x["featured"], x["sort"]))
     return out
+
+
+def long_date(d):
+    return f"{DAYNAMES[d.weekday()]} {d.day} {d.strftime('%B')}"
+
 
 # ---------------------------------------------------------------- list view
 def event_row(x, day):
     ph_cls = "ph ph--red" if x["featured"] and x["kind"] == "event" else ("ph ph--dark" if x["featured"] else "ph")
-    badges = []
-    if x["featured"]:
-        badges.append(f'<span class="badge badge--featured">{I("star")}Featured</span>')
-    if x["kind"] == "class":
-        badges.append(f'<span class="badge badge--outline">{I("repeat")}Weekly class</span>')
-    badges.append(f'<span class="biz-card__cat">{x["cat"]}</span>')
+    extra = f'<span class="badge badge--outline">{I("repeat")}Weekly class</span>' if x["kind"] == "class" else ""
+    badges = event_badges(x, extra) + f'<span class="biz-card__cat">{x["cat"]}</span>'
     when = f'Every {DAYNAMES[day.weekday()]}, {x["time"]}' if x["kind"] == "class" else x["time"]
     when_icon = "repeat" if x["kind"] == "class" else "clock"
     desc = f'\n      <p class="card__text">{x["desc"]}</p>' if x["desc"] else ""
-    return f'''    <article class="event-row{' event-row--featured' if x['featured'] else ''}">
+    return f'''    <article class="event-row{' event-row--featured' if x['featured'] else ''}" data-kind="{x['kind']}">
       <time class="date-tile" datetime="{day.isoformat()}"><span class="date-tile__m">{day.strftime('%b')}</span><span class="date-tile__d">{day.day}</span><span class="date-tile__w">{day.strftime('%a')}</span></time>
       <div class="{ph_cls}">{I(x['icon'])}</div>
       <div>
-        <div class="cluster mb-2">{''.join(badges)}</div>
+        <div class="cluster mb-2">{badges}</div>
         <h3 class="event-row__title"><a href="{x['href']}">{x['title']}</a></h3>
         <p class="card__meta"><span>{I(when_icon)}{when}</span><span>{I('pin')}{x['venue']}, {x['area']}</span><span>{I('people')}{x['age']}</span></p>{desc}
       </div>
       <div class="event-row__side"><strong>{x['price']}</strong></div>
     </article>'''
 
+
 def day_label(day):
     if day == TODAY:
-        return f"Today <small>Wednesday {day.day} November</small>"
+        return f"Today <small>{long_date(day)}</small>"
     if day == TODAY + dt.timedelta(days=1):
-        return f"Tomorrow <small>Thursday {day.day} November</small>"
-    return f"{DAYNAMES[day.weekday()]} {day.day} November"
+        return f"Tomorrow <small>{long_date(day)}</small>"
+    return long_date(day)
+
 
 def build_list():
     groups, total = [], 0
-    for n in range(5):  # Wed 11 to Sun 15
+    for n in range(LIST_DAYS):
         day = TODAY + dt.timedelta(days=n)
         its = items_on(day)
         total += len(its)
         rows = "\n".join(event_row(x, day) for x in its)
         count = f'{len(its)} {"thing" if len(its) == 1 else "things"} on'
-        groups.append(f'''  <section class="day-group" aria-labelledby="day-{day.isoformat()}">
-    <h2 class="day-group__title" id="day-{day.isoformat()}">{day_label(day)} <small>{count}</small></h2>
+        groups.append(f'''  <section class="day-group" data-date="{day.isoformat()}" aria-labelledby="day-{day.isoformat()}">
+    <h2 class="day-group__title" id="day-{day.isoformat()}">{day_label(day)} <small data-day-count>{count}</small></h2>
     <div>
 {rows}
     </div>
   </section>''')
     return "\n".join(groups), total
 
+
 def cat_checks():
     cats = [("classes", "Classes and activities", 11), ("family", "Family", 9), ("music", "Music", 8), ("food-and-drink", "Food and drink", 4),
             ("nightlife", "Nightlife", 2), ("community", "Community", 14), ("arts", "Arts", 3)]
     return "\n".join(f'              <li><label><input type="checkbox" name="cat[]" value="{s}"> {n} <span class="count">{c}</span></label></li>' for s, n, c in cats)
 
+
 def write_list():
     groups, total = build_list()
+    last = TODAY + dt.timedelta(days=LIST_DAYS - 1)
+    span = f"{long_date(TODAY)} to {long_date(last)}"
+    w0, w1 = WEEKEND
     body = f'''<!--
 title: What's On in Harrow: events this week and weekend
 description: Events, things to do and classes across Harrow this week and weekend: family days out, live music, markets, community events and more. Free to list your event.
@@ -188,13 +194,13 @@ body: page-events
           <ul class="check-list">
             <li><label><input type="radio" name="when" value="" checked> Any date</label></li>
             <li><label><input type="radio" name="when" value="today"> Today</label></li>
-            <li><label><input type="radio" name="when" value="weekend"> This weekend <span class="count">13 to 15 Nov</span></label></li>
+            <li><label><input type="radio" name="when" value="weekend"> This weekend <span class="count">{w0.day} to {w1.day} Nov</span></label></li>
             <li><label><input type="radio" name="when" value="7days"> Next 7 days</label></li>
             <li><label><input type="radio" name="when" value="date" data-reveal="#pick-date"> Choose a date</label></li>
           </ul>
           <div class="field mt-4" id="pick-date" hidden>
             <label for="f-date">Date</label>
-            <input class="input input--sm" id="f-date" type="date" name="date" min="2026-11-11" value="2026-11-14">
+            <input class="input input--sm" id="f-date" type="date" name="date" min="{TODAY.isoformat()}" max="{last.isoformat()}" value="{w0.isoformat()}">
           </div>
         </fieldset>
         <fieldset class="filters__group">
@@ -232,9 +238,9 @@ body: page-events
       </form>
     </aside>
 
-    <div>
+    <div data-events-list data-today="{TODAY.isoformat()}" data-weekend="{w0.isoformat()},{w1.isoformat()}">
       <div class="toolbar">
-        <p class="toolbar__count"><strong>{total}</strong> events and classes, Wednesday 11 to Sunday 15 November</p>
+        <p class="toolbar__count" data-events-count><strong>{total}</strong> events and classes, {span}</p>
         <div class="toolbar__right">
           <button class="ho-btn ho-btn--outline ho-btn--sm filters-toggle" type="button" data-filters-open aria-controls="filters" aria-expanded="false">{I('filter')}Filters</button>
           <nav class="seg" aria-label="View">
@@ -245,19 +251,21 @@ body: page-events
       </div>
 
       <div class="chips chips--scroll mb-5" aria-label="Quick dates">
-        <a class="chip" href="/events.html?when=today">Today</a>
-        <a class="chip" href="/events.html?when=weekend">This weekend</a>
-        <a class="chip" href="/events.html?when=7days">Next 7 days</a>
+        <a class="chip" href="/events.html?when=today" data-when="today">Today</a>
+        <a class="chip" href="/events.html?when=weekend" data-when="weekend">This weekend</a>
+        <a class="chip" href="/events.html?when=7days" data-when="7days">Next 7 days</a>
         <a class="chip" href="/classes.html">{I('repeat', 'ho-icon ho-icon--sm')}Classes and activities</a>
         <a class="chip" href="/events.html?cat=family">Family</a>
         <a class="chip" href="/events.html?free=1">Free</a>
       </div>
 
+      <div class="notice mb-5" data-events-empty hidden>{I('calendar')}<p>Nothing listed for that date yet. <a href="/events-month.html">See the month calendar</a>.</p></div>
+
 {groups}
 
       <div class="split mt-6">
-        <p class="muted small mb-0">Showing Wednesday 11 to Sunday 15 November.</p>
-        <a class="ho-btn ho-btn--outline" href="/events.html?from=2026-11-16">Next week: from Monday 16 November {I('arrow')}</a>
+        <p class="muted small mb-0" data-events-range>Showing {span}.</p>
+        <a class="ho-btn ho-btn--outline" href="/events-month.html">See the whole month {I('arrow')}</a>
       </div>
 
       <div class="grid grid-2 mt-6">
@@ -290,6 +298,7 @@ body: page-events
     (PAGES / "events.html").write_text(body, encoding="utf-8", newline="\n")
     return total
 
+
 # ---------------------------------------------------------------- month view
 def cal_ev(x):
     cls = "cal__ev"
@@ -299,6 +308,7 @@ def cal_ev(x):
         cls += " cal__ev--class"
     label = f'{x["time"].split(" to ")[0]} {x["title"]}'
     return f'<a class="{cls}" href="{x["href"]}" title="{x["time"]}: {x["title"]}">{label}</a>'
+
 
 def build_month():
     start = D(2026, 10, 26)
@@ -320,15 +330,16 @@ def build_month():
         cells.append(f'      <div class="{" ".join(cls)}"><time class="cal__num" datetime="{day.isoformat()}"{aria}>{day.day}</time>{inner}</div>')
     return "\n".join(cells)
 
+
 def build_agenda():
     out = []
     day = D(2026, 11, 1)
     while day.month == 11:
         evs = [x for x in items_on(day) if x["kind"] == "event"]
         if evs:
-            label = f"{DAYNAMES[day.weekday()]} {day.day} November"
+            label = long_date(day)
             if day == TODAY:
-                label = f"Today <small>Wednesday {day.day} November</small>"
+                label = f"Today <small>{long_date(day)}</small>"
             past = day < TODAY
             items = "".join(cal_ev(x) for x in evs)
             out.append(f'''      <section class="day-group{' is-past' if past else ''}">
@@ -337,6 +348,7 @@ def build_agenda():
       </section>''')
         day += dt.timedelta(days=1)
     return "\n".join(out)
+
 
 def write_month():
     dows = "".join(f'<div class="cal__dow"><abbr title="{d}">{d[:3]}</abbr></div>' for d in DAYNAMES)
@@ -423,7 +435,255 @@ body: page-events
 '''
     (PAGES / "events-month.html").write_text(body, encoding="utf-8", newline="\n")
 
-if __name__ == "__main__":
-    print("list items:", write_list())
+
+# ---------------------------------------------------------------- cards (homepage, event pages)
+def event_card(ev):
+    feat = is_featured(ev)
+    badges = event_badges(ev)
+    top = f'<div class="card__badges">{badges}</div>\n        ' if badges else ""
+    d = ev["day"]
+    return f'''<article class="card event-card{' card--featured' if feat else ''}">
+        {top}<time class="date-tile" datetime="{d.isoformat()}"><span class="date-tile__m">{d.strftime('%b')}</span><span class="date-tile__d">{d.day}</span><span class="date-tile__w">{d.strftime('%a')}</span></time>
+        <div class="ph{' ph--red' if feat else ''}">{I(ev['icon'])}</div>
+        <div class="card__body">
+          <span class="biz-card__cat">{ev['cat']}</span>
+          <h3 class="card__title"><a href="{ev['href']}">{ev['title']}</a></h3>
+          <p class="card__meta"><span>{I('clock')}{ev['time']}</span><span>{I('pin')}{ev['area']}</span></p>
+          <p class="card__meta"><span>{I('ticket')}{ev['price']}</span></p>
+        </div>
+      </article>'''
+
+
+def weekend_events():
+    w0, w1 = WEEKEND
+    evs = [e for e in EVENTS if w0 <= e["day"] <= w1]
+    return sorted(evs, key=lambda e: (not is_featured(e), e["start"]))
+
+
+def write_weekend_partial():
+    cards = "\n      ".join(event_card(e) for e in weekend_events()[:4])
+    (PARTIALS / "gen-weekend-cards.html").write_text(cards + "\n", encoding="utf-8", newline="\n")
+
+
+# ---------------------------------------------------------------- one page per event
+def _utc(t):
+    """UK local → UTC stamp for calendar links. GMT from 25 Oct 2026 to 28 Mar 2027 (all preview dates)."""
+    bst = dt.datetime(2026, 3, 29) <= t < dt.datetime(2026, 10, 25, 1)
+    return (t - dt.timedelta(hours=1 if bst else 0)).strftime("%Y%m%dT%H%M%SZ")
+
+
+def _offset(t):
+    bst = dt.datetime(2026, 3, 29) <= t < dt.datetime(2026, 10, 25, 1)
+    return "+01:00" if bst else "+00:00"
+
+
+def organiser(ev, claimed):
+    """Hub business that posted the event (sample), or None."""
+    c = claimed.get(ev.get("org"))
+    if not c:
+        return None
+    slug = H.slugify(f'{c["name"]} {H.AREA_BY_SLUG[c["area"]][1]}')
+    return {"name": c["name"], "slug": slug, "area": H.AREA_BY_SLUG[c["area"]][1], "tagline": c.get("tagline", "")}
+
+
+def calendar_links(ev, url):
+    title, place = plain(ev["title"]), plain(f'{ev["venue"]}, {ev["area"]}, Harrow')
+    s, e = _utc(ev["start"]), _utc(ev["end"])
+    google = ("https://calendar.google.com/calendar/render?action=TEMPLATE&amp;text=" + quote_plus(title) + f"&amp;dates={s}/{e}"
+              + "&amp;location=" + quote_plus(place) + "&amp;details=" + quote_plus(url))
+    iso = lambda t: (t - (dt.timedelta(hours=1) if _offset(t) == "+01:00" else dt.timedelta())).strftime("%Y-%m-%dT%H:%M:%SZ")
+    outlook = ("https://outlook.live.com/calendar/0/deeplink/compose?path=%2Fcalendar%2Faction%2Fcompose&amp;rru=addevent&amp;subject="
+               + quote_plus(title) + "&amp;startdt=" + quote(iso(ev["start"]), safe="") + "&amp;enddt=" + quote(iso(ev["end"]), safe="")
+               + "&amp;location=" + quote_plus(place))
+    ics = "\r\n".join([
+        "BEGIN:VCALENDAR", "VERSION:2.0", "PRODID:-//Harrow Online Hub//EN", "BEGIN:VEVENT",
+        f'UID:{ev["slug"]}-{ev["day"].year}@harrowonline.org', "DTSTAMP:20261111T090000Z", f"DTSTART:{s}", f"DTEND:{e}",
+        "SUMMARY:" + title.replace(",", "\\,"), "LOCATION:" + place.replace(",", "\\,"), f"URL:{url}", "END:VEVENT", "END:VCALENDAR"])
+    return google, outlook, "data:text/calendar;charset=utf-8," + quote(ics, safe=":/@.-_ ")
+
+
+def more_events(ev, n=3):
+    after = max(ev["start"], dt.datetime.combine(TODAY, dt.time()))
+    return [e for e in EVENTS if e is not ev and e["start"] >= after][:n]
+
+
+def event_page(ev, claimed):
+    """(meta, body) for /events/{slug}/. Body mirrors the original hand-written event.html layout."""
+    url = f'{ORIGIN}/events/{ev["slug"]}/'
+    title, d = ev["title"], ev["day"]
+    past = d < TODAY
+    org = organiser(ev, claimed)
+    google, outlook, ics = calendar_links(ev, url)
+    maps = "https://www.google.com/maps/search/?api=1&amp;query=" + quote_plus(plain(f'{ev["venue"]} {ev["area"]} Harrow'))
+    when_sub = ev["time"] + (f'. {ev["note"]}.' if ev.get("note") else "")
+    cat_slug = H.slugify(plain(ev["cat"]))
+    free = plain(ev["price"]).lower().startswith("free")
+
+    ended = f'''
+<div class="ho-container mt-4">
+  <div class="notice notice--warn">{I('alert')}
+    <div><p><strong>This event has ended.</strong> It took place on {long_date(d)} {d.year}.</p>
+    <p><a href="/events.html">See what&rsquo;s on in Harrow this week</a></p></div>
+  </div>
+</div>''' if past else ""
+    sample_note = f'''
+<div class="ho-container mt-4">
+  <div class="notice notice--sample">{I('alert')}
+    <p><strong>Sample event.</strong> Made up to show how event pages work. It will be removed before launch.</p>
+  </div>
+</div>''' if ev.get("sample") else ""
+
+    facts = [
+        f'<li>{I("calendar")}<div><strong>{long_date(d)} {d.year}</strong><span>{when_sub}</span></div></li>',
+        f'<li>{I("pin")}<div><strong>{ev["venue"]}, {ev["area"]}</strong><span><a href="#map">View on map</a></span></div></li>',
+        f'<li>{I("ticket")}<div><strong>{ev["price"]}</strong><span>{"No tickets or booking needed" if free else "Check with the organiser before you go"}</span></div></li>',
+        f'<li>{I("people")}<div><strong>{ev["age"]}</strong></div></li>',
+    ]
+    if org:
+        facts.append(f'<li>{I("store")}<div><strong>Organised by <a href="/business/{org["slug"]}.html">{org["name"]}</a></strong><span>Listed on Harrow Online Hub</span></div></li>')
+
+    about = "".join(f"<p>{p}</p>" for p in [ev["desc"]] if p) or "<p>Full details from the organiser coming soon.</p>"
+    more = more_events(ev)
+    more_html = ""
+    if more:
+        more_html = f'''
+        <section class="profile-section" aria-labelledby="more-title">
+          <div class="sec-head">
+            <div><h2 class="sec-title" id="more-title">More coming up</h2></div>
+            <a class="link-arrow hide-mobile" href="/events.html">All events in Harrow {I('arrow')}</a>
+          </div>
+          <div class="grid grid-3">
+            {"".join(event_card(e) for e in more)}
+          </div>
+        </section>'''
+    org_panel = ""
+    if org:
+        org_panel = f'''
+        <div class="panel">
+          <p class="eyebrow mb-2">Organiser</p>
+          <div class="biz-card__head">
+            <span class="mono" aria-hidden="true">{"".join(w[0] for w in plain(org["name"]).split()[:2]).upper()}</span>
+            <div>
+              <h2 class="panel__title mb-0"><a href="/business/{org["slug"]}.html">{org["name"]}</a></h2>
+              <p class="card__meta mt-2"><span>{I('pin')}{org["area"]}</span>{SAMPLE}</p>
+            </div>
+          </div>
+          <p class="small mt-4">{org["tagline"]}</p>
+          <a class="ho-btn ho-btn--dark ho-btn--sm" href="/business/{org["slug"]}.html">View {org["name"]} profile</a>
+        </div>'''
+    share_text = quote(f'{plain(title)}, {d.strftime("%a")} {d.day} {d.strftime("%b")} {url}', safe="")
+    pub = "Made-up sample for the preview." if ev.get("sample") else "Checked by Harrow Online."
+
+    body = f'''<nav class="crumbs ho-container" aria-label="Breadcrumb">
+  <ol>
+    <li><a href="/">Hub</a></li>
+    <li><a href="/events.html">What&rsquo;s On</a></li>
+    <li><a href="/events.html?cat={cat_slug}">{ev["cat"]}</a></li>
+    <li><span aria-current="page">{title}</span></li>
+  </ol>
+</nav>
+{ended}{sample_note}
+<article>
+  <div class="ho-container event-hero">
+    <div class="ph{' ph--red' if is_featured(ev) else ''}">{I(ev["icon"])}</div>
+    <div>
+      <div class="cluster">{event_badges(ev)}<a class="badge badge--outline" href="/events.html?cat={cat_slug}">{ev["cat"]}</a></div>
+      <h1 class="event-hero__title">{title}</h1>
+      <ul class="facts">
+        {"".join(facts)}
+      </ul>
+      <div class="cluster mt-4">
+        <a class="ho-btn ho-btn--outline" href="#add-to-calendar">{I('calendar')}Add to calendar</a>
+        <a class="ho-btn ho-btn--outline" href="{maps}" rel="noopener" target="_blank">{I('map')}Get directions</a>
+      </div>
+    </div>
+  </div>
+
+  <div class="ho-container">
+    <div class="layout-aside">
+      <div>
+        <section class="profile-section" aria-labelledby="about-title">
+          <h2 id="about-title">About this event</h2>
+          <div class="profile-desc">{about}</div>
+        </section>
+
+        <section class="profile-section" id="map" aria-labelledby="map-title">
+          <h2 id="map-title">Where it is</h2>
+          <div class="ph ph--map ph--wide">{I('pin')}</div>
+          <div class="split mt-4">
+            <p class="mb-0"><strong>{ev["venue"]}</strong>, {ev["area"]}, Harrow</p>
+            <a class="ho-btn ho-btn--outline ho-btn--sm" href="{maps}" rel="noopener" target="_blank">{I('map')}Get directions</a>
+          </div>
+        </section>
+{more_html}
+      </div>
+
+      <aside class="sticky stack">
+        <div class="panel" id="add-to-calendar">
+          <h2 class="panel__title">Add to your calendar</h2>
+          <div class="stack">
+            <a class="ho-btn ho-btn--outline ho-btn--block" href="{google}" rel="noopener" target="_blank">{I('calendar')}Google Calendar</a>
+            <a class="ho-btn ho-btn--outline ho-btn--block" href="{outlook}" rel="noopener" target="_blank">{I('calendar')}Outlook</a>
+            <!-- WordPress serves this as /hub/events/{{slug}}/ical/ ; the prototype uses a data URI -->
+            <a class="ho-btn ho-btn--outline ho-btn--block" download="{ev["slug"]}.ics" href="{ics}">{I('download')}Apple or other (.ics)</a>
+          </div>
+        </div>
+
+        <div class="panel">
+          <h2 class="panel__title">Share this event</h2>
+          <div class="cluster">
+            <a class="ho-btn ho-btn--outline ho-btn--sm" href="https://wa.me/?text={share_text}" rel="noopener" target="_blank">{I('whatsapp')}WhatsApp</a>
+            <a class="ho-btn ho-btn--outline ho-btn--sm" href="https://www.facebook.com/sharer/sharer.php?u={quote(url, safe='')}" rel="noopener" target="_blank">{I('facebook')}Facebook</a>
+            <a class="ho-btn ho-btn--outline ho-btn--sm" href="mailto:?subject={quote(plain(title))}&amp;body={quote(url, safe='')}">{I('mail')}Email</a>
+            <button class="ho-btn ho-btn--ghost ho-btn--sm" type="button" data-copy="{url}">Copy link</button>
+          </div>
+        </div>
+{org_panel}
+        <p class="small muted">{pub} Details can change, so check with the organiser before you travel. <a class="report-link" href="/report.html">{I('flag')}Report a problem</a></p>
+      </aside>
+    </div>
+  </div>
+</article>
+'''
+    import json
+    node = {
+        "@type": "Event", "@id": url + "#event", "name": plain(title), "description": plain(ev["desc"]) or plain(title), "url": url,
+        "image": [f"{ORIGIN}/assets/img/og-default.png"],
+        "startDate": ev["start"].strftime("%Y-%m-%dT%H:%M:%S") + _offset(ev["start"]),
+        "endDate": ev["end"].strftime("%Y-%m-%dT%H:%M:%S") + _offset(ev["end"]),
+        "eventStatus": "https://schema.org/EventScheduled", "eventAttendanceMode": "https://schema.org/OfflineEventAttendanceMode",
+        "isAccessibleForFree": free,
+        "location": {"@type": "Place", "name": plain(ev["venue"]),
+                     "address": {"@type": "PostalAddress", "streetAddress": plain(ev["venue"]), "addressLocality": "Harrow",
+                                 "addressRegion": "London", "addressCountry": "GB"}},
+        "publisher": {"@id": "https://harrowonline.org/#organization"},
+    }
+    if org:
+        node["organizer"] = {"@type": "Organization", "name": plain(org["name"]), "url": f'{ORIGIN}/business/{org["slug"]}/'}
+    body += f'\n<script type="application/ld+json">\n{json.dumps({"@context": "https://schema.org", "@graph": [node]}, indent=2, ensure_ascii=False)}\n</script>\n'
+
+    desc = plain(f'{title} at {ev["venue"]}, {ev["area"]}, {long_date(d)} {d.year}, {ev["time"]}. {ev["price"]}, {ev["age"]}. {ev["desc"]}')
+    meta = {"title": plain(f'{title}, {d.day} {d.strftime("%b")} {d.year}'), "description": desc, "nav": "events", "hubnav": "events",
+            "body": "page-event", "schema": "ItemPage", "path": f'/events/{ev["slug"]}/'}
+    if past or ev.get("sample"):
+        meta["robots"] = "noindex, follow"   # SEO brief 03: ended events leave the index; samples never enter it
+    return meta, body
+
+
+def event_pages():
+    """[(meta, body)] for every event. build.py renders and writes them."""
+    claimed = {c["name"]: c for c in H.load_claimed()}
+    return [event_page(ev, claimed) for ev in EVENTS]
+
+
+def write_sources():
+    """Hand-off files that live in src/ (list, month, homepage partial)."""
+    n = write_list()
     write_month()
-    print("done")
+    write_weekend_partial()
+    return n
+
+
+if __name__ == "__main__":
+    print("list items:", write_sources())
+    print("event pages:", len(event_pages()))

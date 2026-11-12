@@ -51,6 +51,23 @@ def verified():
     return f'<span class="badge badge--verified">{icon("verified")}Verified</span>'
 
 
+def is_sample(x):
+    """Every business in data/claimed.json is made up for the preview (hub_data gives them ids "sample-…")."""
+    return str(x.get("id", "")).startswith("sample-")
+
+
+def sample_badge():
+    return f'<span class="badge badge--sample" title="Made-up business for the preview. Removed before launch.">{icon("alert")}Sample</span>'
+
+
+def status_badges(x):
+    """Client rule (12 Nov 2026): samples never show Verified, Featured, Premium, Local Partner or Business of the Week.
+    Real claimed listings keep the verified + plan badges."""
+    if is_sample(x):
+        return sample_badge()
+    return verified() + tier_badge(x["tier"])
+
+
 def today_status(c):
     h = c["hours"][TODAY]
     return ('<span class="open-now open-now--closed">Closed today</span>' if h.lower() == "closed"
@@ -61,8 +78,9 @@ def today_status(c):
 def row(x):
     """Directory row for a claimed listing (search, category, area)."""
     c, tier = x["claimed"], x["tier"]
-    cls = "biz-row" + (" biz-row--featured" if tier in TOP else "")
-    badges = (f'<span class="badge badge--featured">{icon("star")}Featured</span>' if tier in TOP else "") + verified()
+    promoted = tier in TOP and not is_sample(x)
+    cls = "biz-row" + (" biz-row--featured" if promoted else "")
+    badges = (f'<span class="badge badge--featured">{icon("star")}Featured</span>' if promoted else "") + status_badges(x)
     return f'''<article class="{cls}">
         <div class="ph">{icon(c.get("icon", "store"))}</div>
         <div class="biz-row__main">
@@ -80,14 +98,19 @@ def offer_card(x, o, show_biz=True, heading="h3"):
     """Offer card; same markup as the Offers page. Subscriber-only offers render locked with the unlock form."""
     _uid[0] += 1
     c = x["claimed"]
-    cls = "offer" + (" offer--featured" if o.get("featured") else "") + (" offer--locked" if o.get("sub") else "")
-    badges = ""
-    if o.get("featured"):
+    featured = o.get("featured") and not is_sample(x)
+    cls = "offer" + (" offer--featured" if featured else "") + (" offer--locked" if o.get("sub") else "")
+    badges = sample_badge() if is_sample(x) else ""
+    if featured:
         badges += f'<span class="badge badge--featured">{icon("star")}Featured</span>'
     if o.get("sub"):
         badges += f'<span class="badge badge--sub">{icon("lock")}Subscriber-only</span>'
     badges += f'<span class="biz-card__cat">{e(cat_name(x["cat"]))}</span>'
-    code = f'<span class="offer__code">{o["code"]}</span>' if o.get("code") else "<span>No code needed</span>"
+    if o.get("sub"):
+        # Never put a subscriber-only code in the page (it was only blurred). WordPress returns it after email confirmation.
+        code = '<span class="offer__code offer__code--pending">Code shown after you confirm your email</span>' if o.get("code") else "<span>No code needed</span>"
+    else:
+        code = f'<span class="offer__code">{o["code"]}</span>' if o.get("code") else "<span>No code needed</span>"
     lock = ""
     if o.get("sub"):
         uid = f"unlock-{x['slug'][:20]}-{_uid[0]}"
@@ -100,7 +123,7 @@ def offer_card(x, o, show_biz=True, heading="h3"):
               <input id="{uid}" type="email" name="email" placeholder="Your email" autocomplete="email" required>
               <button class="ho-btn ho-btn--sm ho-btn--primary" type="submit">Unlock</button>
             </form>
-            <span class="offer__lock-note">Not subscribed? We&rsquo;ll sign you up to the free daily newsletter.</span>
+            <span class="offer__lock-note">We&rsquo;ll email you a link to confirm. Already a subscriber? Use the email you signed up with.</span>
           </div>'''
     biz = f'<a class="offer__biz" href="/business/{x["slug"]}.html">{e(x["name"])} &middot; {e(area_name(x["area"]))}</a>' if show_biz else ""
     return f'''<article class="{cls}">
@@ -121,9 +144,9 @@ def all_offers(listings):
     return sorted(items, key=lambda p: (not p[1].get("featured"), H.TIER_RANK[p[0]["tier"]]))
 
 
-def event_row(ev):
+def event_row(ev, sample=False):
     rep = f'<span class="badge">{icon("repeat")}Weekly class</span>' if ev.get("class") else ""
-    feat = f'<span class="badge badge--featured">Featured</span>' if ev.get("featured") else ""
+    feat = sample_badge() if sample else (f'<span class="badge badge--featured">Featured</span>' if ev.get("featured") else "")
     return f'''<article class="event-row{" event-row--featured" if ev.get("featured") else ""}">
           <time class="date-tile" datetime="2026-{ {"Oct": 10, "Nov": 11, "Dec": 12}.get(ev["m"], 11):02d}-{int(ev["d"]):02d}"><span class="date-tile__m">{ev["m"]}</span><span class="date-tile__d">{ev["d"]}</span><span class="date-tile__w">{ev["w"]}</span></time>
           <div class="ph">{icon("repeat" if ev.get("class") else "calendar")}</div>
@@ -142,10 +165,14 @@ def profile_body(x, related_html, crumbs_html):
     name, area, cat = x["name"], x["area"], x["cat"]
     top = tier in TOP
     maps = f'https://www.google.com/maps/search/?api=1&query={quote(name + " " + x["postcode"])}'
-    badges = verified() + tier_badge(tier)
-    if c.get("botw"):
-        badges = f'<span class="botw">{icon("star")}Business of the Week</span>' + badges
-    badges += '<span class="badge badge--outline">Sample listing</span>'
+    sample = is_sample(x)
+    if sample:
+        # One clear label, plus which plan layout this sample demonstrates (no Verified / plan / BotW claims).
+        badges = sample_badge() + f'<span class="badge badge--outline">{H.TIER_LABEL[tier]} plan layout</span>'
+    else:
+        badges = verified() + tier_badge(tier)
+        if c.get("botw"):
+            badges = f'<span class="botw">{icon("star")}Business of the Week</span>' + badges
 
     cover = f'<div class="ho-container profile-cover"><div class="ph ph--banner ph--dark">{icon(c.get("icon", "store"))}</div></div>' if top else ""
 
@@ -168,7 +195,7 @@ def profile_body(x, related_html, crumbs_html):
         sections.append(f'<section class="profile-section"><div class="sec-head"><h2 class="mb-0">Local Offers</h2><a class="link-arrow" href="/offers.html">All offers {icon("arrow")}</a></div><div class="stack">{cards}</div></section>')
 
     if c["events"]:
-        rows = "".join(event_row(ev) for ev in c["events"])
+        rows = "".join(event_row(ev, sample) for ev in c["events"])
         sections.append(f'<section class="profile-section"><div class="sec-head"><h2 class="mb-0">Upcoming events and classes</h2><a class="link-arrow" href="/events.html">What&rsquo;s On {icon("arrow")}</a></div><div>{rows}</div></section>')
 
     info = [
@@ -179,9 +206,12 @@ def profile_body(x, related_html, crumbs_html):
       <div class="grid grid-2"><ul class="info-list">{"".join(info)}</ul>
       <a class="ph ph--map" href="{maps}" target="_blank" rel="noopener" aria-label="Open {e(name)} in Google Maps">{icon("pin")}</a></div></section>''')
 
-    if c.get("news"):
+    # In the news: only real Harrow Online articles tagged with this business (each needs its published URL).
+    # In WordPress: posts linked to the listing by the editor, newest first. Nothing linked → no section.
+    news = [n_ for n_ in c.get("news", []) if str(n_.get("url", "")).startswith("https://harrowonline.org/")]
+    if news:
         items = "".join(f'''<article class="news-link"><div class="ph">{icon("news")}</div><div><span class="news-link__cat">{n_["cat"]}</span>
-          <h3 class="news-link__title"><a href="/news-article.html">{n_["title"]}</a></h3><p class="news-link__date">{n_["date"]}</p></div></article>''' for n_ in c["news"])
+          <h3 class="news-link__title"><a href="{n_["url"]}">{n_["title"]}</a></h3><p class="news-link__date">{n_["date"]}</p></div></article>''' for n_ in news)
         sections.append(f'<section class="profile-section"><h2>In the news</h2>{items}</section>')
 
     if not top:  # brief 01, 6.2: paid Premium profiles show no competitor or related listings
@@ -203,10 +233,10 @@ def profile_body(x, related_html, crumbs_html):
       <a class="ho-btn ho-btn--primary ho-btn--block mt-5" href="tel:{x["phone_raw"][0]}">{icon("phone")}Call {e(c["phone"])}</a>
       {social}
     </div>
-    <div class="panel panel--soft">
+    {f"""<div class="notice notice--sample">{icon("alert")}<p><strong>Sample listing.</strong> A made-up business showing the {H.TIER_LABEL[tier]} plan layout. It is not verified and will be removed before launch.</p></div>""" if sample else f"""<div class="panel panel--soft">
       <p class="small mb-2">{verified()}</p>
       <p class="small muted mb-0">Claimed and checked by the owner since {c["claimed"]}. Details are kept up to date by the business.</p>
-    </div>
+    </div>"""}
     <div class="panel mt-4">
       <h3 class="panel__title">Get Harrow&rsquo;s best offers</h3>
       <p class="small muted">Local Offers and what&rsquo;s on, every morning in the Harrow Online Newsletter.</p>

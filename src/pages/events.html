@@ -33,7 +33,7 @@ body: page-events
           </ul>
           <div class="field mt-4" id="pick-date" hidden>
             <label for="f-date">Date</label>
-            <input class="input input--sm" id="f-date" type="date" name="date" min="2026-11-11" value="2026-11-14">
+            <input class="input input--sm" id="f-date" type="date" name="date" min="2026-11-11" max="2026-11-17" value="2026-11-13">
           </div>
         </fieldset>
         <fieldset class="filters__group">
@@ -77,9 +77,9 @@ body: page-events
       </form>
     </aside>
 
-    <div>
+    <div data-events-list data-today="2026-11-11" data-weekend="2026-11-13,2026-11-15">
       <div class="toolbar">
-        <p class="toolbar__count"><strong>19</strong> events and classes, Wednesday 11 to Sunday 15 November</p>
+        <p class="toolbar__count" data-events-count><strong>23</strong> events and classes, Wednesday 11 November to Tuesday 17 November</p>
         <div class="toolbar__right">
           <button class="ho-btn ho-btn--outline ho-btn--sm filters-toggle" type="button" data-filters-open aria-controls="filters" aria-expanded="false"><svg class="ho-icon"><use href="#i-filter"/></svg>Filters</button>
           <nav class="seg" aria-label="View">
@@ -90,45 +90,47 @@ body: page-events
       </div>
 
       <div class="chips chips--scroll mb-5" aria-label="Quick dates">
-        <a class="chip" href="/events.html?when=today">Today</a>
-        <a class="chip" href="/events.html?when=weekend">This weekend</a>
-        <a class="chip" href="/events.html?when=7days">Next 7 days</a>
+        <a class="chip" href="/events.html?when=today" data-when="today">Today</a>
+        <a class="chip" href="/events.html?when=weekend" data-when="weekend">This weekend</a>
+        <a class="chip" href="/events.html?when=7days" data-when="7days">Next 7 days</a>
         <a class="chip" href="/classes.html"><svg class="ho-icon ho-icon--sm"><use href="#i-repeat"/></svg>Classes and activities</a>
         <a class="chip" href="/events.html?cat=family">Family</a>
         <a class="chip" href="/events.html?free=1">Free</a>
       </div>
 
-  <section class="day-group" aria-labelledby="day-2026-11-11">
-    <h2 class="day-group__title" id="day-2026-11-11">Today <small>Wednesday 11 November</small> <small>3 things on</small></h2>
+      <div class="notice mb-5" data-events-empty hidden><svg class="ho-icon"><use href="#i-calendar"/></svg><p>Nothing listed for that date yet. <a href="/events-month.html">See the month calendar</a>.</p></div>
+
+  <section class="day-group" data-date="2026-11-11" aria-labelledby="day-2026-11-11">
+    <h2 class="day-group__title" id="day-2026-11-11">Today <small>Wednesday 11 November</small> <small data-day-count>3 things on</small></h2>
     <div>
-    <article class="event-row">
+    <article class="event-row" data-kind="event">
       <time class="date-tile" datetime="2026-11-11"><span class="date-tile__m">Nov</span><span class="date-tile__d">11</span><span class="date-tile__w">Wed</span></time>
       <div class="ph"><svg class="ho-icon"><use href="#i-flag"/></svg></div>
       <div>
-        <div class="cluster mb-2"><span class="biz-card__cat">Community</span></div>
-        <h3 class="event-row__title"><a href="/event.html">Armistice Day Silence</a></h3>
+        <div class="cluster mb-2"><span class="badge badge--sample" title="Made-up content for the preview. Removed before launch."><svg class="ho-icon"><use href="#i-alert"/></svg>Sample</span><span class="biz-card__cat">Community</span></div>
+        <h3 class="event-row__title"><a href="/events/armistice-day-silence/">Armistice Day Silence</a></h3>
         <p class="card__meta"><span><svg class="ho-icon"><use href="#i-clock"/></svg>10.45am</span><span><svg class="ho-icon"><use href="#i-pin"/></svg>Harrow Civic Centre, Station Road, Harrow Town Centre</span><span><svg class="ho-icon"><use href="#i-people"/></svg>All ages</span></p>
       <p class="card__text">Join the two-minute silence at 11am, followed by a short wreath-laying.</p>
       </div>
       <div class="event-row__side"><strong>Free</strong></div>
     </article>
-    <article class="event-row">
+    <article class="event-row" data-kind="class">
       <time class="date-tile" datetime="2026-11-11"><span class="date-tile__m">Nov</span><span class="date-tile__d">11</span><span class="date-tile__w">Wed</span></time>
       <div class="ph"><svg class="ho-icon"><use href="#i-dumbbell"/></svg></div>
       <div>
-        <div class="cluster mb-2"><span class="badge badge--outline"><svg class="ho-icon"><use href="#i-repeat"/></svg>Weekly class</span><span class="biz-card__cat">Classes and activities</span></div>
+        <div class="cluster mb-2"><span class="badge badge--sample" title="Made-up content for the preview. Removed before launch."><svg class="ho-icon"><use href="#i-alert"/></svg>Sample</span><span class="badge badge--outline"><svg class="ho-icon"><use href="#i-repeat"/></svg>Weekly class</span><span class="biz-card__cat">Classes and activities</span></div>
         <h3 class="event-row__title"><a href="/class.html">Lunchtime Spin</a></h3>
         <p class="card__meta"><span><svg class="ho-icon"><use href="#i-repeat"/></svg>Every Wednesday, 12.30pm</span><span><svg class="ho-icon"><use href="#i-pin"/></svg>Wealdstone Fitness Studio, Wealdstone</span><span><svg class="ho-icon"><use href="#i-people"/></svg>Adults</span></p>
       <p class="card__text">45 minutes of high-energy spin. Bikes set up for you, towels provided.</p>
       </div>
       <div class="event-row__side"><strong>&pound;8</strong></div>
     </article>
-    <article class="event-row">
+    <article class="event-row" data-kind="event">
       <time class="date-tile" datetime="2026-11-11"><span class="date-tile__m">Nov</span><span class="date-tile__d">11</span><span class="date-tile__w">Wed</span></time>
       <div class="ph"><svg class="ho-icon"><use href="#i-people"/></svg></div>
       <div>
-        <div class="cluster mb-2"><span class="biz-card__cat">Community</span></div>
-        <h3 class="event-row__title"><a href="/event.html">Charity Quiz Night</a></h3>
+        <div class="cluster mb-2"><span class="badge badge--sample" title="Made-up content for the preview. Removed before launch."><svg class="ho-icon"><use href="#i-alert"/></svg>Sample</span><span class="biz-card__cat">Community</span></div>
+        <h3 class="event-row__title"><a href="/events/charity-quiz-night/">Charity Quiz Night</a></h3>
         <p class="card__meta"><span><svg class="ho-icon"><use href="#i-clock"/></svg>7.30pm</span><span><svg class="ho-icon"><use href="#i-pin"/></svg>St George&rsquo;s Hall, Headstone</span><span><svg class="ho-icon"><use href="#i-people"/></svg>Adults</span></p>
       <p class="card__text">Teams of up to six, with a raffle. Money raised goes to the Headstone food bank.</p>
       </div>
@@ -136,48 +138,48 @@ body: page-events
     </article>
     </div>
   </section>
-  <section class="day-group" aria-labelledby="day-2026-11-12">
-    <h2 class="day-group__title" id="day-2026-11-12">Tomorrow <small>Thursday 12 November</small> <small>4 things on</small></h2>
+  <section class="day-group" data-date="2026-11-12" aria-labelledby="day-2026-11-12">
+    <h2 class="day-group__title" id="day-2026-11-12">Tomorrow <small>Thursday 12 November</small> <small data-day-count>4 things on</small></h2>
     <div>
-    <article class="event-row">
+    <article class="event-row" data-kind="class">
       <time class="date-tile" datetime="2026-11-12"><span class="date-tile__m">Nov</span><span class="date-tile__d">12</span><span class="date-tile__w">Thu</span></time>
       <div class="ph"><svg class="ho-icon"><use href="#i-family"/></svg></div>
       <div>
-        <div class="cluster mb-2"><span class="badge badge--outline"><svg class="ho-icon"><use href="#i-repeat"/></svg>Weekly class</span><span class="biz-card__cat">Classes and activities</span></div>
+        <div class="cluster mb-2"><span class="badge badge--sample" title="Made-up content for the preview. Removed before launch."><svg class="ho-icon"><use href="#i-alert"/></svg>Sample</span><span class="badge badge--outline"><svg class="ho-icon"><use href="#i-repeat"/></svg>Weekly class</span><span class="biz-card__cat">Classes and activities</span></div>
         <h3 class="event-row__title"><a href="/class.html">Toddler Rhyme Time</a></h3>
         <p class="card__meta"><span><svg class="ho-icon"><use href="#i-repeat"/></svg>Every Thursday, 10.30am</span><span><svg class="ho-icon"><use href="#i-pin"/></svg>Stanmore Library, Stanmore</span><span><svg class="ho-icon"><use href="#i-people"/></svg>Under 4s</span></p>
       <p class="card__text">Songs, rhymes and stories for little ones and their grown-ups. Just turn up.</p>
       </div>
       <div class="event-row__side"><strong>Free</strong></div>
     </article>
-    <article class="event-row">
+    <article class="event-row" data-kind="event">
       <time class="date-tile" datetime="2026-11-12"><span class="date-tile__m">Nov</span><span class="date-tile__d">12</span><span class="date-tile__w">Thu</span></time>
       <div class="ph"><svg class="ho-icon"><use href="#i-home"/></svg></div>
       <div>
-        <div class="cluster mb-2"><span class="biz-card__cat">Arts</span></div>
-        <h3 class="event-row__title"><a href="/event.html">Museum Lates: A Victorian Christmas</a></h3>
+        <div class="cluster mb-2"><span class="badge badge--sample" title="Made-up content for the preview. Removed before launch."><svg class="ho-icon"><use href="#i-alert"/></svg>Sample</span><span class="biz-card__cat">Arts</span></div>
+        <h3 class="event-row__title"><a href="/events/museum-lates-a-victorian-christmas/">Museum Lates: A Victorian Christmas</a></h3>
         <p class="card__meta"><span><svg class="ho-icon"><use href="#i-clock"/></svg>6pm to 9pm</span><span><svg class="ho-icon"><use href="#i-pin"/></svg>Headstone Manor &amp; Museum, Headstone</span><span><svg class="ho-icon"><use href="#i-people"/></svg>Ages 16+</span></p>
       <p class="card__text">Candlelit tours of the manor, short talks and festive crafts after hours.</p>
       </div>
       <div class="event-row__side"><strong>&pound;6</strong></div>
     </article>
-    <article class="event-row">
+    <article class="event-row" data-kind="class">
       <time class="date-tile" datetime="2026-11-12"><span class="date-tile__m">Nov</span><span class="date-tile__d">12</span><span class="date-tile__w">Thu</span></time>
       <div class="ph"><svg class="ho-icon"><use href="#i-people"/></svg></div>
       <div>
-        <div class="cluster mb-2"><span class="badge badge--outline"><svg class="ho-icon"><use href="#i-repeat"/></svg>Weekly class</span><span class="biz-card__cat">Classes and activities</span></div>
+        <div class="cluster mb-2"><span class="badge badge--sample" title="Made-up content for the preview. Removed before launch."><svg class="ho-icon"><use href="#i-alert"/></svg>Sample</span><span class="badge badge--outline"><svg class="ho-icon"><use href="#i-repeat"/></svg>Weekly class</span><span class="biz-card__cat">Classes and activities</span></div>
         <h3 class="event-row__title"><a href="/class.html">Conversational Spanish</a></h3>
         <p class="card__meta"><span><svg class="ho-icon"><use href="#i-repeat"/></svg>Every Thursday, 7pm</span><span><svg class="ho-icon"><use href="#i-pin"/></svg>North Harrow Community Library, North Harrow</span><span><svg class="ho-icon"><use href="#i-people"/></svg>Adults</span></p>
       <p class="card__text">Relaxed evening course for improvers. Join at any point this term.</p>
       </div>
       <div class="event-row__side"><strong>&pound;90 for 10 weeks</strong></div>
     </article>
-    <article class="event-row">
+    <article class="event-row" data-kind="event">
       <time class="date-tile" datetime="2026-11-12"><span class="date-tile__m">Nov</span><span class="date-tile__d">12</span><span class="date-tile__w">Thu</span></time>
       <div class="ph"><svg class="ho-icon"><use href="#i-music"/></svg></div>
       <div>
-        <div class="cluster mb-2"><span class="biz-card__cat">Music</span></div>
-        <h3 class="event-row__title"><a href="/event.html">Open Mic Night</a></h3>
+        <div class="cluster mb-2"><span class="badge badge--sample" title="Made-up content for the preview. Removed before launch."><svg class="ho-icon"><use href="#i-alert"/></svg>Sample</span><span class="biz-card__cat">Music</span></div>
+        <h3 class="event-row__title"><a href="/events/open-mic-night/">Open Mic Night</a></h3>
         <p class="card__meta"><span><svg class="ho-icon"><use href="#i-clock"/></svg>7.30pm</span><span><svg class="ho-icon"><use href="#i-pin"/></svg>Harrow Arts Centre, Hatch End</span><span><svg class="ho-icon"><use href="#i-people"/></svg>Ages 14+</span></p>
       <p class="card__text">Singers, poets and comics welcome. Sign up on the door from 7pm.</p>
       </div>
@@ -185,48 +187,37 @@ body: page-events
     </article>
     </div>
   </section>
-  <section class="day-group" aria-labelledby="day-2026-11-13">
-    <h2 class="day-group__title" id="day-2026-11-13">Friday 13 November <small>4 things on</small></h2>
+  <section class="day-group" data-date="2026-11-13" aria-labelledby="day-2026-11-13">
+    <h2 class="day-group__title" id="day-2026-11-13">Friday 13 November <small data-day-count>3 things on</small></h2>
     <div>
-    <article class="event-row event-row--featured">
-      <time class="date-tile" datetime="2026-11-13"><span class="date-tile__m">Nov</span><span class="date-tile__d">13</span><span class="date-tile__w">Fri</span></time>
-      <div class="ph ph--red"><svg class="ho-icon"><use href="#i-party"/></svg></div>
-      <div>
-        <div class="cluster mb-2"><span class="badge badge--featured"><svg class="ho-icon"><use href="#i-star"/></svg>Featured</span><span class="biz-card__cat">Community</span></div>
-        <h3 class="event-row__title"><a href="/event.html">Harrow Christmas Lights Switch-On</a></h3>
-        <p class="card__meta"><span><svg class="ho-icon"><use href="#i-clock"/></svg>4pm to 8pm</span><span><svg class="ho-icon"><use href="#i-pin"/></svg>St Ann&rsquo;s Road, Harrow Town Centre</span><span><svg class="ho-icon"><use href="#i-people"/></svg>All ages</span></p>
-      <p class="card__text">Live music, a lantern parade, food stalls and the big switch-on at 6pm.</p>
-      </div>
-      <div class="event-row__side"><strong>Free</strong></div>
-    </article>
-    <article class="event-row event-row--featured">
-      <time class="date-tile" datetime="2026-11-13"><span class="date-tile__m">Nov</span><span class="date-tile__d">13</span><span class="date-tile__w">Fri</span></time>
-      <div class="ph ph--dark"><svg class="ho-icon"><use href="#i-dumbbell"/></svg></div>
-      <div>
-        <div class="cluster mb-2"><span class="badge badge--featured"><svg class="ho-icon"><use href="#i-star"/></svg>Featured</span><span class="badge badge--outline"><svg class="ho-icon"><use href="#i-repeat"/></svg>Weekly class</span><span class="biz-card__cat">Classes and activities</span></div>
-        <h3 class="event-row__title"><a href="/class.html">Evening Yoga Flow</a></h3>
-        <p class="card__meta"><span><svg class="ho-icon"><use href="#i-repeat"/></svg>Every Friday, 6.30pm</span><span><svg class="ho-icon"><use href="#i-pin"/></svg>Wealdstone Fitness Studio, Wealdstone</span><span><svg class="ho-icon"><use href="#i-people"/></svg>Adults</span></p>
-      <p class="card__text">Unwind after work with an hour of vinyasa yoga. Mats provided.</p>
-      </div>
-      <div class="event-row__side"><strong>&pound;10</strong></div>
-    </article>
-    <article class="event-row">
+    <article class="event-row" data-kind="class">
       <time class="date-tile" datetime="2026-11-13"><span class="date-tile__m">Nov</span><span class="date-tile__d">13</span><span class="date-tile__w">Fri</span></time>
       <div class="ph"><svg class="ho-icon"><use href="#i-music"/></svg></div>
       <div>
-        <div class="cluster mb-2"><span class="badge badge--outline"><svg class="ho-icon"><use href="#i-repeat"/></svg>Weekly class</span><span class="biz-card__cat">Classes and activities</span></div>
+        <div class="cluster mb-2"><span class="badge badge--sample" title="Made-up content for the preview. Removed before launch."><svg class="ho-icon"><use href="#i-alert"/></svg>Sample</span><span class="badge badge--outline"><svg class="ho-icon"><use href="#i-repeat"/></svg>Weekly class</span><span class="biz-card__cat">Classes and activities</span></div>
         <h3 class="event-row__title"><a href="/class.html">Street Dance for Teens</a></h3>
         <p class="card__meta"><span><svg class="ho-icon"><use href="#i-repeat"/></svg>Every Friday, 6pm</span><span><svg class="ho-icon"><use href="#i-pin"/></svg>Rayners Lane Youth Hall, Rayners Lane</span><span><svg class="ho-icon"><use href="#i-people"/></svg>Ages 12 to 16</span></p>
       <p class="card__text">Hip hop and commercial routines. No experience needed.</p>
       </div>
       <div class="event-row__side"><strong>&pound;7</strong></div>
     </article>
-    <article class="event-row">
+    <article class="event-row" data-kind="class">
+      <time class="date-tile" datetime="2026-11-13"><span class="date-tile__m">Nov</span><span class="date-tile__d">13</span><span class="date-tile__w">Fri</span></time>
+      <div class="ph"><svg class="ho-icon"><use href="#i-dumbbell"/></svg></div>
+      <div>
+        <div class="cluster mb-2"><span class="badge badge--sample" title="Made-up content for the preview. Removed before launch."><svg class="ho-icon"><use href="#i-alert"/></svg>Sample</span><span class="badge badge--outline"><svg class="ho-icon"><use href="#i-repeat"/></svg>Weekly class</span><span class="biz-card__cat">Classes and activities</span></div>
+        <h3 class="event-row__title"><a href="/class.html">Evening Yoga Flow</a></h3>
+        <p class="card__meta"><span><svg class="ho-icon"><use href="#i-repeat"/></svg>Every Friday, 6.30pm</span><span><svg class="ho-icon"><use href="#i-pin"/></svg>Wealdstone Fitness Studio, Wealdstone</span><span><svg class="ho-icon"><use href="#i-people"/></svg>Adults</span></p>
+      <p class="card__text">Unwind after work with an hour of vinyasa yoga. Mats provided.</p>
+      </div>
+      <div class="event-row__side"><strong>&pound;10</strong></div>
+    </article>
+    <article class="event-row" data-kind="event">
       <time class="date-tile" datetime="2026-11-13"><span class="date-tile__m">Nov</span><span class="date-tile__d">13</span><span class="date-tile__w">Fri</span></time>
       <div class="ph"><svg class="ho-icon"><use href="#i-people"/></svg></div>
       <div>
-        <div class="cluster mb-2"><span class="biz-card__cat">Nightlife</span></div>
-        <h3 class="event-row__title"><a href="/event.html">Friday Night Comedy</a></h3>
+        <div class="cluster mb-2"><span class="badge badge--sample" title="Made-up content for the preview. Removed before launch."><svg class="ho-icon"><use href="#i-alert"/></svg>Sample</span><span class="biz-card__cat">Nightlife</span></div>
+        <h3 class="event-row__title"><a href="/events/friday-night-comedy/">Friday Night Comedy</a></h3>
         <p class="card__meta"><span><svg class="ho-icon"><use href="#i-clock"/></svg>8pm</span><span><svg class="ho-icon"><use href="#i-pin"/></svg>Harrow Arts Centre, Hatch End</span><span><svg class="ho-icon"><use href="#i-people"/></svg>Ages 18+</span></p>
       <p class="card__text">Four stand-up acts from the London circuit, hosted by a local favourite.</p>
       </div>
@@ -234,70 +225,70 @@ body: page-events
     </article>
     </div>
   </section>
-  <section class="day-group" aria-labelledby="day-2026-11-14">
-    <h2 class="day-group__title" id="day-2026-11-14">Saturday 14 November <small>6 things on</small></h2>
+  <section class="day-group" data-date="2026-11-14" aria-labelledby="day-2026-11-14">
+    <h2 class="day-group__title" id="day-2026-11-14">Saturday 14 November <small data-day-count>6 things on</small></h2>
     <div>
-    <article class="event-row event-row--featured">
+    <article class="event-row" data-kind="class">
       <time class="date-tile" datetime="2026-11-14"><span class="date-tile__m">Nov</span><span class="date-tile__d">14</span><span class="date-tile__w">Sat</span></time>
-      <div class="ph ph--dark"><svg class="ho-icon"><use href="#i-dumbbell"/></svg></div>
+      <div class="ph"><svg class="ho-icon"><use href="#i-dumbbell"/></svg></div>
       <div>
-        <div class="cluster mb-2"><span class="badge badge--featured"><svg class="ho-icon"><use href="#i-star"/></svg>Featured</span><span class="badge badge--outline"><svg class="ho-icon"><use href="#i-repeat"/></svg>Weekly class</span><span class="biz-card__cat">Classes and activities</span></div>
+        <div class="cluster mb-2"><span class="badge badge--sample" title="Made-up content for the preview. Removed before launch."><svg class="ho-icon"><use href="#i-alert"/></svg>Sample</span><span class="badge badge--outline"><svg class="ho-icon"><use href="#i-repeat"/></svg>Weekly class</span><span class="biz-card__cat">Classes and activities</span></div>
         <h3 class="event-row__title"><a href="/class.html">Weekend Bootcamp</a></h3>
         <p class="card__meta"><span><svg class="ho-icon"><use href="#i-repeat"/></svg>Every Saturday, 9am</span><span><svg class="ho-icon"><use href="#i-pin"/></svg>Wealdstone Fitness Studio, Wealdstone</span><span><svg class="ho-icon"><use href="#i-people"/></svg>Adults</span></p>
       <p class="card__text">Outdoor-style circuits indoors, for every fitness level. First session free.</p>
       </div>
       <div class="event-row__side"><strong>&pound;10</strong></div>
     </article>
-    <article class="event-row">
+    <article class="event-row" data-kind="class">
       <time class="date-tile" datetime="2026-11-14"><span class="date-tile__m">Nov</span><span class="date-tile__d">14</span><span class="date-tile__w">Sat</span></time>
       <div class="ph"><svg class="ho-icon"><use href="#i-music"/></svg></div>
       <div>
-        <div class="cluster mb-2"><span class="badge badge--outline"><svg class="ho-icon"><use href="#i-repeat"/></svg>Weekly class</span><span class="biz-card__cat">Classes and activities</span></div>
+        <div class="cluster mb-2"><span class="badge badge--sample" title="Made-up content for the preview. Removed before launch."><svg class="ho-icon"><use href="#i-alert"/></svg>Sample</span><span class="badge badge--outline"><svg class="ho-icon"><use href="#i-repeat"/></svg>Weekly class</span><span class="biz-card__cat">Classes and activities</span></div>
         <h3 class="event-row__title"><a href="/class.html">Junior Ballet</a></h3>
         <p class="card__meta"><span><svg class="ho-icon"><use href="#i-repeat"/></svg>Every Saturday, 9.30am</span><span><svg class="ho-icon"><use href="#i-pin"/></svg>Pinner Village Hall, Pinner</span><span><svg class="ho-icon"><use href="#i-people"/></svg>Ages 4 to 7</span></p>
       <p class="card__text">Playful ballet for little dancers, working towards a summer show.</p>
       </div>
       <div class="event-row__side"><strong>&pound;9</strong></div>
     </article>
-    <article class="event-row">
+    <article class="event-row" data-kind="event">
       <time class="date-tile" datetime="2026-11-14"><span class="date-tile__m">Nov</span><span class="date-tile__d">14</span><span class="date-tile__w">Sat</span></time>
       <div class="ph"><svg class="ho-icon"><use href="#i-leaf"/></svg></div>
       <div>
-        <div class="cluster mb-2"><span class="biz-card__cat">Community</span></div>
-        <h3 class="event-row__title"><a href="/event.html">Canons Park Tree Planting</a></h3>
+        <div class="cluster mb-2"><span class="badge badge--sample" title="Made-up content for the preview. Removed before launch."><svg class="ho-icon"><use href="#i-alert"/></svg>Sample</span><span class="biz-card__cat">Community</span></div>
+        <h3 class="event-row__title"><a href="/events/canons-park-tree-planting/">Canons Park Tree Planting</a></h3>
         <p class="card__meta"><span><svg class="ho-icon"><use href="#i-clock"/></svg>10am to 1pm</span><span><svg class="ho-icon"><use href="#i-pin"/></svg>Canons Park, Canons Park</span><span><svg class="ho-icon"><use href="#i-people"/></svg>Ages 8+ with an adult</span></p>
       <p class="card__text">Help plant 200 native trees. Tools and gloves provided, bring wellies.</p>
       </div>
       <div class="event-row__side"><strong>Free, book a place</strong></div>
     </article>
-    <article class="event-row">
+    <article class="event-row" data-kind="class">
       <time class="date-tile" datetime="2026-11-14"><span class="date-tile__m">Nov</span><span class="date-tile__d">14</span><span class="date-tile__w">Sat</span></time>
       <div class="ph"><svg class="ho-icon"><use href="#i-family"/></svg></div>
       <div>
-        <div class="cluster mb-2"><span class="badge badge--outline"><svg class="ho-icon"><use href="#i-repeat"/></svg>Weekly class</span><span class="biz-card__cat">Classes and activities</span></div>
+        <div class="cluster mb-2"><span class="badge badge--sample" title="Made-up content for the preview. Removed before launch."><svg class="ho-icon"><use href="#i-alert"/></svg>Sample</span><span class="badge badge--outline"><svg class="ho-icon"><use href="#i-repeat"/></svg>Weekly class</span><span class="biz-card__cat">Classes and activities</span></div>
         <h3 class="event-row__title"><a href="/class.html">Saturday Kids&rsquo; Coding Club</a></h3>
         <p class="card__meta"><span><svg class="ho-icon"><use href="#i-repeat"/></svg>Every Saturday, 10am</span><span><svg class="ho-icon"><use href="#i-pin"/></svg>Kenton Library, Kenton</span><span><svg class="ho-icon"><use href="#i-people"/></svg>Ages 8 to 12</span></p>
       <p class="card__text">Build games and animations in Scratch and Python. Laptops provided.</p>
       </div>
       <div class="event-row__side"><strong>&pound;12</strong></div>
     </article>
-    <article class="event-row">
+    <article class="event-row" data-kind="class">
       <time class="date-tile" datetime="2026-11-14"><span class="date-tile__m">Nov</span><span class="date-tile__d">14</span><span class="date-tile__w">Sat</span></time>
       <div class="ph"><svg class="ho-icon"><use href="#i-cup"/></svg></div>
       <div>
-        <div class="cluster mb-2"><span class="badge badge--outline"><svg class="ho-icon"><use href="#i-repeat"/></svg>Weekly class</span><span class="biz-card__cat">Classes and activities</span></div>
+        <div class="cluster mb-2"><span class="badge badge--sample" title="Made-up content for the preview. Removed before launch."><svg class="ho-icon"><use href="#i-alert"/></svg>Sample</span><span class="badge badge--outline"><svg class="ho-icon"><use href="#i-repeat"/></svg>Weekly class</span><span class="biz-card__cat">Classes and activities</span></div>
         <h3 class="event-row__title"><a href="/class.html">Story Time</a></h3>
         <p class="card__meta"><span><svg class="ho-icon"><use href="#i-repeat"/></svg>Every Saturday, 10.30am</span><span><svg class="ho-icon"><use href="#i-pin"/></svg>Hatch End Bookshop &amp; Caf&eacute;, Hatch End</span><span><svg class="ho-icon"><use href="#i-people"/></svg>Ages 3 to 6</span></p>
       <p class="card__text">Picture books, songs and a craft. Free, with a babyccino for the grown-ups.</p>
       </div>
       <div class="event-row__side"><strong>Free</strong></div>
     </article>
-    <article class="event-row">
+    <article class="event-row" data-kind="event">
       <time class="date-tile" datetime="2026-11-14"><span class="date-tile__m">Nov</span><span class="date-tile__d">14</span><span class="date-tile__w">Sat</span></time>
       <div class="ph"><svg class="ho-icon"><use href="#i-music"/></svg></div>
       <div>
-        <div class="cluster mb-2"><span class="biz-card__cat">Music</span></div>
-        <h3 class="event-row__title"><a href="/event.html">Live Jazz Supper Club</a></h3>
+        <div class="cluster mb-2"><span class="badge badge--sample" title="Made-up content for the preview. Removed before launch."><svg class="ho-icon"><use href="#i-alert"/></svg>Sample</span><span class="biz-card__cat">Music</span></div>
+        <h3 class="event-row__title"><a href="/events/live-jazz-supper-club/">Live Jazz Supper Club</a></h3>
         <p class="card__meta"><span><svg class="ho-icon"><use href="#i-clock"/></svg>7.30pm</span><span><svg class="ho-icon"><use href="#i-pin"/></svg>Hill Street Kitchen, Harrow on the Hill</span><span><svg class="ho-icon"><use href="#i-people"/></svg>Adults</span></p>
       <p class="card__text">A three-course supper with the Hill Street Trio. Booking essential.</p>
       </div>
@@ -305,37 +296,98 @@ body: page-events
     </article>
     </div>
   </section>
-  <section class="day-group" aria-labelledby="day-2026-11-15">
-    <h2 class="day-group__title" id="day-2026-11-15">Sunday 15 November <small>2 things on</small></h2>
+  <section class="day-group" data-date="2026-11-15" aria-labelledby="day-2026-11-15">
+    <h2 class="day-group__title" id="day-2026-11-15">Sunday 15 November <small data-day-count>2 things on</small></h2>
     <div>
-    <article class="event-row">
-      <time class="date-tile" datetime="2026-11-15"><span class="date-tile__m">Nov</span><span class="date-tile__d">15</span><span class="date-tile__w">Sun</span></time>
-      <div class="ph"><svg class="ho-icon"><use href="#i-cart"/></svg></div>
-      <div>
-        <div class="cluster mb-2"><span class="biz-card__cat">Food and drink</span></div>
-        <h3 class="event-row__title"><a href="/event.html">Pinner Farmers&rsquo; Market</a></h3>
-        <p class="card__meta"><span><svg class="ho-icon"><use href="#i-clock"/></svg>10am to 2pm</span><span><svg class="ho-icon"><use href="#i-pin"/></svg>Pinner High Street, Pinner</span><span><svg class="ho-icon"><use href="#i-people"/></svg>All ages</span></p>
-      <p class="card__text">Around 30 stalls of local produce, bread, cheese and hot food.</p>
-      </div>
-      <div class="event-row__side"><strong>Free entry</strong></div>
-    </article>
-    <article class="event-row">
+    <article class="event-row" data-kind="event">
       <time class="date-tile" datetime="2026-11-15"><span class="date-tile__m">Nov</span><span class="date-tile__d">15</span><span class="date-tile__w">Sun</span></time>
       <div class="ph"><svg class="ho-icon"><use href="#i-leaf"/></svg></div>
       <div>
-        <div class="cluster mb-2"><span class="biz-card__cat">Community</span></div>
-        <h3 class="event-row__title"><a href="/event.html">Harrow Weald Common Guided Walk</a></h3>
+        <div class="cluster mb-2"><span class="badge badge--sample" title="Made-up content for the preview. Removed before launch."><svg class="ho-icon"><use href="#i-alert"/></svg>Sample</span><span class="biz-card__cat">Community</span></div>
+        <h3 class="event-row__title"><a href="/events/harrow-weald-common-guided-walk/">Harrow Weald Common Guided Walk</a></h3>
         <p class="card__meta"><span><svg class="ho-icon"><use href="#i-clock"/></svg>10am to 12pm</span><span><svg class="ho-icon"><use href="#i-pin"/></svg>Harrow Weald Common, Harrow Weald</span><span><svg class="ho-icon"><use href="#i-people"/></svg>All ages</span></p>
       <p class="card__text">A gentle two-hour walk with a local ranger. Meet at the car park.</p>
       </div>
       <div class="event-row__side"><strong>Free</strong></div>
     </article>
+    <article class="event-row" data-kind="event">
+      <time class="date-tile" datetime="2026-11-15"><span class="date-tile__m">Nov</span><span class="date-tile__d">15</span><span class="date-tile__w">Sun</span></time>
+      <div class="ph"><svg class="ho-icon"><use href="#i-cart"/></svg></div>
+      <div>
+        <div class="cluster mb-2"><span class="badge badge--sample" title="Made-up content for the preview. Removed before launch."><svg class="ho-icon"><use href="#i-alert"/></svg>Sample</span><span class="biz-card__cat">Food and drink</span></div>
+        <h3 class="event-row__title"><a href="/events/pinner-farmers-market/">Pinner Farmers&rsquo; Market</a></h3>
+        <p class="card__meta"><span><svg class="ho-icon"><use href="#i-clock"/></svg>10am to 2pm</span><span><svg class="ho-icon"><use href="#i-pin"/></svg>Pinner High Street, Pinner</span><span><svg class="ho-icon"><use href="#i-people"/></svg>All ages</span></p>
+      <p class="card__text">Around 30 stalls of local produce, bread, cheese and hot food.</p>
+      </div>
+      <div class="event-row__side"><strong>Free entry</strong></div>
+    </article>
+    </div>
+  </section>
+  <section class="day-group" data-date="2026-11-16" aria-labelledby="day-2026-11-16">
+    <h2 class="day-group__title" id="day-2026-11-16">Monday 16 November <small data-day-count>2 things on</small></h2>
+    <div>
+    <article class="event-row" data-kind="event">
+      <time class="date-tile" datetime="2026-11-16"><span class="date-tile__m">Nov</span><span class="date-tile__d">16</span><span class="date-tile__w">Mon</span></time>
+      <div class="ph"><svg class="ho-icon"><use href="#i-briefcase"/></svg></div>
+      <div>
+        <div class="cluster mb-2"><span class="badge badge--sample" title="Made-up content for the preview. Removed before launch."><svg class="ho-icon"><use href="#i-alert"/></svg>Sample</span><span class="biz-card__cat">Community</span></div>
+        <h3 class="event-row__title"><a href="/events/harrow-business-breakfast/">Harrow Business Breakfast</a></h3>
+        <p class="card__meta"><span><svg class="ho-icon"><use href="#i-clock"/></svg>7.30am</span><span><svg class="ho-icon"><use href="#i-pin"/></svg>Hill Street Kitchen, Harrow on the Hill</span><span><svg class="ho-icon"><use href="#i-people"/></svg>Adults</span></p>
+      </div>
+      <div class="event-row__side"><strong>&pound;12</strong></div>
+    </article>
+    <article class="event-row" data-kind="class">
+      <time class="date-tile" datetime="2026-11-16"><span class="date-tile__m">Nov</span><span class="date-tile__d">16</span><span class="date-tile__w">Mon</span></time>
+      <div class="ph"><svg class="ho-icon"><use href="#i-heart"/></svg></div>
+      <div>
+        <div class="cluster mb-2"><span class="badge badge--sample" title="Made-up content for the preview. Removed before launch."><svg class="ho-icon"><use href="#i-alert"/></svg>Sample</span><span class="badge badge--outline"><svg class="ho-icon"><use href="#i-repeat"/></svg>Weekly class</span><span class="biz-card__cat">Classes and activities</span></div>
+        <h3 class="event-row__title"><a href="/class.html">Chair Yoga for Over-60s</a></h3>
+        <p class="card__meta"><span><svg class="ho-icon"><use href="#i-repeat"/></svg>Every Monday, 11am</span><span><svg class="ho-icon"><use href="#i-pin"/></svg>St George&rsquo;s Hall, Headstone</span><span><svg class="ho-icon"><use href="#i-people"/></svg>Ages 60+</span></p>
+      </div>
+      <div class="event-row__side"><strong>&pound;3</strong></div>
+    </article>
+    </div>
+  </section>
+  <section class="day-group" data-date="2026-11-17" aria-labelledby="day-2026-11-17">
+    <h2 class="day-group__title" id="day-2026-11-17">Tuesday 17 November <small data-day-count>3 things on</small></h2>
+    <div>
+    <article class="event-row" data-kind="event">
+      <time class="date-tile" datetime="2026-11-17"><span class="date-tile__m">Nov</span><span class="date-tile__d">17</span><span class="date-tile__w">Tue</span></time>
+      <div class="ph"><svg class="ho-icon"><use href="#i-medical"/></svg></div>
+      <div>
+        <div class="cluster mb-2"><span class="badge badge--sample" title="Made-up content for the preview. Removed before launch."><svg class="ho-icon"><use href="#i-alert"/></svg>Sample</span><span class="biz-card__cat">Community</span></div>
+        <h3 class="event-row__title"><a href="/events/flu-jab-drop-in/">Flu Jab Drop-in</a></h3>
+        <p class="card__meta"><span><svg class="ho-icon"><use href="#i-clock"/></svg>9am to 1pm</span><span><svg class="ho-icon"><use href="#i-pin"/></svg>Kenton Road Pharmacy, Kenton</span><span><svg class="ho-icon"><use href="#i-people"/></svg>Ages 18+</span></p>
+      <p class="card__text">No appointment needed. Bring your NHS number if you have it.</p>
+      </div>
+      <div class="event-row__side"><strong>Free for eligible adults</strong></div>
+    </article>
+    <article class="event-row" data-kind="event">
+      <time class="date-tile" datetime="2026-11-17"><span class="date-tile__m">Nov</span><span class="date-tile__d">17</span><span class="date-tile__w">Tue</span></time>
+      <div class="ph"><svg class="ho-icon"><use href="#i-wrench"/></svg></div>
+      <div>
+        <div class="cluster mb-2"><span class="badge badge--sample" title="Made-up content for the preview. Removed before launch."><svg class="ho-icon"><use href="#i-alert"/></svg>Sample</span><span class="biz-card__cat">Community</span></div>
+        <h3 class="event-row__title"><a href="/events/pinner-repair-cafe/">Pinner Repair Caf&eacute;</a></h3>
+        <p class="card__meta"><span><svg class="ho-icon"><use href="#i-clock"/></svg>2pm</span><span><svg class="ho-icon"><use href="#i-pin"/></svg>Pinner Methodist Hall, Pinner</span><span><svg class="ho-icon"><use href="#i-people"/></svg>All ages</span></p>
+      </div>
+      <div class="event-row__side"><strong>Free</strong></div>
+    </article>
+    <article class="event-row" data-kind="class">
+      <time class="date-tile" datetime="2026-11-17"><span class="date-tile__m">Nov</span><span class="date-tile__d">17</span><span class="date-tile__w">Tue</span></time>
+      <div class="ph"><svg class="ho-icon"><use href="#i-edit"/></svg></div>
+      <div>
+        <div class="cluster mb-2"><span class="badge badge--sample" title="Made-up content for the preview. Removed before launch."><svg class="ho-icon"><use href="#i-alert"/></svg>Sample</span><span class="badge badge--outline"><svg class="ho-icon"><use href="#i-repeat"/></svg>Weekly class</span><span class="biz-card__cat">Classes and activities</span></div>
+        <h3 class="event-row__title"><a href="/class.html">Beginners&rsquo; Pottery</a></h3>
+        <p class="card__meta"><span><svg class="ho-icon"><use href="#i-repeat"/></svg>Every Tuesday, 7pm</span><span><svg class="ho-icon"><use href="#i-pin"/></svg>Harrow Arts Centre, Hatch End</span><span><svg class="ho-icon"><use href="#i-people"/></svg>Adults</span></p>
+      </div>
+      <div class="event-row__side"><strong>&pound;150 for 6 weeks</strong></div>
+    </article>
     </div>
   </section>
 
       <div class="split mt-6">
-        <p class="muted small mb-0">Showing Wednesday 11 to Sunday 15 November.</p>
-        <a class="ho-btn ho-btn--outline" href="/events.html?from=2026-11-16">Next week: from Monday 16 November <svg class="ho-icon"><use href="#i-arrow"/></svg></a>
+        <p class="muted small mb-0" data-events-range>Showing Wednesday 11 November to Tuesday 17 November.</p>
+        <a class="ho-btn ho-btn--outline" href="/events-month.html">See the whole month <svg class="ho-icon"><use href="#i-arrow"/></svg></a>
       </div>
 
       <div class="grid grid-2 mt-6">
