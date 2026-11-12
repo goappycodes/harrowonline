@@ -433,6 +433,10 @@ address { font-style: normal; }
 .badge--unclaimed { background: var(--ho-soft); color: var(--ho-muted); }
 .badge--sub { background: var(--ho-red-tint); color: var(--ho-red-dark); }
 .badge--outline { background: #fff; box-shadow: inset 0 0 0 1px var(--ho-line-2); color: var(--ho-text); }
+/* Preview-only: made-up content. Never combined with Verified, Featured, Premium, Local Partner or Business of the Week. */
+.badge--sample { background: #FFF3CD; color: #6B4E00; box-shadow: inset 0 0 0 1px #E0B84A; }
+.notice--sample { background: #FFF3CD; color: #4A3600; box-shadow: inset 0 0 0 1px #E0B84A; }
+.offer__code--pending { font: 600 13px/1.3 var(--ho-font-ui); letter-spacing: 0; color: var(--ho-muted); background: none; padding: 0; }
 /* Workflow states: Draft → Pending → Published / Rejected / Ended */
 .status { display: inline-flex; align-items: center; gap: 6px; font: 700 13px/1.3 var(--ho-font-ui); white-space: nowrap; }
 .status::before { content: ""; width: 8px; height: 8px; border-radius: 50%; background: currentColor; }

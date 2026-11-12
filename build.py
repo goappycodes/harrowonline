@@ -73,6 +73,11 @@ def render(meta, body):
     layout = meta.get("layout", "default")
 
     body = INC_RE.sub(lambda m: partial(m.group(1)), body)
+    if meta.get("hubnav") == "account":
+        # Preview only: the signed-in account, its bookings, statuses, invoices and figures are made up.
+        body = ('<div class="ho-container mt-4"><div class="notice notice--sample"><svg class="ho-icon"><use href="#i-alert"/></svg>'
+                '<p><strong>Sample account.</strong> The business, bookings, statuses, invoices and figures on this page are made up '
+                'to show how the dashboard works. None of it is real, and it will be removed before launch.</p></div></div>\n') + body
 
     parts = [partial("head"), partial("header")]
     if site == "hub" and layout != "bare":
@@ -138,6 +143,9 @@ def with_base(html):
 def build(listings=True):
     """listings=False skips the 2,600 generated profile/category/area pages (fast rebuild while editing)."""
     import gen_listings
+    sys.path.insert(0, str(ROOT / "tools"))
+    import gen_events   # data/events.json → What's On list, month, homepage weekend cards, one page per event
+    gen_events.write_sources()
     OUT.mkdir(parents=True, exist_ok=True)
     if listings:
         clean_html()
@@ -152,6 +160,9 @@ def build(listings=True):
         meta.setdefault("schema", seo.PAGE_SCHEMA.get(stem, "WebPage"))
         if stem in seo.NEWS_CANONICAL:
             meta["canonical"] = seo.NEWS_CANONICAL[stem]
+        write(meta["path"], render(meta, body))
+        count += 1
+    for meta, body in gen_events.event_pages():
         write(meta["path"], render(meta, body))
         count += 1
     import sitemap

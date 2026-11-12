@@ -79,12 +79,51 @@
     if (msg) msg.textContent = "Thanks! Your first newsletter arrives tomorrow morning.";
   }));
 
-  /* 6. Subscriber-only offers: unlock (prototype reveals immediately) */
+  /* 6. Subscriber-only offers: the code is NOT in the page. Submitting starts the email confirmation;
+        WordPress returns the code only after the reader confirms (POST /wp-json/ho/v1/unlock → confirm link → code). */
   $$("[data-unlock]").forEach((form) => form.addEventListener("submit", (e) => {
     e.preventDefault();
-    const offer = form.closest(".offer");
-    if (offer) offer.classList.add("is-unlocked");
+    const lock = form.closest(".offer__lock");
+    if (!lock) return;
+    const email = esc(($("input[type=email]", form) || {}).value || "your inbox");
+    lock.innerHTML = `<p role="status">${ICON("mail", "ho-icon ho-icon--sm")}Check ${email} and tap the confirmation link. Your code appears here once you have confirmed.</p>`;
   }));
+
+  /* 6b. What's On list: date filter from ?when=today|weekend|7days|date (&date=YYYY-MM-DD).
+        The preview has a fixed "today" (data-today); WordPress filters server-side with the same parameters. */
+  const evList = $("[data-events-list]");
+  if (evList) {
+    const q = new URLSearchParams(location.search);
+    const when = q.get("when") || "";
+    const today = evList.dataset.today;
+    const [w0, w1] = (evList.dataset.weekend || ",").split(",");
+    const addDays = (iso, n) => { const d = new Date(iso + "T12:00:00"); d.setDate(d.getDate() + n); return d.toISOString().slice(0, 10); };
+    const nice = (iso) => new Date(iso + "T12:00:00").toLocaleDateString("en-GB", { weekday: "long", day: "numeric", month: "long" });
+    const ranges = { today: [today, today], weekend: [w0, w1], "7days": [today, addDays(today, 6)] };
+    const range = when === "date" && /^\d{4}-\d{2}-\d{2}$/.test(q.get("date") || "") ? [q.get("date"), q.get("date")] : ranges[when];
+    if (range) {
+      const [from, to] = range;
+      let n = 0;
+      $$(".day-group[data-date]", evList).forEach((g) => {
+        const on = g.dataset.date >= from && g.dataset.date <= to;
+        g.hidden = !on;
+        g.style.display = on ? "" : "none";
+        if (on) n += $$(".event-row", g).length;
+      });
+      const span = from === to ? nice(from) : `${nice(from)} to ${nice(to)}`;
+      const count = $("[data-events-count]", evList);
+      if (count) count.innerHTML = `<strong>${n}</strong> ${n === 1 ? "event or class" : "events and classes"}, ${esc(span)}`;
+      const shown = $("[data-events-range]", evList);
+      if (shown) shown.textContent = `Showing ${span}.`;
+      const empty = $("[data-events-empty]", evList);
+      if (empty) empty.hidden = n > 0;
+      $$("[data-when]", evList).forEach((c) => c.toggleAttribute("aria-current", c.dataset.when === when));
+      const radio = $(`#filters input[name="when"][value="${when}"]`);
+      if (radio) radio.checked = true;
+      const pick = $("#f-date");
+      if (pick && when === "date") { pick.value = from; const box = $("#pick-date"); if (box) box.hidden = false; }
+    }
+  }
 
   /* 7. Character counters: <textarea maxlength="140" data-counter> */
   $$("[data-counter]").forEach((el) => {

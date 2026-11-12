@@ -16,15 +16,8 @@
         {"title": "2-for-1 mains, Monday to Thursday", "text": "Order any two mains and the cheaper one is free. Dine in only. Show this offer when you order.", "ends": "30 November 2026", "code": "HILL241", "featured": true},
         {"title": "Kids eat free on Sundays", "text": "One free children&rsquo;s meal with every adult Sunday roast. Under 12s.", "ends": "27 December 2026", "icon": "family"}
       ],
-      "events": [
-        {"title": "Live Jazz Supper Club", "when": "Sat 14 Nov, 7.30pm", "d": "14", "m": "Nov", "w": "Sat", "price": "&pound;35 with dinner", "href": "/event.html"},
-        {"title": "Harrow Business Breakfast", "when": "Mon 16 Nov, 7.30am", "d": "16", "m": "Nov", "w": "Mon", "price": "&pound;12", "href": "/event.html"},
-        {"title": "Wine Tasting: Wines for Christmas", "when": "Thu 19 Nov, 7pm", "d": "19", "m": "Nov", "w": "Thu", "price": "&pound;25", "href": "/event.html"}
-      ],
-      "news": [
-        {"title": "Hill Street Kitchen named Harrow&rsquo;s best Sunday roast by readers", "date": "2 November 2026", "cat": "Food"},
-        {"title": "Harrow on the Hill restaurants back plan for winter street lights", "date": "18 October 2026", "cat": "Business"}
-      ]
+      "events": [],
+      "news": []
     },
     {
       "name": "Wealdstone Fitness Studio", "cat": "sport-and-fitness", "sub": "Gym and fitness studio", "area": "wealdstone",
@@ -47,9 +40,7 @@
         {"title": "Evening Yoga Flow", "when": "Every Friday, 6.30pm", "d": "13", "m": "Nov", "w": "Fri", "price": "&pound;10", "href": "/class.html", "class": true, "featured": true},
         {"title": "Weekend Bootcamp", "when": "Every Saturday, 9am", "d": "14", "m": "Nov", "w": "Sat", "price": "&pound;10", "href": "/class.html", "class": true, "featured": true}
       ],
-      "news": [
-        {"title": "Free fitness classes for over-60s launch in Wealdstone", "date": "27 October 2026", "cat": "Health"}
-      ]
+      "news": []
     },
     {
       "name": "Hatch End Bookshop & Café", "cat": "cafes-and-takeaways", "sub": "Bookshop and café", "area": "hatch-end",
@@ -70,9 +61,7 @@
       "events": [
         {"title": "Story Time", "when": "Every Saturday, 10.30am", "d": "14", "m": "Nov", "w": "Sat", "price": "Free", "href": "/class.html", "class": true}
       ],
-      "news": [
-        {"title": "Hatch End bookshop marks five years with community reading list", "date": "9 September 2026", "cat": "Community"}
-      ]
+      "news": []
     },
     {
       "name": "Stanmore Family Dental", "cat": "doctors-dentists-and-clinics", "sub": "Dental practice", "area": "stanmore",
@@ -90,13 +79,8 @@
         {"title": "&pound;25 off your first hygienist visit", "text": "For new private patients. Mention Harrow Online when you book by phone or online.", "ends": "31 December 2026", "featured": true},
         {"title": "Free electric toothbrush with a new patient exam", "text": "For adults joining as private patients. While stocks last.", "ends": "31 December 2026"}
       ],
-      "events": [
-        {"title": "Children&rsquo;s Brushing Workshop", "when": "Sat 28 Nov, 10am", "d": "28", "m": "Nov", "w": "Sat", "price": "Free", "href": "/event.html"}
-      ],
-      "news": [
-        {"title": "Stanmore dentist offers free check-ups for families in need", "date": "21 October 2026", "cat": "Health"},
-        {"title": "Local Partner spotlight: Stanmore Family Dental", "date": "3 November 2026", "cat": "Business"}
-      ]
+      "events": [],
+      "news": []
     },
     {
       "name": "Station Road Barbers", "cat": "hair-and-beauty", "sub": "Barber", "area": "harrow-town-centre",
@@ -157,16 +141,12 @@
       "social": [],
       "tagline": "The voice of Harrow town centre's independent businesses",
       "description": [
-        "A volunteer-run association of shops, cafés and services in Harrow town centre. We organise the Christmas lights, seasonal markets and late-night shopping, and speak up for local traders."
+        "A volunteer-run association of shops, cafés and services in Harrow town centre. We run seasonal markets and late-night shopping, and speak up for local traders."
       ],
       "hours": ["9am to 5pm", "9am to 5pm", "9am to 5pm", "9am to 5pm", "9am to 5pm", "Closed", "Closed"],
       "offers": [],
-      "events": [
-        {"title": "Harrow Christmas Lights Switch-On", "when": "Fri 13 Nov, 4pm to 8pm", "d": "13", "m": "Nov", "w": "Fri", "price": "Free", "href": "/event.html", "featured": true}
-      ],
-      "news": [
-        {"title": "Christmas lights switch-on returns to St Ann&rsquo;s Road", "date": "6 November 2026", "cat": "Community"}
-      ]
+      "events": [],
+      "news": []
     },
     {
       "name": "Rayners Lane Spice House", "cat": "restaurants", "sub": "Indian restaurant", "area": "rayners-lane",
@@ -183,12 +163,8 @@
       "offers": [
         {"title": "Free poppadoms and chutneys with any takeaway over &pound;20", "text": "Collection or delivery. Mention Harrow Online when you order.", "ends": "31 December 2026", "featured": true}
       ],
-      "events": [
-        {"title": "Curry and Quiz Night", "when": "Thu 26 Nov, 7pm", "d": "26", "m": "Nov", "w": "Thu", "price": "&pound;20 with dinner", "href": "/event.html"}
-      ],
-      "news": [
-        {"title": "Rayners Lane restaurant raises &pound;3,000 for local food bank", "date": "14 October 2026", "cat": "Community"}
-      ]
+      "events": [],
+      "news": []
     },
     {
       "name": "Pinner Cycle Workshop", "cat": "shops", "sub": "Bike shop and repairs", "area": "pinner",
@@ -205,9 +181,7 @@
       "offers": [
         {"title": "Free winter bike safety check", "text": "Brakes, lights and tyres checked while you wait. No booking needed.", "ends": "31 December 2026", "icon": "wrench"}
       ],
-      "events": [
-        {"title": "Bike Maintenance for Beginners", "when": "Sat 21 Nov, 10am", "d": "21", "m": "Nov", "w": "Sat", "price": "&pound;15", "href": "/event.html"}
-      ],
+      "events": [],
       "news": []
     },
     {
@@ -225,9 +199,7 @@
       "offers": [
         {"title": "Free blood pressure check", "text": "Walk in any weekday. Takes five minutes and you get a printed result.", "ends": "31 January 2027", "icon": "heart"}
       ],
-      "events": [
-        {"title": "Flu Jab Drop-in", "when": "Tue 17 Nov, 9am to 1pm", "d": "17", "m": "Nov", "w": "Tue", "price": "Free for eligible adults", "href": "/event.html"}
-      ],
+      "events": [],
       "news": []
     },
     {

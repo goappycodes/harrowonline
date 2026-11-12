@@ -172,9 +172,68 @@ TIER_LABEL = {"partner": "Local Partner", "premium": "Premium", "enhanced": "Enh
 
 
 def load_claimed():
-    """Sample claimed businesses (data/claimed.json): full profiles with offers and events."""
+    """Sample claimed businesses (data/claimed.json): full profiles with offers.
+
+    One-off events are NOT typed into claimed.json: they come from data/events.json (the single event source)
+    by organiser name, so an event is entered once and shows on What's On, the homepage and the business profile.
+    Weekly classes stay in claimed.json for now."""
     p = ROOT / "data/claimed.json"
-    return json.loads(p.read_text(encoding="utf-8"))["businesses"] if p.exists() else []
+    if not p.exists():
+        return []
+    businesses = json.loads(p.read_text(encoding="utf-8"))["businesses"]
+    by_org = {}
+    for ev in load_events():
+        if ev.get("org") and ev["day"] >= PREVIEW_TODAY:
+            by_org.setdefault(ev["org"], []).append(ev)
+    for c in businesses:
+        classes = [x for x in c.get("events", []) if x.get("class")]
+        c["events"] = [profile_event(ev) for ev in by_org.get(c["name"], [])] + classes
+    return businesses
+
+
+# ------------------------------------------------------------------ events (data/events.json)
+import datetime as _dt
+from html import unescape as _unescape
+
+PREVIEW_TODAY = _dt.date(2026, 11, 11)   # the preview's fixed "today" (Wednesday 11 November 2026)
+_TIME_RE = re.compile(r"(\d{1,2})(?:\.(\d{2}))?\s*(am|pm)")
+
+
+def _clock(s):
+    m = _TIME_RE.search(s)
+    if not m:
+        return None
+    return int(m.group(1)) % 12 + (12 if m.group(3) == "pm" else 0), int(m.group(2) or 0)
+
+
+def load_events():
+    """Every one-off event, sorted by start. Adds: day (date), start/end (datetime, UK local), slug, href (/events/{slug}/)."""
+    p = ROOT / "data/events.json"
+    raw = json.loads(p.read_text(encoding="utf-8"))["events"] if p.exists() else []
+    seen, out = {}, []
+    for ev in raw:
+        ev = dict(ev)
+        day = _dt.date.fromisoformat(ev["date"])
+        parts = ev["time"].split(" to ")
+        sh, sm = _clock(parts[0]) or (9, 0)
+        start = _dt.datetime(day.year, day.month, day.day, sh, sm)
+        end_t = _clock(parts[1]) if len(parts) > 1 else None
+        end = _dt.datetime(day.year, day.month, day.day, *end_t) if end_t else start + _dt.timedelta(hours=2)
+        base = slugify(_unescape(ev["title"]))
+        seen[base] = seen.get(base, 0) + 1
+        slug = base if seen[base] == 1 else f"{base}-{day.day}-{day.strftime('%b').lower()}"
+        ev.update(day=day, start=start, end=end, slug=slug, href=f"/events/{slug}/")
+        out.append(ev)
+    out.sort(key=lambda e: (e["start"], e["title"]))
+    return out
+
+
+def profile_event(ev):
+    """An event in the shape gen_claimed.event_row() uses on business profiles."""
+    d = ev["day"]
+    return {"title": ev["title"], "when": f'{d.strftime("%a")} {d.day} {d.strftime("%b")}, {ev["time"]}', "d": str(d.day),
+            "m": d.strftime("%b"), "w": d.strftime("%a"), "price": ev["price"], "href": ev["href"],
+            "featured": ev.get("featured") and not ev.get("sample"), "sample": ev.get("sample", False)}
 
 
 if __name__ == "__main__":
