@@ -101,11 +101,11 @@ body: page-classes
   <div class="cta-band mt-7">
     <div>
       <h2>Run a class in Harrow?</h2>
-      <p>List it free. Schools, clubs and charities can open a free organiser account; businesses can add classes from their Hub dashboard. You keep one page up to date all year, and we check it before it goes live.</p>
+      <p>Schools, clubs, charities and community groups list classes free with an organiser account. Businesses add classes on the Featured plan. You keep one page up to date all year, and we check it before it goes live.</p>
     </div>
     <div class="cta-band__actions">
-      <a class="ho-btn ho-btn--primary" href="/register.html">{I('plus')}List your class free</a>
-      <a class="ho-btn ho-btn--outline" href="/pricing.html">Get featured</a>
+      <a class="ho-btn ho-btn--primary" href="/register.html">{I('plus')}List your class</a>
+      <a class="ho-btn ho-btn--outline" href="/pricing.html">Business plans</a>
     </div>
   </div>
 </div>

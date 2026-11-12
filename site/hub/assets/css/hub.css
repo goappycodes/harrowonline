@@ -677,6 +677,10 @@ address { font-style: normal; }
 .offer-page--ended .offer-hero__title, .offer-page--ended .offer-hero__text { color: var(--ho-muted); }
 .terms-list { margin: 0; padding-left: 20px; }
 .terms-list li { margin: 0 0 var(--ho-s2); padding-left: 4px; }
+.inline-signup { margin-top: var(--ho-s3); }
+.inline-signup__row { display: flex; flex-wrap: wrap; gap: var(--ho-s2); }
+.inline-signup__row .input { flex: 1 1 180px; min-width: 0; height: 40px; }
+.inline-signup__row .ho-btn { flex: 1 0 auto; }
 .copy-field__label { display: block; margin-top: var(--ho-s4); }
 .copy-field { display: flex; gap: var(--ho-s2); margin-top: 6px; }
 .copy-field .input { flex: 1; min-width: 0; height: 36px; font: 13px/1.2 ui-monospace, "SFMono-Regular", Consolas, monospace; background: var(--ho-soft-2); }

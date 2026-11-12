@@ -166,7 +166,7 @@ def write_list():
     w0, w1 = WEEKEND
     body = f'''<!--
 title: What's On in Harrow: events this week and weekend
-description: Events, things to do and classes across Harrow this week and weekend: family days out, live music, markets, community events and more. Free to list your event.
+description: Events, things to do and classes across Harrow this week and weekend: family days out, live music, markets, community events and more. Schools, clubs and charities list events free.
 nav: events
 hubnav: events
 body: page-events
@@ -177,7 +177,7 @@ body: page-events
 
 <header class="page-head ho-container">
   <h1 class="page-head__title">What&rsquo;s On in Harrow</h1>
-  <p class="page-head__lead">Events, days out and regular classes across the borough, checked by the Harrow Online team. Running something? <a href="/register.html">Add your event free</a>.</p>
+  <p class="page-head__lead">Events, days out and regular classes across the borough, checked by the Harrow Online team. Running something? <a href="/register.html">Add your event</a>: free for schools, clubs and charities.</p>
 </header>
 
 <div class="ho-container">
@@ -276,7 +276,16 @@ body: page-events
         <div class="panel panel--soft">
           <h2 class="panel__title">{I('mail')} The Weekend, every Thursday</h2>
           <p class="small">Our Thursday newsletter picks the best things to do in Harrow that weekend.</p>
-          <a class="link-arrow" href="https://harrowonline.org/newsletter/">Get The Weekend free {I('arrow')}</a>
+          <form class="inline-signup" action="https://harrowonline.org/wp-json/ho/v1/subscribe" method="post" data-nl-form data-nl-done="Thanks! Check your inbox to confirm. The Weekend arrives every Thursday.">
+            <input type="hidden" name="signup_source" value="events-weekend">
+            <input type="hidden" name="editions[]" value="weekend">
+            <div class="inline-signup__row">
+              <label class="ho-sr" for="wk-email">Email address</label>
+              <input class="input" id="wk-email" type="email" name="email" placeholder="Your email" autocomplete="email" required>
+              <button class="ho-btn ho-btn--primary ho-btn--sm" type="submit">Get The Weekend</button>
+            </div>
+            <p class="help mt-2 mb-0" role="status" aria-live="polite">Free. The Weekend only: it won&rsquo;t sign you up to the Daily or Harrow Business.</p>
+          </form>
         </div>
       </div>
     </div>
@@ -284,12 +293,12 @@ body: page-events
 
   <div class="cta-band mt-7">
     <div>
-      <h2>Add your event, free</h2>
-      <p>Schools, clubs, charities and local businesses can list events and classes for free. We check every listing before it goes live, usually within one working day.</p>
+      <h2>Running an event in Harrow?</h2>
+      <p>Schools, clubs, charities and community groups list events and classes free. Businesses add events and classes on the Featured plan. We check every listing before it goes live, usually within one working day.</p>
     </div>
     <div class="cta-band__actions">
       <a class="ho-btn ho-btn--primary" href="/register.html">{I('plus')}Add your event</a>
-      <a class="ho-btn ho-btn--outline" href="/pricing.html">Feature your event</a>
+      <a class="ho-btn ho-btn--outline" href="/pricing.html">Business plans</a>
     </div>
   </div>
 </div>
@@ -422,8 +431,8 @@ body: page-events
 
   <div class="cta-band mt-7">
     <div>
-      <h2>Add your event, free</h2>
-      <p>Schools, clubs, charities and local businesses can list events and classes on the Hub for free. Every listing is checked before it goes live.</p>
+      <h2>Running an event in Harrow?</h2>
+      <p>Schools, clubs, charities and community groups list events and classes free. Businesses add events and classes on the Featured plan. Every listing is checked before it goes live.</p>
     </div>
     <div class="cta-band__actions">
       <a class="ho-btn ho-btn--primary" href="/register.html">{I('plus')}Add your event</a>

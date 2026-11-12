@@ -106,7 +106,7 @@
     if (!email || !email.value.includes("@")) { if (msg) msg.textContent = "Please enter a valid email address."; return; }
     const btn = $("button[type=submit]", form);
     if (btn) { btn.innerHTML = ICON("check") + "<span>You&rsquo;re signed up</span>"; btn.disabled = true; }
-    if (msg) msg.textContent = "Thanks! Your first newsletter arrives tomorrow morning.";
+    if (msg) msg.textContent = form.dataset.nlDone || "Thanks! Your first newsletter arrives tomorrow morning.";
   }));
 
   /* 6. Subscriber-only offers: the code is NOT in the page. Submitting starts the email confirmation;
