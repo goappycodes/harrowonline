@@ -770,6 +770,8 @@ address { font-style: normal; }
 .ticks { margin: 0; padding: 0; list-style: none; }
 .ticks li { position: relative; padding-left: 28px; margin: 0 0 10px; line-height: 1.45; }
 .ticks li::before { content: ""; position: absolute; left: 0; top: 2px; width: 18px; height: 18px; border-radius: 50%; background: var(--ho-red) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='m6 12.5 4 4L18 8' fill='none' stroke='%23fff' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") center / 13px no-repeat; }
+.ticks li.ticks__lead { padding-left: 0; font-weight: 700; color: var(--ho-ink); } /* "Everything in Basic, plus:" */
+.ticks li.ticks__lead::before { content: none; }
 .ticks li.is-off { color: var(--ho-muted); }
 .ticks li.is-off::before { background: var(--ho-soft) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M7 12h10' fill='none' stroke='%239A9A9A' stroke-width='3' stroke-linecap='round'/%3E%3C/svg%3E") center / 13px no-repeat; }
 .ticks--dark li::before { background-color: var(--ho-ink); }
@@ -918,7 +920,7 @@ address { font-style: normal; }
 .billing-toggle button[aria-pressed="true"] { background: var(--ho-ink); color: #fff; }
 .billing-toggle .save { margin-left: 6px; padding: 2px 6px; border-radius: 4px; background: var(--ho-red); color: #fff; font-size: 11px; }
 
-.plans { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: var(--ho-s4); align-items: stretch; }
+.plans { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--ho-s5); align-items: stretch; max-width: 1080px; margin: 0 auto; }
 .plan { position: relative; display: flex; flex-direction: column; padding: var(--ho-s5); background: #fff; border: 1px solid var(--ho-line); border-radius: var(--ho-radius-lg); }
 .plan__name { margin: 0; font: 700 20px/1.2 var(--ho-font-head); }
 .plan__for { margin: 6px 0 var(--ho-s4); min-height: 44px; font-size: 14px; color: var(--ho-muted); }
@@ -936,8 +938,8 @@ address { font-style: normal; }
 .plan--partner .ho-btn--outline { background: transparent; color: #fff; border-color: rgba(255,255,255,.5); }
 .plan--partner .ho-btn--outline:hover { background: #fff; color: var(--ho-ink); }
 [data-billing="annual"] .price-monthly, [data-billing="monthly"] .price-annual { display: none; }
-@media (max-width: 1100px) { .plans { grid-template-columns: repeat(2, minmax(0, 1fr)); row-gap: var(--ho-s6); } }
-@media (max-width: 640px) { .plans { grid-template-columns: minmax(0, 1fr); } .plan__for { min-height: 0; } }
+/* Three plans: one row on desktop, stacked (not 2 + 1) on tablet and phone */
+@media (max-width: 900px) { .plans { grid-template-columns: minmax(0, 1fr); max-width: 520px; row-gap: var(--ho-s6); } .plan__for { min-height: 0; } }
 
 .compare-wrap { overflow-x: auto; border: 1px solid var(--ho-line); border-radius: var(--ho-radius-lg); }
 .compare { width: 100%; min-width: 720px; border-collapse: collapse; font-size: 15px; background: #fff; }
