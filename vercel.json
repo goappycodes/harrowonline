@@ -13,6 +13,11 @@
       "permanent": true
     },
     {
+      "source": "/hub/categories.html",
+      "destination": "/hub/categories/",
+      "permanent": true
+    },
+    {
       "source": "/hub/offers.html",
       "destination": "/hub/offers/",
       "permanent": true

@@ -1,0 +1,21 @@
+<!--
+title: All business categories in Harrow
+description: Browse every category of local business in Harrow, from restaurants and hair salons to trades, dentists and garages. Harrow Online Hub, powered by Harrow Online Newsletter.
+hubnav: categories
+body: page-categories
+-->
+<nav class="crumbs ho-container" aria-label="Breadcrumb">
+  <ol><li><a href="/">Hub</a></li><li><span aria-current="page">Categories</span></li></ol>
+</nav>
+
+<header class="page-head ho-container">
+  <h1 class="page-head__title">All business categories</h1>
+  <p class="page-head__lead">Every business in the Hub, sorted the way Harrow shops. Pick a category, then narrow it down by area.</p>
+</header>
+
+<section class="section section--tight" aria-label="Categories">
+  <div class="ho-container">
+    {{> gen-cat-tiles}}
+    <p class="mt-6">Looking for something specific? <a href="/search.html">Search all businesses</a> or <a href="/#areas">browse by area</a>.</p>
+  </div>
+</section>

@@ -1,14 +1,16 @@
 <!--
 title: Harrow Online Hub: local businesses, offers and what's on in Harrow
-description: Find 2,500+ local businesses in Harrow, plus Local Offers, What's On events and classes. Harrow Online Hub, powered by Harrow Online Newsletter.
+description: Discover what's happening in Harrow. Find local businesses, events, classes and exclusive offers from across the borough, from Harrow Online.
 nav: hub
 body: page-home
 -->
+<!-- Section order (client feedback, Nov 2026): search, this weekend, Local Offers, featured businesses,
+     six popular categories, areas, business sign-up. Events and offers are the reasons to come back. -->
 <section class="hero">
   <div class="ho-container">
     <p class="eyebrow" style="color:#fff;opacity:.8">Harrow Online Hub</p>
-    <h1 class="hero__title">Find the best of <em>local Harrow</em></h1>
-    <p class="hero__lead">Shops, places to eat, trades and services across the borough, plus Local Offers and what&rsquo;s on this week. Free to use, and free for businesses to claim.</p>
+    <h1 class="hero__title">Discover what&rsquo;s happening <em>in&nbsp;Harrow</em></h1>
+    <p class="hero__lead">Find local businesses, events, classes and exclusive offers from across the borough.</p>
 
     <form class="searchbar" action="/search.html" method="get" role="search">
       <div class="searchbar__field">
@@ -37,28 +39,6 @@ body: page-home
       <div><strong>{{> gen-count}}</strong>local businesses</div>
       <div><strong>19</strong>Harrow areas</div>
       <div><strong>Free</strong>to claim your listing</div>
-    </div>
-  </div>
-</section>
-
-<section class="section" id="categories" aria-labelledby="cats-title">
-  <div class="ho-container">
-    <div class="sec-head">
-      <div><h2 class="sec-title" id="cats-title">Browse by category</h2><p class="sec-sub">Every listing, sorted the way Harrow shops.</p></div>
-      <a class="link-arrow hide-mobile" href="/search.html">All businesses <svg class="ho-icon"><use href="#i-arrow"/></svg></a>
-    </div>
-    {{> gen-cat-tiles}}
-  </div>
-</section>
-
-<section class="section section--soft" aria-labelledby="feat-title">
-  <div class="ho-container">
-    <div class="sec-head">
-      <div><h2 class="sec-title" id="feat-title">Featured local businesses</h2><p class="sec-sub">Premium members, hand-picked by the Harrow Online team.</p></div>
-      <a class="link-arrow hide-mobile" href="/pricing.html">Get featured <svg class="ho-icon"><use href="#i-arrow"/></svg></a>
-    </div>
-    <div class="grid grid-4">
-      {{> sample-featured-cards}}
     </div>
   </div>
 </section>
@@ -95,10 +75,35 @@ body: page-home
   </div>
 </section>
 
+<section class="section" aria-labelledby="feat-title">
+  <div class="ho-container">
+    <div class="sec-head">
+      <div><h2 class="sec-title" id="feat-title">Featured local businesses</h2><p class="sec-sub">Premium members, hand-picked by the Harrow Online team.</p></div>
+      <a class="link-arrow hide-mobile" href="/pricing.html">Get featured <svg class="ho-icon"><use href="#i-arrow"/></svg></a>
+    </div>
+    <div class="grid grid-4">
+      {{> sample-featured-cards}}
+    </div>
+  </div>
+</section>
+
+<section class="section section--soft" id="categories" aria-labelledby="cats-title">
+  <div class="ho-container">
+    <div class="sec-head">
+      <div><h2 class="sec-title" id="cats-title">Popular categories</h2><p class="sec-sub">The categories with the most Harrow businesses.</p></div>
+      <a class="link-arrow hide-mobile" href="/search.html">All businesses <svg class="ho-icon"><use href="#i-arrow"/></svg></a>
+    </div>
+    {{> gen-cat-tiles-top}}
+    <div class="mt-5">
+      <a class="ho-btn ho-btn--outline" href="/categories.html">View all categories <svg class="ho-icon"><use href="#i-arrow"/></svg></a>
+    </div>
+  </div>
+</section>
+
 <section class="section" id="areas" aria-labelledby="areas-title">
   <div class="ho-container">
     <div class="sec-head">
-      <div><h2 class="sec-title" id="areas-title">Explore by area</h2><p class="sec-sub">From Pinner to Edgware, find what&rsquo;s near you.</p></div>
+      <div><h2 class="sec-title" id="areas-title">Browse by area</h2><p class="sec-sub">From Pinner to Edgware, find what&rsquo;s near you.</p></div>
     </div>
     {{> gen-area-tiles}}
   </div>
