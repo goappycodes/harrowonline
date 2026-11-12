@@ -109,4 +109,4 @@ Business data © Overture Maps Foundation and its sources (BrightQuery, Meta, Mi
   if the live header or footer changes.
 - `site/hub/assets/img/hub-logo.png` and `hub-logo-white.png` are the live logos with a red "HUB" block beside "HARROW",
   made by `tools/make_hub_logo.py` (2x images, displayed at the live logo's height).
-- Hub navigation sits in the shared header: the main menu's "Hub" item opens a dropdown (Businesses, Categories, Areas, Pricing, List your business). On phones the same links are in the menu drawer, with the bottom tab bar for Hub, Search, Offers, What's On and Account.
+- Hub navigation sits in the shared header: the main menu's "Businesses" item opens a dropdown (Categories, Areas, Pricing, List your business). On phones the same links are in the menu drawer, with the bottom tab bar for Hub, Search, Offers, What's On and Account.

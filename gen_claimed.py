@@ -67,6 +67,26 @@ def status_badges(x):
     return verified()   # samples show Verified/Featured without a Sample badge (12 Nov 2026); profiles keep a sample notice
 
 
+def photo_inner(x, i=0, fallback_icon="store", alt="", eager=False):
+    """Inside an image slot: the business's sample photo (data/claimed.json "images") or the placeholder icon."""
+    imgs = (x.get("claimed") or {}).get("images") or []
+    if not imgs:
+        return icon(fallback_icon)
+    src = imgs[i % len(imgs)]
+    load = 'fetchpriority="high"' if eager else 'loading="lazy" decoding="async"'
+    return f'<img src="{src}" alt="{e(alt)}" width="1200" height="800" {load}>'
+
+
+def offer_photo_index(x, o):
+    """Each offer of a business gets its own photo (images 2, 3, 1, ...)."""
+    offers = (x.get("claimed") or {}).get("offers") or []
+    return 1 + (offers.index(o) if o in offers else 0)
+
+
+def ph_cls(x, base="ph"):
+    return base + (" ph--photo" if (x.get("claimed") or {}).get("images") else "")
+
+
 def today_status(c):
     h = c["hours"][TODAY]
     return ('<span class="open-now open-now--closed">Closed today</span>' if h.lower() == "closed"
@@ -81,7 +101,7 @@ def row(x):
     cls = "biz-row" + (" biz-row--featured" if promoted else "")
     badges = (f'<span class="badge badge--featured">{icon("star")}Featured</span>' if promoted else "") + status_badges(x)
     return f'''<article class="{cls}">
-        <div class="ph">{icon(c.get("icon", "store"))}</div>
+        <div class="{ph_cls(x)}">{photo_inner(x, 0, c.get("icon", "store"))}</div>
         <div class="biz-row__main">
           <span class="biz-card__cat">{e(cat_name(x["cat"]))} · <span class="muted">{e(x["sub"])}</span></span>
           <h3 class="biz-row__title"><a href="/business/{x["slug"]}.html">{e(x["name"])}</a></h3>
@@ -146,7 +166,6 @@ def offer_card(x, o, show_biz=True, heading="h3"):
     lock = unlock_box(x, o) if o.get("sub") else ""
     biz = f'<a class="offer__biz" href="/business/{x["slug"]}.html">{e(x["name"])} &middot; {e(area_name(x["area"]))}</a>' if show_biz else ""
     return f'''<article class="{cls}" data-cat="{x["cat"]}" data-area="{x["area"]}" data-sub="{1 if o.get("sub") else 0}">
-        <div class="ph">{icon(o.get("icon", c.get("icon", "tag")))}</div>
         <div class="offer__body">
           <div class="cluster">{badges}</div>
           <{heading} class="offer__title"><a href="{o["href"]}">{o["title"]}</a></{heading}>
@@ -156,6 +175,59 @@ def offer_card(x, o, show_biz=True, heading="h3"):
           <a class="offer__more" href="{o["href"]}">Terms and how to redeem {icon("arrow", "ho-icon ho-icon--sm")}</a>{lock}
         </div>
       </article>'''
+
+
+def offer_value(o):
+    """Short headline value for value-first tiles: '20% OFF', '£25 OFF', '2-FOR-1', 'FREE'. Optional "value" in claimed.json wins."""
+    import re
+    if o.get("value"):
+        return o["value"]
+    t = o["title"].replace("&pound;", "£")
+    for pat, fmt in ((r"(\d+)%\s*off", "{}% OFF"), (r"£(\d+)\s*off", "£{} OFF"), (r"(\d)-for-(\d)", None),
+                     (r"£(\d+)\s*cuts", "£{} CUTS"), (r"for\s*£(\d+)", "£{}")):
+        m = re.search(pat, t, re.I)
+        if m:
+            return f"{m.group(1)}-FOR-{m.group(2)}" if fmt is None else fmt.format(m.group(1))
+    if re.search(r"no joining fee", t, re.I):
+        return "NO JOINING FEE"
+    m = re.match(r"(?:a\s+)?free\s+(\w+)", t, re.I)          # "Free coffee …", "A free week …" → FREE COFFEE / FREE WEEK
+    if m:
+        return f"FREE {m.group(1).upper()}"
+    m = re.match(r"(.{0,24}?\bfree)\b", t, re.I)              # "Kids eat free …", "First session free" → KIDS EAT FREE
+    if m:
+        return m.group(1).upper()
+    return t.split(",")[0].upper()
+
+
+def offer_tile(x, o):
+    """Value-first offer tile: big value and the business (no photo: photos are for businesses and events)."""
+    c = x["claimed"]
+    lock = f'<span class="offer-tile__lock" title="Subscribers only">{icon("lock", "ho-icon ho-icon--sm")}<span class="offer-tile__lock-text">Subscribers</span></span>' if o.get("sub") else ""
+    return f'''<a class="offer-tile" href="{o["href"]}">
+        {lock}
+        <span class="offer-tile__biz">{e(x["name"])}, {e(area_name(x["area"]))}</span>
+        <strong class="offer-tile__value">{offer_value(o)}</strong>
+        <span class="offer-tile__title">{o["title"]}</span>
+      </a>'''
+
+
+def offer_list_card(x, o):
+    """Compact card for the Offers page: value, offer line, business, end date. The code, unlock form and terms
+    are on the offer's own page (simplified, Nov 2026). Data attributes drive the hub.js filters."""
+    soon = 0 <= o["days_left"] <= SOON_DAYS
+    feat = bool(o.get("featured"))
+    tags = f'<span class="badge badge--featured">{icon("star")}Featured</span>' if feat else ""
+    if o.get("sub"):
+        tags += f'<span class="badge badge--sub">{icon("lock")}Subscriber-only</span>'
+    if soon:
+        tags += f'<span class="badge badge--soon">{icon("clock")}Ends soon</span>'
+    return f'''<a class="offer-card{" offer-card--featured" if feat else ""}" href="{o["href"]}" data-cat="{x["cat"]}" data-area="{x["area"]}" data-sub="{1 if o.get("sub") else 0}">
+        <span class="offer-card__top"><span class="biz-card__cat">{e(cat_name(x["cat"]))}</span>{tags}</span>
+        <strong class="offer-card__value">{offer_value(o)}</strong>
+        <span class="offer-card__title">{o["title"]}</span>
+        <span class="offer-card__biz">{e(x["name"])} &middot; {e(area_name(x["area"]))}</span>
+        <span class="offer-card__foot"><span>{icon("calendar", "ho-icon ho-icon--sm")}{ends_label(o)}</span><span class="offer-card__go">View offer {icon("arrow", "ho-icon ho-icon--sm")}</span></span>
+      </a>'''
 
 
 def all_offers(listings):
@@ -184,18 +256,15 @@ def offer_page(x, o, live):
     sample = is_sample(x)
     soon = 0 <= o["days_left"] <= SOON_DAYS
 
-    badges = ""
-    if o.get("featured") and not ended:
-        badges += f'<span class="badge badge--featured">{icon("star")}Featured</span>'
-    if o.get("sub"):
-        badges += f'<span class="badge badge--sub">{icon("lock")}Subscriber-only</span>'
-    if soon:
-        badges += f'<span class="badge badge--soon">{icon("clock")}Ends soon</span>'
+    # Simplified layout (client feedback, Nov 2026): photo + offer side by side, one code box, a small share row;
+    # terms folded away, one compact business row, small offer tiles below.
+    status = ""
     if ended:
-        badges += '<span class="badge badge--unclaimed">Ended</span>'
-    if sample:
-        badges += sample_badge()
-    badges += f'<a class="badge badge--outline" href="/offers.html?cat={x["cat"]}">{e(cat_name(x["cat"]))}</a>'
+        status = '<span class="badge badge--unclaimed">Ended</span>'
+    elif o.get("sub"):
+        status = f'<span class="badge badge--sub">{icon("lock")}Subscriber-only</span>'
+    elif soon:
+        status = f'<span class="badge badge--soon">{icon("clock")}Ends soon</span>'
 
     if ended:
         left = "This offer has ended"
@@ -203,38 +272,24 @@ def offer_page(x, o, live):
         left = "Last day today"
     else:
         left = f'{o["days_left"]} day{"s" if o["days_left"] != 1 else ""} left'
-    maps = "https://www.google.com/maps/search/?api=1&amp;query=" + quote(plain(f'{c["address"]} {x["postcode"]}'))
-    who = "Harrow Online Newsletter subscribers" if o.get("sub") else "Open to everyone"
-    who_sub = "Unlock with your newsletter email. Free to join." if o.get("sub") else "No sign-up needed."
-    facts = [
-        f'<li>{icon("calendar")}<div><strong>{"Ended on" if ended else "Ends"} {end_long}</strong><span>{left}. Offers come off the Hub automatically when they end.</span></div></li>',
-        f'<li>{icon("store")}<div><strong><a href="/business/{x["slug"]}.html">{e(name)}</a></strong><span>{c["address"]}, {e(area)}, {e(x["postcode"])}</span></div></li>',
-        f'<li>{icon("people")}<div><strong>{who}</strong><span>{who_sub}</span></div></li>',
-    ]
 
     # The voucher: code + copy, "no code needed", the unlock form, or "ended"
     if ended:
-        voucher_main = f'''<p class="voucher__label">Offer ended</p>
-          <p class="voucher__state">This offer has ended</p>
+        voucher_main = f'''<p class="voucher__state">This offer has ended</p>
           <p class="small mb-0">It ran until {end.day} {end.strftime("%B %Y")}. Any code for it no longer works.</p>
-          <a class="ho-btn ho-btn--primary ho-btn--block mt-4" href="/offers.html">See current offers</a>'''
+          <a class="ho-btn ho-btn--primary mt-4" href="/offers.html">See current offers</a>'''
     elif o.get("sub"):
-        what = "The code appears here once you confirm your email." if o.get("code") else "Full details appear here once you confirm your email."
-        voucher_main = f'''<p class="voucher__label">{"Your code" if o.get("code") else "How to claim"}</p>
-          <p class="small mb-0">{what}</p>{unlock_box(x, o, note=False)}
-          <p class="help mt-2 mb-0">New to the newsletter? Unlocking signs you up to the free daily email. Unsubscribe any time.</p>'''
+        what = "Your code appears here once you confirm your email." if o.get("code") else "Full details appear here once you confirm your email."
+        voucher_main = f'''<p class="small mb-0">{what}</p>{unlock_box(x, o, note=False)}'''
     elif o.get("code"):
-        voucher_main = f'''<p class="voucher__label">Your code</p>
-          <p class="voucher__code">{o["code"]}</p>
-          <button class="ho-btn ho-btn--dark ho-btn--block" type="button" data-copy="{o["code"]}" data-copied="Code copied">Copy code</button>'''
+        voucher_main = f'''<div class="voucher__row"><span class="voucher__code">{o["code"]}</span>
+          <button class="ho-btn ho-btn--dark" type="button" data-copy="{o["code"]}" data-copied="Code copied">Copy code</button></div>'''
     else:
-        voucher_main = '''<p class="voucher__label">No code needed</p>
-          <p class="voucher__state">Just ask for the offer</p>'''
-    redeem = "" if ended else f'<div class="voucher__how"><strong>How to redeem</strong><p>{o.get("redeem", "Show this page when you pay.")}</p></div>'
-    voucher = f'''<div class="voucher{" voucher--ended" if ended else ""}" id="redeem">
+        voucher_main = '<p class="voucher__state">No code needed</p>'
+    redeem = "" if ended else f'<p class="voucher__how">{o.get("redeem", "Show this page when you pay.")}</p>'
+    voucher = f'''<div class="voucher voucher--simple{" voucher--ended" if ended else ""}" id="redeem">
           {voucher_main}
           {redeem}
-          <p class="voucher__ends">{icon("calendar", "ho-icon ho-icon--sm")}{"Ended" if ended else "Valid until"} {end.day} {end.strftime("%b %Y")} &middot; <a href="#terms">Terms</a></p>
         </div>'''
 
     terms = "".join(f"<li>{t}</li>" for t in o.get("terms", []))
@@ -247,52 +302,32 @@ def offer_page(x, o, live):
     more.sort(key=lambda yp: (yp[0] is not x, yp[0]["cat"] != x["cat"], not yp[1].get("featured")))
     more_html = ""
     if more:
-        cards = "".join(offer_card(y, p) for y, p in more[:3])
+        tiles = "".join(offer_tile(y, p) for y, p in more[:4])
         more_html = f'''
-        <section class="profile-section" aria-labelledby="more-title">
-          <div class="sec-head">
-            <div><h2 class="sec-title" id="more-title">More Local Offers</h2></div>
-            <a class="link-arrow hide-mobile" href="/offers.html">All offers {icon("arrow")}</a>
-          </div>
-          <div class="stack">
-            {cards}
-          </div>
-        </section>'''
+    <section class="offer-more" aria-labelledby="more-title">
+      <div class="sec-head">
+        <h2 class="sec-title" id="more-title">More Local Offers</h2>
+        <a class="link-arrow" href="/offers.html">All offers {icon("arrow")}</a>
+      </div>
+      <div class="offer-tiles offer-tiles--4">{tiles}</div>
+    </section>'''
 
     share = quote(f'{plain(title)} at {plain(name)}: {url}', safe="")
-    share_panel = "" if ended else f'''
-        <div class="panel">
-          <h2 class="panel__title">Share this offer</h2>
-          <div class="cluster">
-            <a class="ho-btn ho-btn--outline ho-btn--sm" href="https://wa.me/?text={share}" rel="noopener" target="_blank">{icon("whatsapp")}WhatsApp</a>
-            <a class="ho-btn ho-btn--outline ho-btn--sm" href="https://www.facebook.com/sharer/sharer.php?u={quote(url, safe="")}" rel="noopener" target="_blank">{icon("facebook")}Facebook</a>
-            <a class="ho-btn ho-btn--outline ho-btn--sm" href="https://x.com/intent/post?text={share}" rel="noopener" target="_blank">{icon("x")}X</a>
-            <a class="ho-btn ho-btn--outline ho-btn--sm" href="mailto:?subject={quote(plain(title))}&amp;body={quote(url, safe="")}">{icon("mail")}Email</a>
-          </div>
-          <label class="field__label copy-field__label" for="offer-link">Link to this offer</label>
-          <div class="copy-field">
-            <input class="input" id="offer-link" type="text" value="{url}" readonly>
-            <button class="ho-btn ho-btn--dark ho-btn--sm" type="button" data-copy="{url}">Copy link</button>
-          </div>
-          <p class="help mt-2 mb-0">The newsletter and our social posts use this same link, so everyone lands on this page.</p>
+    share_row = "" if ended else f'''
+        <div class="share-row" aria-label="Share this offer">
+          <span>Share</span>
+          <a href="https://wa.me/?text={share}" rel="noopener" target="_blank" aria-label="Share on WhatsApp">{icon("whatsapp")}</a>
+          <a href="https://www.facebook.com/sharer/sharer.php?u={quote(url, safe="")}" rel="noopener" target="_blank" aria-label="Share on Facebook">{icon("facebook")}</a>
+          <a href="mailto:?subject={quote(plain(title))}&amp;body={quote(url, safe="")}" aria-label="Share by email">{icon("mail")}</a>
+          <button type="button" data-copy="{url}" data-copied="Link copied">Copy link</button>
         </div>'''
-    biz_panel = f'''
-        <div class="panel">
-          <p class="eyebrow mb-2">The business</p>
-          <div class="biz-card__head">
-            <span class="mono" aria-hidden="true">{initials(name)}</span>
-            <div>
-              <h2 class="panel__title mb-0"><a href="/business/{x["slug"]}.html">{e(name)}</a></h2>
-              <p class="card__meta mt-2"><span>{icon("pin")}{e(area)}</span>{sample_badge() if sample else ""}</p>
-            </div>
-          </div>
-          <p class="small mt-4">{c["tagline"]}</p>
-          <div class="cluster">
-            <a class="ho-btn ho-btn--dark ho-btn--sm" href="/business/{x["slug"]}.html">View profile</a>
-            <a class="ho-btn ho-btn--outline ho-btn--sm" href="tel:{x["phone_raw"][0]}">{icon("phone")}Call</a>
-            <a class="ho-btn ho-btn--outline ho-btn--sm" href="{maps}" rel="noopener" target="_blank">{icon("map")}Directions</a>
-          </div>
-        </div>'''
+
+    biz_row = f'''
+    <a class="offer-biz" href="/business/{x["slug"]}.html">
+      <span class="{ph_cls(x, "ph ph--square offer-biz__pic")}">{photo_inner(x, 0, c.get("icon", "store"))}</span>
+      <span class="offer-biz__main"><strong>{e(name)}</strong><span>{c["address"]}, {e(area)} {e(x["postcode"])}</span></span>
+      <span class="offer-biz__go">View business {icon("arrow", "ho-icon ho-icon--sm")}</span>
+    </a>'''
 
     ended_note = f'''
 <div class="ho-container mt-4">
@@ -301,13 +336,9 @@ def offer_page(x, o, live):
     <p><a href="/offers.html">See current offers in Harrow</a></p></div>
   </div>
 </div>''' if ended else ""
-    sample_note = f'''
-<div class="ho-container mt-4">
-  <div class="notice notice--sample">{icon("alert")}
-    <p><strong>Sample offer.</strong> Made up to show how offer pages work. It will be removed before launch.</p>
-  </div>
-</div>''' if sample else ""
     pub = "Made-up sample for the preview." if sample else "Checked by Harrow Online."
+    still = "" if ended else f" &middot; {left}"
+    meta_line = f'{icon("calendar", "ho-icon ho-icon--sm")}{"Ended" if ended else "Ends"} {end.day} {end.strftime("%b %Y")}{still}'
 
     body = f'''<nav class="crumbs ho-container" aria-label="Breadcrumb">
   <ol>
@@ -317,35 +348,30 @@ def offer_page(x, o, live):
     <li><span aria-current="page">{title}</span></li>
   </ol>
 </nav>
-{ended_note}{sample_note}
-<article class="offer-page{" offer-page--ended" if ended else ""}">
-  <div class="ho-container offer-hero">
-    <div class="offer-hero__head">
-      <div class="cluster">{badges}</div>
-      <h1 class="offer-hero__title">{title}</h1>
-      <p class="offer-hero__biz">at <a href="/business/{x["slug"]}.html">{e(name)}</a>, {e(area)}</p>
-      <p class="offer-hero__text">{o["text"]}</p>
+{ended_note}
+<article class="offer-page offer-page--simple{" offer-page--ended" if ended else ""}">
+  <div class="ho-container offer-simple">
+    <div class="offer-simple__main">
+      <div class="cluster offer-simple__tags">{status}{sample_badge() if sample else ""}<span class="biz-card__cat">{e(cat_name(x["cat"]))}</span></div>
+      <p class="offer-simple__value">{offer_value(o)}</p>
+      <h1 class="offer-simple__title">{title}</h1>
+      <p class="offer-simple__biz"><a href="/business/{x["slug"]}.html">{e(name)}</a> &middot; {e(area)}</p>
+      <p class="offer-simple__text">{o["text"]}</p>
     </div>
-    {voucher}
-    <ul class="facts offer-hero__facts">
-      {"".join(facts)}
-    </ul>
+    <div class="offer-simple__side">
+      {voucher}
+      <p class="offer-simple__meta">{meta_line} &middot; <a href="#terms">Terms</a></p>
+    </div>{share_row}
   </div>
 
-  <div class="ho-container">
-    <div class="layout-aside">
-      <div>
-        <section class="profile-section" id="terms" aria-labelledby="terms-title">
-          <h2 id="terms-title">Terms and conditions</h2>
-          <ul class="terms-list">{terms}</ul>
-        </section>
+  <div class="ho-container offer-simple__below">
+    <details class="offer-terms" id="terms">
+      <summary>Terms and conditions</summary>
+      <ul class="terms-list">{terms}</ul>
+      <p class="small muted mb-0">{pub} Offers are run by the business, so check the terms with them before you buy. <a class="report-link" href="/report.html">{icon("flag")}Report a problem</a></p>
+    </details>
+{biz_row}
 {more_html}
-      </div>
-
-      <aside class="sticky stack">{share_panel}{biz_panel}
-        <p class="small muted">{pub} Offers are run by the business, so check the terms with them before you buy. <a class="report-link" href="/report.html">{icon("flag")}Report a problem</a></p>
-      </aside>
-    </div>
   </div>
 </article>
 '''
@@ -406,14 +432,14 @@ def profile_body(x, related_html, crumbs_html):
         if c.get("botw"):
             badges = f'<span class="botw">{icon("star")}Business of the Week</span>' + badges
 
-    cover = f'<div class="ho-container profile-cover"><div class="ph ph--banner ph--dark">{icon(c.get("icon", "store"))}</div></div>' if top else ""
+    cover = f'<div class="ho-container profile-cover"><div class="{ph_cls(x, "ph ph--banner ph--dark")}">{photo_inner(x, 0, c.get("icon", "store"), name)}</div></div>' if top else ""
 
     # Photos: Basic shows 1; paid plans a gallery (max 5 tiles, "+N more" on the last)
     n = c.get("photos", 1) if tier in PAID else 1
     if n >= 3:
-        tiles = [f'<div class="ph">{icon(c.get("icon", "store"))}</div>' for _ in range(min(n, 5))]
+        tiles = [f'<div class="{ph_cls(x)}">{photo_inner(x, k + 1, c.get("icon", "store"))}</div>' for k in range(min(n, 5))]
         if n > 5:
-            tiles[-1] = f'<div class="gallery__more"><div class="ph">{icon(c.get("icon", "store"))}</div><span>+{n - 4} photos</span></div>'
+            tiles[-1] = f'<div class="gallery__more"><div class="{ph_cls(x)}">{photo_inner(x, 2, c.get("icon", "store"))}</div><span>+{n - 4} photos</span></div>'
         gallery = f'<div class="gallery mb-6" aria-label="Photos">{"".join(tiles)}</div>'
     else:
         gallery = f'<div class="ph ph--wide mb-6">{icon(c.get("icon", "store"))}</div>'
