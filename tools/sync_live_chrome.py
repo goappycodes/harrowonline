@@ -39,7 +39,7 @@ USER_SVG = ('<svg class="ho-icon ho-icon--user" viewBox="0 0 24 24" width="24" h
             '<circle cx="12" cy="8" r="4" fill="none" stroke="currentColor" stroke-width="2"/>'
             '<path d="M4 20.5c1.2-3.8 4.3-5.7 8-5.7s6.8 1.9 8 5.7" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>')
 # One account control. hub-bar__out / hub-bar__in swap on body.is-logged-in.
-ACCOUNT = ('{{site:hub}}<a class="ho-header__icon-btn ho-header__account hub-bar__out" href="/sign-in.html" aria-label="Sign in">' + USER_SVG + '</a>'
+ACCOUNT = ('{{site:hub}}<a class="ho-header__icon-btn ho-header__account hub-bar__out" href="/account.html" aria-label="My account">' + USER_SVG + '</a>'
            '<a class="ho-header__icon-btn ho-header__account hub-bar__in" href="/account.html" aria-label="My account">' + USER_SVG + '</a>{{/site}}\n                ')
 DRAWER_NL = '<a class="ho-btn ho-btn--primary ho-btn--block" href="https://harrowonline.org/newsletter/">'
 DRAWER_HUB = ('{{site:hub}}<nav class="ho-drawer__hub" aria-label="Hub">'
