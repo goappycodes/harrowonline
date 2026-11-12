@@ -41,11 +41,14 @@ body: page-offers
   </div>
 
   <div class="toolbar mt-6">
-    <p class="toolbar__count"><strong>{{> gen-offer-count}}</strong> offers across Harrow</p>
+    <p class="toolbar__count" data-offers-count><strong>{{> gen-offer-count}}</strong> offers across Harrow</p>
     <p class="small muted mb-0">Featured offers first, then newest</p>
   </div>
 
-  <div class="grid grid-2">
+  <div class="notice mb-5" data-offers-empty hidden><svg class="ho-icon"><use href="#i-tag"/></svg><p>No offers match that yet. <a href="/offers.html">See all offers</a>.</p></div>
+
+  <!-- hub.js filters these by ?cat=, ?area= and ?sub=1 (WordPress filters server-side with the same parameters) -->
+  <div class="grid grid-2" data-offers-list>
     {{> gen-offers}}
   </div>
 

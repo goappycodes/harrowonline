@@ -306,8 +306,8 @@ def write_partials(cat_counts, area_counts):
     (PARTIALS / "gen-offers-home.html").write_text("\n".join(C.offer_card(x, o) for x, o in offers[:3]), encoding="utf-8")
     (PARTIALS / "gen-offer-count.html").write_text(str(len(offers)), encoding="utf-8")
     by_cat = Counter(x["cat"] for x, _o in offers)
-    chips = [f'<a class="chip" href="/offers.html" aria-current="page">All offers <span class="count">{len(offers)}</span></a>']
-    chips += [f'<a class="chip" href="/offers.html?cat={c}">{e(cat_name(c))} <span class="count">{n}</span></a>'
+    chips = [f'<a class="chip" href="/offers.html" data-cat="" aria-current="page">All offers <span class="count">{len(offers)}</span></a>']
+    chips += [f'<a class="chip" href="/offers.html?cat={c}" data-cat="{c}">{e(cat_name(c))} <span class="count">{n}</span></a>'
               for c, n in sorted(by_cat.items(), key=lambda kv: (-kv[1], cat_name(kv[0])))]
     (PARTIALS / "gen-offer-chips.html").write_text("\n    ".join(chips), encoding="utf-8")
     (PARTIALS / "gen-count.html").write_text(f"{len(listings()):,}", encoding="utf-8")
@@ -360,6 +360,7 @@ def build_all():
                 "w": 1 if x["web"] else 0,
                 "t": x.get("tier", ""), "i": x["claimed"].get("icon", "") if x.get("claimed") else "",
                 "tg": unescape(x["claimed"]["tagline"]) if x.get("claimed") else "",
+                "sm": 1 if C.is_sample(x) else 0,   # made-up preview business: Sample badge, never Featured/Verified
             }.items() if v not in ("", 0)}
             for x in L
         ],

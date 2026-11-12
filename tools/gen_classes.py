@@ -17,10 +17,12 @@ C = [
 ]
 cards = []
 for t, ty, when, area, age, price, icon, feat, prov, text in C:
-    # All classes are made-up samples: Sample badge, never Featured (client feedback, 12 Nov 2026)
-    badges = f'<div class="card__badges"><span class="badge badge--sample" title="Made-up class for the preview. Removed before launch.">{I("alert")}Sample</span></div>\n        '
-    ph = "ph"
-    cards.append(f'''      <article class="card event-card">
+    # All classes are made-up samples: Sample badge, plus Featured where set
+    feat_b = f'<span class="badge badge--featured">{I("star")}Featured</span>' if feat else ""
+    sample_b = "" if feat else f'<span class="badge badge--sample" title="Made-up class for the preview. Removed before launch.">{I("alert")}Sample</span>'
+    badges = f'<div class="card__badges">{sample_b}{feat_b}</div>\n        '
+    ph = "ph ph--dark" if feat else "ph"
+    cards.append(f'''      <article class="card event-card{' card--featured' if feat else ''}">
         {badges}<div class="{ph}">{I(icon)}</div>
         <div class="card__body">
           <span class="biz-card__cat">{ty}</span>

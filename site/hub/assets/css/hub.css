@@ -9,7 +9,7 @@
     2. Base                   10. Search, filters, toolbar, pagination
     3. Layout utilities       11. Business profile
     4. Buttons                12. Events (list, month, detail)
-    5. Header, Hub bar, drawer 13. Pricing
+    5. Header, Hub menu, drawer 13. Pricing
     6. Footer                 14. Forms
     7. Newsletter band        15. Account dashboard
     8. Page furniture          16. Auth, prose, misc
@@ -146,9 +146,14 @@ address { font-style: normal; }
 .small { font-size: var(--ho-fs-sm); }
 .xsmall { font-size: var(--ho-fs-xs); }
 .center { text-align: center; }
+/* Spacing utilities win over component margins (e.g. .help, .page-head__lead set margin: 0 later in this file) */
 .mt-0 { margin-top: 0 !important; } .mb-0 { margin-bottom: 0 !important; }
-.mt-2 { margin-top: var(--ho-s2); } .mt-4 { margin-top: var(--ho-s4); } .mt-5 { margin-top: var(--ho-s5); } .mt-6 { margin-top: var(--ho-s6); }
-.mb-2 { margin-bottom: var(--ho-s2); } .mb-4 { margin-bottom: var(--ho-s4); } .mb-5 { margin-bottom: var(--ho-s5); } .mb-6 { margin-bottom: var(--ho-s6); }
+.mt-1 { margin-top: var(--ho-s1) !important; } .mt-2 { margin-top: var(--ho-s2) !important; } .mt-3 { margin-top: var(--ho-s3) !important; }
+.mt-4 { margin-top: var(--ho-s4) !important; } .mt-5 { margin-top: var(--ho-s5) !important; } .mt-6 { margin-top: var(--ho-s6) !important; }
+.mt-7 { margin-top: var(--ho-s7) !important; }
+.mb-1 { margin-bottom: var(--ho-s1) !important; } .mb-2 { margin-bottom: var(--ho-s2) !important; } .mb-3 { margin-bottom: var(--ho-s3) !important; }
+.mb-4 { margin-bottom: var(--ho-s4) !important; } .mb-5 { margin-bottom: var(--ho-s5) !important; } .mb-6 { margin-bottom: var(--ho-s6) !important; }
+.mb-7 { margin-bottom: var(--ho-s7) !important; }
 .nowrap { white-space: nowrap; }
 .hide-mobile { } @media (max-width: 767px) { .hide-mobile { display: none !important; } }
 .show-mobile { display: none !important; } @media (max-width: 767px) { .show-mobile { display: revert !important; } }
@@ -185,7 +190,7 @@ address { font-style: normal; }
 .link-quiet { color: var(--ho-muted); font-size: var(--ho-fs-sm); }
 
 /* ==========================================================================
-   5. Header + navigation (ported) + Hub logo lockup + Hub bar
+   5. Header + navigation (ported) + Hub logo lockup + Hub dropdown
    ========================================================================== */
 .ho-header {
   position: relative; z-index: 50; background: #fff;
@@ -241,35 +246,54 @@ address { font-style: normal; }
 @media (max-width: 400px) {
 }
 
-/* Hub bar: secondary menu under the shared header (Hub pages only) */
-.hub-bar { background: var(--ho-ink); color: #fff; }
-.hub-bar__inner { display: flex; align-items: center; justify-content: space-between; gap: var(--ho-s4); min-height: 52px; }
-.hub-bar__nav { display: flex; gap: 2px; overflow-x: auto; scrollbar-width: none; -webkit-overflow-scrolling: touch; }
-.hub-bar__nav::-webkit-scrollbar { display: none; }
-.hub-bar__nav a, .hub-bar__link {
-  display: inline-flex; align-items: center; gap: 6px; padding: 8px 12px; border-radius: var(--ho-radius-sm);
-  font: 600 14px/1.2 var(--ho-font-ui); color: rgba(255, 255, 255, .82); text-decoration: none; white-space: nowrap;
+/* Hub dropdown in the main menu (desktop, 1019px+). Replaces the old Hub bar (Nov 2026).
+   Opens on hover, keyboard focus, or the chevron button (touch); hub.js handles the button, Escape and outside clicks. */
+.ho-nav__list > li.menu-item-has-children { display: flex; align-items: center; }
+.ho-nav__list > li.menu-item-has-children > a { padding-right: 2px; }
+.ho-nav__toggle {
+  display: inline-flex; align-items: center; justify-content: center; width: 26px; height: 36px; padding: 0;
+  border: 0; border-radius: var(--ho-radius-sm); background: none; color: var(--ho-ink); cursor: pointer;
 }
-.hub-bar__nav a:hover, .hub-bar__link:hover { color: #fff; background: rgba(255, 255, 255, .1); }
-.hub-bar__nav a[aria-current="page"], .hub-bar__link[aria-current="page"] { color: #fff; box-shadow: inset 0 -3px 0 var(--ho-red); border-radius: 0; }
-.hub-bar__link .ho-icon { width: 16px; height: 16px; }
-.hub-bar__actions { display: flex; align-items: center; gap: var(--ho-s2); flex: none; }
-.hub-bar .ho-btn--dark { background: var(--ho-red); border-color: var(--ho-red); }
-.hub-bar .ho-btn--dark:hover { background: var(--ho-red-dark); border-color: var(--ho-red-dark); }
+.ho-nav__toggle:hover, .current-menu-item > .ho-nav__toggle { color: var(--ho-red); }
+.ho-nav__toggle .ho-icon { width: 16px; height: 16px; transition: transform .15s ease; }
+.menu-item-has-children:hover > .ho-nav__toggle .ho-icon,
+.menu-item-has-children.is-open > .ho-nav__toggle .ho-icon { transform: rotate(180deg); }
+.ho-nav .sub-menu {
+  position: absolute; top: calc(100% + 6px); left: 0; z-index: 9995; min-width: 232px; margin: 0; padding: 8px; list-style: none;
+  background: #fff; border: 1px solid var(--ho-line); border-radius: var(--ho-radius);
+  box-shadow: 0 18px 36px -14px rgba(20, 20, 20, .28);
+  opacity: 0; visibility: hidden; transform: translateY(4px); transition: opacity .15s ease, transform .15s ease, visibility 0s linear .15s;
+}
+.ho-nav .sub-menu::before { content: ""; position: absolute; left: 0; right: 0; top: -12px; height: 12px; }  /* hover bridge */
+.menu-item-has-children:hover > .sub-menu,
+.menu-item-has-children:focus-within > .sub-menu,
+.menu-item-has-children.is-open > .sub-menu { opacity: 1; visibility: visible; transform: none; transition: opacity .15s ease, transform .15s ease; }
+.menu-item-has-children.is-dismissed > .sub-menu { opacity: 0; visibility: hidden; transform: translateY(4px); }
+.menu-item-has-children.is-dismissed > .ho-nav__toggle .ho-icon { transform: none; }
+.ho-nav .sub-menu li { margin: 0; }
+.ho-nav .sub-menu a {
+  display: flex; align-items: center; gap: 8px; padding: 10px 12px; border-radius: var(--ho-radius-sm);
+  font: 600 15px/1.2 var(--ho-font-ui); color: var(--ho-ink); text-decoration: none; white-space: nowrap;
+}
+.ho-nav .sub-menu a:hover { background: var(--ho-soft); color: var(--ho-red); }
+.ho-nav .sub-menu a[aria-current="page"] { color: var(--ho-red); }
+.ho-nav .sub-menu__cta { margin-top: 6px; padding-top: 6px; border-top: 1px solid var(--ho-line); }
+.ho-nav .sub-menu__cta a { color: var(--ho-red); font-weight: 700; }
+.ho-nav .sub-menu__cta .ho-icon { width: 16px; height: 16px; }
+
+/* Signed-out / signed-in pairs (header account icon, tab bar). Class names kept from the old Hub bar. */
 .hub-bar__in { display: none !important; }
 .is-logged-in .hub-bar__in { display: inline-flex !important; }
 .is-logged-in .hub-bar__out { display: none !important; }
-@media (max-width: 767px) {
-  .hub-bar__inner { min-height: 46px; }
-  .hub-bar__actions { display: none; }
-  .hub-bar__nav { margin: 0 calc(var(--ho-gutter) * -1); padding: 0 var(--ho-gutter); }
-}
-
-
 /* Hub logo (269x90 image): same height as the live logo at every breakpoint */
 .ho-header__logo--hub img { width: 203px; }
 .ho-drawer__logo--hub img { width: 150px; }
 .ho-footer__logo--hub img { width: 196px; }
+@media (max-width: 1018px) { .ho-header__logo--hub img { width: 129px; } }
+
+/* Menu drawer (phones and tablets): Hub links */
+.ho-drawer__hub { margin: var(--ho-s4) 0 var(--ho-s5); }
+.ho-drawer__hub .ho-drawer__label { margin-bottom: var(--ho-s1); color: var(--ho-red); }
 
 /* Live site, tablet and phone: sticky compact header */
 @media (max-width: 1018px) {
@@ -277,7 +301,6 @@ address { font-style: normal; }
   .ho-header { position: sticky; top: 0; z-index: 9990; }
   .ho-header__inner { min-height: 56px; }
   .ho-header__logo img { width: 112px; }
-  .ho-header__logo--hub img { width: 129px; }
   .ho-header__icon-btn { width: 40px; height: 40px; }
   .ho-header__icon-btn .ho-icon { width: 22px; height: 22px; }
   .ho-search { position: absolute; left: 0; right: 0; top: 100%; box-shadow: 0 10px 20px -12px rgba(20, 20, 20, .25); }
@@ -435,7 +458,7 @@ address { font-style: normal; }
 .badge--outline { background: #fff; box-shadow: inset 0 0 0 1px var(--ho-line-2); color: var(--ho-text); }
 /* Preview-only: made-up content. Never combined with Verified, Featured, Premium, Local Partner or Business of the Week. */
 .badge--sample { background: #FFF3CD; color: #6B4E00; box-shadow: inset 0 0 0 1px #E0B84A; }
-.notice--sample { background: #FFF3CD; color: #4A3600; box-shadow: inset 0 0 0 1px #E0B84A; }
+.notice.notice--sample { background: #FFF3CD; color: #4A3600; box-shadow: inset 0 0 0 1px #E0B84A; }
 .offer__code--pending { font: 600 13px/1.3 var(--ho-font-ui); letter-spacing: 0; color: var(--ho-muted); background: none; padding: 0; }
 /* Workflow states: Draft → Pending → Published / Rejected / Ended */
 .status { display: inline-flex; align-items: center; gap: 6px; font: 700 13px/1.3 var(--ho-font-ui); white-space: nowrap; }
@@ -486,6 +509,7 @@ address { font-style: normal; }
 .panel--red h2, .panel--red h3 { color: #fff; }
 .panel__title { margin: 0 0 var(--ho-s3); font-size: 18px; }
 .panel + .panel { margin-top: var(--ho-s4); }
+.grid > .panel + .panel { margin-top: 0; }  /* side by side in a grid: the grid gap does the spacing */
 @media (max-width: 640px) { .panel { padding: var(--ho-s4); } }
 
 /* Image placeholders (swap for <img> in WordPress) */
@@ -1145,12 +1169,21 @@ address { font-style: normal; }
    16. Auth, prose, misc
    ========================================================================== */
 .auth { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); min-height: calc(100vh - 84px); }
-.auth__side { position: relative; display: flex; flex-direction: column; justify-content: center; padding: var(--ho-s7); background: var(--ho-ink); color: rgba(255,255,255,.82); overflow: hidden; }
-.auth__side::before { content: ""; position: absolute; inset: 0; background: radial-gradient(ellipse at 100% 0%, rgba(223, 32, 40, .45), transparent 55%); }
+.auth__side { position: relative; display: flex; flex-direction: column; justify-content: flex-start; padding: var(--ho-s7); background: var(--ho-ink); color: rgba(255,255,255,.82); overflow: clip; }  /* clip, not hidden: hidden would stop the sticky text */
+/* Red glow top right, plus a red fade along the bottom so the panel reads apart from the dark footer below */
+.auth__side::before { content: ""; position: absolute; inset: 0;
+  background: radial-gradient(ellipse at 100% 0%, rgba(223, 32, 40, .45), transparent 55%),
+              linear-gradient(to top, rgba(223, 32, 40, .38), rgba(223, 32, 40, .12) 18%, transparent 40%); }
 .auth__side > * { position: relative; max-width: 460px; }
+/* Panel text stays in view while a long form (register) scrolls; the dark background still fills the column */
+.auth__side { padding-top: 0; padding-bottom: 0; }
+.auth__side > .auth__side-inner {
+  position: sticky; top: 0; min-height: calc(100vh - 84px);   /* one screen below the header */
+  display: flex; flex-direction: column; justify-content: center; padding: var(--ho-s7) 0;
+}
 .auth__side h2 { color: #fff; font-size: 32px; line-height: 1.2; }
 .auth__side .ticks li { color: #fff; }
-.auth__main { display: flex; align-items: center; justify-content: center; padding: var(--ho-s7) var(--ho-gutter); }
+.auth__main { display: flex; align-items: flex-start; justify-content: center; padding: var(--ho-s7) var(--ho-gutter); }
 .auth__card { width: 100%; max-width: 440px; }
 .auth__card h1 { font-size: 30px; margin-bottom: 6px; }
 .auth__card > p { color: var(--ho-muted); }
@@ -1221,7 +1254,7 @@ address { font-style: normal; }
 .page-index li code { display: block; font-size: 12px; color: var(--ho-muted); }
 
 @media print {
-  .ho-header, .hub-bar, .ho-footer, .ho-nl, .ho-drawer { display: none !important; }
+  .ho-header, .ho-footer, .ho-nl, .ho-drawer { display: none !important; }
 }
 
 /* ==========================================================================
@@ -1329,9 +1362,8 @@ address { font-style: normal; }
 .example-state__label { margin: 0 0 var(--ho-s2); font: 700 11px/1.2 var(--ho-font-ui); text-transform: uppercase; letter-spacing: .08em; color: var(--ho-muted); }
 
 /* Scroll containers contain their absolutely positioned children (e.g. .ho-sr labels) so nothing widens the page */
-.compare-wrap, .table-wrap, .chips, .tabs, .hub-bar__nav, .dash-nav ul, .cal { position: relative; }
+.compare-wrap, .table-wrap, .chips, .tabs, .dash-nav ul, .cal { position: relative; }
 @media (max-width: 640px) { .ho-btn { white-space: normal; text-align: center; } }
-@media (max-width: 1018px) { .hub-bar__link { display: none !important; } .hub-bar__nav { flex: 1 1 auto; min-width: 0; } }
 .profile-cover .ph { aspect-ratio: auto; height: 260px; }
 @media (max-width: 767px) { .profile-cover .ph { height: 160px; } }
 
@@ -1382,7 +1414,7 @@ body { -webkit-tap-highlight-color: rgba(223, 32, 40, .12); }
   .sec-title { font-size: 20px; padding-top: 12px; }
   .sec-title::before { width: 34px; height: 4px; }
   .sec-sub { font-size: 14px; }
-  .mb-6 { margin-bottom: var(--ho-s5); } .mt-6 { margin-top: var(--ho-s5); }
+  .mb-6 { margin-bottom: var(--ho-s5) !important; } .mt-6 { margin-top: var(--ho-s5) !important; } .mt-7 { margin-top: var(--ho-s6) !important; }
   .layout-aside, .layout-filters { gap: var(--ho-s5); }
   .stack-lg > * + * { margin-top: var(--ho-s5); }
   .panel { border-radius: var(--ho-radius); }
@@ -1393,9 +1425,6 @@ body { -webkit-tap-highlight-color: rgba(223, 32, 40, .12); }
   .crumbs ol { flex-wrap: nowrap; overflow-x: auto; white-space: nowrap; scrollbar-width: none; }
   .crumbs ol::-webkit-scrollbar { display: none; }
 
-  /* Hub bar: slimmer */
-  .hub-bar__inner { min-height: 42px; }
-  .hub-bar__nav a { padding: 6px 10px; font-size: 13px; }
 
   /* Home hero */
   .hero { padding: var(--ho-s5) 0 var(--ho-s6); }
@@ -1531,3 +1560,18 @@ body { -webkit-tap-highlight-color: rgba(223, 32, 40, .12); }
   .grid > .event-card:not(:has(> .date-tile)) { grid-template-columns: 92px minmax(0, 1fr); }
   .grid > .event-card:not(:has(> .date-tile)) > .ph { display: flex; }
 }
+
+/* Header menu and Hub dropdown: no underline on hover or focus (current page keeps its red bar) */
+.ho-nav__list a:hover, .ho-nav__list a:focus, .ho-nav .sub-menu a:hover, .ho-nav .sub-menu a:focus { text-decoration: none; }
+/* Current page bar on the Hub item spans the text and its arrow */
+.ho-nav__list > li.menu-item-has-children.current-menu-item { box-shadow: inset 0 -3px 0 var(--ho-red); }
+.ho-nav__list > li.menu-item-has-children.current-menu-item > a { box-shadow: none; }
+.ho-nav__list > li.menu-item-has-children > a:hover { background: none; }
+/* Footer badges keep their natural shape (live: 44x44 and 80x44); the legal text wraps instead */
+.ho-footer__bottom .ho-badges { flex: none; }
+/* Footer legal lines: one per row, as on harrowonline.org */
+.ho-footer__legal { flex-direction: column; gap: var(--ho-s1); }
+/* Sign-in, register, forgot password (layout: bare, no newsletter strip): the auth panels meet the footer */
+main:has(> .auth) + .ho-footer { margin-top: 0; }
+/* Buttons in the footer keep their own text colour (.ho-footer a would otherwise turn it grey-white) */
+.ho-footer .ho-btn--primary, .ho-footer .ho-btn--primary:hover { color: #fff; }

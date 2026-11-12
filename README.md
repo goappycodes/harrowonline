@@ -19,7 +19,7 @@ The previous data-only preview is kept on the `old` branch.
 | `site/hub/category/`, `site/hub/area/` | 24 category and 19 area archives (generated) |
 | `site/hub/data/hub-index.json` | Compact listing index used by search |
 | `src/pages/` | Hand-written page bodies (homepage, pricing, events, account, etc.) |
-| `src/partials/` | Shared header, Hub bar, footer, newsletter strip and sample cards. `gen-*.html` are generated. |
+| `src/partials/` | Shared header (with the Hub dropdown), footer, newsletter strip and sample cards. `gen-*.html` are generated. |
 | `build.py` | Assembles `src/` + generated pages into `site/hub/{url}/index.html` |
 | `seo.py` | URL map, canonical/robots/Open Graph head, JSON-LD graph and the index rules (brief 03) |
 | `sitemap.py` | Hub XML sitemaps (indexable pages only) |
@@ -59,7 +59,7 @@ To refresh the listing data, run `scripts/1_fetch_overture.py`, `2_filter_export
 
 ## Moving to WordPress
 
-- `src/partials/header.html`, `hubbar.html`, `footer.html`, `nl-strip.html` → `header.php`, `footer.php` and template parts.
+- `src/partials/header.html`, `footer.html`, `nl-strip.html` → `header.php`, `footer.php` and template parts.
 - Each `src/pages/*.html` → a page template; generated pages → `single-listing.php`, `taxonomy-listing_category.php`, `taxonomy-area.php`.
 - `.ph` blocks are image placeholders; swap for `<img>` / `wp_get_attachment_image()`.
 - The client-side search in `hub.js` is a stand-in; in WordPress, render results server-side with the same markup (`.biz-row`).
@@ -109,4 +109,4 @@ Business data © Overture Maps Foundation and its sources (BrightQuery, Meta, Mi
   if the live header or footer changes.
 - `site/hub/assets/img/hub-logo.png` and `hub-logo-white.png` are the live logos with a red "HUB" block beside "HARROW",
   made by `tools/make_hub_logo.py` (2x images, displayed at the live logo's height).
-- The Hub bar under the header (Businesses, Categories, Areas, Offers, What's On, Pricing) is the Hub's own menu.
+- Hub navigation sits in the shared header: the main menu's "Hub" item opens a dropdown (Businesses, Categories, Areas, Pricing, List your business). On phones the same links are in the menu drawer, with the bottom tab bar for Hub, Search, Offers, What's On and Account.
