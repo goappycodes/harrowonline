@@ -43,6 +43,8 @@ body: page-home
   </div>
 </section>
 
+{{> gen-just-joined}}
+
 <section class="section" aria-labelledby="wknd-title">
   <div class="ho-container">
     <div class="sec-head">
@@ -69,9 +71,15 @@ body: page-home
       <div><h2 class="sec-title" id="offers-title">Local Offers</h2><p class="sec-sub">Deals from Harrow businesses. Some are just for newsletter subscribers.</p></div>
       <a class="link-arrow" href="/offers.html">All offers <svg class="ho-icon"><use href="#i-arrow"/></svg></a>
     </div>
-    <div class="grid grid-3">
+    <div class="offer-tiles">
       {{> gen-offers-home}}
     </div>
+  </div>
+</section>
+
+<section class="stats-band" aria-label="The Hub in numbers">
+  <div class="ho-container">
+    {{> gen-live-stats}}
   </div>
 </section>
 
@@ -103,25 +111,32 @@ body: page-home
       <div><h2 class="sec-title" id="areas-title">Browse by area</h2><p class="sec-sub">From Pinner to Edgware, find what&rsquo;s near you.</p></div>
     </div>
     {{> gen-area-tiles}}
+    <div class="suggest mt-6">
+      <div><p class="eyebrow mb-1">Local favourites</p><h2 class="suggest__title">Know a hidden gem?</h2><p class="mb-0">Tell us about a Harrow business you love. We&rsquo;re always looking for great local places.</p></div>
+      <a class="ho-btn ho-btn--outline" href="/add-business.html?recommend=1">Recommend a business</a>
+    </div>
   </div>
 </section>
 
-<section class="section section--soft" aria-labelledby="biz-title">
+<!-- For businesses: one panel, text and actions left, the three steps as a timeline right (redesign, Nov 2026) -->
+<section class="section" aria-labelledby="biz-title">
   <div class="ho-container">
-    <div class="sec-head">
-      <div><p class="eyebrow">For businesses</p><h2 class="sec-title" id="biz-title">Get found by Harrow</h2><p class="sec-sub">Harrow Online reaches thousands of local readers every day. Put your business in front of them.</p></div>
-    </div>
-    <ol class="steps">
-      <li><h3>Find or add your business</h3><p>Most Harrow businesses are already listed. Search for yours, or add it in two minutes.</p></li>
-      <li><h3>Claim it free</h3><p>Prove you own it, then add your description, opening hours and a photo. You get a verified badge.</p></li>
-      <li><h3>Upgrade when you&rsquo;re ready</h3><p>Paid plans put you at the top of your category, add Local Offers and events, and feature you in the newsletter.</p></li>
-    </ol>
-    <div class="cta-band mt-6">
-      <div><h2>Plans from free to Local Partner</h2><p>Monthly or annual billing. Upgrade, downgrade or cancel any time.</p></div>
-      <div class="cta-band__actions">
-        <a class="ho-btn ho-btn--primary" href="/search.html">Find your business</a>
-        <a class="ho-btn ho-btn--outline" href="/pricing.html">See plans and prices</a>
+    <div class="biz-panel">
+      <div class="biz-panel__intro">
+        <p class="eyebrow">For businesses</p>
+        <h2 class="biz-panel__title" id="biz-title">Get found by Harrow</h2>
+        <p class="biz-panel__lead">Harrow Online reaches thousands of local readers every day. Put your business in front of them.</p>
+        <div class="biz-panel__actions">
+          <a class="ho-btn ho-btn--primary" href="/search.html">Find your business</a>
+          <a class="ho-btn ho-btn--outline" href="/pricing.html">See plans and prices</a>
+        </div>
+        <p class="biz-panel__note"><svg class="ho-icon ho-icon--sm"><use href="#i-check"/></svg>Plans from free to Local Partner. Monthly or annual billing, cancel any time.</p>
       </div>
+      <ol class="biz-steps">
+        <li><span class="biz-steps__num" aria-hidden="true">1</span><div><h3>Find or add your business</h3><p>Most Harrow businesses are already listed. Search for yours, or add it in two minutes.</p></div></li>
+        <li><span class="biz-steps__num" aria-hidden="true">2</span><div><h3>Claim it free</h3><p>Prove you own it, then add your description, opening hours and a photo. You get a verified badge.</p></div></li>
+        <li><span class="biz-steps__num" aria-hidden="true">3</span><div><h3>Upgrade when you&rsquo;re ready</h3><p>Paid plans put you at the top of your category, add Local Offers and events, and feature you in the newsletter.</p></div></li>
+      </ol>
     </div>
   </div>
 </section>

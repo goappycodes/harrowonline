@@ -2,7 +2,7 @@
   "_about": "Sample claimed businesses for the design preview. Fictional: names, addresses and offers are made up; phone numbers use Ofcom's reserved drama range (020 7946 0xxx). In WordPress this data comes from claimed listings, offers and events. tier: basic | enhanced | premium | partner. Days: Mon..Sun.",
   "businesses": [
     {
-      "name": "Hill Street Kitchen", "cat": "restaurants", "sub": "British restaurant", "area": "harrow-on-the-hill",
+      "name": "Hill Street Kitchen", "images": ["/assets/img/sample/hill-street-kitchen-1.jpg", "/assets/img/sample/hill-street-kitchen-2.jpg", "/assets/img/sample/hill-street-kitchen-3.jpg"], "cat": "restaurants", "sub": "British restaurant", "area": "harrow-on-the-hill",
       "address": "14 High Street", "postcode": "HA1 3HT", "phone": "020 7946 0101",
       "tier": "premium", "botw": true, "icon": "food", "photos": 9, "claimed": "March 2026",
       "social": ["facebook", "instagram"],
@@ -14,14 +14,14 @@
       "hours": ["Closed", "12pm to 10pm", "12pm to 10pm", "12pm to 10pm", "12pm to 11pm", "11am to 11pm", "12pm to 6pm"],
       "offers": [
         {"title": "2-for-1 mains, Monday to Thursday", "text": "Order any two mains and the cheaper one is free. Dine in only. Show this offer when you order.", "ends": "30 November 2026", "code": "HILL241", "featured": true, "redeem": "Show the code or this page when you order.", "terms": ["Monday to Thursday, dine in only.", "The cheaper of the two mains is free.", "One offer per table. Not with set menus or other offers."]},
-        {"title": "Bonfire Night set menu: 3 courses for &pound;25", "text": "A three-course set menu for Bonfire Night weekend, with a free mulled wine for the table.", "ends": "8 November 2026", "redeem": "Mention Harrow Online when you book.", "terms": ["Friday 6 to Sunday 8 November only.", "Booking needed."]},
+        {"title": "Bonfire Night set menu: 3 courses for &pound;25", "value": "3 COURSES £25", "text": "A three-course set menu for Bonfire Night weekend, with a free mulled wine for the table.", "ends": "8 November 2026", "redeem": "Mention Harrow Online when you book.", "terms": ["Friday 6 to Sunday 8 November only.", "Booking needed."]},
         {"title": "Kids eat free on Sundays", "text": "One free children&rsquo;s meal with every adult Sunday roast. Under 12s.", "ends": "27 December 2026", "icon": "family", "redeem": "Mention Harrow Online when you book or order.", "terms": ["Sundays only, while the roast is served.", "One free children&rsquo;s meal (under 12s) per adult roast.", "Dine in only."]}
       ],
       "events": [],
       "news": []
     },
     {
-      "name": "Wealdstone Fitness Studio", "cat": "sport-and-fitness", "sub": "Gym and fitness studio", "area": "wealdstone",
+      "name": "Wealdstone Fitness Studio", "images": ["/assets/img/sample/wealdstone-fitness-1.jpg", "/assets/img/sample/wealdstone-fitness-2.jpg", "/assets/img/sample/wealdstone-fitness-3.jpg"], "cat": "sport-and-fitness", "sub": "Gym and fitness studio", "area": "wealdstone",
       "address": "52 High Street", "postcode": "HA3 7AF", "phone": "020 7946 0102",
       "tier": "premium", "icon": "dumbbell", "photos": 8, "claimed": "January 2026",
       "social": ["facebook", "instagram", "tiktok"],
@@ -44,7 +44,7 @@
       "news": []
     },
     {
-      "name": "Hatch End Bookshop & Café", "cat": "cafes-and-takeaways", "sub": "Bookshop and café", "area": "hatch-end",
+      "name": "Hatch End Bookshop & Café", "images": ["/assets/img/sample/hatch-end-bookshop-1.jpg", "/assets/img/sample/hatch-end-bookshop-2.jpg", "/assets/img/sample/hatch-end-bookshop-3.jpg"], "cat": "cafes-and-takeaways", "sub": "Bookshop and café", "area": "hatch-end",
       "address": "301 Uxbridge Road", "postcode": "HA5 4JR", "phone": "020 7946 0103",
       "tier": "premium", "icon": "cup", "photos": 7, "claimed": "February 2026",
       "social": ["facebook", "instagram"],
@@ -65,7 +65,7 @@
       "news": []
     },
     {
-      "name": "Stanmore Family Dental", "cat": "doctors-dentists-and-clinics", "sub": "Dental practice", "area": "stanmore",
+      "name": "Stanmore Family Dental", "images": ["/assets/img/sample/stanmore-dental-1.jpg", "/assets/img/sample/stanmore-dental-2.jpg", "/assets/img/sample/stanmore-dental-3.jpg"], "cat": "doctors-dentists-and-clinics", "sub": "Dental practice", "area": "stanmore",
       "address": "12 The Broadway", "postcode": "HA7 4DW", "phone": "020 7946 0104",
       "tier": "partner", "icon": "medical", "photos": 10, "claimed": "December 2025",
       "social": ["facebook", "instagram", "linkedin"],
@@ -78,7 +78,7 @@
       "hours": ["8.30am to 6pm", "8.30am to 6pm", "8.30am to 7pm", "8.30am to 6pm", "8.30am to 5pm", "9am to 1pm", "Closed"],
       "offers": [
         {"title": "&pound;25 off your first hygienist visit", "text": "For new private patients. Mention Harrow Online when you book by phone or online.", "ends": "31 December 2026", "featured": true, "redeem": "Mention Harrow Online when you book by phone or online.", "terms": ["New private patients only.", "One visit per patient.", "Not with NHS treatment or other offers."]},
-        {"title": "Free electric toothbrush with a new patient exam", "text": "For adults joining as private patients. While stocks last.", "ends": "31 December 2026", "redeem": "Mention Harrow Online when you book your exam.", "terms": ["Adults joining as new private patients.", "One per patient, while stocks last."]}
+        {"title": "Free electric toothbrush with a new patient exam", "value": "FREE TOOTHBRUSH", "text": "For adults joining as private patients. While stocks last.", "ends": "31 December 2026", "redeem": "Mention Harrow Online when you book your exam.", "terms": ["Adults joining as new private patients.", "One per patient, while stocks last."]}
       ],
       "events": [],
       "news": []
@@ -150,7 +150,7 @@
       "news": []
     },
     {
-      "name": "Rayners Lane Spice House", "cat": "restaurants", "sub": "Indian restaurant", "area": "rayners-lane",
+      "name": "Rayners Lane Spice House", "images": ["/assets/img/sample/rayners-lane-spice-1.jpg", "/assets/img/sample/rayners-lane-spice-2.jpg", "/assets/img/sample/rayners-lane-spice-3.jpg"], "cat": "restaurants", "sub": "Indian restaurant", "area": "rayners-lane",
       "address": "402 Alexandra Avenue", "postcode": "HA2 9TL", "phone": "020 7946 0109",
       "tier": "premium", "icon": "food", "photos": 8, "claimed": "June 2026",
       "social": ["facebook", "instagram"],
@@ -180,7 +180,7 @@
       ],
       "hours": ["Closed", "9am to 6pm", "9am to 6pm", "9am to 6pm", "9am to 6pm", "9am to 5pm", "Closed"],
       "offers": [
-        {"title": "Free winter bike safety check", "text": "Brakes, lights and tyres checked while you wait. No booking needed.", "ends": "31 December 2026", "icon": "wrench", "redeem": "Bring your bike in. No booking needed.", "terms": ["Brakes, lights and tyres only.", "Any repairs are quoted before we start."]}
+        {"title": "Free winter bike safety check", "value": "FREE SAFETY CHECK", "text": "Brakes, lights and tyres checked while you wait. No booking needed.", "ends": "31 December 2026", "icon": "wrench", "redeem": "Bring your bike in. No booking needed.", "terms": ["Brakes, lights and tyres only.", "Any repairs are quoted before we start."]}
       ],
       "events": [],
       "news": []
@@ -198,7 +198,7 @@
       ],
       "hours": ["9am to 7pm", "9am to 7pm", "9am to 7pm", "9am to 7pm", "9am to 7pm", "9am to 5pm", "Closed"],
       "offers": [
-        {"title": "Free blood pressure check", "text": "Walk in any weekday. Takes five minutes and you get a printed result.", "ends": "31 January 2027", "icon": "heart", "redeem": "Walk in and ask at the counter.", "terms": ["Monday to Friday.", "Adults 18 and over."]}
+        {"title": "Free blood pressure check", "value": "FREE BP CHECK", "text": "Walk in any weekday. Takes five minutes and you get a printed result.", "ends": "31 January 2027", "icon": "heart", "redeem": "Walk in and ask at the counter.", "terms": ["Monday to Friday.", "Adults 18 and over."]}
       ],
       "events": [],
       "news": []

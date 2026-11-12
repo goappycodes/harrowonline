@@ -10,15 +10,15 @@ nl: off
   <aside class="dash-nav" aria-label="Account">
     <div class="dash-nav__who">
       <span class="mono mono--sm" aria-hidden="true">SR</span>
-      <div><strong>Station Road Barbers</strong><span>Enhanced plan</span></div>
+      <div><strong>Station Road Barbers</strong><span>Featured plan</span></div>
     </div>
     <ul>
       <li><a href="/account.html"><svg class="ho-icon"><use href="#i-home"/></svg>Overview</a></li>
       <li><a href="/account-listings.html"><svg class="ho-icon"><use href="#i-store"/></svg>My listings</a></li>
-      <li><a href="/account-billing.html"><svg class="ho-icon"><use href="#i-card"/></svg>Plan and billing</a></li>
       <li><a href="/account-offers.html" aria-current="page"><svg class="ho-icon"><use href="#i-tag"/></svg>Offers<span class="num">1<span class="ho-sr"> offer needs changes</span></span></a></li>
       <li><a href="/account-events.html"><svg class="ho-icon"><use href="#i-calendar"/></svg>Events and classes</a></li>
       <li><a href="/account-bookings.html"><svg class="ho-icon"><use href="#i-megaphone"/></svg>Newsletter and promotions</a></li>
+      <li><a href="/account-billing.html"><svg class="ho-icon"><use href="#i-card"/></svg>Plan and billing</a></li>
       <li><a href="/account-settings.html"><svg class="ho-icon"><use href="#i-settings"/></svg>Settings</a></li>
     </ul>
     <hr>
@@ -39,8 +39,7 @@ nl: off
     <div class="notice notice--plain mb-5">
       <svg class="ho-icon"><use href="#i-info"/></svg>
       <div>
-        <p><strong>1 of 1 offer used for November</strong> on Enhanced. You can still add an offer that starts on 1 December or later.</p>
-        <p>Want more offers each month? <a href="/account-billing.html">Upgrade to Premium</a></p>
+        <p><strong>Your Featured plan includes Local Offers.</strong> Publish one any time; we check each one before it goes live.</p>
       </div>
     </div>
 
@@ -55,100 +54,67 @@ nl: off
     <div class="table-wrap">
       <table class="table table--stack">
         <thead>
-          <tr><th scope="col">Offer</th><th scope="col">Status</th><th scope="col">Runs</th><th scope="col">Shown to</th><th scope="col">Featured</th><th scope="col"><span class="ho-sr">Actions</span></th></tr>
+          <tr><th scope="col">Offer</th><th scope="col">Status</th><th scope="col">Featured</th><th scope="col"><span class="ho-sr">Actions</span></th></tr>
         </thead>
         <tbody>
           <tr>
             <td>
               <div class="table__item">
-                <div class="ph"><svg class="ho-icon"><use href="#i-scissors"/></svg></div>
                 <div><strong>20% off your first cut</strong><span>For new customers</span></div>
               </div>
             </td>
             <td data-label="Status"><span class="status status--published">Published</span></td>
-            <td data-label="Runs">1 Nov to 20 Dec 2026</td>
-            <td data-label="Shown to"><span class="badge badge--sub"><svg class="ho-icon"><use href="#i-lock"/></svg>Subscribers</span></td>
             <td data-label="Featured"><span class="badge badge--featured">Until 18 Nov</span></td>
             <td>
-              <div class="table__actions">
-                <a class="ho-btn ho-btn--sm ho-btn--outline" href="/account-offer-edit.html"><svg class="ho-icon"><use href="#i-edit"/></svg>Edit</a>
-                <a class="ho-btn ho-btn--sm ho-btn--outline" href="/offers/20-off-your-first-cut/"><svg class="ho-icon"><use href="#i-external"/></svg>View offer</a>
-                <button class="ho-btn ho-btn--sm ho-btn--ghost" type="button" data-copy="https://harrowonline.org/hub/offers/20-off-your-first-cut/">Copy link</button>
-                <a class="ho-btn ho-btn--sm ho-btn--ghost" href="#end-offer">End now</a>
-              </div>
+              <div class="table__actions"><a class="ho-btn ho-btn--sm ho-btn--outline" href="/account-offer-edit.html"><svg class="ho-icon"><use href="#i-edit"/></svg>Edit</a></div>
             </td>
           </tr>
           <tr>
             <td>
               <div class="table__item">
-                <div class="ph"><svg class="ho-icon"><use href="#i-scissors"/></svg></div>
                 <div><strong>Free beard trim with any haircut</strong><span>Sent for approval 10 Nov</span></div>
               </div>
             </td>
             <td data-label="Status"><span class="status status--pending">Pending</span></td>
-            <td data-label="Runs">1 Dec to 31 Dec 2026</td>
-            <td data-label="Shown to">Everyone</td>
             <td data-label="Featured"><span class="muted">No</span></td>
             <td>
-              <div class="table__actions">
-                <a class="ho-btn ho-btn--sm ho-btn--outline" href="/account-offer-edit.html"><svg class="ho-icon"><use href="#i-edit"/></svg>Edit</a>
-                <a class="ho-btn ho-btn--sm ho-btn--ghost" href="#stripe-checkout"><svg class="ho-icon"><use href="#i-star"/></svg>Feature this</a>
-              </div>
+              <div class="table__actions"><a class="ho-btn ho-btn--sm ho-btn--outline" href="/account-offer-edit.html"><svg class="ho-icon"><use href="#i-edit"/></svg>Edit</a></div>
             </td>
           </tr>
           <tr>
             <td>
               <div class="table__item">
-                <div class="ph"><svg class="ho-icon"><use href="#i-family"/></svg></div>
                 <div><strong>Kids&rsquo; cuts &pound;10 on weekdays</strong><span>Back in draft</span></div>
               </div>
             </td>
-            <td data-label="Status">
-              <span class="status status--rejected">Rejected</span>
-              <p class="reason"><strong>Note from our team:</strong> Please add the days and times this applies, and the age limit, so customers know what to expect.</p>
-            </td>
-            <td data-label="Runs">Not set</td>
-            <td data-label="Shown to">Everyone</td>
+            <td data-label="Status"><span class="status status--rejected">Needs changes</span></td>
             <td data-label="Featured"><span class="muted">No</span></td>
             <td>
-              <div class="table__actions">
-                <a class="ho-btn ho-btn--sm ho-btn--primary" href="/account-offer-edit.html"><svg class="ho-icon"><use href="#i-edit"/></svg>Fix and resubmit</a>
-              </div>
+              <div class="table__actions"><a class="ho-btn ho-btn--sm ho-btn--outline" href="/account-offer-edit.html?changes=1"><svg class="ho-icon"><use href="#i-edit"/></svg>Edit</a></div>
             </td>
           </tr>
           <tr>
             <td>
               <div class="table__item">
-                <div class="ph"><svg class="ho-icon"><use href="#i-gift"/></svg></div>
                 <div><strong>Gift vouchers: pay &pound;30, get &pound;35</strong><span>Not sent yet</span></div>
               </div>
             </td>
             <td data-label="Status"><span class="status status--draft">Draft</span></td>
-            <td data-label="Runs">1 Jan to 31 Jan 2027</td>
-            <td data-label="Shown to">Everyone</td>
             <td data-label="Featured"><span class="muted">No</span></td>
             <td>
-              <div class="table__actions">
-                <a class="ho-btn ho-btn--sm ho-btn--outline" href="/account-offer-edit.html"><svg class="ho-icon"><use href="#i-edit"/></svg>Edit</a>
-                <a class="ho-btn ho-btn--sm ho-btn--ghost" href="#delete-draft">Delete</a>
-              </div>
+              <div class="table__actions"><a class="ho-btn ho-btn--sm ho-btn--outline" href="/account-offer-edit.html"><svg class="ho-icon"><use href="#i-edit"/></svg>Edit</a></div>
             </td>
           </tr>
           <tr>
             <td>
               <div class="table__item">
-                <div class="ph"><svg class="ho-icon"><use href="#i-family"/></svg></div>
                 <div><strong>Half-term kids&rsquo; cuts</strong><span>Ended automatically</span></div>
               </div>
             </td>
             <td data-label="Status"><span class="status status--ended">Ended</span></td>
-            <td data-label="Runs">20 Oct to 31 Oct 2026</td>
-            <td data-label="Shown to">Everyone</td>
             <td data-label="Featured"><span class="muted">Ended 31 Oct</span></td>
             <td>
-              <div class="table__actions">
-                <a class="ho-btn ho-btn--sm ho-btn--ghost" href="/account-offer-edit.html"><svg class="ho-icon"><use href="#i-repeat"/></svg>Copy as new</a>
-              </div>
+              <div class="table__actions"><a class="ho-btn ho-btn--sm ho-btn--outline" href="/account-offer-edit.html"><svg class="ho-icon"><use href="#i-edit"/></svg>Edit</a></div>
             </td>
           </tr>
         </tbody>

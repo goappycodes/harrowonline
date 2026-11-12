@@ -187,7 +187,7 @@ def load_claimed():
             by_org.setdefault(ev["org"], []).append(ev)
     used = set()
     for c in businesses:
-        classes = [x for x in c.get("events", []) if x.get("class")]
+        classes = [dict(x, href=f'/events/{slugify(_unescape(x["title"]))}/') for x in c.get("events", []) if x.get("class")]
         c["events"] = [profile_event(ev) for ev in by_org.get(c["name"], [])] + classes
         live, ended = [], []
         for o in c.get("offers", []):

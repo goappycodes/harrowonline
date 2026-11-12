@@ -291,19 +291,32 @@ def write_partials(cat_counts, area_counts):
     (PARTIALS / "gen-area-options.html").write_text(gen_area_options(), encoding="utf-8")
     by_size = sorted(H.CATEGORIES, key=lambda c: -cat_counts[c[0]])
     cat_tile = lambda s, n, i: f'<a class="tile" href="/category/{s}.html"><span class="tile__icon">{icon(i)}</span><span class="tile__name">{e(n)}</span><span class="tile__count">{cat_counts[s]:,} businesses</span></a>'
-    # All categories (the /categories/ page)
-    tiles = "".join(cat_tile(s, n, i) for s, n, i, _r in by_size)
-    (PARTIALS / "gen-cat-tiles.html").write_text(f'<div class="grid grid-6">{tiles}</div>', encoding="utf-8")
+    # Category cards: icon, name, count, arrow, and a large faded icon as texture (redesign, Nov 2026).
+    # Used on the homepage (six largest) and the /categories/ page (all).
+    cat_card = lambda s, n, i: (f'<a class="cat-card" href="/category/{s}.html"><span class="cat-card__icon">{icon(i)}</span>'
+                                f'<span class="cat-card__body"><span class="cat-card__name">{e(n)}</span>'
+                                f'<span class="cat-card__count">{cat_counts[s]:,} businesses</span></span>'
+                                f'<span class="cat-card__go">{icon("arrow")}</span><span class="cat-card__mark" aria-hidden="true">{icon(i)}</span></a>')
+    tiles = "".join(cat_card(s, n, i) for s, n, i, _r in by_size)
+    (PARTIALS / "gen-cat-tiles.html").write_text(f'<div class="cat-cards">{tiles}</div>', encoding="utf-8")
     # Homepage: the six largest categories only (client feedback: keep the section short)
-    top = "".join(cat_tile(s, n, i) for s, n, i, _r in by_size[:6])
-    (PARTIALS / "gen-cat-tiles-top.html").write_text(f'<div class="grid grid-6">{top}</div>', encoding="utf-8")
+    top = "".join(cat_card(s, n, i) for s, n, i, _r in by_size[:6])
+    (PARTIALS / "gen-cat-tiles-top.html").write_text(f'<div class="cat-cards">{top}</div>', encoding="utf-8")
+    # Area cards: pin badge, name, count and a bar showing size against the largest area (redesign, Nov 2026)
+    biggest = max(area_counts.values()) or 1
     atiles = "".join(
-        f'<a class="tile tile--area" href="/area/{s}.html"><span><span class="tile__name">{e(n)}</span><br><span class="tile__count">{area_counts[s]:,} businesses</span></span>{icon("chevron")}</a>'
+        f'<a class="area-card" href="/area/{s}.html"><span class="area-card__pin">{icon("pin")}</span>'
+        f'<span class="area-card__body"><span class="area-card__name">{e(n)}</span>'
+        f'<span class="area-card__count">{area_counts[s]:,} businesses</span>'
+        f'<span class="area-card__bar" aria-hidden="true"><i style="width:{max(8, round(100 * area_counts[s] / biggest))}%"></i></span></span>'
+        f'<span class="area-card__go">{icon("chevron")}</span></a>'
         for s, n, _a, _b in sorted(H.AREAS, key=lambda a: a[1]))
-    (PARTIALS / "gen-area-tiles.html").write_text(f'<div class="grid grid-4">{atiles}</div>', encoding="utf-8")
+    (PARTIALS / "gen-area-tiles.html").write_text(f'<div class="area-cards">{atiles}</div>', encoding="utf-8")
     offers = C.all_offers(listings())
-    (PARTIALS / "gen-offers.html").write_text("\n".join(C.offer_card(x, o, heading="h2") for x, o in offers), encoding="utf-8")
-    (PARTIALS / "gen-offers-home.html").write_text("\n".join(C.offer_card(x, o) for x, o in offers[:3]), encoding="utf-8")
+    (PARTIALS / "gen-offers.html").write_text("\n".join(C.offer_list_card(x, o) for x, o in offers), encoding="utf-8")
+    # Homepage: value-first offer tiles (six), "Just joined" ticker and live stats strip (cues from the client's reference site)
+    (PARTIALS / "gen-offers-home.html").write_text("\n".join(C.offer_tile(x, o) for x, o in offers[:6]), encoding="utf-8")
+    write_home_extras(offers)
     (PARTIALS / "gen-offer-count.html").write_text(str(len(offers)), encoding="utf-8")
     by_cat = Counter(x["cat"] for x, _o in offers)
     chips = [f'<a class="chip" href="/offers.html" data-cat="" aria-current="page">All offers <span class="count">{len(offers)}</span></a>']
@@ -319,6 +332,40 @@ def write_partials(cat_counts, area_counts):
 def offer_pages():
     """One page per Local Offer, live and ended (gen_claimed.offer_page)."""
     return C.offer_pages(listings())
+
+
+def write_home_extras(offers):
+    """gen-just-joined.html (newest claimed businesses, scrolling) and gen-live-stats.html (big-number strip)."""
+    import datetime as dt
+    import sys
+    from pathlib import Path as _P
+    claimed = [x for x in listings() if x.get("claimed")]
+    def when(x):
+        try:
+            return dt.datetime.strptime(x["claimed"].get("claimed", ""), "%B %Y")
+        except ValueError:
+            return dt.datetime.min
+    newest = sorted(claimed, key=when, reverse=True)[:10]
+    items = "".join(f'<a class="ticker__item" href="/business/{x["slug"]}.html">{e(x["name"])}, {e(area_name(x["area"]))}</a>' for x in newest)
+    # The list is repeated once so the CSS scroll loops seamlessly; the copy is hidden from screen readers.
+    (PARTIALS / "gen-just-joined.html").write_text(
+        f'<div class="ticker" aria-label="Businesses that recently joined the Hub">'
+        f'<span class="ticker__label"><i aria-hidden="true"></i>Just joined</span>'
+        f'<div class="ticker__track"><div class="ticker__run">{items}</div><div class="ticker__run" aria-hidden="true">{items}</div></div></div>',
+        encoding="utf-8")
+    sys.path.insert(0, str(_P(__file__).parent / "tools"))
+    import gen_events as G
+    week = [G.TODAY + dt.timedelta(days=n) for n in range(7)]
+    this_week = sum(1 for d in week for x in G.items_on(d) if x["kind"] == "event")
+    cells = [
+        ("Offers live", str(len(offers)), "and counting", "/offers.html"),
+        ("This week", str(this_week), "events across Harrow", "/events.html"),
+        ("Every week", str(len(G.CLASSES)), "regular classes", "/classes.html"),
+        ("Local businesses", f"{len(listings()):,}", f"across {len(H.AREAS)} areas", "/search.html"),
+    ]
+    html = "".join(f'<a class="stat" href="{href}"><span class="stat__label">{label}</span><strong class="stat__value" data-count="{value.replace(',', '')}">{value}</strong><span class="stat__note">{note}</span></a>'
+                   for label, value, note, href in cells)
+    (PARTIALS / "gen-live-stats.html").write_text(f'<div class="stats-strip">{html}</div>', encoding="utf-8")
 
 
 def write_partials_only():
@@ -365,6 +412,7 @@ def build_all():
                 "w": 1 if x["web"] else 0,
                 "t": x.get("tier", ""), "i": x["claimed"].get("icon", "") if x.get("claimed") else "",
                 "tg": unescape(x["claimed"]["tagline"]) if x.get("claimed") else "",
+                "im": ((x.get("claimed") or {}).get("images") or [""])[0],   # sample photo for the results row
                 "sm": 1 if C.is_sample(x) else 0,   # made-up preview business: Sample badge, never Featured/Verified
             }.items() if v not in ("", 0)}
             for x in L

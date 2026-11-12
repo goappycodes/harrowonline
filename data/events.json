@@ -166,7 +166,8 @@
    "icon": "people",
    "featured": false,
    "desc": "Four stand-up acts from the London circuit, hosted by a local favourite.",
-   "sample": true
+   "sample": true,
+   "image": "/assets/img/sample/event-friday-night-comedy.jpg"
   },
   {
    "date": "2026-11-14",
@@ -180,7 +181,8 @@
    "icon": "leaf",
    "featured": false,
    "desc": "Help plant 200 native trees. Tools and gloves provided, bring wellies.",
-   "sample": true
+   "sample": true,
+   "image": "/assets/img/sample/event-canons-park-tree-planting.jpg"
   },
   {
    "date": "2026-11-14",
@@ -195,7 +197,8 @@
    "featured": false,
    "desc": "A three-course supper with the Hill Street Trio. Booking essential.",
    "sample": true,
-   "org": "Hill Street Kitchen"
+   "org": "Hill Street Kitchen",
+   "image": "/assets/img/sample/event-live-jazz-supper-club.jpg"
   },
   {
    "date": "2026-11-15",
@@ -223,7 +226,8 @@
    "icon": "leaf",
    "featured": false,
    "desc": "A gentle two-hour walk with a local ranger. Meet at the car park.",
-   "sample": true
+   "sample": true,
+   "image": "/assets/img/sample/event-harrow-weald-guided-walk.jpg"
   },
   {
    "date": "2026-11-16",
