@@ -30,6 +30,7 @@ MIN_ARCHIVE_LISTINGS = 5     # category/area archive: indexable listings needed
 PAGE_PATHS = {
     "index": "/",
     "search": "/search/",
+    "categories": "/categories/",
     "offers": "/offers/",
     "events": "/events/",
     "events-month": "/events/month/",
@@ -66,7 +67,7 @@ PAGE_PATHS = {
     "news-article": "/news-site/article/",
 }
 PAGE_SCHEMA = {
-    "index": "CollectionPage", "search": "SearchResultsPage", "offers": "CollectionPage", "events": "CollectionPage",
+    "index": "CollectionPage", "search": "SearchResultsPage", "categories": "CollectionPage", "offers": "CollectionPage", "events": "CollectionPage",
     "events-month": "CollectionPage", "classes": "CollectionPage", "pricing": "WebPage", "data-sources": "AboutPage",
     "report": "ContactPage", "event": "ItemPage", "class": "ItemPage",
 }

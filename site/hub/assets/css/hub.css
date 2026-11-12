@@ -1422,15 +1422,9 @@ body { -webkit-tap-highlight-color: rgba(223, 32, 40, .12); }
   .profile-section > h2, .profile-section .sec-head h2 { font-size: 20px; margin-bottom: var(--ho-s3); }
   .event-row__side { margin-top: -4px; }
 
-  /* Category tiles: two-row swipe rail. Area tiles: two tight columns */
-  .grid-6:has(> .tile) {
-    grid-template-columns: none; grid-auto-flow: column; grid-template-rows: repeat(2, auto);
-    grid-auto-columns: 38%; gap: var(--ho-s2);
-    overflow-x: auto; scroll-snap-type: x mandatory; scrollbar-width: none;
-    margin: 0 calc(var(--ho-gutter) * -1); padding: 2px var(--ho-gutter) 6px; scroll-padding: 0 var(--ho-gutter);
-  }
-  .grid-6:has(> .tile)::-webkit-scrollbar { display: none; }
-  .grid-6 > .tile { scroll-snap-align: start; padding: var(--ho-s3); gap: 6px; }
+  /* Category tiles and area tiles: two tight columns (homepage shows six categories, the rest are on /categories/) */
+  .grid-6:has(> .tile) { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--ho-s2); }
+  .grid-6 > .tile { padding: var(--ho-s3); gap: 6px; }
   .tile__icon { width: 36px; height: 36px; }
   .tile__icon .ho-icon { width: 18px; height: 18px; }
   .tile__name { font-size: 13px; }

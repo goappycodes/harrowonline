@@ -289,10 +289,14 @@ def gen_area_options():
 def write_partials(cat_counts, area_counts):
     (PARTIALS / "gen-cat-options.html").write_text(gen_cat_options(), encoding="utf-8")
     (PARTIALS / "gen-area-options.html").write_text(gen_area_options(), encoding="utf-8")
-    tiles = "".join(
-        f'<a class="tile" href="/category/{s}.html"><span class="tile__icon">{icon(i)}</span><span class="tile__name">{e(n)}</span><span class="tile__count">{cat_counts[s]:,} businesses</span></a>'
-        for s, n, i, _r in sorted(H.CATEGORIES, key=lambda c: -cat_counts[c[0]]))
+    by_size = sorted(H.CATEGORIES, key=lambda c: -cat_counts[c[0]])
+    cat_tile = lambda s, n, i: f'<a class="tile" href="/category/{s}.html"><span class="tile__icon">{icon(i)}</span><span class="tile__name">{e(n)}</span><span class="tile__count">{cat_counts[s]:,} businesses</span></a>'
+    # All categories (the /categories/ page)
+    tiles = "".join(cat_tile(s, n, i) for s, n, i, _r in by_size)
     (PARTIALS / "gen-cat-tiles.html").write_text(f'<div class="grid grid-6">{tiles}</div>', encoding="utf-8")
+    # Homepage: the six largest categories only (client feedback: keep the section short)
+    top = "".join(cat_tile(s, n, i) for s, n, i, _r in by_size[:6])
+    (PARTIALS / "gen-cat-tiles-top.html").write_text(f'<div class="grid grid-6">{top}</div>', encoding="utf-8")
     atiles = "".join(
         f'<a class="tile tile--area" href="/area/{s}.html"><span><span class="tile__name">{e(n)}</span><br><span class="tile__count">{area_counts[s]:,} businesses</span></span>{icon("chevron")}</a>'
         for s, n, _a, _b in sorted(H.AREAS, key=lambda a: a[1]))
