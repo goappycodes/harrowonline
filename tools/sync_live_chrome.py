@@ -1,6 +1,6 @@
 """
 Copy the live harrowonline.org header and footer into the Hub partials, verbatim, with only these changes:
-  - Hub pages use the Hub logo (hub-logo.png / hub-logo-white.png), linking to the Hub homepage
+  - Hub pages use the Hub logo (hub-logo.svg / hub-logo-white.svg), linking to the Hub homepage
   - an account icon in the header actions (Hub pages only): Sign in when signed out, My account when signed in
   - a "Hub" section in the phone menu drawer (Businesses, Categories, Areas, Pricing, List your business),
     (desktop gets the same links as a "Hub" dropdown in the main menu)
@@ -58,13 +58,13 @@ header = swap(header,
               '<a class="ho-header__logo" href="https://harrowonline.org/" rel="home">',
               '<a class="ho-header__logo{{site:hub}} ho-header__logo--hub{{/site}}" href="{{site:hub}}/{{/site}}{{site:news}}https://harrowonline.org/{{/site}}" rel="home">')
 header = swap(header, LOGO,
-              '{{site:hub}}<img src="/assets/img/hub-logo.png" width="269" height="90" alt="Harrow Online Hub" fetchpriority="high">{{/site}}{{site:news}}' + LOGO + '{{/site}}')
+              '{{site:hub}}<img src="/assets/img/hub-logo.svg" width="146" height="100" alt="Harrow Online Hub" fetchpriority="high">{{/site}}{{site:news}}' + LOGO + '{{/site}}')
 header = swap(header, SEARCH_BTN, ACCOUNT + SEARCH_BTN)
 header = swap(header,
               '<a class="ho-drawer__logo" href="https://harrowonline.org/">',
               '<a class="ho-drawer__logo{{site:hub}} ho-drawer__logo--hub{{/site}}" href="{{site:hub}}/{{/site}}{{site:news}}https://harrowonline.org/{{/site}}">')
 header = swap(header, LOGO_LAZY,
-              '{{site:hub}}<img src="/assets/img/hub-logo.png" width="269" height="90" alt="Harrow Online Hub" loading="lazy">{{/site}}{{site:news}}' + LOGO_LAZY + '{{/site}}')
+              '{{site:hub}}<img src="/assets/img/hub-logo.svg" width="146" height="100" alt="Harrow Online Hub" loading="lazy">{{/site}}{{site:news}}' + LOGO_LAZY + '{{/site}}')
 header = swap(header, DRAWER_NL, DRAWER_HUB + DRAWER_NL)
 # Hub pages use the shared main menu from brief 01, section 3 (News, What's On, Classes, Offers, Hub), in the live
 # menu's markup and styling. No "Newsletter" item: the red Newsletter button in the header (and "Get the newsletter"
@@ -121,7 +121,7 @@ footer = swap(footer,
               '<a class="ho-footer__logo" href="https://harrowonline.org/">',
               '<a class="ho-footer__logo{{site:hub}} ho-footer__logo--hub{{/site}}" href="{{site:hub}}/{{/site}}{{site:news}}https://harrowonline.org/{{/site}}">')
 footer = swap(footer, FOOT_LOGO,
-              '{{site:hub}}<img src="/assets/img/hub-logo-white.png" width="269" height="90" alt="Harrow Online Hub" loading="lazy">{{/site}}{{site:news}}' + FOOT_LOGO + '{{/site}}')
+              '{{site:hub}}<img src="/assets/img/hub-logo-white.svg" width="146" height="100" alt="Harrow Online Hub" loading="lazy">{{/site}}{{site:news}}' + FOOT_LOGO + '{{/site}}')
 # Footer "Events" goes to the Hub calendar on Hub pages (it replaces the Evvnt page at launch: brief 01, section 3)
 footer = swap(footer, '<li><a href="https://harrowonline.org/events/">Events</a></li>',
               '<li><a href="{{site:hub}}/events.html{{/site}}{{site:news}}https://harrowonline.org/events/{{/site}}">Events</a></li>')

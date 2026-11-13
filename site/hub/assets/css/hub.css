@@ -285,11 +285,12 @@ address { font-style: normal; }
 .hub-bar__in { display: none !important; }
 .is-logged-in .hub-bar__in { display: inline-flex !important; }
 .is-logged-in .hub-bar__out { display: none !important; }
-/* Hub logo (269x90 image): same height as the live logo at every breakpoint */
-.ho-header__logo--hub img { width: 203px; }
-.ho-drawer__logo--hub img { width: 150px; }
-.ho-footer__logo--hub img { width: 196px; }
-@media (max-width: 1018px) { .ho-header__logo--hub img { width: 129px; } }
+/* Hub logo (client artwork, Nov 2026; SVG, 146x100 ratio): sized by height so it sits in the header bar */
+.ho-header__logo.ho-header__logo--hub img { width: auto; height: 68px; }
+.ho-drawer__logo.ho-drawer__logo--hub img { width: auto; height: 56px; }
+.ho-footer__logo.ho-footer__logo--hub img { width: auto; height: 104px; }
+@media (max-width: 1018px) { .ho-header__logo.ho-header__logo--hub img { height: 52px; } }
+@media (max-width: 420px) { .ho-header__logo.ho-header__logo--hub img { height: 48px; } }
 
 /* Menu drawer (phones and tablets): Hub links */
 .ho-drawer__hub { margin: var(--ho-s4) 0 var(--ho-s5); }

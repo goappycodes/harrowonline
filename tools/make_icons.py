@@ -4,7 +4,7 @@ Favicons, app icons, web app manifest and the default social share image for the
     python tools/make_icons.py
 
 Source: tools/brand/ho-symbol-512.jpg (the Harrow Online symbol used as the news site's favicon) and
-site/hub/assets/img/hub-logo.png (made by make_hub_logo.py). Outputs:
+site/hub/assets/img/hub-logo.png (made by make_hub_logo.py from the client's logo). Outputs:
     site/hub/favicon.ico                      16, 32, 48 px
     site/hub/assets/img/icon-192.png, icon-512.png, icon-maskable-512.png, apple-touch-icon.png (180)
     site/hub/assets/img/og-default.png        1200x630 Open Graph / X card
@@ -53,15 +53,16 @@ def og_image():
     im = Image.new("RGB", (W, H), "white")
     d = ImageDraw.Draw(im)
     logo = Image.open(IMG / "hub-logo.png").convert("RGBA")
-    lw = 760
-    logo = logo.resize((lw, round(logo.height * lw / logo.width)), Image.LANCZOS)
-    im.paste(logo, ((W - lw) // 2, 110), logo)
+    lh = 380   # client logo is nearly square (146x100), so size it by height to fill the white area
+    lw = round(logo.width * lh / logo.height)
+    logo = logo.resize((lw, lh), Image.LANCZOS)
+    im.paste(logo, ((W - lw) // 2, (H - 170 - lh) // 2), logo)
     d.rectangle([0, H - 170, W, H], fill=RED)
     line1 = "Local businesses, offers and what’s on in Harrow"
     f1 = font(44)
     w1 = d.textlength(line1, font=f1)
     d.text(((W - w1) / 2, H - 140), line1, font=f1, fill="white")
-    line2 = "powered by Harrow Online Newsletter"
+    line2 = "harrowonline.org/hub"
     f2 = font(30)
     w2 = d.textlength(line2, font=f2)
     d.text(((W - w2) / 2, H - 78), line2, font=f2, fill=(255, 225, 226))
