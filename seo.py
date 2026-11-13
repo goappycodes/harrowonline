@@ -292,7 +292,7 @@ CAT_TYPE = {
 }
 SUB_TYPE = [
     (r"dent", "Dentist"), (r"pharmac", "Pharmacy"), (r"barber|hair", "HairSalon"), (r"plumb|heating", "Plumber"),
-    (r"bike|cycle", "BikeStore"), (r"book", "BookStore"), (r"florist", "Florist"), (r"gym|fitness", "ExerciseGym"),
+    (r"football|sports club", "SportsClub"), (r"bike|cycle", "BikeStore"), (r"book", "BookStore"), (r"florist", "Florist"), (r"gym|fitness", "ExerciseGym"),
     (r"indian|chinese|thai|italian|british", "Restaurant"), (r"vet", "VeterinaryCare"), (r"electric", "Electrician"),
     (r"estate agent|letting", "RealEstateAgent"), (r"account", "AccountingService"), (r"solicitor", "Attorney"),
     (r"coding|tutor|school|class", "EducationalOrganization"), (r"association", "Organization"),
@@ -341,6 +341,14 @@ def local_business(x, base, area_name, cat_name, days, area_centre):
         "areaServed": {"@type": "Place", "name": f"{area_name}, Harrow"},
         "image": absolute(base, OG_IMAGE),   # replaced by the business's own photo in WordPress
     }
+    if not str(x.get("id", "")).startswith("sample-"):   # real business: its own logo and photos
+        own = ([c["logo"]] if c.get("logo") else []) + list(c.get("images", []))
+        if own:
+            node["image"] = [absolute(base, i) for i in own]
+        if c.get("logo"):
+            node["logo"] = absolute(base, c["logo"])
+        if x.get("email"):
+            node["email"] = x["email"][0]
     if c.get("description"):
         node["description"] = text(" ".join(c["description"]))
     elif c.get("tagline"):
@@ -355,7 +363,7 @@ def local_business(x, base, area_name, cat_name, days, area_centre):
         node["geo"] = {"@type": "GeoCoordinates", "latitude": round(lat, 5), "longitude": round(lng, 5)}
     if c.get("hours"):
         node["openingHoursSpecification"] = opening_hours(days, c["hours"])
-    same = [w for w in x.get("web", []) if w.startswith("http")]
+    same = [w for w in x.get("web", []) if w.startswith("http")] + list((c.get("social_urls") or {}).values())
     if same:
         node["sameAs"] = same
     if c.get("offers"):

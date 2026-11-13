@@ -158,9 +158,11 @@ def load_listings():
         used.add(slug)
         raw_phone = re.sub(r"[^\d+]", "", c["phone"])
         out.append({
-            "id": "sample-" + slug, "slug": slug, "name": c["name"], "cat": c["cat"], "sub": c["sub"], "area": c["area"],
+            # Real businesses (claimed.json "real": true) get a normal id; everything else is a made-up sample.
+            "id": ("claimed-" if c.get("real") else "sample-") + slug, "slug": slug, "name": c["name"], "cat": c["cat"], "sub": c["sub"], "area": c["area"],
             "address": c["address"], "postcode": c["postcode"], "phone": [c["phone"]], "phone_raw": [raw_phone],
-            "web": [], "email": [], "social": c.get("social", []), "lat": None, "lng": None, "sources": [],
+            "web": [c["website"]] if c.get("website") else [], "email": [c["email"]] if c.get("email") else [],
+            "social": c.get("social", []), "lat": None, "lng": None, "sources": [],
             "tier": c["tier"], "claimed": c,
         })
     out.sort(key=lambda x: x["name"].lower())

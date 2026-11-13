@@ -1,5 +1,5 @@
 {
-  "_about": "Sample claimed businesses for the design preview. Fictional: names, addresses and offers are made up; phone numbers use Ofcom's reserved drama range (020 7946 0xxx). In WordPress this data comes from claimed listings, offers and events. tier: basic | enhanced | premium | partner. Days: Mon..Sun.",
+  "_about": "Claimed businesses for the design preview. Entries WITHOUT \"real\": true are fictional samples: names, addresses and offers are made up; phone numbers use Ofcom's reserved drama range (020 7946 0xxx). Entries WITH \"real\": true are real businesses supplied by Harrow Online (no Sample label, indexable). Real-only optional fields: website, email, logo, image_alts, social_urls, status + schedule_title + schedule + schedule_note (instead of 7-day hours), other_locations, verified_note. In WordPress this data comes from claimed listings, offers and events. tier: basic | enhanced | premium | partner. Days: Mon..Sun.",
   "businesses": [
     {
       "name": "Hill Street Kitchen", "images": ["/assets/img/sample/hill-street-kitchen-1.jpg", "/assets/img/sample/hill-street-kitchen-2.jpg", "/assets/img/sample/hill-street-kitchen-3.jpg"], "cat": "restaurants", "sub": "British restaurant", "area": "harrow-on-the-hill",
@@ -219,6 +219,40 @@
         {"title": "&pound;20 off a boiler service", "text": "For homes in Harrow and Edgware. Book by phone and quote the code.", "ends": "31 December 2026", "code": "HOBOIL20", "sub": true, "icon": "wrench", "redeem": "Quote the code when you book by phone.", "terms": ["Homes in Harrow and Edgware.", "Gas boilers only.", "One per household."]}
       ],
       "events": [],
+      "news": []
+    },
+    {
+      "_note": "REAL business (not a sample): supplied by Harrow Online, 13 Nov 2026. Complimentary Featured listing. Chairman's name left off until his role is reconfirmed.",
+      "real": true,
+      "name": "Parkfield Youth FC", "cat": "sport-and-fitness", "sub": "Youth football club", "area": "hatch-end",
+      "address": "John Rumney Playing Fields, Uxbridge Road", "postcode": "HA3 6PU", "phone": "07545 122346",
+      "email": "chairman@parkfieldyouthfc.co.uk", "website": "https://parkfieldyouthfc.co.uk/",
+      "tier": "premium", "icon": "people", "claimed": "November 2026",
+      "logo": "/assets/img/business/parkfield-youth-fc-badge.png",
+      "images": ["/assets/img/business/parkfield-youth-fc-clubhouse.jpg", "/assets/img/business/parkfield-youth-fc-team.jpg"],
+      "image_alts": ["The Parkfield Youth FC clubhouse at John Rumney Playing Fields", "Parkfield Youth FC players in a team huddle"],
+      "photos": 2,
+      "social": ["facebook", "instagram"],
+      "social_urls": {"facebook": "https://www.facebook.com/share/1A6wvmU2dm/", "instagram": "https://www.instagram.com/parkfieldyouthfc"},
+      "tagline": "Established in 1945, Parkfield Youth FC offers grassroots football, coaching and Saturday soccer sessions for children in Hatch End, Harrow.",
+      "description": [
+        "Parkfield Youth FC is a long-established grassroots football club based at John Rumney Playing Fields in Hatch End, Harrow. Founded in 1945, the club has been part of the local football community for more than 80 years, helping generations of young players enjoy the game.",
+        "The club provides opportunities for children to get involved in football, develop their skills, make friends and build confidence in a welcoming team environment. Alongside its competitive youth teams, Parkfield runs a Saturday Soccer School with sessions for different age groups, including a dedicated girls-only session.",
+        "Whether children are taking their first steps into football or looking to develop their skills through organised matches, Parkfield Youth FC offers a friendly setting for youngsters and families across Harrow."
+      ],
+      "hours": [],
+      "status": "Soccer School every Saturday",
+      "schedule_title": "When the club meets",
+      "schedule": [["Saturday", "Soccer School, 9am to 12pm"], ["Sunday", "Match fixtures, times vary"]],
+      "schedule_note": "The club runs around training, coaching sessions and match fixtures rather than set opening hours. Saturday times are for the Soccer School.",
+      "other_locations": [{"label": "Soccer School in winter", "name": "Bannister Outdoor Sports Centre", "address": "Uxbridge Road, Hatch End, HA3 6SW"}],
+      "verified_note": "Details supplied by the club and checked by Harrow Online in November 2026.",
+      "offers": [],
+      "events": [
+        {"title": "Saturday Soccer School: Reception to Year 2", "when": "Every Saturday, 10am to 11am", "d": "14", "m": "Nov", "w": "Sat", "price": "&pound;6", "class": true, "featured": true},
+        {"title": "Saturday Soccer School: Years 3 to 9", "when": "Every Saturday, 11am to 12pm", "d": "14", "m": "Nov", "w": "Sat", "price": "&pound;6", "class": true, "featured": true},
+        {"title": "Girls&rsquo; Saturday Soccer School", "when": "Every Saturday, time to be confirmed", "d": "14", "m": "Nov", "w": "Sat", "price": "Ask the club", "class": true, "featured": true}
+      ],
       "news": []
     }
   ]

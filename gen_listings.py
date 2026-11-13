@@ -81,6 +81,9 @@ def seo_meta(x, meta):
         meta.pop("robots", None)
         a = H.AREA_BY_SLUG[x["area"]]
         meta["ld"] = [seo.local_business(x, BASE(), area_name(x["area"]), cat_name(x["cat"]), C.DAYS, (a[2], a[3]))]
+        imgs = (x.get("claimed") or {}).get("images")
+        if imgs and not C.is_sample(x):
+            meta["image"] = seo.absolute(BASE(), imgs[0])   # real business: share preview uses its own photo
     else:
         meta["robots"] = "noindex, follow"
     return meta
@@ -105,6 +108,8 @@ def profile(x, related):
         meta = {"title": f'{x["name"]} in {area_name(x["area"])}',
                 "description": f'{x["name"]} ({x["sub"]}) in {area_name(x["area"])}, Harrow: opening hours, photos, Local Offers, events and contact details on Harrow Online Hub.',
                 "hubnav": "directory"}
+        if not C.is_sample(x):   # real business: its own one-line summary
+            meta["description"] = short(unescape(x["claimed"]["tagline"]))
         return render(seo_meta(x, meta), C.profile_body(x, rel, crumb))
     cat, area = x["cat"], x["area"]
     maps = f'https://www.google.com/maps/search/?api=1&query={quote(x["name"] + " " + x["postcode"])}'
@@ -412,7 +417,8 @@ def build_all():
                 "w": 1 if x["web"] else 0,
                 "t": x.get("tier", ""), "i": x["claimed"].get("icon", "") if x.get("claimed") else "",
                 "tg": unescape(x["claimed"]["tagline"]) if x.get("claimed") else "",
-                "im": ((x.get("claimed") or {}).get("images") or [""])[0],   # sample photo for the results row
+                "im": (x.get("claimed") or {}).get("logo") or ((x.get("claimed") or {}).get("images") or [""])[0],   # logo, else first photo, for the results row
+                "lg": 1 if (x.get("claimed") or {}).get("logo") else 0,   # "im" is a logo: show it whole, not cropped
                 "sm": 1 if C.is_sample(x) else 0,   # made-up preview business: Sample badge, never Featured/Verified
             }.items() if v not in ("", 0)}
             for x in L

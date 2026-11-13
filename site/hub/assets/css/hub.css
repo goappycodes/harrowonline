@@ -1756,6 +1756,20 @@ main:has(> .auth) + .ho-footer { margin-top: 0; }
 .ph--photo > img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; display: block; }
 .ph--photo .offer-tile__lock { z-index: 1; }
 
+/* Real businesses: own logo or badge shown whole on white (rows, search results, profile head) */
+.ph.ph--logo { background: #fff; border: 1px solid var(--ho-line); }
+.ph--logo > img { position: absolute; inset: 8%; width: 84%; height: 84%; object-fit: contain; display: block; }
+.mono.mono--logo { background: #fff; border: 1px solid var(--ho-line); padding: 6px; overflow: hidden; }
+.mono--logo img { width: 100%; height: 100%; object-fit: contain; display: block; }
+/* Clubs and groups that list a weekly schedule instead of opening hours */
+.open-now--info { color: var(--ho-ink); }
+.open-now--info::before { background: var(--ho-red); }
+/* Gallery with only the business's own photos (1 or 2 of them) */
+.gallery.gallery--1, .gallery.gallery--2 { grid-template-rows: auto; }
+.gallery.gallery--1 { grid-template-columns: 1fr; }
+.gallery.gallery--2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.gallery.gallery--1 .ph, .gallery.gallery--2 .ph { grid-row: auto; grid-column: auto; height: auto; min-height: 0; aspect-ratio: 4 / 3; }
+
 /* Homepage "Get found by Harrow" keeps its original look (client asked to keep it): grey section, step cards, dark band */
 .section--soft.biz-section { background: var(--ho-soft); }
 .biz-section .cta-band { background: var(--ho-ink); color: rgba(255,255,255,.82); box-shadow: none; }

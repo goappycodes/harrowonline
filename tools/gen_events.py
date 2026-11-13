@@ -9,7 +9,7 @@ From that one list it builds:
 Business profiles pick up the same events by organiser ("org") in hub_data.load_claimed().
 
 Sample content rule: anything with "sample": true carries a Sample badge (alongside Featured where set, to demo
-featured placement). Weekly classes below are all samples.
+featured placement). Weekly classes below are samples, except those in CLASS_REAL (real businesses).
 
     python tools/gen_events.py   # regenerate the list, month and weekend partial (build.py also runs this)
 """
@@ -58,8 +58,14 @@ def is_featured(x):
     return bool(x.get("featured"))
 
 
-# Weekly classes: weekday (0 = Mon), time, sort, title, venue, area, price, age, icon, featured, type. All samples.
+# Weekly classes: weekday (0 = Mon), time, sort, title, venue, area, price, age, icon, featured, type.
+# Samples, except the titles in CLASS_REAL below.
 CLASSES = [
+    # Parkfield Youth FC (real, 13 Nov 2026). Times, ages and price from parkfieldyouthfc.co.uk/soccer-school/;
+    # the girls-only session is in the club's listing but its time, ages and price are not published yet.
+    (5, "10am to 11am", 10.0, "Saturday Soccer School: Reception to Year 2", "Bannister Outdoor Sports Centre", "Hatch End", "&pound;6", "Ages 4 to 7 (Reception to Year 2)", "family", True, "Children&rsquo;s activities"),
+    (5, "11am to 12pm", 11.0, "Saturday Soccer School: Years 3 to 9", "Bannister Outdoor Sports Centre", "Hatch End", "&pound;6", "Ages 7 to 14 (Years 3 to 9)", "family", True, "Children&rsquo;s activities"),
+    (5, "time to be confirmed", 9.0, "Girls&rsquo; Saturday Soccer School", "Bannister Outdoor Sports Centre", "Hatch End", "Ask the club", "Girls (ages to be confirmed)", "family", True, "Children&rsquo;s activities"),
     (0, "11am", 11.0, "Chair Yoga for Over-60s", "St George&rsquo;s Hall", "Headstone", "&pound;3", "Ages 60+", "heart", False, "Fitness"),
     (1, "7pm", 19.0, "Beginners&rsquo; Pottery", "Harrow Arts Centre", "Hatch End", "&pound;150 for 6 weeks", "Adults", "edit", False, "Workshops"),
     (2, "12.30pm", 12.5, "Lunchtime Spin", "Wealdstone Fitness Studio", "Wealdstone", "&pound;8", "Adults", "dumbbell", False, "Fitness"),
@@ -72,7 +78,14 @@ CLASSES = [
     (5, "10am", 10.0, "Saturday Kids&rsquo; Coding Club", "Kenton Library", "Kenton", "&pound;12", "Ages 8 to 12", "family", False, "Children&rsquo;s activities"),
     (5, "10.30am", 10.25, "Story Time", "Hatch End Bookshop &amp; Caf&eacute;", "Hatch End", "Free", "Ages 3 to 6", "cup", False, "Children&rsquo;s activities"),
 ]
+_PF_DESC = ("Fun football coaching for children, led by DBS-checked, FA-qualified coaches from Parkfield Youth FC. "
+            "No booking needed: just turn up. Sessions are at Bannister Outdoor Sports Centre in winter and the club&rsquo;s "
+            "home ground at John Rumney Playing Fields at other times, so check with the club before your first visit.")
 CLASS_DESC = {
+    "Saturday Soccer School: Reception to Year 2": _PF_DESC + " &pound;6 per session, paid on the day.",
+    "Saturday Soccer School: Years 3 to 9": _PF_DESC + " &pound;6 per session, paid on the day.",
+    "Girls&rsquo; Saturday Soccer School": "A girls-only session of Parkfield Youth FC&rsquo;s Saturday Soccer School, with the same friendly coaching. "
+                                           "The time, age groups and price are still to be confirmed: call or email the club before you go.",
     "Lunchtime Spin": "45 minutes of high-energy spin. Bikes set up for you, towels provided.",
     "Toddler Rhyme Time": "Songs, rhymes and stories for little ones and their grown-ups. Just turn up.",
     "Conversational Spanish": "Relaxed evening course for improvers. Join at any point this term.",
@@ -84,6 +97,20 @@ CLASS_DESC = {
     "Story Time": "Picture books, songs and a craft. Free, with a babyccino for the grown-ups.",
 }
 DAYNAMES = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"]
+# Classes run by real Hub businesses: no Sample badge, indexable page, the business's own photo.
+_PF = {"img": "/assets/img/business/parkfield-youth-fc-team.jpg", "alt": "Parkfield Youth FC players in a team huddle",
+       "street": "Uxbridge Road, Hatch End", "postcode": "HA3 6SW"}
+CLASS_REAL = {"Saturday Soccer School: Reception to Year 2": _PF, "Saturday Soccer School: Years 3 to 9": _PF,
+              "Girls&rsquo; Saturday Soccer School": _PF}
+
+
+def class_media(title, ic, cls="ph", eager=False):
+    """Image slot for a class: the business's photo for real classes, else the placeholder icon."""
+    r = CLASS_REAL.get(title)
+    if not r:
+        return f'<div class="{cls}">{I(ic)}</div>'
+    load = 'fetchpriority="high"' if eager else 'loading="lazy" decoding="async"'
+    return f'<div class="{cls} ph--photo"><img src="{r["img"]}" alt="{r["alt"]}" width="1200" height="800" {load}></div>'
 
 EVENTS = H.load_events()
 
@@ -99,7 +126,7 @@ def items_on(day):
         for c in CLASSES:
             if c[0] == day.weekday():
                 out.append(dict(kind="class", time=c[1], sort=c[2], title=c[3], cat="Classes and activities", venue=c[4], area=c[5], price=c[6],
-                                age=c[7], icon=c[8], featured=c[9], sample=True, desc=CLASS_DESC.get(c[3], ""), href=class_href(c[3]), ctype=c[10]))
+                                age=c[7], icon=c[8], featured=c[9], sample=c[3] not in CLASS_REAL, desc=CLASS_DESC.get(c[3], ""), href=class_href(c[3]), ctype=c[10]))
     out.sort(key=lambda x: (not x["featured"], x["sort"]))
     return out
 
@@ -118,7 +145,7 @@ def event_row(x, day):
     desc = f'\n      <p class="card__text">{x["desc"]}</p>' if x["desc"] else ""
     return f'''    <article class="event-row{' event-row--featured' if x['featured'] else ''}" data-kind="{x['kind']}">
       <time class="date-tile" datetime="{day.isoformat()}"><span class="date-tile__m">{day.strftime('%b')}</span><span class="date-tile__d">{day.day}</span><span class="date-tile__w">{day.strftime('%a')}</span></time>
-      <div class="{ph_cls}">{I(x['icon'])}</div>
+      {class_media(x['title'], x['icon'], ph_cls) if x['kind'] == 'class' else f'<div class="{ph_cls}">{I(x["icon"])}</div>'}
       <div>
         <div class="cluster mb-2">{badges}</div>
         <h3 class="event-row__title"><a href="{x['href']}">{x['title']}</a></h3>
@@ -657,6 +684,9 @@ CLASS_PROVIDER = {
     "Lunchtime Spin": "Wealdstone Fitness Studio",
     "Evening Yoga Flow": "Wealdstone Fitness Studio",
     "Weekend Bootcamp": "Wealdstone Fitness Studio",
+    "Saturday Soccer School: Reception to Year 2": "Parkfield Youth FC",
+    "Saturday Soccer School: Years 3 to 9": "Parkfield Youth FC",
+    "Girls&rsquo; Saturday Soccer School": "Parkfield Youth FC",
 }
 SCHEMA_DAYS = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"]
 
@@ -672,10 +702,10 @@ def class_href(title):
 def class_card(c):
     """Card for "More classes" (same look as the event cards)."""
     day, tm, _s, title, venue, area, price, age, ic, feat, ctype = c
-    badges = SAMPLE + (f'<span class="badge badge--featured">{I("star")}Featured</span>' if feat else "")
+    badges = ("" if title in CLASS_REAL else SAMPLE) + (f'<span class="badge badge--featured">{I("star")}Featured</span>' if feat else "")
     return f'''<article class="card event-card">
         <div class="card__badges">{badges}</div>
-        <div class="ph">{I(ic)}</div>
+        {class_media(title, ic)}
         <div class="card__body">
           <span class="biz-card__cat">{ctype}</span>
           <h3 class="card__title"><a href="{class_href(title)}">{title}</a></h3>
@@ -700,15 +730,17 @@ def class_page(c, claimed):
         initials = "".join(w[0] for w in plain(prov["name"]).split()[:2]).upper()
         org_row = f'''
     <a class="offer-biz" href="/business/{pslug}.html">
-      <span class="mono" aria-hidden="true">{initials}</span>
+      {f'<span class="mono mono--logo" aria-hidden="true"><img src="{prov["logo"]}" alt="" width="480" height="480" loading="lazy"></span>' if prov.get("logo") else f'<span class="mono" aria-hidden="true">{initials}</span>'}
       <span class="offer-biz__main"><span class="eyebrow mb-0">Run by</span><strong>{prov["name"]}</strong><span>{H.AREA_BY_SLUG[prov["area"]][1]}</span></span>
       <span class="offer-biz__go">View profile {I('arrow', 'ho-icon ho-icon--sm')}</span>
     </a>'''
     others = [x for x in CLASSES if x[3] != title]
-    others.sort(key=lambda x: (x[10] != ctype, x[5] != area, x[0]))
+    # Same provider's other sessions first, then same type and area
+    others.sort(key=lambda x: (CLASS_PROVIDER.get(x[3]) != CLASS_PROVIDER.get(title) or title not in CLASS_PROVIDER, x[10] != ctype, x[5] != area, x[0]))
     more = "".join(class_card(x) for x in others[:3])
     share_text = quote(f"{plain(title)}, every {DAYNAMES[day]} {url}", safe="")
-    tags = SAMPLE + (f'<span class="badge badge--featured">{I("star")}Featured</span>' if feat else "") + \
+    real = CLASS_REAL.get(title)
+    tags = ("" if real else SAMPLE) + (f'<span class="badge badge--featured">{I("star")}Featured</span>' if feat else "") + \
         f'<span class="badge badge--outline">{I("repeat")}Weekly class</span><a class="biz-card__cat" href="/classes.html">{ctype}</a>'
     body = f'''<nav class="crumbs ho-container" aria-label="Breadcrumb">
   <ol>
@@ -721,7 +753,7 @@ def class_page(c, claimed):
 
 <article class="event-page--simple">
   <div class="ho-container offer-simple event-simple">
-    <div class="ph offer-simple__media">{I(ic)}</div>
+    {class_media(title, ic, "ph offer-simple__media", eager=True)}
     <div class="offer-simple__main">
       <div class="cluster offer-simple__tags">{tags}</div>
       <h1 class="offer-simple__title event-simple__title">{title}</h1>
@@ -744,7 +776,7 @@ def class_page(c, claimed):
     <section class="event-about" aria-labelledby="about-title">
       <h2 id="about-title">About this class</h2>
       <div class="profile-desc"><p>{desc or "Full details from the organiser coming soon."}</p></div>
-      <p class="small muted mb-0">Made-up sample for the preview. Check times with the organiser before you go. <a class="report-link" href="/report.html">{I('flag')}Report a problem</a></p>
+      <p class="small muted mb-0">{"Details from the club, checked by Harrow Online." if real else "Made-up sample for the preview."} Check times with the organiser before you go. <a class="report-link" href="/report.html">{I('flag')}Report a problem</a></p>
     </section>
 {org_row}
     <section class="event-more" aria-labelledby="more-title">
@@ -757,16 +789,21 @@ def class_page(c, claimed):
   </div>
 </article>
 '''
-    h, m = (H._clock(tm) or (9, 0))
+    clock = H._clock(tm)
     node = {"@type": "Event", "@id": url + "#event", "name": plain(title), "description": plain(desc) or plain(title), "url": url,
             "eventAttendanceMode": "https://schema.org/OfflineEventAttendanceMode", "eventStatus": "https://schema.org/EventScheduled",
             "startDate": "2026-11-01", "eventSchedule": {"@type": "Schedule", "repeatFrequency": "P1W", "byDay": "https://schema.org/" + SCHEMA_DAYS[day],
-                                                       "startTime": f"{h:02d}:{m:02d}:00", "scheduleTimezone": "Europe/London"},
-            "location": {"@type": "Place", "name": plain(venue), "address": {"@type": "PostalAddress", "addressLocality": "Harrow", "addressCountry": "GB"}},
+                                                       **({"startTime": f"{clock[0]:02d}:{clock[1]:02d}:00"} if clock else {}), "scheduleTimezone": "Europe/London"},
+            "location": {"@type": "Place", "name": plain(venue), "address": {"@type": "PostalAddress", "addressLocality": "Harrow", "addressCountry": "GB",
+                                                                       **({"streetAddress": real["street"], "postalCode": real["postcode"]} if real else {})}},
             "isAccessibleForFree": plain(price).lower().startswith("free"), "publisher": {"@id": "https://harrowonline.org/#organization"}}
     body += f'\n<script type="application/ld+json">\n{json.dumps({"@context": "https://schema.org", "@graph": [node]}, indent=2, ensure_ascii=False)}\n</script>\n'
     meta = {"title": plain(f"{title} in {area}, every {DAYNAMES[day]}"), "description": plain(f"{title}: every {DAYNAMES[day]}, {tm} at {venue}, {area}. {price}, {age}. {desc}"),
             "nav": "classes", "hubnav": "events", "body": "page-event", "schema": "ItemPage", "path": f"/events/{slug}/", "robots": "noindex, follow"}
+    if real:
+        meta.pop("robots")   # real class from a real Hub business: indexable (samples never are)
+        meta["title"] = plain(title)   # long class names: keep the page title within 70 characters
+        meta["image"] = ORIGIN + real["img"]
     return meta, body
 
 

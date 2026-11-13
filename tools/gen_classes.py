@@ -6,7 +6,11 @@ def _slug(t):
     t = _ud.normalize("NFKD", _html.unescape(t)).encode("ascii", "ignore").decode()
     return _re.sub(r"-{2,}", "-", _re.sub(r"[^a-zA-Z0-9]+", "-", t.lower()).strip("-"))
 # title, type, when, area, age, price, icon, featured, provider, text
+# Samples, except the titles in REAL (classes run by real Hub businesses). Keep titles in step with tools/gen_events.py CLASSES.
 C = [
+ ("Saturday Soccer School: Reception to Year 2", "Children&rsquo;s activities", "Every Saturday, 10am to 11am", "Hatch End", "Ages 4 to 7 (Reception to Year 2)", "&pound;6", "family", True, "Parkfield Youth FC", "Football coaching from DBS-checked, FA-qualified coaches. No booking needed: just turn up."),
+ ("Saturday Soccer School: Years 3 to 9", "Children&rsquo;s activities", "Every Saturday, 11am to 12pm", "Hatch End", "Ages 7 to 14 (Years 3 to 9)", "&pound;6", "family", True, "Parkfield Youth FC", "Football coaching from DBS-checked, FA-qualified coaches. No booking needed: just turn up."),
+ ("Girls&rsquo; Saturday Soccer School", "Children&rsquo;s activities", "Every Saturday, time to be confirmed", "Hatch End", "Girls (ages to be confirmed)", "Ask the club", "family", True, "Parkfield Youth FC", "A girls-only Soccer School session. Call or email the club for the time before you go."),
  ("Weekend Bootcamp", "Fitness", "Every Saturday, 9am", "Wealdstone", "Adults", "&pound;10", "dumbbell", True, "Wealdstone Fitness Studio", "Circuits for every fitness level. First session free."),
  ("Evening Yoga Flow", "Fitness", "Every Friday, 6.30pm", "Wealdstone", "Adults", "&pound;10", "dumbbell", True, "Wealdstone Fitness Studio", "An hour of vinyasa yoga to end the week. Mats provided."),
  ("Saturday Kids&rsquo; Coding Club", "Children&rsquo;s activities", "Every Saturday, 10am", "Kenton", "Ages 8 to 12", "&pound;12", "family", False, "Bright Sparks Coding", "Games and animations in Scratch and Python. Laptops provided."),
@@ -19,6 +23,8 @@ C = [
  ("Chair Yoga for Over-60s", "Fitness", "Every Monday, 11am", "Headstone", "Ages 60+", "&pound;3", "heart", False, "St George&rsquo;s Hall", "Gentle seated yoga to help with balance and movement."),
  ("Conversational Spanish", "Other regular classes", "Every Thursday, 7pm", "North Harrow", "Adults", "&pound;90 for 10 weeks", "people", False, "North Harrow Community Library", "A relaxed evening class for improvers. Join any week."),
 ]
+REAL = {t: ("/assets/img/business/parkfield-youth-fc-team.jpg", "Parkfield Youth FC players in a team huddle", "/business/parkfield-youth-fc-hatch-end.html")
+        for t in ("Saturday Soccer School: Reception to Year 2", "Saturday Soccer School: Years 3 to 9", "Girls&rsquo; Saturday Soccer School")}
 TYPE_SLUG = {"Children&rsquo;s activities": "childrens-activities", "Fitness": "fitness", "Dance schools": "dance-schools",
              "Workshops": "workshops", "Other regular classes": "other"}
 DAY_SLUG = {d.lower(): d[:3].lower() for d in ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"]}
@@ -45,6 +51,8 @@ def _ages(age):
         lo, hi = nums[0], nums[1]
     elif nums:
         lo, hi = nums[0], nums[0]
+    elif "girl" in a or "boy" in a:
+        return "under-5 5-11 12-17"   # children's session, exact ages not published yet
     else:
         return "under-5 5-11 12-17 adults 60-plus"
     out = []
@@ -58,21 +66,27 @@ cards = []
 for t, ty, when, area, age, price, icon, feat, prov, text in C:
     # All classes are made-up samples: Sample badge, plus Featured where set
     feat_b = f'<span class="badge badge--featured">{I("star")}Featured</span>' if feat else ""
-    sample_b = "" if feat else f'<span class="badge badge--sample" title="Made-up class for the preview. Removed before launch.">{I("alert")}Sample</span>'
+    real = REAL.get(t)
+    sample_b = "" if feat or real else f'<span class="badge badge--sample" title="Made-up class for the preview. Removed before launch.">{I("alert")}Sample</span>'
     badges = f'<div class="card__badges">{sample_b}{feat_b}</div>\n        '
     ph = "ph ph--dark" if feat else "ph"
+    media = (f'<div class="ph ph--photo"><img src="{real[0]}" alt="{real[1]}" width="1200" height="800" loading="lazy" decoding="async"></div>'
+             if real else f'<div class="{ph}">{I(icon)}</div>')
+    prov_html = f'<a href="{real[2]}">{prov}</a>' if real else prov
     cards.append(f'''      <article class="card event-card{' card--featured' if feat else ''}" data-type="{TYPE_SLUG.get(ty, "other")}" data-area="{_slug(area)}" data-day="{_day(when)}" data-ages="{_ages(age)}">
-        {badges}<div class="{ph}">{I(icon)}</div>
+        {badges}{media}
         <div class="card__body">
           <span class="biz-card__cat">{ty}</span>
           <h3 class="card__title"><a href="/events/{_slug(t)}/">{t}</a></h3>
           <p class="card__meta"><span>{I('repeat')}{when}</span><span>{I('pin')}{area}</span></p>
           <p class="card__meta"><span>{I('people')}{age}</span><span>{I('ticket')}{price}</span></p>
           <p class="card__text">{text}</p>
-          <p class="card__meta mt-2"><span>{I('store')}{prov}</span></p>
+          <p class="card__meta mt-2"><span>{I('store')}{prov_html}</span></p>
         </div>
       </article>''')
-types = [("", "All classes", 11), ("childrens-activities", "Children&rsquo;s activities", 3), ("fitness", "Fitness", 4), ("dance-schools", "Dance schools", 2), ("workshops", "Workshops", 1), ("other", "Other regular classes", 1)]
+_n = lambda ty: sum(1 for x in C if TYPE_SLUG.get(x[1], "other") == ty)
+types = [("", "All classes", len(C)), ("childrens-activities", "Children&rsquo;s activities", _n("childrens-activities")), ("fitness", "Fitness", _n("fitness")),
+         ("dance-schools", "Dance schools", _n("dance-schools")), ("workshops", "Workshops", _n("workshops")), ("other", "Other regular classes", _n("other"))]
 chips = "\n".join(f'    <a class="chip" data-type="{s}" href="/classes.html{"?type=" + s if s else ""}"{" aria-current=\"page\"" if not s else ""}>{n} <span class="count">{c}</span></a>' for s, n, c in types)
 body = f'''<!--
 title: Classes and activities in Harrow

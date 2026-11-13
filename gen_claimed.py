@@ -44,7 +44,7 @@ def tier_badge(tier):
     if tier == "partner":
         return f'<span class="badge badge--partner">{icon("star")}Local Partner</span>'
     if tier == "premium":
-        return f'<span class="badge badge--premium">{icon("star")}Premium</span>'
+        return f'<span class="badge badge--premium">{icon("star")}Featured</span>'   # Premium plan is sold as "Featured"
     return ""
 
 
@@ -53,7 +53,7 @@ def verified():
 
 
 def is_sample(x):
-    """Every business in data/claimed.json is made up for the preview (hub_data gives them ids "sample-…")."""
+    """Made-up preview business (hub_data gives them ids "sample-…"). Real ones ("real": true in claimed.json) get "claimed-…"."""
     return str(x.get("id", "")).startswith("sample-")
 
 
@@ -69,10 +69,14 @@ def status_badges(x):
 
 def photo_inner(x, i=0, fallback_icon="store", alt="", eager=False):
     """Inside an image slot: the business's sample photo (data/claimed.json "images") or the placeholder icon."""
-    imgs = (x.get("claimed") or {}).get("images") or []
+    c = x.get("claimed") or {}
+    imgs = c.get("images") or []
     if not imgs:
         return icon(fallback_icon)
     src = imgs[i % len(imgs)]
+    alts = c.get("image_alts") or []
+    if not alt and i % len(imgs) < len(alts):
+        alt = alts[i % len(imgs)]
     load = 'fetchpriority="high"' if eager else 'loading="lazy" decoding="async"'
     return f'<img src="{src}" alt="{e(alt)}" width="1200" height="800" {load}>'
 
@@ -87,7 +91,15 @@ def ph_cls(x, base="ph"):
     return base + (" ph--photo" if (x.get("claimed") or {}).get("images") else "")
 
 
+def logo_slot(c, cls="ph ph--logo", alt=""):
+    """The business's own logo or badge (claimed.json "logo"), shown whole on white instead of a cropped photo."""
+    return f'<div class="{cls}"><img src="{c["logo"]}" alt="{e(alt)}" width="480" height="480" loading="lazy" decoding="async"></div>'
+
+
 def today_status(c):
+    if c.get("status") or not c.get("hours"):
+        # Clubs and groups with a weekly schedule instead of opening hours (claimed.json "status" + "schedule")
+        return f'<span class="open-now open-now--info">{c.get("status", "See times")}</span>'
     h = c["hours"][TODAY]
     return ('<span class="open-now open-now--closed">Closed today</span>' if h.lower() == "closed"
             else f'<span class="open-now">Open today, {h}</span>')
@@ -101,7 +113,7 @@ def row(x):
     cls = "biz-row" + (" biz-row--featured" if promoted else "")
     badges = (f'<span class="badge badge--featured">{icon("star")}Featured</span>' if promoted else "") + status_badges(x)
     return f'''<article class="{cls}">
-        <div class="{ph_cls(x)}">{photo_inner(x, 0, c.get("icon", "store"))}</div>
+        {logo_slot(c) if c.get("logo") else f'<div class="{ph_cls(x)}">{photo_inner(x, 0, c.get("icon", "store"))}</div>'}
         <div class="biz-row__main">
           <span class="biz-card__cat">{e(cat_name(x["cat"]))} · <span class="muted">{e(x["sub"])}</span></span>
           <h3 class="biz-row__title"><a href="/business/{x["slug"]}.html">{e(x["name"])}</a></h3>
@@ -436,7 +448,12 @@ def profile_body(x, related_html, crumbs_html):
 
     # Photos: Basic shows 1; paid plans a gallery (max 5 tiles, "+N more" on the last)
     n = c.get("photos", 1) if tier in PAID else 1
-    if n >= 3:
+    if not sample and c.get("images") and tier in PAID:
+        # Real business: its own photos, each shown once (no "+N more" padding)
+        imgs = c["images"][:5]
+        tiles = "".join(f'<div class="{ph_cls(x)}">{photo_inner(x, k)}</div>' for k in range(len(imgs)))
+        gallery = f'<div class="gallery gallery--{len(imgs)} mb-6" aria-label="Photos">{tiles}</div>'
+    elif n >= 3:
         tiles = [f'<div class="{ph_cls(x)}">{photo_inner(x, k + 1, c.get("icon", "store"))}</div>' for k in range(min(n, 5))]
         if n > 5:
             tiles[-1] = f'<div class="gallery__more"><div class="{ph_cls(x)}">{photo_inner(x, 2, c.get("icon", "store"))}</div><span>+{n - 4} photos</span></div>'
@@ -460,6 +477,13 @@ def profile_body(x, related_html, crumbs_html):
         f'<li>{icon("pin")}<div><address>{c["address"]}, {e(area_name(area))}, {e(x["postcode"])}</address><a class="small" href="{maps}" target="_blank" rel="noopener">Get directions</a></div></li>',
         f'<li>{icon("phone")}<a href="tel:{x["phone_raw"][0]}">{e(c["phone"])}</a></li>',
     ]
+    for w in x.get("web", [])[:1]:
+        info.append(f'<li>{icon("globe")}<a href="{e(w)}" target="_blank" rel="noopener">{e(w.split("//", 1)[-1].rstrip("/"))}</a></li>')
+    for m in x.get("email", [])[:1]:
+        info.append(f'<li>{icon("mail")}<a href="mailto:{e(m)}">{e(m)}</a></li>')
+    for loc in c.get("other_locations", []):
+        lmaps = f'https://www.google.com/maps/search/?api=1&query={quote(loc["name"] + " " + loc["address"])}'
+        info.append(f'<li>{icon("pin")}<div><span class="small muted">{loc["label"]}</span><address>{loc["name"]}, {loc["address"]}</address><a class="small" href="{lmaps}" target="_blank" rel="noopener">Get directions</a></div></li>')
     sections.append(f'''<section class="profile-section"><h2>Contact and location</h2>
       <div class="grid grid-2"><ul class="info-list">{"".join(info)}</ul>
       <a class="ph ph--map" href="{maps}" target="_blank" rel="noopener" aria-label="Open {e(name)} in Google Maps">{icon("pin")}</a></div></section>''')
@@ -477,23 +501,31 @@ def profile_body(x, related_html, crumbs_html):
           <a class="link-arrow" href="/category/{cat}.html">All {e(cat_name(cat).lower())} in Harrow {icon("arrow")}</a></div>{related_html}</section>''')
 
     today_cls = ' class="is-today"'
-    hours = "".join(f'<tr{today_cls if i == TODAY else ""}><th scope="row">{d}</th><td>{h}</td></tr>' for i, (d, h) in enumerate(zip(DAYS, c["hours"])))
+    if c.get("schedule"):
+        hours_title = c.get("schedule_title", "When we meet")
+        hours = "".join(f'<tr><th scope="row">{d}</th><td>{h}</td></tr>' for d, h in c["schedule"])
+        hours_note = f'<p class="small muted mt-3 mb-0">{c["schedule_note"]}</p>' if c.get("schedule_note") else ""
+    else:
+        hours_title, hours_note = "Opening hours", ""
+        hours = "".join(f'<tr{today_cls if i == TODAY else ""}><th scope="row">{d}</th><td>{h}</td></tr>' for i, (d, h) in enumerate(zip(DAYS, c["hours"])))
     social = ""
     if tier in PAID and c.get("social"):
-        links = "".join(f'<a href="#" aria-label="{SOCIAL_LABEL[s]}">{icon(s)}</a>' for s in c["social"])
+        urls = c.get("social_urls", {})
+        links = "".join(f'<a href="{e(urls[s])}" target="_blank" rel="noopener" aria-label="{SOCIAL_LABEL[s]}">{icon(s)}</a>' if s in urls
+                        else f'<a href="#" aria-label="{SOCIAL_LABEL[s]}">{icon(s)}</a>' for s in c["social"])
         social = f'<div class="mt-5"><h3 class="panel__title">Follow</h3><div class="social-row">{links}</div></div>'
 
     aside = f'''<aside class="sticky">
     <div class="panel">
-      <h2 class="panel__title">Opening hours</h2>
+      <h2 class="panel__title">{hours_title}</h2>
       <p class="mb-4">{today_status(c)}</p>
-      <table class="hours"><caption class="ho-sr">Opening hours</caption><tbody>{hours}</tbody></table>
+      <table class="hours"><caption class="ho-sr">{hours_title}</caption><tbody>{hours}</tbody></table>{hours_note}
       <a class="ho-btn ho-btn--primary ho-btn--block mt-5" href="tel:{x["phone_raw"][0]}">{icon("phone")}Call {e(c["phone"])}</a>
       {social}
     </div>
     {f"""<div class="notice notice--sample">{icon("alert")}<p><strong>Sample listing.</strong> A made-up business showing the {H.TIER_LABEL[tier]} plan layout. The Verified badge shows how a real claimed listing looks. It will be removed before launch.</p></div>""" if sample else f"""<div class="panel panel--soft">
       <p class="small mb-2">{verified()}</p>
-      <p class="small muted mb-0">Claimed and checked by the owner since {c["claimed"]}. Details are kept up to date by the business.</p>
+      <p class="small muted mb-0">{c.get("verified_note") or f"Claimed and checked by the owner since {c['claimed']}. Details are kept up to date by the business."}</p>
     </div>"""}
     <div class="panel mt-4">
       <h3 class="panel__title">Get Harrow&rsquo;s best offers</h3>
@@ -506,7 +538,7 @@ def profile_body(x, related_html, crumbs_html):
 {cover}
 <section class="profile-head ho-container{" profile-head--premium" if top else ""}">
   <div class="profile-head__row">
-    <span class="mono mono--lg{" mono--red" if top else ""}" aria-hidden="true">{e(initials(name))}</span>
+    {f'<span class="mono mono--lg mono--logo"><img src="{c["logo"]}" alt="{e(name)} badge" width="480" height="480"></span>' if c.get("logo") else f'<span class="mono mono--lg{" mono--red" if top else ""}" aria-hidden="true">{e(initials(name))}</span>'}
     <div class="profile-head__main">
       <div class="cluster">{badges}</div>
       <h1 class="profile-head__title">{e(name)}</h1>
@@ -518,6 +550,7 @@ def profile_body(x, related_html, crumbs_html):
       </p>
       <div class="profile-head__actions">
         <a class="ho-btn ho-btn--primary" href="tel:{x["phone_raw"][0]}">{icon("phone")}Call</a>
+        {f'<a class="ho-btn ho-btn--outline" href="{e(x["web"][0])}" target="_blank" rel="noopener">{icon("globe")}Website</a>' if x.get("web") else ""}
         <a class="ho-btn ho-btn--outline" href="{maps}" target="_blank" rel="noopener">{icon("map")}Directions</a>
         <button class="ho-btn ho-btn--outline" type="button" data-copy>{icon("external")}Share</button>
       </div>
