@@ -9,6 +9,11 @@
   const ICON = (id, cls = "ho-icon") => `<svg class="${cls}"><use href="${BASE}/assets/img/icons.svg#i-${id}"/></svg>`;
   const esc = (s) => String(s ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
 
+  /* 0. Scrollbar width as --ho-sbw, so full-width layouts can line up with the centred container (100vw includes it) */
+  const setSbw = () => document.documentElement.style.setProperty("--ho-sbw", (window.innerWidth - document.documentElement.clientWidth) + "px");
+  setSbw();
+  window.addEventListener("resize", setSbw);
+
   /* 1. Drawer (mobile menu) */
   const drawer = $("#ho-drawer");
   let lastFocus = null;
@@ -119,6 +124,134 @@
     lock.innerHTML = `<p role="status">${ICON("mail", "ho-icon ho-icon--sm")}Check ${email} and tap the confirmation link. Your code appears here once you have confirmed.</p>`;
   }));
 
+  /* 5b. Homepage stats: numbers count up once when the strip scrolls into view.
+        The real number is already in the HTML (no-JS, search engines and reduced motion keep it as is). */
+  const counters = $$("[data-count]");
+  if (counters.length && "IntersectionObserver" in window && !matchMedia("(prefers-reduced-motion: reduce)").matches) {
+    const fmt = (n) => n.toLocaleString("en-GB");
+    const run = (el) => {
+      const target = parseInt(el.dataset.count, 10);
+      if (!Number.isFinite(target)) return;
+      const t0 = performance.now(), dur = 1400;
+      const step = (now) => {
+        const p = Math.min(1, (now - t0) / dur), eased = 1 - Math.pow(1 - p, 3);
+        el.textContent = fmt(Math.round(target * eased));
+        if (p < 1) requestAnimationFrame(step);
+      };
+      el.textContent = "0";
+      requestAnimationFrame(step);
+    };
+    const io = new IntersectionObserver((entries) => entries.forEach((en) => {
+      if (en.isIntersecting) { run(en.target); io.unobserve(en.target); }
+    }), { threshold: 0.4 });
+    counters.forEach((el) => io.observe(el));
+  }
+
+  /* 5c. Offer editor: show the team's note when opened from a "Needs changes" offer (?changes=1 in the preview) */
+  const changes = $("[data-offer-changes]");
+  if (changes && new URLSearchParams(location.search).get("changes") === "1") changes.hidden = false;
+
+  /* 5d. Account lists (offers, events): status tabs filter the table by ?status=published|pending|draft|ended.
+        A row's status comes from its .status--* pill; "needs changes" (rejected) counts as a draft. */
+  const statusTabs = $(".dash-main .tabs");
+  if (statusTabs && $("a[href*='status=']", statusTabs)) {
+    const want = new URLSearchParams(location.search).get("status") || "";
+    const table = $(".dash-main table");
+    const norm = (s) => ({ rejected: "draft", active: "published", live: "published" }[s] || s);
+    if (table && want) {
+      let shown = 0;
+      $$("tbody tr", table).forEach((tr) => {
+        const pill = $(".status", tr);
+        const cls = pill ? [...pill.classList].find((c) => c.startsWith("status--")) || "" : "";
+        const on = norm(cls.slice(8)) === want;
+        tr.hidden = !on;
+        tr.style.display = on ? "" : "none";
+        if (on) shown += 1;
+      });
+      if (!shown) {
+        const row = document.createElement("tr");
+        row.className = "table__empty";
+        const cell = document.createElement("td");
+        cell.colSpan = $$("thead th", table).length || 1;
+        cell.textContent = "Nothing here yet.";
+        row.appendChild(cell);
+        $("tbody", table).appendChild(row);
+      }
+    }
+    $$("a", statusTabs).forEach((a) => {
+      const s = new URL(a.href, location.href).searchParams.get("status") || "";
+      if (s === want) a.setAttribute("aria-current", "page"); else a.removeAttribute("aria-current");
+    });
+  }
+
+  /* 5e. Offer form: live preview (headline value, title, end date, code, subscriber tag) */
+  const offerForm = $("[data-offer-form]");
+  if (offerForm) {
+    const out = (k) => $(`[data-preview-out="${k}"]`);
+    const valueOf = (title) => {
+      const t = title.trim();
+      let m = t.match(/(\d+)%\s*off/i); if (m) return `${m[1]}% OFF`;
+      m = t.match(/£\s?(\d+)\s*off/i); if (m) return `£${m[1]} OFF`;
+      m = t.match(/(\d)-for-(\d)/i); if (m) return `${m[1]}-FOR-${m[2]}`;
+      m = t.match(/^(?:a\s+)?free\s+(\w+)/i); if (m) return `FREE ${m[1].toUpperCase()}`;
+      return (t.split(",")[0] || "Your offer").toUpperCase();
+    };
+    const fmt = (iso) => { if (!iso) return "No end date"; const d = new Date(iso + "T12:00:00"); return "Ends " + d.toLocaleDateString("en-GB", { day: "numeric", month: "short" }); };
+    const update = () => {
+      const title = ($("#of-title") || {}).value || "";
+      const code = (($("#of-code") || {}).value || "").trim().toUpperCase();
+      const sub = (($("input[name=audience]:checked", offerForm) || {}).value) === "subscribers";
+      if (out("title")) out("title").textContent = title || "Your offer headline";
+      if (out("value")) out("value").textContent = valueOf(title);
+      if (out("ends")) out("ends").textContent = fmt(($("#of-end") || {}).value);
+      if (out("code")) out("code").textContent = sub ? (code ? "Code after email confirmation" : "Unlock with email") : (code || "No code needed");
+      if (out("sub")) { out("sub").hidden = !sub; out("sub").style.display = sub ? "" : "none"; }
+    };
+    offerForm.addEventListener("input", update);
+    offerForm.addEventListener("change", update);
+    update();
+    window.addEventListener("pageshow", update);   // browsers restore typed values after load (back button, reload)
+  }
+
+  /* 5f. Event form: live preview (kind, category, title, when, where, price, age) */
+  const eventForm = $("[data-event-form]");
+  if (eventForm) {
+    const out = (k) => $(`[data-ev-out="${k}"]`);
+    const val = (sel) => (($(sel, eventForm) || {}).value || "").trim();
+    const checked = (name) => $(`input[name="${name}"]:checked`, eventForm);
+    const time12 = (hhmm) => {
+      if (!hhmm) return "";
+      const [h, m] = hhmm.split(":").map(Number);
+      const s = (h % 12 || 12) + (m ? "." + String(m).padStart(2, "0") : "") + (h < 12 ? "am" : "pm");
+      return s;
+    };
+    const update = () => {
+      const weekly = (checked("recurrence") || {}).value === "weekly";
+      const cat = checked("category");
+      if (out("kind")) { out("kind").style.display = weekly ? "" : "none"; }
+      if (out("cat") && cat) out("cat").textContent = cat.parentElement.textContent.trim();
+      if (out("title")) out("title").textContent = val("#ev-title") || "Your event title";
+      let when = "";
+      if (weekly) when = `Every ${val("#sl1-day") || "week"}${val("#sl1-s") ? ", " + time12(val("#sl1-s")) : ""}`;
+      else {
+        const d = val("#ev-sd");
+        const ds = d ? new Date(d + "T12:00:00").toLocaleDateString("en-GB", { weekday: "short", day: "numeric", month: "short" }) : "Date to be set";
+        when = ds + (val("#ev-st") ? ", " + time12(val("#ev-st")) : "");
+      }
+      if (out("when")) out("when").textContent = when;
+      const home = (checked("venue_is_listing") || {}).value !== "0";
+      if (out("where")) out("where").textContent = home ? "Harrow Town Centre" : (val("#ev-venue") || "Venue to be set");
+      const hint = $("[data-venue-home]", eventForm);
+      if (hint) hint.style.display = home ? "" : "none";
+      if (out("price")) out("price").textContent = val("#ev-price") || "Free";
+      if (out("age")) out("age").textContent = val("#ev-age") || "All ages";
+    };
+    eventForm.addEventListener("input", update);
+    eventForm.addEventListener("change", update);
+    update();
+    window.addEventListener("pageshow", update);
+  }
+
   /* 6a. Local Offers page: filter by ?cat=, ?area= and ?sub=1 (chips and the filter form both send these).
         WordPress filters server-side with the same parameters. */
   const offerList = $("[data-offers-list]");
@@ -126,7 +259,7 @@
     const q = new URLSearchParams(location.search);
     const cat = q.get("cat") || "", area = q.get("area") || "", sub = q.get("sub") === "1";
     let n = 0;
-    $$(".offer", offerList).forEach((o) => {
+    $$(".offer, .offer-card", offerList).forEach((o) => {
       const on = (!cat || o.dataset.cat === cat) && (!area || o.dataset.area === area) && (!sub || o.dataset.sub === "1");
       o.hidden = !on;
       o.style.display = on ? "" : "none";
@@ -145,6 +278,29 @@
       const count = $("[data-offers-count]");
       if (count) count.innerHTML = `<strong>${n}</strong> ${esc(parts.join(" "))}${parts.length ? " " : ""}${n === 1 ? "offer" : "offers"} ${esc(where)}`;
       const empty = $("[data-offers-empty]");
+      if (empty) empty.hidden = n > 0;
+    }
+  }
+
+  /* 6c. Classes page: filter cards by ?type=, ?age=, ?area= and ?day= (chips and the filter form send these) */
+  const classList = $("[data-classes-list]");
+  if (classList) {
+    const q = new URLSearchParams(location.search);
+    const want = { type: q.get("type") || "", age: q.get("age") || "", area: q.get("area") || "", day: q.get("day") || "" };
+    let n = 0;
+    $$(".event-card", classList).forEach((card) => {
+      const on = (!want.type || card.dataset.type === want.type) && (!want.area || card.dataset.area === want.area)
+        && (!want.day || card.dataset.day === want.day) && (!want.age || (card.dataset.ages || "").split(" ").includes(want.age));
+      card.hidden = !on;
+      card.style.display = on ? "" : "none";
+      if (on) n += 1;
+    });
+    ["age", "area", "day"].forEach((k) => { const s = $(`#c-${k}`); if (s) s.value = want[k]; });
+    $$(".chip[data-type]").forEach((c) => { if (c.dataset.type === want.type) c.setAttribute("aria-current", "page"); else c.removeAttribute("aria-current"); });
+    if (want.type || want.age || want.area || want.day) {
+      const count = $("[data-classes-count]");
+      if (count) count.innerHTML = `<strong>${n}</strong> ${n === 1 ? "class matches" : "classes match"}`;
+      const empty = $("[data-classes-empty]");
       if (empty) empty.hidden = n > 0;
     }
   }
@@ -284,7 +440,7 @@
         // Claimed listing: photo, tagline, verified; Premium and Local Partner are featured (brief 01, 6.2)
         const top = tier === "premium" || tier === "partner";
         return `<article class="biz-row${top ? " biz-row--featured" : ""}">
-        <div class="ph">${ICON(x.i || "store")}</div>
+        <div class="ph${x.im ? " ph--photo" : ""}">${x.im ? `<img src="${BASE}${esc(x.im)}" alt="" width="1200" height="800" loading="lazy" decoding="async">` : ICON(x.i || "store")}</div>
         <div class="biz-row__main">
           <span class="biz-card__cat">${esc(cat.n || "")}${x.s ? ` · <span class="muted">${esc(x.s)}</span>` : ""}</span>
           <h3 class="biz-row__title"><a href="${BASE}/business/${x.k}/">${esc(x.n)}</a></h3>

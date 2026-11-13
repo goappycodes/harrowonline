@@ -1,6 +1,10 @@
 from pathlib import Path
 OUT = Path(__file__).resolve().parent.parent / "src/pages/classes.html"
 def I(n, c="ho-icon"): return f'<svg class="{c}"><use href="#i-{n}"/></svg>'
+import html as _html, re as _re, unicodedata as _ud
+def _slug(t):
+    t = _ud.normalize("NFKD", _html.unescape(t)).encode("ascii", "ignore").decode()
+    return _re.sub(r"-{2,}", "-", _re.sub(r"[^a-zA-Z0-9]+", "-", t.lower()).strip("-"))
 # title, type, when, area, age, price, icon, featured, provider, text
 C = [
  ("Weekend Bootcamp", "Fitness", "Every Saturday, 9am", "Wealdstone", "Adults", "&pound;10", "dumbbell", True, "Wealdstone Fitness Studio", "Circuits for every fitness level. First session free."),
@@ -15,6 +19,41 @@ C = [
  ("Chair Yoga for Over-60s", "Fitness", "Every Monday, 11am", "Headstone", "Ages 60+", "&pound;3", "heart", False, "St George&rsquo;s Hall", "Gentle seated yoga to help with balance and movement."),
  ("Conversational Spanish", "Other regular classes", "Every Thursday, 7pm", "North Harrow", "Adults", "&pound;90 for 10 weeks", "people", False, "North Harrow Community Library", "A relaxed evening class for improvers. Join any week."),
 ]
+TYPE_SLUG = {"Children&rsquo;s activities": "childrens-activities", "Fitness": "fitness", "Dance schools": "dance-schools",
+             "Workshops": "workshops", "Other regular classes": "other"}
+DAY_SLUG = {d.lower(): d[:3].lower() for d in ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"]}
+
+
+def _day(when):
+    w = when.lower()
+    return next((v for k, v in DAY_SLUG.items() if k in w), "")
+
+
+def _ages(age):
+    """Age buckets a class suits (matches the Age filter values)."""
+    a = age.lower()
+    if "adult" in a:
+        return "adults"
+    if "60" in a:
+        return "60-plus adults"
+    nums = [int(n) for n in __import__("re").findall(r"\d+", a)]
+    if "under" in a and nums:
+        lo, hi = 0, nums[0] - 1
+    elif "+" in a and nums:
+        lo, hi = nums[0], 120
+    elif len(nums) >= 2:
+        lo, hi = nums[0], nums[1]
+    elif nums:
+        lo, hi = nums[0], nums[0]
+    else:
+        return "under-5 5-11 12-17 adults 60-plus"
+    out = []
+    for name, a0, a1 in (("under-5", 0, 4), ("5-11", 5, 11), ("12-17", 12, 17), ("adults", 18, 120)):
+        if lo <= a1 and hi >= a0:
+            out.append(name)
+    return " ".join(out)
+
+
 cards = []
 for t, ty, when, area, age, price, icon, feat, prov, text in C:
     # All classes are made-up samples: Sample badge, plus Featured where set
@@ -22,11 +61,11 @@ for t, ty, when, area, age, price, icon, feat, prov, text in C:
     sample_b = "" if feat else f'<span class="badge badge--sample" title="Made-up class for the preview. Removed before launch.">{I("alert")}Sample</span>'
     badges = f'<div class="card__badges">{sample_b}{feat_b}</div>\n        '
     ph = "ph ph--dark" if feat else "ph"
-    cards.append(f'''      <article class="card event-card{' card--featured' if feat else ''}">
+    cards.append(f'''      <article class="card event-card{' card--featured' if feat else ''}" data-type="{TYPE_SLUG.get(ty, "other")}" data-area="{_slug(area)}" data-day="{_day(when)}" data-ages="{_ages(age)}">
         {badges}<div class="{ph}">{I(icon)}</div>
         <div class="card__body">
           <span class="biz-card__cat">{ty}</span>
-          <h3 class="card__title"><a href="/class.html">{t}</a></h3>
+          <h3 class="card__title"><a href="/events/{_slug(t)}/">{t}</a></h3>
           <p class="card__meta"><span>{I('repeat')}{when}</span><span>{I('pin')}{area}</span></p>
           <p class="card__meta"><span>{I('people')}{age}</span><span>{I('ticket')}{price}</span></p>
           <p class="card__text">{text}</p>
@@ -34,7 +73,7 @@ for t, ty, when, area, age, price, icon, feat, prov, text in C:
         </div>
       </article>''')
 types = [("", "All classes", 11), ("childrens-activities", "Children&rsquo;s activities", 3), ("fitness", "Fitness", 4), ("dance-schools", "Dance schools", 2), ("workshops", "Workshops", 1), ("other", "Other regular classes", 1)]
-chips = "\n".join(f'    <a class="chip" href="/classes.html{"?type=" + s if s else ""}"{" aria-current=\"page\"" if not s else ""}>{n} <span class="count">{c}</span></a>' for s, n, c in types)
+chips = "\n".join(f'    <a class="chip" data-type="{s}" href="/classes.html{"?type=" + s if s else ""}"{" aria-current=\"page\"" if not s else ""}>{n} <span class="count">{c}</span></a>' for s, n, c in types)
 body = f'''<!--
 title: Classes and activities in Harrow
 description: Weekly classes and activities across Harrow: children's clubs, fitness classes, dance schools, workshops and evening courses. Filter by age, area and day.
@@ -89,12 +128,14 @@ body: page-classes
   </form>
 
   <div class="toolbar mt-6">
-    <p class="toolbar__count"><strong>{len(C)}</strong> classes and activities</p>
+    <p class="toolbar__count" data-classes-count><strong>{len(C)}</strong> classes and activities</p>
     <a class="link-quiet" href="/events.html">See one-off events in What&rsquo;s On</a>
   </div>
 
   <h2 class="ho-sr" id="classes-list">All classes and activities</h2>
-  <div class="grid grid-3">
+  <div class="notice mb-5" data-classes-empty hidden>{I('calendar')}<p>No classes match that yet. <a href="/classes.html">See all classes</a>.</p></div>
+  <!-- hub.js filters these by ?type=, ?age=, ?area= and ?day= (WordPress filters server-side with the same parameters) -->
+  <div class="grid grid-3" data-classes-list>
 {chr(10).join(cards)}
   </div>
 

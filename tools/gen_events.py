@@ -99,7 +99,7 @@ def items_on(day):
         for c in CLASSES:
             if c[0] == day.weekday():
                 out.append(dict(kind="class", time=c[1], sort=c[2], title=c[3], cat="Classes and activities", venue=c[4], area=c[5], price=c[6],
-                                age=c[7], icon=c[8], featured=c[9], sample=True, desc=CLASS_DESC.get(c[3], ""), href="/class.html", ctype=c[10]))
+                                age=c[7], icon=c[8], featured=c[9], sample=True, desc=CLASS_DESC.get(c[3], ""), href=class_href(c[3]), ctype=c[10]))
     out.sort(key=lambda x: (not x["featured"], x["sort"]))
     return out
 
@@ -445,6 +445,14 @@ body: page-events
 
 
 # ---------------------------------------------------------------- cards (homepage, event pages)
+def ev_media(ev, extra_cls="", eager=False):
+    """Image slot for an event: its photo when it has one (data/events.json "image"), else the icon placeholder."""
+    if ev.get("image"):
+        load = 'fetchpriority="high"' if eager else 'loading="lazy" decoding="async"'
+        return f'<div class="ph ph--photo{extra_cls}"><img src="{ev["image"]}" alt="" width="1200" height="800" {load}></div>'
+    return f'<div class="ph{extra_cls}">{I(ev["icon"])}</div>'
+
+
 def event_card(ev):
     feat = is_featured(ev)
     badges = event_badges(ev)
@@ -452,7 +460,7 @@ def event_card(ev):
     d = ev["day"]
     return f'''<article class="card event-card{' card--featured' if feat else ''}">
         {top}<time class="date-tile" datetime="{d.isoformat()}"><span class="date-tile__m">{d.strftime('%b')}</span><span class="date-tile__d">{d.day}</span><span class="date-tile__w">{d.strftime('%a')}</span></time>
-        <div class="ph{' ph--red' if feat else ''}">{I(ev['icon'])}</div>
+        {ev_media(ev, ' ph--red' if feat else '')}
         <div class="card__body">
           <span class="biz-card__cat">{ev['cat']}</span>
           <h3 class="card__title"><a href="{ev['href']}">{ev['title']}</a></h3>
@@ -516,7 +524,7 @@ def more_events(ev, n=3):
 
 
 def event_page(ev, claimed):
-    """(meta, body) for /events/{slug}/. Body mirrors the original hand-written event.html layout."""
+    """(meta, body) for /events/{slug}/. Simplified layout (Nov 2026); same facts, calendar links, share and JSON-LD."""
     url = f'{ORIGIN}/events/{ev["slug"]}/'
     title, d = ev["title"], ev["day"]
     past = d < TODAY
@@ -534,52 +542,52 @@ def event_page(ev, claimed):
     <p><a href="/events.html">See what&rsquo;s on in Harrow this week</a></p></div>
   </div>
 </div>''' if past else ""
-    sample_note = f'''
-<div class="ho-container mt-4">
-  <div class="notice notice--sample">{I('alert')}
-    <p><strong>Sample event.</strong> Made up to show how event pages work. It will be removed before launch.</p>
-  </div>
-</div>''' if ev.get("sample") else ""
-
-    facts = [
-        f'<li>{I("calendar")}<div><strong>{long_date(d)} {d.year}</strong><span>{when_sub}</span></div></li>',
-        f'<li>{I("pin")}<div><strong>{ev["venue"]}, {ev["area"]}</strong><span><a href="#map">View on map</a></span></div></li>',
-        f'<li>{I("ticket")}<div><strong>{ev["price"]}</strong><span>{"No tickets or booking needed" if free else "Check with the organiser before you go"}</span></div></li>',
-        f'<li>{I("people")}<div><strong>{ev["age"]}</strong></div></li>',
-    ]
-    if org:
-        facts.append(f'<li>{I("store")}<div><strong>Organised by <a href="/business/{org["slug"]}.html">{org["name"]}</a></strong><span>Listed on Harrow Online Hub</span></div></li>')
-
+    # Simplified layout (client feedback, Nov 2026): picture + event side by side with three short fact lines,
+    # one row of actions (calendar, directions, share); below: about, a compact organiser row, three more events.
+    tags = event_badges(ev) + f'<a class="biz-card__cat" href="/events.html?cat={cat_slug}">{ev["cat"]}</a>'
+    when_line = f'{long_date(d)} {d.year} &middot; {when_sub}'
+    price_line = ev["price"] + ("" if not ev.get("age") else f' &middot; {ev["age"]}')
     about = "".join(f"<p>{p}</p>" for p in [ev["desc"]] if p) or "<p>Full details from the organiser coming soon.</p>"
+
     more = more_events(ev)
     more_html = ""
     if more:
         more_html = f'''
-        <section class="profile-section" aria-labelledby="more-title">
-          <div class="sec-head">
-            <div><h2 class="sec-title" id="more-title">More coming up</h2></div>
-            <a class="link-arrow hide-mobile" href="/events.html">All events in Harrow {I('arrow')}</a>
-          </div>
-          <div class="grid grid-3">
-            {"".join(event_card(e) for e in more)}
-          </div>
-        </section>'''
-    org_panel = ""
+    <section class="event-more" aria-labelledby="more-title">
+      <div class="sec-head">
+        <h2 class="sec-title" id="more-title">More coming up</h2>
+        <a class="link-arrow" href="/events.html">All events {I('arrow')}</a>
+      </div>
+      <div class="grid grid-3">
+        {"".join(event_card(e) for e in more)}
+      </div>
+    </section>'''
+
+    org_row = ""
     if org:
-        org_panel = f'''
-        <div class="panel">
-          <p class="eyebrow mb-2">Organiser</p>
-          <div class="biz-card__head">
-            <span class="mono" aria-hidden="true">{"".join(w[0] for w in plain(org["name"]).split()[:2]).upper()}</span>
-            <div>
-              <h2 class="panel__title mb-0"><a href="/business/{org["slug"]}.html">{org["name"]}</a></h2>
-              <p class="card__meta mt-2"><span>{I('pin')}{org["area"]}</span>{SAMPLE}</p>
-            </div>
-          </div>
-          <p class="small mt-4">{org["tagline"]}</p>
-          <a class="ho-btn ho-btn--dark ho-btn--sm" href="/business/{org["slug"]}.html">View {org["name"]} profile</a>
-        </div>'''
+        initials = "".join(w[0] for w in plain(org["name"]).split()[:2]).upper()
+        org_row = f'''
+    <a class="offer-biz" href="/business/{org["slug"]}.html">
+      <span class="mono" aria-hidden="true">{initials}</span>
+      <span class="offer-biz__main"><span class="eyebrow mb-0">Organiser</span><strong>{org["name"]}</strong><span>{org["area"]}</span></span>
+      <span class="offer-biz__go">View profile {I('arrow', 'ho-icon ho-icon--sm')}</span>
+    </a>'''
+
     share_text = quote(f'{plain(title)}, {d.strftime("%a")} {d.day} {d.strftime("%b")} {url}', safe="")
+    actions = "" if past else f'''
+      <div class="event-actions" id="add-to-calendar">
+        <span>Add to calendar</span>
+        <a href="{google}" rel="noopener" target="_blank">Google</a>
+        <a href="{outlook}" rel="noopener" target="_blank">Outlook</a>
+        <a download="{ev["slug"]}.ics" href="{ics}">Apple (.ics)</a>
+      </div>
+      <div class="share-row" aria-label="Share this event">
+        <span>Share</span>
+        <a href="https://wa.me/?text={share_text}" rel="noopener" target="_blank" aria-label="Share on WhatsApp">{I('whatsapp')}</a>
+        <a href="https://www.facebook.com/sharer/sharer.php?u={quote(url, safe='')}" rel="noopener" target="_blank" aria-label="Share on Facebook">{I('facebook')}</a>
+        <a href="mailto:?subject={quote(plain(title))}&amp;body={quote(url, safe='')}" aria-label="Share by email">{I('mail')}</a>
+        <button type="button" data-copy="{url}" data-copied="Link copied">Copy link</button>
+      </div>'''
     pub = "Made-up sample for the preview." if ev.get("sample") else "Checked by Harrow Online."
 
     body = f'''<nav class="crumbs ho-container" aria-label="Breadcrumb">
@@ -590,66 +598,29 @@ def event_page(ev, claimed):
     <li><span aria-current="page">{title}</span></li>
   </ol>
 </nav>
-{ended}{sample_note}
-<article>
-  <div class="ho-container event-hero">
-    <div class="ph{' ph--red' if is_featured(ev) else ''}">{I(ev["icon"])}</div>
-    <div>
-      <div class="cluster">{event_badges(ev)}<a class="badge badge--outline" href="/events.html?cat={cat_slug}">{ev["cat"]}</a></div>
-      <h1 class="event-hero__title">{title}</h1>
-      <ul class="facts">
-        {"".join(facts)}
-      </ul>
-      <div class="cluster mt-4">
-        <a class="ho-btn ho-btn--outline" href="#add-to-calendar">{I('calendar')}Add to calendar</a>
-        <a class="ho-btn ho-btn--outline" href="{maps}" rel="noopener" target="_blank">{I('map')}Get directions</a>
-      </div>
+{ended}
+<article class="event-page--simple">
+  <div class="ho-container offer-simple event-simple">
+    {ev_media(ev, ' offer-simple__media' + (' ph--red' if is_featured(ev) else ''), eager=True)}
+    <div class="offer-simple__main">
+      <div class="cluster offer-simple__tags">{tags}</div>
+      <h1 class="offer-simple__title event-simple__title">{title}</h1>
+      <ul class="event-lines">
+        <li>{I("calendar")}<span>{when_line}</span></li>
+        <li>{I("pin")}<span>{ev["venue"]}, {ev["area"]} &middot; <a href="{maps}" rel="noopener" target="_blank">Directions</a></span></li>
+        <li>{I("ticket")}<span>{price_line}</span></li>
+      </ul>{actions}
     </div>
   </div>
 
-  <div class="ho-container">
-    <div class="layout-aside">
-      <div>
-        <section class="profile-section" aria-labelledby="about-title">
-          <h2 id="about-title">About this event</h2>
-          <div class="profile-desc">{about}</div>
-        </section>
-
-        <section class="profile-section" id="map" aria-labelledby="map-title">
-          <h2 id="map-title">Where it is</h2>
-          <div class="ph ph--map ph--wide">{I('pin')}</div>
-          <div class="split mt-4">
-            <p class="mb-0"><strong>{ev["venue"]}</strong>, {ev["area"]}, Harrow</p>
-            <a class="ho-btn ho-btn--outline ho-btn--sm" href="{maps}" rel="noopener" target="_blank">{I('map')}Get directions</a>
-          </div>
-        </section>
+  <div class="ho-container offer-simple__below">
+    <section class="event-about" aria-labelledby="about-title">
+      <h2 id="about-title">About this event</h2>
+      <div class="profile-desc">{about}</div>
+      <p class="small muted mb-0">{pub} Details can change, so check with the organiser before you travel. <a class="report-link" href="/report.html">{I('flag')}Report a problem</a></p>
+    </section>
+{org_row}
 {more_html}
-      </div>
-
-      <aside class="sticky stack">
-        <div class="panel" id="add-to-calendar">
-          <h2 class="panel__title">Add to your calendar</h2>
-          <div class="stack">
-            <a class="ho-btn ho-btn--outline ho-btn--block" href="{google}" rel="noopener" target="_blank">{I('calendar')}Google Calendar</a>
-            <a class="ho-btn ho-btn--outline ho-btn--block" href="{outlook}" rel="noopener" target="_blank">{I('calendar')}Outlook</a>
-            <!-- WordPress serves this as /hub/events/{{slug}}/ical/ ; the prototype uses a data URI -->
-            <a class="ho-btn ho-btn--outline ho-btn--block" download="{ev["slug"]}.ics" href="{ics}">{I('download')}Apple or other (.ics)</a>
-          </div>
-        </div>
-
-        <div class="panel">
-          <h2 class="panel__title">Share this event</h2>
-          <div class="cluster">
-            <a class="ho-btn ho-btn--outline ho-btn--sm" href="https://wa.me/?text={share_text}" rel="noopener" target="_blank">{I('whatsapp')}WhatsApp</a>
-            <a class="ho-btn ho-btn--outline ho-btn--sm" href="https://www.facebook.com/sharer/sharer.php?u={quote(url, safe='')}" rel="noopener" target="_blank">{I('facebook')}Facebook</a>
-            <a class="ho-btn ho-btn--outline ho-btn--sm" href="mailto:?subject={quote(plain(title))}&amp;body={quote(url, safe='')}">{I('mail')}Email</a>
-            <button class="ho-btn ho-btn--ghost ho-btn--sm" type="button" data-copy="{url}">Copy link</button>
-          </div>
-        </div>
-{org_panel}
-        <p class="small muted">{pub} Details can change, so check with the organiser before you travel. <a class="report-link" href="/report.html">{I('flag')}Report a problem</a></p>
-      </aside>
-    </div>
   </div>
 </article>
 '''
@@ -678,10 +649,131 @@ def event_page(ev, claimed):
     return meta, body
 
 
+# ---------------------------------------------------------------- one page per weekly class
+# Who runs each class (a Hub business when it is one of the sample businesses)
+CLASS_PROVIDER = {
+    "Saturday Kids&rsquo; Coding Club": "Bright Sparks Coding",
+    "Story Time": "Hatch End Bookshop & Café",
+    "Lunchtime Spin": "Wealdstone Fitness Studio",
+    "Evening Yoga Flow": "Wealdstone Fitness Studio",
+    "Weekend Bootcamp": "Wealdstone Fitness Studio",
+}
+SCHEMA_DAYS = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"]
+
+
+def class_slug(title):
+    return H.slugify(plain(title))
+
+
+def class_href(title):
+    return f"/events/{class_slug(title)}/"
+
+
+def class_card(c):
+    """Card for "More classes" (same look as the event cards)."""
+    day, tm, _s, title, venue, area, price, age, ic, feat, ctype = c
+    badges = SAMPLE + (f'<span class="badge badge--featured">{I("star")}Featured</span>' if feat else "")
+    return f'''<article class="card event-card">
+        <div class="card__badges">{badges}</div>
+        <div class="ph">{I(ic)}</div>
+        <div class="card__body">
+          <span class="biz-card__cat">{ctype}</span>
+          <h3 class="card__title"><a href="{class_href(title)}">{title}</a></h3>
+          <p class="card__meta"><span>{I('repeat')}Every {DAYNAMES[day]}, {tm}</span><span>{I('pin')}{area}</span></p>
+          <p class="card__meta"><span>{I('ticket')}{price}</span><span>{I('people')}{age}</span></p>
+        </div>
+      </article>'''
+
+
+def class_page(c, claimed):
+    """(meta, body) for /events/{class}/, in the simplified event layout."""
+    import json
+    day, tm, _s, title, venue, area, price, age, ic, feat, ctype = c
+    slug = class_slug(title)
+    url = f"{ORIGIN}/events/{slug}/"
+    desc = CLASS_DESC.get(title, "")
+    maps = "https://www.google.com/maps/search/?api=1&amp;query=" + quote_plus(plain(f"{venue} {area} Harrow"))
+    prov = claimed.get(CLASS_PROVIDER.get(title, plain(venue)))
+    org_row = ""
+    if prov:
+        pslug = H.slugify(f'{prov["name"]} {H.AREA_BY_SLUG[prov["area"]][1]}')
+        initials = "".join(w[0] for w in plain(prov["name"]).split()[:2]).upper()
+        org_row = f'''
+    <a class="offer-biz" href="/business/{pslug}.html">
+      <span class="mono" aria-hidden="true">{initials}</span>
+      <span class="offer-biz__main"><span class="eyebrow mb-0">Run by</span><strong>{prov["name"]}</strong><span>{H.AREA_BY_SLUG[prov["area"]][1]}</span></span>
+      <span class="offer-biz__go">View profile {I('arrow', 'ho-icon ho-icon--sm')}</span>
+    </a>'''
+    others = [x for x in CLASSES if x[3] != title]
+    others.sort(key=lambda x: (x[10] != ctype, x[5] != area, x[0]))
+    more = "".join(class_card(x) for x in others[:3])
+    share_text = quote(f"{plain(title)}, every {DAYNAMES[day]} {url}", safe="")
+    tags = SAMPLE + (f'<span class="badge badge--featured">{I("star")}Featured</span>' if feat else "") + \
+        f'<span class="badge badge--outline">{I("repeat")}Weekly class</span><a class="biz-card__cat" href="/classes.html">{ctype}</a>'
+    body = f'''<nav class="crumbs ho-container" aria-label="Breadcrumb">
+  <ol>
+    <li><a href="/">Hub</a></li>
+    <li><a href="/events.html">What&rsquo;s On</a></li>
+    <li><a href="/classes.html">Classes and activities</a></li>
+    <li><span aria-current="page">{title}</span></li>
+  </ol>
+</nav>
+
+<article class="event-page--simple">
+  <div class="ho-container offer-simple event-simple">
+    <div class="ph offer-simple__media">{I(ic)}</div>
+    <div class="offer-simple__main">
+      <div class="cluster offer-simple__tags">{tags}</div>
+      <h1 class="offer-simple__title event-simple__title">{title}</h1>
+      <ul class="event-lines">
+        <li>{I("repeat")}<span>Every {DAYNAMES[day]}, {tm}</span></li>
+        <li>{I("pin")}<span>{venue}, {area} &middot; <a href="{maps}" rel="noopener" target="_blank">Directions</a></span></li>
+        <li>{I("ticket")}<span>{price} &middot; {age}</span></li>
+      </ul>
+      <div class="share-row" aria-label="Share this class">
+        <span>Share</span>
+        <a href="https://wa.me/?text={share_text}" rel="noopener" target="_blank" aria-label="Share on WhatsApp">{I('whatsapp')}</a>
+        <a href="https://www.facebook.com/sharer/sharer.php?u={quote(url, safe='')}" rel="noopener" target="_blank" aria-label="Share on Facebook">{I('facebook')}</a>
+        <a href="mailto:?subject={quote(plain(title))}&amp;body={quote(url, safe='')}" aria-label="Share by email">{I('mail')}</a>
+        <button type="button" data-copy="{url}" data-copied="Link copied">Copy link</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="ho-container offer-simple__below">
+    <section class="event-about" aria-labelledby="about-title">
+      <h2 id="about-title">About this class</h2>
+      <div class="profile-desc"><p>{desc or "Full details from the organiser coming soon."}</p></div>
+      <p class="small muted mb-0">Made-up sample for the preview. Check times with the organiser before you go. <a class="report-link" href="/report.html">{I('flag')}Report a problem</a></p>
+    </section>
+{org_row}
+    <section class="event-more" aria-labelledby="more-title">
+      <div class="sec-head">
+        <h2 class="sec-title" id="more-title">More classes</h2>
+        <a class="link-arrow" href="/classes.html">All classes {I('arrow')}</a>
+      </div>
+      <div class="grid grid-3">{more}</div>
+    </section>
+  </div>
+</article>
+'''
+    h, m = (H._clock(tm) or (9, 0))
+    node = {"@type": "Event", "@id": url + "#event", "name": plain(title), "description": plain(desc) or plain(title), "url": url,
+            "eventAttendanceMode": "https://schema.org/OfflineEventAttendanceMode", "eventStatus": "https://schema.org/EventScheduled",
+            "startDate": "2026-11-01", "eventSchedule": {"@type": "Schedule", "repeatFrequency": "P1W", "byDay": "https://schema.org/" + SCHEMA_DAYS[day],
+                                                       "startTime": f"{h:02d}:{m:02d}:00", "scheduleTimezone": "Europe/London"},
+            "location": {"@type": "Place", "name": plain(venue), "address": {"@type": "PostalAddress", "addressLocality": "Harrow", "addressCountry": "GB"}},
+            "isAccessibleForFree": plain(price).lower().startswith("free"), "publisher": {"@id": "https://harrowonline.org/#organization"}}
+    body += f'\n<script type="application/ld+json">\n{json.dumps({"@context": "https://schema.org", "@graph": [node]}, indent=2, ensure_ascii=False)}\n</script>\n'
+    meta = {"title": plain(f"{title} in {area}, every {DAYNAMES[day]}"), "description": plain(f"{title}: every {DAYNAMES[day]}, {tm} at {venue}, {area}. {price}, {age}. {desc}"),
+            "nav": "classes", "hubnav": "events", "body": "page-event", "schema": "ItemPage", "path": f"/events/{slug}/", "robots": "noindex, follow"}
+    return meta, body
+
+
 def event_pages():
     """[(meta, body)] for every event. build.py renders and writes them."""
     claimed = {c["name"]: c for c in H.load_claimed()}
-    return [event_page(ev, claimed) for ev in EVENTS]
+    return [event_page(ev, claimed) for ev in EVENTS] + [class_page(c, claimed) for c in CLASSES]
 
 
 def write_sources():

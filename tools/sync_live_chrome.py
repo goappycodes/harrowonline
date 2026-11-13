@@ -39,7 +39,7 @@ USER_SVG = ('<svg class="ho-icon ho-icon--user" viewBox="0 0 24 24" width="24" h
             '<circle cx="12" cy="8" r="4" fill="none" stroke="currentColor" stroke-width="2"/>'
             '<path d="M4 20.5c1.2-3.8 4.3-5.7 8-5.7s6.8 1.9 8 5.7" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>')
 # One account control. hub-bar__out / hub-bar__in swap on body.is-logged-in.
-ACCOUNT = ('{{site:hub}}<a class="ho-header__icon-btn ho-header__account hub-bar__out" href="/sign-in.html" aria-label="Sign in">' + USER_SVG + '</a>'
+ACCOUNT = ('{{site:hub}}<a class="ho-header__icon-btn ho-header__account hub-bar__out" href="/account.html" aria-label="My account">' + USER_SVG + '</a>'
            '<a class="ho-header__icon-btn ho-header__account hub-bar__in" href="/account.html" aria-label="My account">' + USER_SVG + '</a>{{/site}}\n                ')
 DRAWER_NL = '<a class="ho-btn ho-btn--primary ho-btn--block" href="https://harrowonline.org/newsletter/">'
 DRAWER_HUB = ('{{site:hub}}<nav class="ho-drawer__hub" aria-label="Hub">'
@@ -70,16 +70,16 @@ header = swap(header, DRAWER_NL, DRAWER_HUB + DRAWER_NL)
 # menu's markup and styling. No "Newsletter" item: the red Newsletter button in the header (and "Get the newsletter"
 # in the phone drawer) already covers it. News-site mock pages keep the live menu.
 HUB_MENU = [
+    ("hub", "/", "Hub"),
     ("news", "https://harrowonline.org/category/news/", "News"),
     ("events", "/events.html", "What&rsquo;s On"),
     ("classes", "/classes.html", "Classes"),
     ("offers", "/offers.html", "Offers"),
     ("businesses", "/search.html", "Businesses"),
-    ("hub", "/", "Hub"),
 ]
 
 
-# Desktop "Hub" dropdown (replaces the old Hub bar, Nov 2026). Same links as the phone drawer's Hub section.
+# Desktop "Businesses" dropdown (Categories, Areas, Pricing, List your business). Same links as the phone drawer's Hub section.
 HUB_SUBMENU = [
     ("categories", "/categories.html", "Categories"),
     ("", "/#areas", "Areas"),
@@ -90,7 +90,7 @@ HUB_SUBMENU = [
 def hub_submenu():
     items = "".join(f'<li><a href="{href}"{"{{hubnav:" + key + "}}" if key else ""}>{label}</a></li>' for key, href, label in HUB_SUBMENU)
     cta = '<li class="sub-menu__cta"><a href="/add-business.html"><svg class="ho-icon"><use href="#i-plus"/></svg>List your business</a></li>'
-    return ('<button class="ho-nav__toggle" type="button" aria-expanded="false" aria-controls="ho-hub-menu" aria-label="More Hub pages" data-ho-sub-toggle>'
+    return ('<button class="ho-nav__toggle" type="button" aria-expanded="false" aria-controls="ho-hub-menu" aria-label="More business pages" data-ho-sub-toggle>'
             '<svg class="ho-icon"><use href="#i-chevron-down"/></svg></button>'
             f'<ul class="sub-menu" id="ho-hub-menu">{items}{cta}</ul>')
 
@@ -98,7 +98,7 @@ def hub_submenu():
 def hub_menu(dropdown=False):
     out = []
     for key, href, label in HUB_MENU:
-        sub = dropdown and key == "hub"
+        sub = dropdown and key == "businesses"
         cls = "menu-item" + (" menu-item-has-children" if sub else "") + "{{navcls:" + key + "}}"
         out.append(f'<li class="{cls}"><a href="{href}"{"{{navaria:" + key + "}}"}>{label}</a>{hub_submenu() if sub else ""}</li>')
     return "\n".join(out)
