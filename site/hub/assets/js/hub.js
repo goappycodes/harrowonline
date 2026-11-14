@@ -341,6 +341,74 @@
     }
   }
 
+  /* 6d. Chip rows that run off the edge (.chips--scroll, and every chip row on phones).
+        A mouse has no sideways scroll, so: arrow buttons at each end, drag to scroll, and the
+        selected chip scrolled into view. Touch keeps its native swipe; the arrows are hidden there. */
+  $$(".chips:not(.chips--wrap)").forEach((row) => {
+    const rail = document.createElement("div");
+    rail.className = "chips-rail";
+    row.parentNode.insertBefore(rail, row);
+    rail.appendChild(row);
+    const btn = (dir, label, icon) => {
+      const b = document.createElement("button");
+      b.type = "button";
+      b.className = `chips-rail__btn chips-rail__btn--${dir}`;
+      b.setAttribute("aria-label", label);
+      b.tabIndex = -1; // keyboard users tab through the chips themselves
+      b.innerHTML = ICON(icon);
+      b.addEventListener("click", () => row.scrollBy({ left: (dir === "prev" ? -1 : 1) * row.clientWidth * 0.7, behavior: "smooth" }));
+      rail.appendChild(b);
+      return b;
+    };
+    const prev = btn("prev", "Scroll left", "chevron-left"), next = btn("next", "Scroll right", "chevron");
+    const update = () => {
+      const max = row.scrollWidth - row.clientWidth;
+      prev.hidden = row.scrollLeft <= 2;
+      next.hidden = row.scrollLeft >= max - 2;
+      rail.classList.toggle("has-prev", !prev.hidden);
+      rail.classList.toggle("has-next", !next.hidden);
+    };
+    row.addEventListener("scroll", update, { passive: true });
+    if ("ResizeObserver" in window) new ResizeObserver(update).observe(row);
+    else window.addEventListener("resize", update);
+
+    // Drag with the mouse. A drag of more than a few pixels cancels the click, so you don't land on another category.
+    let startX = 0, startLeft = 0, down = false, dragged = false;
+    row.addEventListener("dragstart", (e) => e.preventDefault()); // stop the browser dragging the link itself
+    row.addEventListener("pointerdown", (e) => {
+      if (e.pointerType !== "mouse" || e.button !== 0 || row.scrollWidth <= row.clientWidth) return;
+      down = true; dragged = false; startX = e.clientX; startLeft = row.scrollLeft;
+    });
+    row.addEventListener("pointermove", (e) => {
+      if (!down) return;
+      const dx = e.clientX - startX;
+      if (!dragged && Math.abs(dx) > 5) {
+        dragged = true;
+        row.classList.add("is-dragging");
+        row.setPointerCapture(e.pointerId);
+      }
+      if (dragged) row.scrollLeft = startLeft - dx;
+    });
+    const end = () => {
+      if (!down) return;
+      down = false;
+      row.classList.remove("is-dragging");
+    };
+    row.addEventListener("pointerup", end);
+    row.addEventListener("pointercancel", end);
+    row.addEventListener("click", (e) => {
+      if (dragged) { e.preventDefault(); e.stopPropagation(); dragged = false; }
+    }, true);
+
+    // Bring the selected chip into view (e.g. a category near the end of the row)
+    const cur = $(".chip[aria-current], .chip.is-active, .chip[aria-pressed=\"true\"]", row);
+    if (cur && row.scrollWidth > row.clientWidth) {
+      const r = row.getBoundingClientRect(), c = cur.getBoundingClientRect();
+      if (c.left < r.left || c.right > r.right) row.scrollLeft += c.left - r.left - (r.width - c.width) / 2;
+    }
+    update();
+  });
+
   /* 7. Character counters: <textarea maxlength="140" data-counter> */
   $$("[data-counter]").forEach((el) => {
     const out = document.createElement("span");

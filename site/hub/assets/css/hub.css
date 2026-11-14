@@ -482,6 +482,23 @@ address { font-style: normal; }
 .chips { display: flex; flex-wrap: wrap; gap: var(--ho-s2); }
 .chips--scroll { flex-wrap: nowrap; overflow-x: auto; scrollbar-width: none; padding-bottom: 2px; }
 .chips--scroll::-webkit-scrollbar { display: none; }
+/* hub.js wraps scrolling chip rows in .chips-rail and adds arrow buttons at the ends */
+.chips-rail { position: relative; }
+.chips-rail .chips { cursor: grab; }
+.chips-rail .chips.is-dragging { cursor: grabbing; user-select: none; }
+.chips-rail .chips.is-dragging .chip { pointer-events: none; }
+.chips-rail__btn {
+  position: absolute; top: 0; bottom: 2px; z-index: 2; display: flex; align-items: center; width: 56px; padding: 0;
+  border: 0; background: transparent; cursor: pointer; color: var(--ho-ink);
+}
+.chips-rail__btn[hidden] { display: none; }
+.chips-rail__btn--prev { left: 0; justify-content: flex-start; background: linear-gradient(to right, #fff 55%, rgba(255, 255, 255, 0)); }
+.chips-rail__btn--next { right: 0; justify-content: flex-end; background: linear-gradient(to left, #fff 55%, rgba(255, 255, 255, 0)); }
+.chips-rail__btn .ho-icon {
+  box-sizing: content-box; width: 16px; height: 16px; padding: 9px; border: 1px solid var(--ho-line-2); border-radius: 50%; background: #fff;
+}
+.chips-rail__btn:hover .ho-icon { border-color: var(--ho-ink); }
+@media (hover: none), (max-width: 767px) { .chips-rail__btn { display: none; } .chips-rail .chips { cursor: auto; } }
 @media (max-width: 767px) {
   .chips:not(.chips--wrap) { flex-wrap: nowrap; overflow-x: auto; scrollbar-width: none; margin-left: calc(var(--ho-gutter) * -1); margin-right: calc(var(--ho-gutter) * -1); padding: 0 var(--ho-gutter) 2px; }
   .chips:not(.chips--wrap)::-webkit-scrollbar { display: none; }
