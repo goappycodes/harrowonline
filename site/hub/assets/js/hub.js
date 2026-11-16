@@ -502,8 +502,8 @@
       const initials = x.n.replace(/[^A-Za-z0-9 ]/g, "").split(/\s+/).filter(Boolean).slice(0, 2).map((w) => w[0]).join("").toUpperCase() || "?";
       const tier = x.t || "unclaimed";
       // Claimed listings (sample or real) show Verified; Featured for Premium and Local Partner
-      const badge = tier === "unclaimed" ? `<span class="badge badge--unclaimed">Unclaimed</span>` :
-        `<span class="badge badge--verified">${ICON("verified")}Verified</span>`;
+      const badge = tier === "unclaimed" ? `<span class="badge badge--unclaimed">Information imported from public data</span>` :
+        `<span class="badge badge--verified">${ICON("verified")}Verified by the business</span>`;
       if (tier !== "unclaimed") {
         // Claimed listing: photo, tagline, verified; Premium and Local Partner are featured (brief 01, 6.2)
         const top = tier === "premium" || tier === "partner";

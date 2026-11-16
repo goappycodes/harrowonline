@@ -49,7 +49,7 @@ def tier_badge(tier):
 
 
 def verified():
-    return f'<span class="badge badge--verified">{icon("verified")}Verified</span>'
+    return f'<span class="badge badge--verified">{icon("verified")}Verified by the business</span>'
 
 
 def is_sample(x):

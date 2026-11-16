@@ -455,6 +455,9 @@ address { font-style: normal; }
 .badge--partner { background: var(--ho-ink); color: #fff; box-shadow: inset 0 0 0 2px var(--ho-red); }
 .badge--verified { background: var(--ho-ok-tint); color: var(--ho-ok); }
 .badge--unclaimed { background: var(--ho-soft); color: var(--ho-muted); }
+/* The longer trust labels ("Verified by the business", "Information imported from public data") may wrap instead of pushing the Call button out */
+.badge--unclaimed, .badge--verified { white-space: normal; text-align: left; }
+.biz-row__side .badge--unclaimed { max-width: 190px; text-align: right; }
 .badge--sub { background: var(--ho-red-tint); color: var(--ho-red-dark); }
 .badge--outline { background: #fff; box-shadow: inset 0 0 0 1px var(--ho-line-2); color: var(--ho-text); }
 /* Preview-only: made-up content. Never combined with Verified, Featured, Premium, Local Partner or Business of the Week. */
