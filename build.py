@@ -185,6 +185,11 @@ def write_vercel():
     for stem, path in seo.PAGE_PATHS.items():
         if stem not in ("404", "index"):
             redirects.append({"source": f"{BASE}/{stem}.html", "destination": BASE + path, "permanent": True})
+    import hub_data as H
+    for old, new in H.CAT_MOVED.items():   # renamed or split categories
+        dest = f"{BASE}/category/{new}/" if new else f"{BASE}/categories/"
+        redirects.append({"source": f"{BASE}/category/{old}/", "destination": dest, "permanent": True})
+        redirects.append({"source": f"{BASE}/category/{old}.html", "destination": dest, "permanent": True})
     redirects.append({"source": f"{BASE}/:kind(business|category|area)/:slug.html", "destination": f"{BASE}/:kind/:slug/", "permanent": True})
     cfg["redirects"] = redirects
     cfg_file.write_text(json.dumps(cfg, indent=2) + "\n", encoding="utf-8", newline="\n")

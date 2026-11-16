@@ -44,7 +44,7 @@
       "news": []
     },
     {
-      "name": "Hatch End Bookshop & Café", "images": ["/assets/img/sample/hatch-end-bookshop-1.jpg", "/assets/img/sample/hatch-end-bookshop-2.jpg", "/assets/img/sample/hatch-end-bookshop-3.jpg"], "cat": "cafes-and-takeaways", "sub": "Bookshop and café", "area": "hatch-end",
+      "name": "Hatch End Bookshop & Café", "images": ["/assets/img/sample/hatch-end-bookshop-1.jpg", "/assets/img/sample/hatch-end-bookshop-2.jpg", "/assets/img/sample/hatch-end-bookshop-3.jpg"], "cat": "food-and-drink", "sub": "Bookshop and café", "area": "hatch-end",
       "address": "301 Uxbridge Road", "postcode": "HA5 4JR", "phone": "020 7946 0103",
       "tier": "premium", "icon": "cup", "photos": 7, "claimed": "February 2026",
       "social": ["facebook", "instagram"],
@@ -116,7 +116,7 @@
       "offers": [], "events": [], "news": []
     },
     {
-      "name": "Bright Sparks Coding", "cat": "family-and-childcare", "sub": "Coding classes for children", "area": "kenton",
+      "name": "Bright Sparks Coding", "cat": "education-and-tuition", "sub": "Coding classes for children", "area": "kenton",
       "address": "Kenton Lane", "postcode": "HA3 8UJ", "phone": "020 7946 0107",
       "tier": "enhanced", "icon": "family", "photos": 4, "claimed": "July 2026",
       "social": ["facebook", "instagram"],
@@ -204,7 +204,7 @@
       "news": []
     },
     {
-      "name": "Edgware Heating & Plumbing", "cat": "trades-and-home-services", "sub": "Plumber and heating engineer", "area": "edgware",
+      "name": "Edgware Heating & Plumbing", "cat": "home-and-garden", "sub": "Plumber and heating engineer", "area": "edgware",
       "address": "7 Station Road", "postcode": "HA8 7JE", "phone": "020 7946 0112",
       "tier": "enhanced", "icon": "wrench", "photos": 4, "claimed": "October 2026",
       "social": ["facebook"],
@@ -263,7 +263,7 @@
       ],
       "slug": "aj-pizzas-harrow-town-centre",
       "name": "AJ Pizza's",
-      "cat": "cafes-and-takeaways",
+      "cat": "food-and-drink",
       "sub": "Pizza takeaway and delivery",
       "area": "harrow-town-centre",
       "address": "123 Headstone Road",
@@ -389,7 +389,7 @@
       "_note": "REAL business (not a sample): supplied by Harrow Online, 16 Nov 2026. Complimentary Featured listing. The flyer is shown whole as the cover; there are no other photos yet.",
       "real": true,
       "name": "GradeSmart Tuition",
-      "cat": "family-and-childcare",
+      "cat": "education-and-tuition",
       "sub": "Tuition centre",
       "area": "south-harrow",
       "address": "Christ Church Roxeth",
@@ -467,7 +467,7 @@
       "slug": "greensleaves-harrow",
       "name": "Greensleaves Construction, Landscaping and Garden Maintenance",
       "seo_title": "Greensleaves: landscaping and building in Harrow",
-      "cat": "trades-and-home-services",
+      "cat": "home-and-garden",
       "sub": "Landscaping, gardening and building",
       "area": "harrow-town-centre",
       "address": "",
@@ -519,7 +519,7 @@
       "_note": "REAL business (not a sample): supplied by Harrow Online, 16 Nov 2026. Complimentary Featured listing. Website under construction. The supplied logo artwork also shows a personal email address, so only the name block is used.",
       "real": true,
       "name": "Kay Construction (UK) Ltd",
-      "cat": "trades-and-home-services",
+      "cat": "construction-and-building-services",
       "sub": "Building contractor",
       "area": "south-harrow",
       "address": "27 Somervell Road",
@@ -575,7 +575,7 @@
       "_note": "REAL business (not a sample): supplied by Harrow Online, 16 Nov 2026. Complimentary Featured listing. Class times from the business's own listing (prices on request).",
       "real": true,
       "name": "Kidology Dance Co",
-      "cat": "family-and-childcare",
+      "cat": "classes-and-activities",
       "sub": "Children's dance school",
       "area": "hatch-end",
       "address": "Harrow Arts Centre, 171 Uxbridge Road",

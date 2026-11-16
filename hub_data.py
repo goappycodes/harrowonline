@@ -17,32 +17,45 @@ from pathlib import Path
 ROOT = Path(__file__).parent
 
 # slug, name, icon, [(overture group, overture subcategory or "*")]
+# Names follow the client's listing docs (16 Nov 2026): title case with "&".
 CATEGORIES = [
     ("restaurants", "Restaurants", "food", [("food_and_drink", "restaurant")]),
-    ("cafes-and-takeaways", "Cafés and takeaways", "cup", [("food_and_drink", "casual_eatery"), ("food_and_drink", "non_alcoholic_beverage_venue"), ("food_and_drink", "")]),
-    ("pubs-and-bars", "Pubs and bars", "beer", [("food_and_drink", "alcoholic_beverage_venue")]),
-    ("food-shops-and-groceries", "Food shops and groceries", "cart", [("shopping", "food_and_beverage_store"), ("shopping", "convenience_store"), ("shopping", "market"), ("shopping", "warehouse_club_store"), ("shopping", "discount_store")]),
-    ("fashion-and-clothing", "Fashion and clothing", "shirt", [("shopping", "fashion_and_apparel_store"), ("shopping", "second_hand_store")]),
-    ("shops", "Shops and specialists", "gift", [("shopping", "specialty_store"), ("shopping", ""), ("shopping", "shopping_mall"), ("shopping", "department_store")]),
-    ("hair-and-beauty", "Hair and beauty", "scissors", [("lifestyle_services", "personal_or_beauty_service")]),
-    ("health-and-wellbeing", "Health and wellbeing", "leaf", [("lifestyle_services", "wellness_service")]),
-    ("doctors-dentists-and-clinics", "Doctors, dentists and clinics", "medical", [("health_care", "*")]),
-    ("pets", "Pets and vets", "paw", [("lifestyle_services", "animal_or_pet_service")]),
-    ("trades-and-home-services", "Trades and home services", "wrench", [("services_and_business", "home_service"), ("services_and_business", "building_or_construction_service")]),
-    ("property-and-estate-agents", "Property and estate agents", "key", [("services_and_business", "real_estate_service"), ("services_and_business", "housing_or_property_service")]),
-    ("finance-and-accountants", "Finance and accountants", "pound", [("services_and_business", "financial_service")]),
-    ("legal-services", "Legal services", "scale", [("services_and_business", "legal_service")]),
-    ("professional-services", "Professional services", "briefcase", [("services_and_business", "professional_service"), ("services_and_business", "design_service")]),
-    ("printing-and-signs", "Printing and signs", "print", [("services_and_business", "printing_service")]),
-    ("events-and-parties", "Events, parties and catering", "party", [("services_and_business", "event_or_party_service"), ("lifestyle_services", "food_service")]),
-    ("family-and-childcare", "Family and childcare", "family", [("services_and_business", "family_service")]),
-    ("cleaning-laundry-and-hire", "Cleaning, laundry and hire", "washer", [("services_and_business", "laundry_service"), ("services_and_business", "rental_service")]),
+    ("food-and-drink", "Food & Drink", "cup", [("food_and_drink", "casual_eatery"), ("food_and_drink", "non_alcoholic_beverage_venue"), ("food_and_drink", "")]),
+    ("pubs-and-bars", "Pubs & Bars", "beer", [("food_and_drink", "alcoholic_beverage_venue")]),
+    ("food-shops-and-groceries", "Food Shops & Groceries", "cart", [("shopping", "food_and_beverage_store"), ("shopping", "convenience_store"), ("shopping", "market"), ("shopping", "warehouse_club_store"), ("shopping", "discount_store")]),
+    ("fashion-and-clothing", "Fashion & Clothing", "shirt", [("shopping", "fashion_and_apparel_store"), ("shopping", "second_hand_store")]),
+    ("shops", "Shops & Specialists", "gift", [("shopping", "specialty_store"), ("shopping", ""), ("shopping", "shopping_mall"), ("shopping", "department_store")]),
+    ("hair-and-beauty", "Hair & Beauty", "scissors", [("lifestyle_services", "personal_or_beauty_service")]),
+    ("health-and-wellbeing", "Health & Wellbeing", "leaf", [("lifestyle_services", "wellness_service")]),
+    ("doctors-dentists-and-clinics", "Doctors, Dentists & Clinics", "medical", [("health_care", "*")]),
+    ("pets", "Pets & Vets", "paw", [("lifestyle_services", "animal_or_pet_service")]),
+    ("home-and-garden", "Home & Garden", "home", [("services_and_business", "home_service"), ("services_and_business", "building_or_construction_service")]),
+    ("construction-and-building-services", "Construction & Building Services", "wrench", []),   # by detailed type: BUILDING_TYPES below
+    ("property-and-estate-agents", "Property & Estate Agents", "key", [("services_and_business", "real_estate_service"), ("services_and_business", "housing_or_property_service")]),
+    ("finance-and-accountants", "Finance & Accountants", "pound", [("services_and_business", "financial_service")]),
+    ("legal-services", "Legal Services", "scale", [("services_and_business", "legal_service")]),
+    ("professional-services", "Professional Services", "briefcase", [("services_and_business", "professional_service"), ("services_and_business", "design_service")]),
+    ("printing-and-signs", "Printing & Signs", "print", [("services_and_business", "printing_service")]),
+    ("events-and-parties", "Events, Parties & Catering", "party", [("services_and_business", "event_or_party_service"), ("lifestyle_services", "food_service")]),
+    ("family-and-childcare", "Family & Childcare", "family", [("services_and_business", "family_service")]),
+    ("education-and-tuition", "Education & Tuition", "edit", []),        # claimed businesses only (the imported data has no schools or tutors)
+    ("classes-and-activities", "Classes & Activities", "calendar", []),  # claimed businesses only
+    ("cleaning-laundry-and-hire", "Cleaning, Laundry & Hire", "washer", [("services_and_business", "laundry_service"), ("services_and_business", "rental_service")]),
     ("motoring", "Motoring", "car", [("travel_and_transportation", "vehicle_service"), ("shopping", "vehicle_dealer")]),
-    ("travel", "Travel and transport", "plane", [("travel_and_transportation", "travel_service")]),
-    ("sport-and-fitness", "Sport and fitness", "dumbbell", [("sports_and_recreation", "*")]),
-    ("arts-and-entertainment", "Arts and entertainment", "music", [("arts_and_entertainment", "*")]),
-    ("hotels-and-places-to-stay", "Hotels and places to stay", "bed", [("lodging", "*")]),
+    ("travel", "Travel & Transport", "plane", [("travel_and_transportation", "travel_service")]),
+    ("sport-and-fitness", "Sports & Fitness", "dumbbell", [("sports_and_recreation", "*")]),
+    ("arts-and-entertainment", "Arts & Entertainment", "music", [("arts_and_entertainment", "*")]),
+    ("hotels-and-places-to-stay", "Hotels & Places to Stay", "bed", [("lodging", "*")]),
 ]
+# Builders, roofers, fitters and contractors (detailed Overture type) go to Construction & Building Services;
+# the other home trades and services stay in Home & Garden.
+BUILDING_TYPES = {
+    "building_contractor", "contractor", "engineering_service", "roofing", "drywall_service", "building_or_construction_service",
+    "carpenter", "flooring_contractor", "ceiling_service", "road_contractor", "altering_and_remodeling_contractor",
+    "bathroom_remodeling", "tiling", "solar_installation", "windows_installation", "countertop_installation",
+}
+# Old category URLs → new ones (vercel.json redirects)
+CAT_MOVED = {"cafes-and-takeaways": "food-and-drink", "trades-and-home-services": None}   # None: split, so to /categories/
 
 # slug, name, lat, lng (approximate centres; assignment = nearest centre to the map pin)
 AREAS = [
@@ -93,7 +106,9 @@ def label(slug):
     return s[:1].upper() + s[1:]
 
 
-def category_for(g, s):
+def category_for(g, s, c=""):
+    if c in BUILDING_TYPES and s in ("home_service", "building_or_construction_service"):
+        return "construction-and-building-services"
     return _CAT_RULES.get((g, s)) or _CAT_RULES.get((g, "*")) or "shops"
 
 
@@ -141,7 +156,7 @@ def load_listings():
             "id": r["id"],
             "slug": slug,
             "name": name,
-            "cat": category_for(r["g"], r["s"]),
+            "cat": category_for(r["g"], r["s"], r.get("c") or ""),
             "sub": label(r["c"]) if r.get("c") else "",
             "area": area,
             "address": tidy(r["a"] or ""),

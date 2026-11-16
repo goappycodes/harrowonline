@@ -24,7 +24,8 @@ CAT_INTRO = {
     "restaurants": "From family-run curry houses on Station Road to Pinner's high-street bistros, here are Harrow's restaurants.",
     "hair-and-beauty": "Barbers, hair salons, nail bars and beauty clinics across the borough.",
     "doctors-dentists-and-clinics": "GP surgeries, dentists, opticians, physios and private clinics in Harrow.",
-    "trades-and-home-services": "Plumbers, electricians, builders, decorators and other trades that serve Harrow homes.",
+    "home-and-garden": "Plumbers, electricians, gardeners, cleaners, locksmiths and other trades that look after Harrow homes and gardens.",
+    "construction-and-building-services": "Builders, roofers, loft and extension specialists, fitters and contractors working across Harrow.",
 }
 
 
@@ -296,12 +297,13 @@ def write_partials(cat_counts, area_counts):
     (PARTIALS / "gen-cat-options.html").write_text(gen_cat_options(), encoding="utf-8")
     (PARTIALS / "gen-area-options.html").write_text(gen_area_options(), encoding="utf-8")
     by_size = sorted(H.CATEGORIES, key=lambda c: -cat_counts[c[0]])
-    cat_tile = lambda s, n, i: f'<a class="tile" href="/category/{s}.html"><span class="tile__icon">{icon(i)}</span><span class="tile__name">{e(n)}</span><span class="tile__count">{cat_counts[s]:,} businesses</span></a>'
+    biz = lambda k: f'{k:,} business' + ("" if k == 1 else "es")
+    cat_tile = lambda s, n, i: f'<a class="tile" href="/category/{s}.html"><span class="tile__icon">{icon(i)}</span><span class="tile__name">{e(n)}</span><span class="tile__count">{biz(cat_counts[s])}</span></a>'
     # Category cards: icon, name, count, arrow, and a large faded icon as texture (redesign, Nov 2026).
     # Used on the homepage (six largest) and the /categories/ page (all).
     cat_card = lambda s, n, i: (f'<a class="cat-card" href="/category/{s}.html"><span class="cat-card__icon">{icon(i)}</span>'
                                 f'<span class="cat-card__body"><span class="cat-card__name">{e(n)}</span>'
-                                f'<span class="cat-card__count">{cat_counts[s]:,} businesses</span></span>'
+                                f'<span class="cat-card__count">{biz(cat_counts[s])}</span></span>'
                                 f'<span class="cat-card__go">{icon("arrow")}</span><span class="cat-card__mark" aria-hidden="true">{icon(i)}</span></a>')
     tiles = "".join(cat_card(s, n, i) for s, n, i, _r in by_size)
     (PARTIALS / "gen-cat-tiles.html").write_text(f'<div class="cat-cards">{tiles}</div>', encoding="utf-8")
@@ -313,7 +315,7 @@ def write_partials(cat_counts, area_counts):
     atiles = "".join(
         f'<a class="area-card" href="/area/{s}.html"><span class="area-card__pin">{icon("pin")}</span>'
         f'<span class="area-card__body"><span class="area-card__name">{e(n)}</span>'
-        f'<span class="area-card__count">{area_counts[s]:,} businesses</span>'
+        f'<span class="area-card__count">{biz(area_counts[s])}</span>'
         f'<span class="area-card__bar" aria-hidden="true"><i style="width:{max(8, round(100 * area_counts[s] / biggest))}%"></i></span></span>'
         f'<span class="area-card__go">{icon("chevron")}</span></a>'
         for s, n, _a, _b in sorted(H.AREAS, key=lambda a: a[1]))

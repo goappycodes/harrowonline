@@ -119,7 +119,7 @@
   <form class="filter-bar" action="/hub/offers/" method="get" aria-label="Filter offers">
     <div class="field">
       <label for="o-cat">Category</label>
-      <select class="select select--sm" id="o-cat" name="cat"><option value="">All categories</option><option value="arts-and-entertainment">Arts and entertainment</option><option value="cafes-and-takeaways">Cafés and takeaways</option><option value="cleaning-laundry-and-hire">Cleaning, laundry and hire</option><option value="doctors-dentists-and-clinics">Doctors, dentists and clinics</option><option value="events-and-parties">Events, parties and catering</option><option value="family-and-childcare">Family and childcare</option><option value="fashion-and-clothing">Fashion and clothing</option><option value="finance-and-accountants">Finance and accountants</option><option value="food-shops-and-groceries">Food shops and groceries</option><option value="hair-and-beauty">Hair and beauty</option><option value="health-and-wellbeing">Health and wellbeing</option><option value="hotels-and-places-to-stay">Hotels and places to stay</option><option value="legal-services">Legal services</option><option value="motoring">Motoring</option><option value="pets">Pets and vets</option><option value="printing-and-signs">Printing and signs</option><option value="professional-services">Professional services</option><option value="property-and-estate-agents">Property and estate agents</option><option value="pubs-and-bars">Pubs and bars</option><option value="restaurants">Restaurants</option><option value="shops">Shops and specialists</option><option value="sport-and-fitness">Sport and fitness</option><option value="trades-and-home-services">Trades and home services</option><option value="travel">Travel and transport</option></select>
+      <select class="select select--sm" id="o-cat" name="cat"><option value="">All categories</option><option value="arts-and-entertainment">Arts &amp; Entertainment</option><option value="classes-and-activities">Classes &amp; Activities</option><option value="cleaning-laundry-and-hire">Cleaning, Laundry &amp; Hire</option><option value="construction-and-building-services">Construction &amp; Building Services</option><option value="doctors-dentists-and-clinics">Doctors, Dentists &amp; Clinics</option><option value="education-and-tuition">Education &amp; Tuition</option><option value="events-and-parties">Events, Parties &amp; Catering</option><option value="family-and-childcare">Family &amp; Childcare</option><option value="fashion-and-clothing">Fashion &amp; Clothing</option><option value="finance-and-accountants">Finance &amp; Accountants</option><option value="food-and-drink">Food &amp; Drink</option><option value="food-shops-and-groceries">Food Shops &amp; Groceries</option><option value="hair-and-beauty">Hair &amp; Beauty</option><option value="health-and-wellbeing">Health &amp; Wellbeing</option><option value="home-and-garden">Home &amp; Garden</option><option value="hotels-and-places-to-stay">Hotels &amp; Places to Stay</option><option value="legal-services">Legal Services</option><option value="motoring">Motoring</option><option value="pets">Pets &amp; Vets</option><option value="printing-and-signs">Printing &amp; Signs</option><option value="professional-services">Professional Services</option><option value="property-and-estate-agents">Property &amp; Estate Agents</option><option value="pubs-and-bars">Pubs &amp; Bars</option><option value="restaurants">Restaurants</option><option value="shops">Shops &amp; Specialists</option><option value="sport-and-fitness">Sports &amp; Fitness</option><option value="travel">Travel &amp; Transport</option></select>
     </div>
     <div class="field">
       <label for="o-area">Area</label>
@@ -132,13 +132,13 @@
   <div class="chips chips--scroll mt-4" aria-label="Popular categories">
     <a class="chip" href="/hub/offers/" data-cat="" aria-current="page">All offers <span class="count">18</span></a>
     <a class="chip" href="/hub/offers/?cat=restaurants" data-cat="restaurants">Restaurants <span class="count">4</span></a>
-    <a class="chip" href="/hub/offers/?cat=cafes-and-takeaways" data-cat="cafes-and-takeaways">Cafés and takeaways <span class="count">3</span></a>
-    <a class="chip" href="/hub/offers/?cat=doctors-dentists-and-clinics" data-cat="doctors-dentists-and-clinics">Doctors, dentists and clinics <span class="count">3</span></a>
-    <a class="chip" href="/hub/offers/?cat=family-and-childcare" data-cat="family-and-childcare">Family and childcare <span class="count">2</span></a>
-    <a class="chip" href="/hub/offers/?cat=hair-and-beauty" data-cat="hair-and-beauty">Hair and beauty <span class="count">2</span></a>
-    <a class="chip" href="/hub/offers/?cat=sport-and-fitness" data-cat="sport-and-fitness">Sport and fitness <span class="count">2</span></a>
-    <a class="chip" href="/hub/offers/?cat=shops" data-cat="shops">Shops and specialists <span class="count">1</span></a>
-    <a class="chip" href="/hub/offers/?cat=trades-and-home-services" data-cat="trades-and-home-services">Trades and home services <span class="count">1</span></a>
+    <a class="chip" href="/hub/offers/?cat=doctors-dentists-and-clinics" data-cat="doctors-dentists-and-clinics">Doctors, Dentists &amp; Clinics <span class="count">3</span></a>
+    <a class="chip" href="/hub/offers/?cat=food-and-drink" data-cat="food-and-drink">Food &amp; Drink <span class="count">3</span></a>
+    <a class="chip" href="/hub/offers/?cat=education-and-tuition" data-cat="education-and-tuition">Education &amp; Tuition <span class="count">2</span></a>
+    <a class="chip" href="/hub/offers/?cat=hair-and-beauty" data-cat="hair-and-beauty">Hair &amp; Beauty <span class="count">2</span></a>
+    <a class="chip" href="/hub/offers/?cat=sport-and-fitness" data-cat="sport-and-fitness">Sports &amp; Fitness <span class="count">2</span></a>
+    <a class="chip" href="/hub/offers/?cat=home-and-garden" data-cat="home-and-garden">Home &amp; Garden <span class="count">1</span></a>
+    <a class="chip" href="/hub/offers/?cat=shops" data-cat="shops">Shops &amp; Specialists <span class="count">1</span></a>
   </div>
 
 
@@ -151,15 +151,15 @@
 
   <!-- hub.js filters these by ?cat=, ?area= and ?sub=1 (WordPress filters server-side with the same parameters) -->
   <div class="offer-cards" data-offers-list>
-    <a class="offer-card offer-card--featured" href="/hub/offers/two-pizza-collection-deal-from-7-99-each/" data-cat="cafes-and-takeaways" data-area="harrow-town-centre" data-sub="1">
-        <span class="offer-card__top"><span class="biz-card__cat">Cafés and takeaways</span><span class="badge badge--featured"><svg class="ho-icon"><use href="/hub/assets/img/icons.svg#i-star"/></svg>Featured</span><span class="badge badge--sub"><svg class="ho-icon"><use href="/hub/assets/img/icons.svg#i-lock"/></svg>Subscriber-only</span></span>
+    <a class="offer-card offer-card--featured" href="/hub/offers/two-pizza-collection-deal-from-7-99-each/" data-cat="food-and-drink" data-area="harrow-town-centre" data-sub="1">
+        <span class="offer-card__top"><span class="biz-card__cat">Food &amp; Drink</span><span class="badge badge--featured"><svg class="ho-icon"><use href="/hub/assets/img/icons.svg#i-star"/></svg>Featured</span><span class="badge badge--sub"><svg class="ho-icon"><use href="/hub/assets/img/icons.svg#i-lock"/></svg>Subscriber-only</span></span>
         <strong class="offer-card__value">FROM &pound;7.99</strong>
         <span class="offer-card__title">Two-pizza collection deal from &pound;7.99 each</span>
         <span class="offer-card__biz">AJ Pizza&#x27;s &middot; Harrow Town Centre</span>
         <span class="offer-card__foot"><span><svg class="ho-icon ho-icon--sm"><use href="/hub/assets/img/icons.svg#i-calendar"/></svg>No end date</span><span class="offer-card__go">View offer <svg class="ho-icon ho-icon--sm"><use href="/hub/assets/img/icons.svg#i-arrow"/></svg></span></span>
       </a>
-<a class="offer-card offer-card--featured" href="/hub/offers/75-off-your-first-month-of-tuition/" data-cat="family-and-childcare" data-area="south-harrow" data-sub="0">
-        <span class="offer-card__top"><span class="biz-card__cat">Family and childcare</span><span class="badge badge--featured"><svg class="ho-icon"><use href="/hub/assets/img/icons.svg#i-star"/></svg>Featured</span></span>
+<a class="offer-card offer-card--featured" href="/hub/offers/75-off-your-first-month-of-tuition/" data-cat="education-and-tuition" data-area="south-harrow" data-sub="0">
+        <span class="offer-card__top"><span class="biz-card__cat">Education &amp; Tuition</span><span class="badge badge--featured"><svg class="ho-icon"><use href="/hub/assets/img/icons.svg#i-star"/></svg>Featured</span></span>
         <strong class="offer-card__value">75% OFF</strong>
         <span class="offer-card__title">75% off your first month of tuition</span>
         <span class="offer-card__biz">GradeSmart Tuition &middot; South Harrow</span>
@@ -187,28 +187,28 @@
         <span class="offer-card__foot"><span><svg class="ho-icon ho-icon--sm"><use href="/hub/assets/img/icons.svg#i-calendar"/></svg>Ends 31 Dec</span><span class="offer-card__go">View offer <svg class="ho-icon ho-icon--sm"><use href="/hub/assets/img/icons.svg#i-arrow"/></svg></span></span>
       </a>
 <a class="offer-card offer-card--featured" href="/hub/offers/25-off-your-first-hygienist-visit/" data-cat="doctors-dentists-and-clinics" data-area="stanmore" data-sub="0">
-        <span class="offer-card__top"><span class="biz-card__cat">Doctors, dentists and clinics</span><span class="badge badge--featured"><svg class="ho-icon"><use href="/hub/assets/img/icons.svg#i-star"/></svg>Featured</span></span>
+        <span class="offer-card__top"><span class="biz-card__cat">Doctors, Dentists &amp; Clinics</span><span class="badge badge--featured"><svg class="ho-icon"><use href="/hub/assets/img/icons.svg#i-star"/></svg>Featured</span></span>
         <strong class="offer-card__value">£25 OFF</strong>
         <span class="offer-card__title">&pound;25 off your first hygienist visit</span>
         <span class="offer-card__biz">Stanmore Family Dental &middot; Stanmore</span>
         <span class="offer-card__foot"><span><svg class="ho-icon ho-icon--sm"><use href="/hub/assets/img/icons.svg#i-calendar"/></svg>Ends 31 Dec</span><span class="offer-card__go">View offer <svg class="ho-icon ho-icon--sm"><use href="/hub/assets/img/icons.svg#i-arrow"/></svg></span></span>
       </a>
 <a class="offer-card offer-card--featured" href="/hub/offers/a-free-week-of-classes/" data-cat="sport-and-fitness" data-area="wealdstone" data-sub="1">
-        <span class="offer-card__top"><span class="biz-card__cat">Sport and fitness</span><span class="badge badge--featured"><svg class="ho-icon"><use href="/hub/assets/img/icons.svg#i-star"/></svg>Featured</span><span class="badge badge--sub"><svg class="ho-icon"><use href="/hub/assets/img/icons.svg#i-lock"/></svg>Subscriber-only</span></span>
+        <span class="offer-card__top"><span class="biz-card__cat">Sports &amp; Fitness</span><span class="badge badge--featured"><svg class="ho-icon"><use href="/hub/assets/img/icons.svg#i-star"/></svg>Featured</span><span class="badge badge--sub"><svg class="ho-icon"><use href="/hub/assets/img/icons.svg#i-lock"/></svg>Subscriber-only</span></span>
         <strong class="offer-card__value">FREE WEEK</strong>
         <span class="offer-card__title">A free week of classes</span>
         <span class="offer-card__biz">Wealdstone Fitness Studio &middot; Wealdstone</span>
         <span class="offer-card__foot"><span><svg class="ho-icon ho-icon--sm"><use href="/hub/assets/img/icons.svg#i-calendar"/></svg>Ends 14 Dec</span><span class="offer-card__go">View offer <svg class="ho-icon ho-icon--sm"><use href="/hub/assets/img/icons.svg#i-arrow"/></svg></span></span>
       </a>
-<a class="offer-card" href="/hub/offers/free-coffee-with-any-slice-of-cake/" data-cat="cafes-and-takeaways" data-area="hatch-end" data-sub="0">
-        <span class="offer-card__top"><span class="biz-card__cat">Cafés and takeaways</span></span>
+<a class="offer-card" href="/hub/offers/free-coffee-with-any-slice-of-cake/" data-cat="food-and-drink" data-area="hatch-end" data-sub="0">
+        <span class="offer-card__top"><span class="biz-card__cat">Food &amp; Drink</span></span>
         <strong class="offer-card__value">FREE COFFEE</strong>
         <span class="offer-card__title">Free coffee with any slice of cake</span>
         <span class="offer-card__biz">Hatch End Bookshop &amp; Café &middot; Hatch End</span>
         <span class="offer-card__foot"><span><svg class="ho-icon ho-icon--sm"><use href="/hub/assets/img/icons.svg#i-calendar"/></svg>Ends 31 Dec</span><span class="offer-card__go">View offer <svg class="ho-icon ho-icon--sm"><use href="/hub/assets/img/icons.svg#i-arrow"/></svg></span></span>
       </a>
-<a class="offer-card" href="/hub/offers/10-off-every-book-all-winter/" data-cat="cafes-and-takeaways" data-area="hatch-end" data-sub="1">
-        <span class="offer-card__top"><span class="biz-card__cat">Cafés and takeaways</span><span class="badge badge--sub"><svg class="ho-icon"><use href="/hub/assets/img/icons.svg#i-lock"/></svg>Subscriber-only</span></span>
+<a class="offer-card" href="/hub/offers/10-off-every-book-all-winter/" data-cat="food-and-drink" data-area="hatch-end" data-sub="1">
+        <span class="offer-card__top"><span class="biz-card__cat">Food &amp; Drink</span><span class="badge badge--sub"><svg class="ho-icon"><use href="/hub/assets/img/icons.svg#i-lock"/></svg>Subscriber-only</span></span>
         <strong class="offer-card__value">10% OFF</strong>
         <span class="offer-card__title">10% off every book, all winter</span>
         <span class="offer-card__biz">Hatch End Bookshop &amp; Café &middot; Hatch End</span>
@@ -222,56 +222,56 @@
         <span class="offer-card__foot"><span><svg class="ho-icon ho-icon--sm"><use href="/hub/assets/img/icons.svg#i-calendar"/></svg>Ends 27 Dec</span><span class="offer-card__go">View offer <svg class="ho-icon ho-icon--sm"><use href="/hub/assets/img/icons.svg#i-arrow"/></svg></span></span>
       </a>
 <a class="offer-card" href="/hub/offers/free-electric-toothbrush-with-a-new-patient-exam/" data-cat="doctors-dentists-and-clinics" data-area="stanmore" data-sub="0">
-        <span class="offer-card__top"><span class="biz-card__cat">Doctors, dentists and clinics</span></span>
+        <span class="offer-card__top"><span class="biz-card__cat">Doctors, Dentists &amp; Clinics</span></span>
         <strong class="offer-card__value">FREE TOOTHBRUSH</strong>
         <span class="offer-card__title">Free electric toothbrush with a new patient exam</span>
         <span class="offer-card__biz">Stanmore Family Dental &middot; Stanmore</span>
         <span class="offer-card__foot"><span><svg class="ho-icon ho-icon--sm"><use href="/hub/assets/img/icons.svg#i-calendar"/></svg>Ends 31 Dec</span><span class="offer-card__go">View offer <svg class="ho-icon ho-icon--sm"><use href="/hub/assets/img/icons.svg#i-arrow"/></svg></span></span>
       </a>
 <a class="offer-card" href="/hub/offers/no-joining-fee-in-november/" data-cat="sport-and-fitness" data-area="wealdstone" data-sub="0">
-        <span class="offer-card__top"><span class="biz-card__cat">Sport and fitness</span></span>
+        <span class="offer-card__top"><span class="biz-card__cat">Sports &amp; Fitness</span></span>
         <strong class="offer-card__value">NO JOINING FEE</strong>
         <span class="offer-card__title">No joining fee in November</span>
         <span class="offer-card__biz">Wealdstone Fitness Studio &middot; Wealdstone</span>
         <span class="offer-card__foot"><span><svg class="ho-icon ho-icon--sm"><use href="/hub/assets/img/icons.svg#i-calendar"/></svg>Ends 30 Nov</span><span class="offer-card__go">View offer <svg class="ho-icon ho-icon--sm"><use href="/hub/assets/img/icons.svg#i-arrow"/></svg></span></span>
       </a>
-<a class="offer-card" href="/hub/offers/first-session-free/" data-cat="family-and-childcare" data-area="kenton" data-sub="0">
-        <span class="offer-card__top"><span class="biz-card__cat">Family and childcare</span></span>
+<a class="offer-card" href="/hub/offers/first-session-free/" data-cat="education-and-tuition" data-area="kenton" data-sub="0">
+        <span class="offer-card__top"><span class="biz-card__cat">Education &amp; Tuition</span></span>
         <strong class="offer-card__value">FIRST SESSION FREE</strong>
         <span class="offer-card__title">First session free</span>
         <span class="offer-card__biz">Bright Sparks Coding &middot; Kenton</span>
         <span class="offer-card__foot"><span><svg class="ho-icon ho-icon--sm"><use href="/hub/assets/img/icons.svg#i-calendar"/></svg>Ends 31 Dec</span><span class="offer-card__go">View offer <svg class="ho-icon ho-icon--sm"><use href="/hub/assets/img/icons.svg#i-arrow"/></svg></span></span>
       </a>
-<a class="offer-card" href="/hub/offers/20-off-a-boiler-service/" data-cat="trades-and-home-services" data-area="edgware" data-sub="1">
-        <span class="offer-card__top"><span class="biz-card__cat">Trades and home services</span><span class="badge badge--sub"><svg class="ho-icon"><use href="/hub/assets/img/icons.svg#i-lock"/></svg>Subscriber-only</span></span>
+<a class="offer-card" href="/hub/offers/20-off-a-boiler-service/" data-cat="home-and-garden" data-area="edgware" data-sub="1">
+        <span class="offer-card__top"><span class="biz-card__cat">Home &amp; Garden</span><span class="badge badge--sub"><svg class="ho-icon"><use href="/hub/assets/img/icons.svg#i-lock"/></svg>Subscriber-only</span></span>
         <strong class="offer-card__value">£20 OFF</strong>
         <span class="offer-card__title">&pound;20 off a boiler service</span>
         <span class="offer-card__biz">Edgware Heating &amp; Plumbing &middot; Edgware</span>
         <span class="offer-card__foot"><span><svg class="ho-icon ho-icon--sm"><use href="/hub/assets/img/icons.svg#i-calendar"/></svg>Ends 31 Dec</span><span class="offer-card__go">View offer <svg class="ho-icon ho-icon--sm"><use href="/hub/assets/img/icons.svg#i-arrow"/></svg></span></span>
       </a>
 <a class="offer-card" href="/hub/offers/free-blood-pressure-check/" data-cat="doctors-dentists-and-clinics" data-area="kenton" data-sub="0">
-        <span class="offer-card__top"><span class="biz-card__cat">Doctors, dentists and clinics</span></span>
+        <span class="offer-card__top"><span class="biz-card__cat">Doctors, Dentists &amp; Clinics</span></span>
         <strong class="offer-card__value">FREE BP CHECK</strong>
         <span class="offer-card__title">Free blood pressure check</span>
         <span class="offer-card__biz">Kenton Road Pharmacy &middot; Kenton</span>
         <span class="offer-card__foot"><span><svg class="ho-icon ho-icon--sm"><use href="/hub/assets/img/icons.svg#i-calendar"/></svg>Ends 31 Jan</span><span class="offer-card__go">View offer <svg class="ho-icon ho-icon--sm"><use href="/hub/assets/img/icons.svg#i-arrow"/></svg></span></span>
       </a>
 <a class="offer-card" href="/hub/offers/free-winter-bike-safety-check/" data-cat="shops" data-area="pinner" data-sub="0">
-        <span class="offer-card__top"><span class="biz-card__cat">Shops and specialists</span></span>
+        <span class="offer-card__top"><span class="biz-card__cat">Shops &amp; Specialists</span></span>
         <strong class="offer-card__value">FREE SAFETY CHECK</strong>
         <span class="offer-card__title">Free winter bike safety check</span>
         <span class="offer-card__biz">Pinner Cycle Workshop &middot; Pinner</span>
         <span class="offer-card__foot"><span><svg class="ho-icon ho-icon--sm"><use href="/hub/assets/img/icons.svg#i-calendar"/></svg>Ends 31 Dec</span><span class="offer-card__go">View offer <svg class="ho-icon ho-icon--sm"><use href="/hub/assets/img/icons.svg#i-arrow"/></svg></span></span>
       </a>
 <a class="offer-card" href="/hub/offers/20-off-your-first-cut/" data-cat="hair-and-beauty" data-area="harrow-town-centre" data-sub="1">
-        <span class="offer-card__top"><span class="biz-card__cat">Hair and beauty</span><span class="badge badge--sub"><svg class="ho-icon"><use href="/hub/assets/img/icons.svg#i-lock"/></svg>Subscriber-only</span></span>
+        <span class="offer-card__top"><span class="biz-card__cat">Hair &amp; Beauty</span><span class="badge badge--sub"><svg class="ho-icon"><use href="/hub/assets/img/icons.svg#i-lock"/></svg>Subscriber-only</span></span>
         <strong class="offer-card__value">20% OFF</strong>
         <span class="offer-card__title">20% off your first cut</span>
         <span class="offer-card__biz">Station Road Barbers &middot; Harrow Town Centre</span>
         <span class="offer-card__foot"><span><svg class="ho-icon ho-icon--sm"><use href="/hub/assets/img/icons.svg#i-calendar"/></svg>Ends 20 Dec</span><span class="offer-card__go">View offer <svg class="ho-icon ho-icon--sm"><use href="/hub/assets/img/icons.svg#i-arrow"/></svg></span></span>
       </a>
 <a class="offer-card" href="/hub/offers/student-tuesdays-15-cuts/" data-cat="hair-and-beauty" data-area="harrow-town-centre" data-sub="0">
-        <span class="offer-card__top"><span class="biz-card__cat">Hair and beauty</span><span class="badge badge--soon"><svg class="ho-icon"><use href="/hub/assets/img/icons.svg#i-clock"/></svg>Ends soon</span></span>
+        <span class="offer-card__top"><span class="biz-card__cat">Hair &amp; Beauty</span><span class="badge badge--soon"><svg class="ho-icon"><use href="/hub/assets/img/icons.svg#i-clock"/></svg>Ends soon</span></span>
         <strong class="offer-card__value">£15 CUTS</strong>
         <span class="offer-card__title">Student Tuesdays: &pound;15 cuts</span>
         <span class="offer-card__biz">Station Road Barbers &middot; Harrow Town Centre</span>

@@ -279,11 +279,12 @@ def graph(meta, body, base, title):
 # ------------------------------------------------------------------ page nodes
 # Most specific schema.org type per category; a sub-category keyword can narrow it further.
 CAT_TYPE = {
-    "restaurants": "Restaurant", "cafes-and-takeaways": "CafeOrCoffeeShop", "pubs-and-bars": "BarOrPub",
+    "restaurants": "Restaurant", "food-and-drink": "FoodEstablishment", "pubs-and-bars": "BarOrPub",
     "food-shops-and-groceries": "GroceryStore", "fashion-and-clothing": "ClothingStore", "shops": "Store",
     "hair-and-beauty": "BeautySalon", "health-and-wellbeing": "HealthAndBeautyBusiness",
     "doctors-dentists-and-clinics": "MedicalBusiness", "pets": "LocalBusiness",
-    "trades-and-home-services": "HomeAndConstructionBusiness", "property-and-estate-agents": "RealEstateAgent",
+    "home-and-garden": "HomeAndConstructionBusiness", "construction-and-building-services": "GeneralContractor",
+    "education-and-tuition": "EducationalOrganization", "classes-and-activities": "LocalBusiness", "property-and-estate-agents": "RealEstateAgent",
     "finance-and-accountants": "FinancialService", "legal-services": "LegalService",
     "professional-services": "ProfessionalService", "printing-and-signs": "LocalBusiness",
     "events-and-parties": "LocalBusiness", "family-and-childcare": "ChildCare",

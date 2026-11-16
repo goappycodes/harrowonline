@@ -178,6 +178,26 @@
       "permanent": true
     },
     {
+      "source": "/hub/category/cafes-and-takeaways/",
+      "destination": "/hub/category/food-and-drink/",
+      "permanent": true
+    },
+    {
+      "source": "/hub/category/cafes-and-takeaways.html",
+      "destination": "/hub/category/food-and-drink/",
+      "permanent": true
+    },
+    {
+      "source": "/hub/category/trades-and-home-services/",
+      "destination": "/hub/categories/",
+      "permanent": true
+    },
+    {
+      "source": "/hub/category/trades-and-home-services.html",
+      "destination": "/hub/categories/",
+      "permanent": true
+    },
+    {
       "source": "/hub/:kind(business|category|area)/:slug.html",
       "destination": "/hub/:kind/:slug/",
       "permanent": true
