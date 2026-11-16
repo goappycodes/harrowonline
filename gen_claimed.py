@@ -129,7 +129,9 @@ def row(x):
     """Directory row for a claimed listing (search, category, area)."""
     c, tier = x["claimed"], x["tier"]
     promoted = tier in TOP
-    cls = "biz-row" + (" biz-row--featured" if promoted else "")
+    # biz-row--media: has a photo or logo, so on phones the row becomes a card with the picture on top
+    media = bool(c.get("logo") or c.get("images"))
+    cls = "biz-row" + (" biz-row--featured" if promoted else "") + (" biz-row--media" if media else "")
     badges = (f'<span class="badge badge--featured">{icon("star")}Featured</span>' if promoted else "") + status_badges(x)
     return f'''<article class="{cls}">
         {logo_slot(c) if c.get("logo") else f'<div class="{ph_cls(x)}">{photo_inner(x, 0, c.get("icon", "store"))}</div>'}

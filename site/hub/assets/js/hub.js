@@ -507,7 +507,8 @@
       if (tier !== "unclaimed") {
         // Claimed listing: photo, tagline, verified; Premium and Local Partner are featured (brief 01, 6.2)
         const top = tier === "premium" || tier === "partner";
-        return `<article class="biz-row${top ? " biz-row--featured" : ""}">
+        // biz-row--media: a photo or logo, shown on top of the card on phones
+        return `<article class="biz-row${top ? " biz-row--featured" : ""}${x.im ? " biz-row--media" : ""}">
         <div class="ph${x.lg ? " ph--logo" : x.im ? " ph--photo" : ""}">${x.im ? `<img src="${BASE}${esc(x.im)}" alt="" width="1200" height="800" loading="lazy" decoding="async">` : ICON(x.i || "store")}</div>
         <div class="biz-row__main">
           <span class="biz-card__cat">${esc(cat.n || "")}${x.s ? ` · <span class="muted">${esc(x.s)}</span>` : ""}</span>

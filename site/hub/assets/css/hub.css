@@ -2213,3 +2213,15 @@ main:has(> .auth) + .ho-footer { margin-top: 0; }
 /* Type scale: list pages 44px titles; detail pages (business, event, class) 34px */
 .profile-head__title, .offer-simple__title.event-simple__title { font-size: 34px; line-height: 1.2; }
 @media (max-width: 767px) { .profile-head__title, .offer-simple__title.event-simple__title { font-size: 26px; } }
+
+/* Listing rows with a photo or logo, on phones: a card with the picture full width on top,
+   then category, name, address and summary; badges stacked on the left and Call on the right (client mock-up, Nov 2026).
+   Imported listings without a picture keep the compact initials row. */
+@media (max-width: 767px) {
+  .biz-row.biz-row--media { grid-template-columns: minmax(0, 1fr); gap: var(--ho-s3); }
+  .biz-row--media > .ph { width: 100%; height: auto; aspect-ratio: 3 / 2; border-radius: var(--ho-radius); }
+  .biz-row--media > .ph.ph--logo { aspect-ratio: 16 / 9; }
+  .biz-row--media .biz-row__title { font-size: 19px; }
+  .biz-row--media .biz-row__side { align-items: flex-end; }
+  .biz-row--media .biz-row__side .cluster { flex-direction: column; align-items: flex-start; gap: 6px; }
+}
