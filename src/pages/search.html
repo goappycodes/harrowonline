@@ -1,6 +1,6 @@
 <!--
-title: Search Harrow businesses
-description: Search 2,500+ local businesses in Harrow by name, category and area on Harrow Online Hub.
+title: Search the Hub
+description: Search Harrow businesses, what's on, weekly classes and local offers on Harrow Online Hub.
 hubnav: directory
 robots: noindex, follow
 body: page-search
@@ -8,14 +8,14 @@ body: page-search
 <nav class="crumbs ho-container" aria-label="Breadcrumb"><ol><li><a href="/">Hub</a></li><li><span aria-current="page">Search</span></li></ol></nav>
 
 <header class="page-head ho-container">
-  <h1 class="page-head__title">Find a local business</h1>
-  <p class="page-head__lead mb-5">Search {{> gen-count}} Harrow businesses by name, service, category or area.</p>
+  <h1 class="page-head__title">Search the Hub</h1>
+  <p class="page-head__lead mb-5">Search {{> gen-count}} Harrow businesses, plus what&rsquo;s on, weekly classes and local offers.</p>
 
   <div class="searchbar searchbar--inline" role="search">
     <div class="searchbar__field">
       <svg class="ho-icon"><use href="#i-search"/></svg>
       <label class="ho-sr" for="s-q">What are you looking for?</label>
-      <input id="s-q" type="search" name="q" form="filters" placeholder="Plumber, Indian restaurant, dentist&hellip;" autocomplete="off">
+      <input id="s-q" type="search" name="q" form="filters" placeholder="Plumber, dance classes, pizza deals&hellip;" autocomplete="off">
     </div>
     <div class="searchbar__field">
       <svg class="ho-icon"><use href="#i-pin"/></svg>
@@ -29,9 +29,10 @@ body: page-search
 <div class="ho-container">
   <div class="layout-filters">
     <form class="filters" id="filters" data-directory-form action="/search.html" method="get">
+      <input type="hidden" name="type">
       <div class="filters__head"><h2>Filter results</h2><button class="ho-header__icon-btn filters__close" type="button" data-filters-close aria-label="Close filters"><svg class="ho-icon"><use href="#i-close"/></svg></button></div>
       <div class="filters__group">
-        <div class="field"><label for="f-cat">Category</label><select class="select" id="f-cat" name="cat"><option value="">All categories</option>{{> gen-cat-options}}</select></div>
+        <div class="field"><label for="f-cat">Business category</label><select class="select" id="f-cat" name="cat"><option value="">All categories</option>{{> gen-cat-options}}</select></div>
       </div>
       <fieldset class="filters__group"><legend>Contact details</legend>
         <ul class="check-list">
@@ -46,14 +47,17 @@ body: page-search
       <div class="filters__foot"><a class="ho-btn ho-btn--ghost" href="/search.html">Clear</a><button class="ho-btn ho-btn--primary" type="submit">Show results</button></div>
     </form>
 
-    <div data-directory data-page-size="20">
+    <div data-directory data-all data-page-size="20">
+      <nav class="tabs search-tabs" data-tabs aria-label="Result types" hidden></nav>
       <div class="toolbar">
         <p class="toolbar__count" data-count><strong>{{> gen-count}}</strong> businesses</p>
         <div class="toolbar__right"><button class="ho-btn ho-btn--sm ho-btn--outline filters-toggle" type="button" data-filters-open aria-controls="filters" aria-expanded="false"><svg class="ho-icon"><use href="#i-filter"/></svg>Filters</button></div>
       </div>
       <div class="active-filters" data-active hidden></div>
+      <div data-groups></div>
       <div data-results>{{> gen-recent-rows}}</div>
       <nav class="pager" data-pager aria-label="Pages"></nav>
+      <div data-after></div>
 
       <div class="limited-note mt-6">
         <svg class="ho-icon"><use href="#i-info"/></svg>

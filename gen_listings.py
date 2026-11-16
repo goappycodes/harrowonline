@@ -381,6 +381,45 @@ def write_partials_only():
     write_partials(Counter(x["cat"] for x in L), Counter(x["area"] for x in L))
 
 
+def search_extras(L):
+    """Upcoming events, weekly classes and live offers for the Hub search (hub.js section 11), so a search
+    for "events", "dance classes" or "pizza deals" finds them, not only businesses with those words in their name."""
+    import re
+    import sys
+    from pathlib import Path
+    sys.path.insert(0, str(Path(__file__).resolve().parent / "tools"))
+    import gen_events as G
+
+    def t(s):
+        return " ".join(unescape(re.sub(r"<[^>]+>", "", s or "")).split())
+
+    area_slug = {n: s for s, n, _a, _b in H.AREAS}
+    slim = lambda d: {k: v for k, v in d.items() if v not in ("", 0, None)}
+    events = [slim({
+        "t": t(ev["title"]), "h": ev["href"], "d": ev["day"].isoformat(), "tm": t(ev["time"]), "c": t(ev["cat"]),
+        "v": t(ev["venue"]), "an": t(ev["area"]), "a": area_slug.get(t(ev["area"]), ""), "p": t(ev["price"]),
+        "ag": t(ev["age"]), "i": ev["icon"], "im": ev.get("image", ""), "o": t(ev.get("org", "")),
+        "f": 1 if G.is_featured(ev) else 0, "sm": 1 if ev.get("sample") else 0,
+    }) for ev in G.EVENTS if ev["day"] >= H.PREVIEW_TODAY]
+    classes = []
+    for day, tm, _s, title, venue, area, price, age, ic, feat, ctype in G.CLASSES:
+        real = G.CLASS_REAL.get(title) or {}
+        classes.append({**slim({
+            "t": t(title), "h": G.class_href(title), "tm": t(tm), "c": t(ctype), "v": t(venue), "an": t(area),
+            "a": area_slug.get(t(area), ""), "p": t(price), "ag": t(age), "i": ic, "im": real.get("img", ""),
+            "lg": 1 if real.get("fit") == "logo" else 0, "o": t(G.CLASS_PROVIDER.get(title, "")),
+            "f": 1 if feat else 0, "sm": 0 if real else 1,
+        }), "wd": day})   # weekday, 0 = Monday (kept even when 0)
+    offers = [slim({
+        "t": t(o["title"]), "h": o["href"], "vl": t(C.offer_value(o)), "b": x["name"], "k": x["slug"], "a": x["area"],
+        "c": x["cat"], "e": C.ends_label(o), "sub": 1 if o.get("sub") else 0, "f": 1 if o.get("featured") else 0,
+        "sm": 1 if C.is_sample(x) else 0,
+    }) for x, o in C.all_offers(L)]
+    w0, w1 = G.WEEKEND
+    return {"today": H.PREVIEW_TODAY.isoformat(), "weekend": [w0.isoformat(), w1.isoformat()],
+            "events": events, "classes": classes, "offers": offers}
+
+
 def build_all():
     from build import OUT as SITE
     L = listings()
@@ -426,6 +465,7 @@ def build_all():
             }.items() if v not in ("", 0)}
             for x in L
         ],
+        **search_extras(L),
     }
     (SITE / "data" / "hub-index.json").write_text(json.dumps(index, ensure_ascii=False, separators=(",", ":")), encoding="utf-8")
     print(f"Generated {len(L)} profiles, {len(H.CATEGORIES)} categories, {len(H.AREAS)} areas")

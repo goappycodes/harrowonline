@@ -2225,3 +2225,22 @@ main:has(> .auth) + .ho-footer { margin-top: 0; }
   .biz-row--media .biz-row__side { align-items: flex-end; }
   .biz-row--media .biz-row__side .cluster { flex-direction: column; align-items: flex-start; gap: 6px; }
 }
+
+/* Search page: events, classes and offers beside businesses, in tabs (hub.js section 11) */
+.search-tabs { margin-bottom: var(--ho-s3); scrollbar-width: none; }
+.search-tabs::-webkit-scrollbar { display: none; }
+.tabs { overflow-y: hidden; }   /* the 3px underline sits 1px over the line: no stray vertical scrollbar */
+.search-group { margin-bottom: var(--ho-s6); }
+.search-group__head { display: flex; align-items: baseline; justify-content: space-between; gap: var(--ho-s3); margin: 0 0 var(--ho-s2); padding-bottom: var(--ho-s2); border-bottom: 2px solid var(--ho-ink); }
+.search-group__head h2 { margin: 0; font: 700 20px/1.2 var(--ho-font-head); }
+.search-group__head .count { margin-left: 8px; padding: 1px 8px; border-radius: 999px; background: var(--ho-soft); font: 600 13px/1.4 var(--ho-font-ui); vertical-align: middle; }
+.search-group__head a { display: inline-flex; align-items: center; gap: 4px; font: 600 14px var(--ho-font-ui); white-space: nowrap; }
+.search-group .offer-cards { margin-top: var(--ho-s4); }
+[data-directory] .offer-cards { grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); }
+.date-tile--day { padding: 8px 0 10px; }
+.date-tile--day .date-tile__d { font-size: 19px; }
+/* Hub header search: "Search news instead" */
+.ho-search__form--hub { flex-wrap: wrap; align-items: center; }
+.ho-search__form--hub .ho-search__input { flex: 1 1 260px; }
+.ho-search__alt { flex-basis: 100%; font: 600 14px var(--ho-font-ui); color: var(--ho-muted); }
+.ho-search__alt:hover { color: var(--ho-red); }

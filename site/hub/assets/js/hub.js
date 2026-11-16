@@ -46,6 +46,14 @@
     btn.setAttribute("aria-expanded", String(!panel.hidden));
     if (!panel.hidden) $("input", panel).focus();
   }));
+  // Hub header search: "Search news instead" carries what was typed to the news site's search
+  $$("[data-news-search]").forEach((a) => {
+    const inp = $("input[type=search]", a.closest("form") || a.parentElement.parentElement);
+    if (!inp) return;
+    const sync = () => { a.href = "https://harrowonline.org/?s=" + encodeURIComponent(inp.value.trim()); };
+    inp.addEventListener("input", sync);
+    sync();
+  });
 
   /* 3. Mobile filter sheet */
   $$("[data-filters-open]").forEach((b) => b.addEventListener("click", () => {
@@ -481,10 +489,16 @@
     const pagerEl = $("[data-pager]", dir);
     const activeEl = $("[data-active]");
     let INDEX = null;
+    // Search page only (data-all): events, weekly classes and offers beside businesses, one tab each
+    const ALL = dir.hasAttribute("data-all");
+    const tabsEl = $("[data-tabs]", dir);
+    const groupsEl = $("[data-groups]", dir);
+    const afterEl = $("[data-after]", dir);
 
     const params = () => {
       const u = new URLSearchParams(location.search);
       return {
+        type: u.get("type") || "",
         q: (u.get("q") || "").trim(),
         cat: fixed.cat || u.get("cat") || "",
         area: fixed.area || u.get("area") || "",
@@ -530,6 +544,166 @@
       </article>`;
     };
 
+    /* ---- Search everything (search page). Common words open the matching tab: "events", "what's on",
+       "this weekend" → What's On; "classes", "lessons" → Classes; "offers", "deals" → Offers. The other
+       words still filter that tab ("dance classes", "pizza deals", "kids events this weekend"). ---- */
+    const TYPES = [["all", "All"], ["events", "What&rsquo;s On"], ["classes", "Classes"], ["offers", "Offers"], ["businesses", "Businesses"]];
+    const LABEL = Object.fromEntries(TYPES);
+    const NOUN = { events: ["event", "events"], classes: ["class", "classes"], offers: ["offer", "offers"] };
+    const SECTION = { events: ["/events/", "See everything on What&rsquo;s On", "calendar"], classes: ["/classes/", "See all weekly classes", "repeat"], offers: ["/offers/", "See all offers", "tag"] };
+    const INTENTS = [
+      ["events", ["what's on", "whats on", "what is on", "things to do", "this weekend", "this week", "weekend", "tonight", "today", "tomorrow", "events", "event"]],
+      ["classes", ["weekly classes", "classes", "class", "lessons", "lesson", "courses", "course"]],
+      ["offers", ["promo codes", "offers", "offer", "deals", "deal", "discounts", "discount", "vouchers", "voucher", "promotions"]],
+    ];
+    const WHEN = { today: "today", tonight: "today", tomorrow: "tomorrow", "this weekend": "weekend", weekend: "weekend", "this week": "week" };
+    const WHEN_LABEL = { today: "today", tomorrow: "tomorrow", weekend: "this weekend", week: "this week" };
+    const STOP = new Set(["in", "near", "me", "for", "the", "a", "an", "and", "at", "on", "of", "to", "any", "find", "show", "local", "harrow"]);
+    const ALIAS = {
+      kids: ["kid", "child", "junior", "toddler", "teen", "under ", "family", "mini"], children: ["kid", "child", "junior", "toddler", "family"],
+      football: ["football", "soccer"], soccer: ["football", "soccer"], dance: ["dance", "ballet"], dancing: ["dance", "ballet"],
+      fitness: ["fitness", "yoga", "spin", "bootcamp"], exercise: ["fitness", "yoga", "spin", "bootcamp"], tutoring: ["tuition", "tutor"], tutor: ["tuition", "tutor"],
+    };
+    const DAYS = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];   // classes: wd 0 = Monday
+    const MON = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+    const WD = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+    const norm = (s) => (s || "").toLowerCase().replace(/[‘’]/g, "'");
+    const words = (s) => norm(s).replace(/[^a-z0-9' ]+/g, " ").split(/\s+/).filter(Boolean);
+    // "plumbers" finds "plumber"
+    const hasWord = (hay, t) => hay.includes(t) || (t.length > 3 && t.endsWith("s") && hay.includes(t.slice(0, -1)));
+    const has = (hay, t) => hasWord(hay, t) || (ALIAS[t] || []).some((a) => hay.includes(a));
+    const parseQ = (q) => {
+      let s = ` ${words(q).join(" ")} `;
+      let intent = "", when = "";
+      for (const [type, list] of INTENTS) for (const w of list) {
+        if (!s.includes(` ${w} `) || (intent && intent !== type)) continue;
+        intent = type;
+        if (WHEN[w] && !when) when = WHEN[w];
+        s = s.replace(` ${w} `, " ");
+      }
+      return { intent, when, rest: s.trim().split(" ").filter((w) => w && !STOP.has(w)) };
+    };
+    const rank = (list, terms) => !terms.length ? list : list.map((x, i) => {
+      let score = 0;
+      for (const t of terms) {
+        if (!has(x._h, t)) return null;
+        score += x._n.startsWith(t) ? 6 : x._n.includes(t) ? 4 : 1;
+      }
+      return [score, i, x];
+    }).filter(Boolean).sort((a, b) => b[0] - a[0] || a[1] - b[1]).map((a) => a[2]);
+    const addDays = (iso, n) => { const d = new Date(iso + "T12:00:00"); d.setDate(d.getDate() + n); return d.toISOString().slice(0, 10); };
+    const onWhen = (x, when) => {
+      const T = INDEX.today;
+      if (when === "today") return x.d === T;
+      if (when === "tomorrow") return x.d === addDays(T, 1);
+      if (when === "weekend") return x.d >= INDEX.weekend[0] && x.d <= INDEX.weekend[1];
+      return x.d < addDays(T, 7);
+    };
+    const prep = () => {
+      (INDEX.events || []).forEach((x) => { x._n = norm(x.t); x._h = norm([x.t, x.c, x.v, x.an, x.ag, x.o, x.p].join(" ")); });
+      (INDEX.classes || []).forEach((x) => { x._n = norm(x.t); x._h = norm([x.t, x.c, x.v, x.an, x.ag, x.o, x.p, "weekly every " + DAYS[x.wd]].join(" ")); });
+      (INDEX.offers || []).forEach((x) => { x._n = norm(x.t); x._h = norm([x.t, x.vl, x.b, (INDEX.cats[x.c] || {}).n, INDEX.areas[x.a]].join(" ")); });
+    };
+
+    // Cards: the same markup as the What's On list and the Offers page
+    const FEAT = `<span class="badge badge--featured">${ICON("star")}Featured</span>`;
+    const SAMPLE = `<span class="badge badge--sample" title="Made-up content for the preview. Removed before launch.">${ICON("alert")}Sample</span>`;
+    const media = (x, cls) => x.im ?
+      `<div class="${cls}${x.lg ? " ph--logo" : " ph--photo"}"><img src="${BASE}${esc(x.im)}" alt="" width="1200" height="800" loading="lazy" decoding="async"></div>` :
+      `<div class="${cls}">${ICON(x.i || "calendar")}</div>`;
+    const eventRow = (x) => {
+      const d = new Date(x.d + "T12:00:00");
+      return `<article class="event-row${x.f ? " event-row--featured" : ""}">
+        <time class="date-tile" datetime="${x.d}"><span class="date-tile__m">${MON[d.getMonth()]}</span><span class="date-tile__d">${d.getDate()}</span><span class="date-tile__w">${WD[d.getDay()]}</span></time>
+        ${media(x, x.f ? "ph ph--red" : "ph")}
+        <div>
+          <div class="cluster mb-2">${x.f ? FEAT : x.sm ? SAMPLE : ""}<span class="biz-card__cat">${esc(x.c)}</span></div>
+          <h3 class="event-row__title"><a href="${BASE}${x.h}">${esc(x.t)}</a></h3>
+          <p class="card__meta"><span>${ICON("clock")}${esc(x.tm)}</span><span>${ICON("pin")}${esc(x.v)}, ${esc(x.an)}</span>${x.ag ? `<span>${ICON("people")}${esc(x.ag)}</span>` : ""}</p>
+        </div>
+        <div class="event-row__side"><strong>${esc(x.p || "")}</strong></div>
+      </article>`;
+    };
+    const classRow = (x) => `<article class="event-row${x.f ? " event-row--featured" : ""}">
+        <span class="date-tile date-tile--day"><span class="date-tile__m">Every</span><span class="date-tile__d">${DAYS[x.wd].slice(0, 3)}</span></span>
+        ${media(x, x.f ? "ph ph--dark" : "ph")}
+        <div>
+          <div class="cluster mb-2">${x.f ? FEAT : x.sm ? SAMPLE : ""}<span class="badge badge--outline">${ICON("repeat")}Weekly class</span><span class="biz-card__cat">${esc(x.c)}</span></div>
+          <h3 class="event-row__title"><a href="${BASE}${x.h}">${esc(x.t)}</a></h3>
+          <p class="card__meta"><span>${ICON("repeat")}Every ${DAYS[x.wd]}, ${esc(x.tm)}</span><span>${ICON("pin")}${esc(x.v)}, ${esc(x.an)}</span>${x.ag ? `<span>${ICON("people")}${esc(x.ag)}</span>` : ""}</p>
+        </div>
+        <div class="event-row__side"><strong>${esc(x.p || "")}</strong></div>
+      </article>`;
+    const offerCard = (x) => {
+      const soon = /^Ends (in|today|tomorrow)/.test(x.e || "");
+      const tags = (x.f ? FEAT : "") + (x.sub ? `<span class="badge badge--sub">${ICON("lock")}Subscriber-only</span>` : "") +
+        (soon ? `<span class="badge badge--soon">${ICON("clock")}Ends soon</span>` : "");
+      return `<a class="offer-card${x.f ? " offer-card--featured" : ""}" href="${BASE}${x.h}">
+        <span class="offer-card__top"><span class="biz-card__cat">${esc((INDEX.cats[x.c] || {}).n || "")}</span>${tags}</span>
+        <strong class="offer-card__value">${esc(x.vl)}</strong>
+        <span class="offer-card__title">${esc(x.t)}</span>
+        <span class="offer-card__biz">${esc(x.b)} &middot; ${esc(INDEX.areas[x.a] || "")}</span>
+        <span class="offer-card__foot"><span>${ICON("calendar", "ho-icon ho-icon--sm")}${esc(x.e || "")}</span><span class="offer-card__go">View offer ${ICON("arrow", "ho-icon ho-icon--sm")}</span></span>
+      </a>`;
+    };
+    const cards = (k, xs) => k === "offers" ? `<div class="offer-cards">${xs.map(offerCard).join("")}</div>` : xs.map(k === "events" ? eventRow : classRow).join("");
+
+    // Tabs, the "All" overview and the What's On / Classes / Offers tabs. Returns the tab shown.
+    const renderGroups = (p, items) => {
+      const qi = p.q ? parseQ(p.q) : { intent: "", when: "", rest: [] };
+      const full = words(p.q).filter((w) => !STOP.has(w));
+      const termsFor = (k) => (qi.intent === k ? qi.rest : full);
+      const inArea = (x) => !p.area || x.a === p.area;
+      let ev = rank((INDEX.events || []).filter(inArea), termsFor("events"));
+      if (qi.intent === "events" && qi.when) ev = ev.filter((x) => onWhen(x, qi.when));
+      const G = {
+        events: ev,
+        classes: rank((INDEX.classes || []).filter(inArea), termsFor("classes")),
+        offers: rank((INDEX.offers || []).filter((x) => inArea(x) && (!p.cat || x.c === p.cat)), termsFor("offers")),
+        businesses: items,
+      };
+      const total = G.events.length + G.classes.length + G.offers.length + items.length;
+      // A common word opens its tab, unless that tab is empty and other tabs have results ("first class plumbing")
+      const auto = qi.intent && (G[qi.intent].length || !total) ? qi.intent : "all";
+      const type = LABEL[p.type] ? p.type : (p.q ? auto : "all");
+      const href = (k) => { const u = new URLSearchParams(location.search); u.delete("page"); u.set("type", k); return "?" + u.toString(); };
+      const num = (n) => n.toLocaleString("en-GB");
+      const forQ = p.q ? ` for &ldquo;${esc(p.q)}&rdquo;` : "";
+
+      tabsEl.innerHTML = TYPES.map(([k, label]) => {
+        const n = k === "all" ? (p.q ? total : null) : G[k].length;
+        return `<a href="${href(k)}" data-nav${k === type ? ' aria-current="page"' : ""}>${label}${n === null ? "" : `<span class="count">${num(n)}</span>`}</a>`;
+      }).join("");
+      tabsEl.hidden = false;
+      const curTab = $("[aria-current]", tabsEl);   // phones: the tabs scroll sideways, keep the current one in view
+      if (curTab) tabsEl.scrollLeft = Math.max(0, curTab.offsetLeft - 16);
+      groupsEl.innerHTML = "";
+      afterEl.innerHTML = "";
+
+      if (type === "all" && p.q) {
+        if (countEl) countEl.innerHTML = `<strong>${num(total)}</strong> ${total === 1 ? "result" : "results"}${forQ}`;
+        const secs = ["events", "classes", "offers"].filter((k) => G[k].length).map((k) => `<section class="search-group">
+          <div class="search-group__head"><h2>${LABEL[k]}<span class="count">${num(G[k].length)}</span></h2>${G[k].length > 3 ? `<a href="${href(k)}" data-nav>See all ${num(G[k].length)} ${NOUN[k][1]}${ICON("arrow", "ho-icon ho-icon--sm")}</a>` : ""}</div>
+          ${cards(k, G[k].slice(0, 3))}
+        </section>`).join("");
+        groupsEl.innerHTML = secs + (secs && items.length ? `<div class="search-group__head"><h2>Businesses<span class="count">${num(items.length)}</span></h2></div>` : "");
+      } else if (SECTION[type]) {
+        const xs = G[type];
+        const whenOnly = type === qi.intent && qi.when && !qi.rest.length;
+        if (countEl) countEl.innerHTML = `<strong>${num(xs.length)}</strong> ${NOUN[type][xs.length === 1 ? 0 : 1]}${whenOnly ? " " + WHEN_LABEL[qi.when] : forQ}`;
+        const [path, more, ic] = SECTION[type];
+        resultsEl.innerHTML = xs.length ? cards(type, xs) :
+          `<div class="empty">${ICON(ic)}<h3>No ${NOUN[type][1]} found</h3><p>Try a different word, or another area.</p><a class="ho-btn ho-btn--primary" href="${BASE}${path}">${more}</a></div>`;
+        const links = [`<a href="${BASE}${path}">${more}</a>`];
+        if (p.q && items.length) links.push(`<a href="${href("businesses")}" data-nav>see ${num(items.length)} ${items.length === 1 ? "business" : "businesses"} matching &ldquo;${esc(p.q)}&rdquo;</a>`);
+        afterEl.innerHTML = `<div class="limited-note mt-6">${ICON("info")}<p class="mb-0">${links.join(", or ")}.</p></div>`;
+      } else if (type === "businesses" && qi.intent && G[qi.intent].length) {
+        const k = qi.intent;
+        afterEl.innerHTML = `<div class="limited-note mt-6">${ICON(SECTION[k][2])}<p class="mb-0">Looking for ${NOUN[k][1]}? <a href="${href(k)}" data-nav>See ${num(G[k].length)} ${NOUN[k][G[k].length === 1 ? 0 : 1]}${qi.rest.length ? ` for &ldquo;${esc(qi.rest.join(" "))}&rdquo;` : ""}</a>.</p></div>`;
+      }
+      return type;
+    };
+
     const render = () => {
       const p = params();
       const terms = p.q.toLowerCase().split(/\s+/).filter(Boolean);
@@ -541,7 +715,7 @@
           const name = x.n.toLowerCase();
           let score = 0;
           for (const t of terms) {
-            if (!hay.includes(t)) return null;
+            if (!hasWord(hay, t)) return null;
             score += name.startsWith(t) ? 6 : name.includes(t) ? 4 : 1;
           }
           return [score, x];
@@ -550,14 +724,20 @@
       // Ranking rule (brief 01, 6.2): paid featured first, then claimed, then unclaimed
       items = items.map((x, i) => [x, i]).sort((a, b) => (tierRank[a[0].t || "unclaimed"] - tierRank[b[0].t || "unclaimed"]) || (p.sort === "name" ? a[0].n.localeCompare(b[0].n) : a[1] - b[1])).map((a) => a[0]);
 
+      const type = ALL ? renderGroups(p, items) : "businesses";
+      const bizView = type === "all" || type === "businesses";
+      const overview = type === "all" && !!p.q;   // "All" with a search: count and sections set by renderGroups
+
       const total = items.length;
-      const pages = Math.max(1, Math.ceil(total / PAGE));
+      const pages = bizView ? Math.max(1, Math.ceil(total / PAGE)) : 1;
       const page = Math.min(p.page, pages);
       const slice = items.slice((page - 1) * PAGE, page * PAGE);
 
-      if (countEl) countEl.innerHTML = `<strong>${total.toLocaleString("en-GB")}</strong> ${total === 1 ? "business" : "businesses"}${p.q ? ` for &ldquo;${esc(p.q)}&rdquo;` : ""}`;
-      resultsEl.innerHTML = slice.length ? slice.map(row).join("") :
-        `<div class="empty">${ICON("search")}<h3>No businesses found</h3><p>Try a different word, or clear a filter. Can&rsquo;t find a business you know? Add it to the Hub.</p><a class="ho-btn ho-btn--primary" href="${BASE}/add-business/">${ICON("plus")}Add a business</a></div>`;
+      if (bizView) {
+        if (countEl && !overview) countEl.innerHTML = `<strong>${total.toLocaleString("en-GB")}</strong> ${total === 1 ? "business" : "businesses"}${p.q ? ` for &ldquo;${esc(p.q)}&rdquo;` : ""}`;
+        resultsEl.innerHTML = slice.length ? slice.map(row).join("") : overview && groupsEl.innerHTML ? "" :
+          `<div class="empty">${ICON("search")}<h3>${overview ? "Nothing found" : "No businesses found"}</h3><p>Try a different word, or clear a filter. Can&rsquo;t find a business you know? Add it to the Hub.</p><a class="ho-btn ho-btn--primary" href="${BASE}/add-business/">${ICON("plus")}Add a business</a></div>`;
+      }
 
       if (activeEl) {
         const chips = [];
@@ -589,7 +769,7 @@
       // Reflect state in the filter form
       if (form) {
         const set = (name, v) => { const el = form.elements[name]; if (!el) return; if (el.type === "checkbox") el.checked = !!v; else el.value = v; };
-        set("q", p.q); if (!fixed.cat) set("cat", p.cat); if (!fixed.area) set("area", p.area); set("web", p.web); set("phone", p.phone); set("sort", p.sort);
+        set("q", p.q); set("type", p.type); if (!fixed.cat) set("cat", p.cat); if (!fixed.area) set("area", p.area); set("web", p.web); set("phone", p.phone); set("sort", p.sort);
         $$("input[name=cat][type=radio]", form).forEach((r) => { r.checked = r.value === p.cat; });
         $$("input[name=area][type=radio]", form).forEach((r) => { r.checked = r.value === p.area; });
       }
@@ -600,6 +780,7 @@
       e.preventDefault();
       const u = new URLSearchParams();
       new FormData(form).forEach((v, k) => { if (v !== "" && !(k === "sort" && v === "relevance")) u.set(k, v); });
+      if ((u.get("q") || "") !== params().q) u.delete("type");   // a new search picks its own tab; filter changes keep it
       history.pushState(null, "", "?" + u.toString());
       render();
       document.body.classList.remove("ho-lock");
@@ -611,15 +792,16 @@
     }));
     window.addEventListener("popstate", render);
     document.addEventListener("click", (e) => {
-      const a = e.target.closest("[data-pager] a, [data-active] a");
-      if (!a) return;
+      const a = e.target.closest("[data-pager] a, [data-active] a, a[data-nav]");
+      if (!a || !INDEX) return;
       e.preventDefault();
       history.pushState(null, "", a.getAttribute("href"));
       render();
-      resultsEl.scrollIntoView({ block: "start" });
+      if (a.hasAttribute("data-nav") && tabsEl) tabsEl.scrollIntoView({ block: "nearest" });
+      else resultsEl.scrollIntoView({ block: "start" });
     });
 
-    fetch(BASE + "/data/hub-index.json").then((r) => r.json()).then((d) => { INDEX = d; render(); })
+    fetch(BASE + "/data/hub-index.json").then((r) => r.json()).then((d) => { INDEX = d; if (ALL) prep(); render(); })
       .catch(() => { /* keep the server-rendered first page */ });
   }
 })();

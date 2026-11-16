@@ -34,11 +34,16 @@
 
         <div class="ho-search" id="ho-search" hidden>
             <div class="ho-container">
-                <form class="ho-search__form" role="search" method="get" action="https://harrowonline.org/">
+                {{site:hub}}<form class="ho-search__form ho-search__form--hub" role="search" method="get" action="/search.html">
+                    <label class="ho-sr" for="ho-search-input">Search the Hub</label>
+                    <input class="ho-search__input" id="ho-search-input" type="search" name="q" value="" placeholder="Search businesses, events, classes and offers&hellip;" autocomplete="off">
+                    <button class="ho-btn ho-btn--primary" type="submit">Search</button>
+                    <a class="ho-search__alt" href="https://harrowonline.org/?s=" data-news-search>Search news instead</a>
+                </form>{{/site}}{{site:news}}<form class="ho-search__form" role="search" method="get" action="https://harrowonline.org/">
                     <label class="ho-sr" for="ho-search-input">Search Harrow Online</label>
                     <input class="ho-search__input" id="ho-search-input" type="search" name="s" value="" placeholder="Search Harrow news&hellip;" autocomplete="off">
                     <button class="ho-btn ho-btn--primary" type="submit">Search</button>
-                </form>
+                </form>{{/site}}
             </div>
         </div>
     </header>
@@ -53,9 +58,11 @@
                 <button class="ho-header__icon-btn" type="button" aria-label="Close menu" data-ho-drawer-close>
                     <svg class="ho-icon ho-icon--close" viewBox="0 0 24 24" width="24" height="24" aria-hidden="true" focusable="false"><path d="M6 6l12 12M18 6 6 18" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></svg>                </button>
             </div>
-            <form class="ho-drawer__search" role="search" method="get" action="https://harrowonline.org/">
+            {{site:hub}}<form class="ho-drawer__search" role="search" method="get" action="/search.html">
+                <label class="ho-sr" for="ho-drawer-search">Search the Hub</label>
+                <input id="ho-drawer-search" type="search" name="q" placeholder="Search the Hub&hellip;" autocomplete="off">{{/site}}{{site:news}}<form class="ho-drawer__search" role="search" method="get" action="https://harrowonline.org/">
                 <label class="ho-sr" for="ho-drawer-search">Search</label>
-                <input id="ho-drawer-search" type="search" name="s" placeholder="Search Harrow news&hellip;" autocomplete="off">
+                <input id="ho-drawer-search" type="search" name="s" placeholder="Search Harrow news&hellip;" autocomplete="off">{{/site}}
                 <button type="submit" aria-label="Search"><svg class="ho-icon ho-icon--search" viewBox="0 0 24 24" width="24" height="24" aria-hidden="true" focusable="false"><circle cx="11" cy="11" r="7" fill="none" stroke="currentColor" stroke-width="2.2"/><path d="m20 20-4.2-4.2" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></svg></button>
             </form>
             <nav class="ho-drawer__nav" aria-label="Mobile">
