@@ -81,7 +81,8 @@ def seo_meta(x, meta):
         meta.pop("robots", None)
         a = H.AREA_BY_SLUG[x["area"]]
         meta["ld"] = [seo.local_business(x, BASE(), area_name(x["area"]), cat_name(x["cat"]), C.DAYS, (a[2], a[3]))]
-        imgs = (x.get("claimed") or {}).get("images")
+        cl = x.get("claimed") or {}
+        imgs = cl.get("images") or ([cl["cover"]] if cl.get("cover") else [])
         if imgs and not C.is_sample(x):
             meta["image"] = seo.absolute(BASE(), imgs[0])   # real business: share preview uses its own photo
     else:
@@ -105,7 +106,7 @@ def profile(x, related):
     if x.get("tier"):
         crumb = crumbs([("Hub", "/"), (cat_name(x["cat"]), f"/category/{x['cat']}.html"), (area_name(x["area"]), f"/area/{x['area']}.html"), (x["name"], "")])
         rel = "".join(biz_row(r) for r in related) or '<p class="muted">No other listings in this area yet.</p>'
-        meta = {"title": f'{x["name"]} in {area_name(x["area"])}',
+        meta = {"title": x["claimed"].get("seo_title") or f'{x["name"]} in {area_name(x["area"])}',   # "seo_title": for very long names
                 "description": f'{x["name"]} ({x["sub"]}) in {area_name(x["area"])}, Harrow: opening hours, photos, Local Offers, events and contact details on Harrow Online Hub.',
                 "hubnav": "directory"}
         if not C.is_sample(x):   # real business: its own one-line summary

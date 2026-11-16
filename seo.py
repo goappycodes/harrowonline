@@ -110,7 +110,8 @@ def listing_indexable(x):
     c = x.get("claimed")
     if not c:
         return False
-    has_hours = any(h and h.lower() != "closed" for h in c.get("hours", []))
+    # A club's weekly schedule ("schedule" in claimed.json) counts as its hours
+    has_hours = any(h and h.lower() != "closed" for h in c.get("hours", [])) or bool(c.get("schedule"))
     return words(c.get("description", [])) >= MIN_DESC_WORDS and (has_hours or c.get("photos", 0) > 0)
 
 
@@ -293,9 +294,10 @@ CAT_TYPE = {
 SUB_TYPE = [
     (r"dent", "Dentist"), (r"pharmac", "Pharmacy"), (r"barber|hair", "HairSalon"), (r"plumb|heating", "Plumber"),
     (r"football|sports club", "SportsClub"), (r"bike|cycle", "BikeStore"), (r"book", "BookStore"), (r"florist", "Florist"), (r"gym|fitness", "ExerciseGym"),
-    (r"indian|chinese|thai|italian|british", "Restaurant"), (r"vet", "VeterinaryCare"), (r"electric", "Electrician"),
+    (r"indian|chinese|thai|italian|british|sri lankan|pizza", "Restaurant"), (r"vet", "VeterinaryCare"), (r"electric", "Electrician"),
     (r"estate agent|letting", "RealEstateAgent"), (r"account", "AccountingService"), (r"solicitor", "Attorney"),
-    (r"coding|tutor|school|class", "EducationalOrganization"), (r"association", "Organization"),
+    (r"coding|tutor|tuition|school|class", "EducationalOrganization"), (r"landscap|garden", "HomeAndConstructionBusiness"),
+    (r"builder|building contractor|construction", "GeneralContractor"), (r"association", "Organization"),
 ]
 DAY_URI = "https://schema.org/{}"
 TIME_RE = re.compile(r"(\d{1,2})(?:[.:](\d{2}))?\s*(am|pm)", re.I)
@@ -314,6 +316,9 @@ def opening_hours(days, hours):
     """['Monday', …] + ['9am to 5.30pm', 'Closed', '9am to 1pm, 2pm to 5pm'] → OpeningHoursSpecification list."""
     out = []
     for day, h in zip(days, hours):
+        if "24 hours" in h.lower():
+            out.append({"@type": "OpeningHoursSpecification", "dayOfWeek": DAY_URI.format(day), "opens": "00:00", "closes": "23:59"})
+            continue
         for part in re.split(r",|&| and ", h):
             ends = [to_24h(p) for p in part.split(" to ")]
             if len(ends) == 2 and all(ends):
@@ -339,10 +344,13 @@ def local_business(x, base, area_name, cat_name, days, area_centre):
         "address": {"@type": "PostalAddress", "streetAddress": htmllib.unescape(c.get("address") or x.get("address", "")),
                     "addressLocality": area_name, "addressRegion": "Harrow", "postalCode": x.get("postcode", ""), "addressCountry": "GB"},
         "areaServed": {"@type": "Place", "name": f"{area_name}, Harrow"},
-        "image": absolute(base, OG_IMAGE),   # replaced by the business's own photo in WordPress
     }
+    if c.get("service_area"):   # mobile business: no street address, the area it covers instead
+        node["address"] = {"@type": "PostalAddress", "addressLocality": "Harrow", "addressRegion": "London", "addressCountry": "GB"}
+        node["areaServed"] = {"@type": "Place", "name": htmllib.unescape(c["service_area"])}
+    node["image"] = absolute(base, OG_IMAGE)   # replaced by the business's own photo in WordPress
     if not str(x.get("id", "")).startswith("sample-"):   # real business: its own logo and photos
-        own = ([c["logo"]] if c.get("logo") else []) + list(c.get("images", []))
+        own = ([c["logo"]] if c.get("logo") else []) + list(c.get("images", [])) + ([c["cover"]] if c.get("cover") else [])
         if own:
             node["image"] = [absolute(base, i) for i in own]
         if c.get("logo"):

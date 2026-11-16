@@ -11,6 +11,15 @@ C = [
  ("Saturday Soccer School: Reception to Year 2", "Children&rsquo;s activities", "Every Saturday, 10am to 11am", "Hatch End", "Ages 4 to 7 (Reception to Year 2)", "&pound;6", "family", True, "Parkfield Youth FC", "Football coaching from DBS-checked, FA-qualified coaches. No booking needed: just turn up."),
  ("Saturday Soccer School: Years 3 to 9", "Children&rsquo;s activities", "Every Saturday, 11am to 12pm", "Hatch End", "Ages 7 to 14 (Years 3 to 9)", "&pound;6", "family", True, "Parkfield Youth FC", "Football coaching from DBS-checked, FA-qualified coaches. No booking needed: just turn up."),
  ("Girls&rsquo; Saturday Soccer School", "Children&rsquo;s activities", "Every Saturday, time to be confirmed", "Hatch End", "Girls (ages to be confirmed)", "Ask the club", "family", True, "Parkfield Youth FC", "A girls-only Soccer School session. Call or email the club for the time before you go."),
+ ("Saturday Small Group Tuition", "Children&rsquo;s activities", "Every Saturday, 10am to 2pm", "South Harrow", "Ages 7 to 18 (Years 3 to 13)", "From &pound;8.50 an hour", "edit", True, "GradeSmart Tuition", "Maths, English and Science in groups of six or fewer. Free assessment and 75% off the first month."),
+ ("Kids&rsquo; Breakdance", "Dance schools", "Every Monday, 5pm to 6.30pm", "Hatch End", "Ages 8+", "Free trial, then ask for prices", "music", True, "Kidology Dance Co", "Footwork, freezes and power moves at Harrow Arts Centre. Book by half term. Free trial class available."),
+ ("Musical Theatre for Kids", "Dance schools", "Every Thursday, 5pm to 6pm", "Hatch End", "Ages 8+", "Free trial, then ask for prices", "music", True, "Kidology Dance Co", "Singing, acting and dance from the musicals. Book by half term. Free trial class available."),
+ ("Toddler Dance", "Dance schools", "Every Friday, 5pm to 5.45pm", "Hatch End", "Ages 2 to 4", "Free trial, then ask for prices", "music", True, "Kidology Dance Co", "A first dance class: music, movement and fun. Book by half term. Free trial class available."),
+ ("Mini Street Dance", "Dance schools", "Every Friday, 5pm to 6pm", "Hatch End", "Ages 5 to 7", "Free trial, then ask for prices", "music", True, "Kidology Dance Co", "Fun street dance routines to the latest music. Book by half term. Free trial class available."),
+ ("Junior Street Dance", "Dance schools", "Every Friday, 5pm to 6pm", "Hatch End", "Ages 8 to 11", "Free trial, then ask for prices", "music", True, "Kidology Dance Co", "Street dance and hip-hop routines. Book by half term. Free trial class available."),
+ ("Senior Street Dance and Hip-Hop", "Dance schools", "Every Friday, 6pm to 7pm", "Hatch End", "Ages 12+", "Free trial, then ask for prices", "music", True, "Kidology Dance Co", "Routines for performances and the annual showcase. Book by half term. Free trial class available."),
+ ("Kodak FC Youth Football", "Children&rsquo;s activities", "Training and matches, times vary by age group", "Harrow Weald", "Youth teams", "Ask the club", "family", True, "Kodak FC", "Youth teams in the Harrow Youth Football League, with FA-qualified coaches. Call the club to find the right age group."),
+ ("Kodak FC Adult Football", "Fitness", "Training and Saturday matches, times vary by team", "Harrow Weald", "Adults", "Ask the club", "people", True, "Kodak FC", "Senior teams in the Middlesex County Football League. New players welcome, including those coming back to football."),
  ("Weekend Bootcamp", "Fitness", "Every Saturday, 9am", "Wealdstone", "Adults", "&pound;10", "dumbbell", True, "Wealdstone Fitness Studio", "Circuits for every fitness level. First session free."),
  ("Evening Yoga Flow", "Fitness", "Every Friday, 6.30pm", "Wealdstone", "Adults", "&pound;10", "dumbbell", True, "Wealdstone Fitness Studio", "An hour of vinyasa yoga to end the week. Mats provided."),
  ("Saturday Kids&rsquo; Coding Club", "Children&rsquo;s activities", "Every Saturday, 10am", "Kenton", "Ages 8 to 12", "&pound;12", "family", False, "Bright Sparks Coding", "Games and animations in Scratch and Python. Laptops provided."),
@@ -23,8 +32,18 @@ C = [
  ("Chair Yoga for Over-60s", "Fitness", "Every Monday, 11am", "Headstone", "Ages 60+", "&pound;3", "heart", False, "St George&rsquo;s Hall", "Gentle seated yoga to help with balance and movement."),
  ("Conversational Spanish", "Other regular classes", "Every Thursday, 7pm", "North Harrow", "Adults", "&pound;90 for 10 weeks", "people", False, "North Harrow Community Library", "A relaxed evening class for improvers. Join any week."),
 ]
-REAL = {t: ("/assets/img/business/parkfield-youth-fc-team.jpg", "Parkfield Youth FC players in a team huddle", "/business/parkfield-youth-fc-hatch-end.html")
-        for t in ("Saturday Soccer School: Reception to Year 2", "Saturday Soccer School: Years 3 to 9", "Girls&rsquo; Saturday Soccer School")}
+# Real classes: (image, alt, provider page, card link or None for the class's own page, "logo" to show the image whole)
+_PF = ("/assets/img/business/parkfield-youth-fc-team.jpg", "Parkfield Youth FC players in a team huddle", "/business/parkfield-youth-fc-hatch-end.html", None, "")
+_KDC = ("/assets/img/business/kidology-dance-co-dancers.jpg", "Young Kidology dancers in KDC T-shirts", "/business/kidology-dance-co-hatch-end.html", None, "")
+_KODAK = "/business/kodak-fc-harrow-weald.html"
+REAL = {
+    **{t: _PF for t in ("Saturday Soccer School: Reception to Year 2", "Saturday Soccer School: Years 3 to 9", "Girls&rsquo; Saturday Soccer School")},
+    "Saturday Small Group Tuition": ("/assets/img/business/gradesmart-tuition-logo.jpg", "GradeSmart Tuition logo", "/business/gradesmart-tuition-south-harrow.html", None, "logo"),
+    **{t: _KDC for t in ("Kids&rsquo; Breakdance", "Musical Theatre for Kids", "Toddler Dance", "Mini Street Dance", "Junior Street Dance", "Senior Street Dance and Hip-Hop")},
+    # Kodak FC's teams train at times that vary, so they have no weekly class page: the card links to the club
+    "Kodak FC Youth Football": ("/assets/img/business/kodak-fc-badge.jpg", "Kodak FC badge", _KODAK, _KODAK, "logo"),
+    "Kodak FC Adult Football": ("/assets/img/business/kodak-fc-badge.jpg", "Kodak FC badge", _KODAK, _KODAK, "logo"),
+}
 TYPE_SLUG = {"Children&rsquo;s activities": "childrens-activities", "Fitness": "fitness", "Dance schools": "dance-schools",
              "Workshops": "workshops", "Other regular classes": "other"}
 DAY_SLUG = {d.lower(): d[:3].lower() for d in ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"]}
@@ -51,7 +70,7 @@ def _ages(age):
         lo, hi = nums[0], nums[1]
     elif nums:
         lo, hi = nums[0], nums[0]
-    elif "girl" in a or "boy" in a:
+    elif "girl" in a or "boy" in a or "youth" in a:
         return "under-5 5-11 12-17"   # children's session, exact ages not published yet
     else:
         return "under-5 5-11 12-17 adults 60-plus"
@@ -70,14 +89,19 @@ for t, ty, when, area, age, price, icon, feat, prov, text in C:
     sample_b = "" if feat or real else f'<span class="badge badge--sample" title="Made-up class for the preview. Removed before launch.">{I("alert")}Sample</span>'
     badges = f'<div class="card__badges">{sample_b}{feat_b}</div>\n        '
     ph = "ph ph--dark" if feat else "ph"
-    media = (f'<div class="ph ph--photo"><img src="{real[0]}" alt="{real[1]}" width="1200" height="800" loading="lazy" decoding="async"></div>'
-             if real else f'<div class="{ph}">{I(icon)}</div>')
+    if real and real[4] == "logo":
+        media = f'<div class="ph ph--logo"><img src="{real[0]}" alt="{real[1]}" width="480" height="480" loading="lazy" decoding="async"></div>'
+    elif real:
+        media = f'<div class="ph ph--photo"><img src="{real[0]}" alt="{real[1]}" width="1200" height="800" loading="lazy" decoding="async"></div>'
+    else:
+        media = f'<div class="{ph}">{I(icon)}</div>'
+    href = (real[3] if real and real[3] else f"/events/{_slug(t)}/")
     prov_html = f'<a href="{real[2]}">{prov}</a>' if real else prov
     cards.append(f'''      <article class="card event-card{' card--featured' if feat else ''}" data-type="{TYPE_SLUG.get(ty, "other")}" data-area="{_slug(area)}" data-day="{_day(when)}" data-ages="{_ages(age)}">
         {badges}{media}
         <div class="card__body">
           <span class="biz-card__cat">{ty}</span>
-          <h3 class="card__title"><a href="/events/{_slug(t)}/">{t}</a></h3>
+          <h3 class="card__title"><a href="{href}">{t}</a></h3>
           <p class="card__meta"><span>{I('repeat')}{when}</span><span>{I('pin')}{area}</span></p>
           <p class="card__meta"><span>{I('people')}{age}</span><span>{I('ticket')}{price}</span></p>
           <p class="card__text">{text}</p>

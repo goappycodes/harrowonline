@@ -122,9 +122,14 @@ def phone_display(p):
 
 def load_listings():
     raw = json.loads((ROOT / "data/listings.json").read_text(encoding="utf-8"))
+    claimed = load_claimed()
+    # A real business that joins the Hub replaces its old unclaimed entry (claimed.json "replaces": [listing ids])
+    replaced = {i for c in claimed for i in c.get("replaces", [])}
     used = set()
     out = []
     for r in raw:
+        if r["id"] in replaced:
+            continue
         name = tidy(r["n"]).strip()
         area = area_for(r["lat"], r["lng"])
         base = slugify(f"{name} {AREA_BY_SLUG[area][1]}")
@@ -150,8 +155,8 @@ def load_listings():
             "lng": r["lng"],
             "sources": r["src"],
         })
-    for c in load_claimed():
-        base = slugify(f'{c["name"]} {AREA_BY_SLUG[c["area"]][1]}')
+    for c in claimed:
+        base = c.get("slug") or slugify(f'{c["name"]} {AREA_BY_SLUG[c["area"]][1]}')   # "slug": a cleaner URL for awkward names
         slug, i = base, 2
         while slug in used:
             slug, i = f"{base}-{i}", i + 1
@@ -193,7 +198,7 @@ def load_claimed():
         c["events"] = [profile_event(ev) for ev in by_org.get(c["name"], [])] + classes
         live, ended = [], []
         for o in c.get("offers", []):
-            o.update(offer_dates(o["ends"]))
+            o.update(offer_dates(o.get("ends")))
             base = slugify(_unescape(o["title"]))
             slug = base if base not in used else slugify(f'{_unescape(o["title"])} {c["name"]}')
             used.add(slug)
@@ -206,7 +211,10 @@ def load_claimed():
 
 
 def offer_dates(ends):
-    """'30 November 2026' → end date, days left from the preview's today, live flag and short label."""
+    """'30 November 2026' → end date, days left from the preview's today, live flag and short label.
+    No "ends" (the business set no end date): live until the business ends it, never "ending soon"."""
+    if not ends:
+        return {"end": None, "days_left": 9999, "live": True, "ends_short": ""}
     end = _dt.datetime.strptime(_unescape(ends).strip(), "%d %B %Y").date()
     days = (end - PREVIEW_TODAY).days
     return {"end": end, "days_left": days, "live": days >= 0, "ends_short": f"{end.day} {end.strftime('%b')}"}

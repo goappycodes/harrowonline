@@ -66,6 +66,14 @@ CLASSES = [
     (5, "10am to 11am", 10.0, "Saturday Soccer School: Reception to Year 2", "Bannister Outdoor Sports Centre", "Hatch End", "&pound;6", "Ages 4 to 7 (Reception to Year 2)", "family", True, "Children&rsquo;s activities"),
     (5, "11am to 12pm", 11.0, "Saturday Soccer School: Years 3 to 9", "Bannister Outdoor Sports Centre", "Hatch End", "&pound;6", "Ages 7 to 14 (Years 3 to 9)", "family", True, "Children&rsquo;s activities"),
     (5, "time to be confirmed", 9.0, "Girls&rsquo; Saturday Soccer School", "Bannister Outdoor Sports Centre", "Hatch End", "Ask the club", "Girls (ages to be confirmed)", "family", True, "Children&rsquo;s activities"),
+    # GradeSmart Tuition and Kidology Dance Co (real, 16 Nov 2026), from their own listings
+    (5, "10am to 2pm", 10.0, "Saturday Small Group Tuition", "Christ Church Roxeth", "South Harrow", "From &pound;8.50 an hour", "Ages 7 to 18 (Years 3 to 13)", "edit", True, "Children&rsquo;s activities"),
+    (0, "5pm to 6.30pm", 17.0, "Kids&rsquo; Breakdance", "Harrow Arts Centre", "Hatch End", "Free trial, then ask for prices", "Ages 8+", "music", True, "Dance schools"),
+    (3, "5pm to 6pm", 17.0, "Musical Theatre for Kids", "Harrow Arts Centre", "Hatch End", "Free trial, then ask for prices", "Ages 8+", "music", True, "Dance schools"),
+    (4, "5pm to 5.45pm", 17.0, "Toddler Dance", "Harrow Arts Centre", "Hatch End", "Free trial, then ask for prices", "Ages 2 to 4", "music", True, "Dance schools"),
+    (4, "5pm to 6pm", 17.01, "Mini Street Dance", "Harrow Arts Centre", "Hatch End", "Free trial, then ask for prices", "Ages 5 to 7", "music", True, "Dance schools"),
+    (4, "5pm to 6pm", 17.02, "Junior Street Dance", "Harrow Arts Centre", "Hatch End", "Free trial, then ask for prices", "Ages 8 to 11", "music", True, "Dance schools"),
+    (4, "6pm to 7pm", 18.0, "Senior Street Dance and Hip-Hop", "Harrow Arts Centre", "Hatch End", "Free trial, then ask for prices", "Ages 12+", "music", True, "Dance schools"),
     (0, "11am", 11.0, "Chair Yoga for Over-60s", "St George&rsquo;s Hall", "Headstone", "&pound;3", "Ages 60+", "heart", False, "Fitness"),
     (1, "7pm", 19.0, "Beginners&rsquo; Pottery", "Harrow Arts Centre", "Hatch End", "&pound;150 for 6 weeks", "Adults", "edit", False, "Workshops"),
     (2, "12.30pm", 12.5, "Lunchtime Spin", "Wealdstone Fitness Studio", "Wealdstone", "&pound;8", "Adults", "dumbbell", False, "Fitness"),
@@ -81,11 +89,23 @@ CLASSES = [
 _PF_DESC = ("Fun football coaching for children, led by DBS-checked, FA-qualified coaches from Parkfield Youth FC. "
             "No booking needed: just turn up. Sessions are at Bannister Outdoor Sports Centre in winter and the club&rsquo;s "
             "home ground at John Rumney Playing Fields at other times, so check with the club before your first visit.")
+_KDC_DESC = ("{} Taught by Kidology Dance Co&rsquo;s experienced teachers at Harrow Arts Centre. "
+             "Classes run by half term and must be booked in advance. A free trial class is available: "
+             "call 07792 054943 or email info@kidologydance.co.uk.")
 CLASS_DESC = {
     "Saturday Soccer School: Reception to Year 2": _PF_DESC + " &pound;6 per session, paid on the day.",
     "Saturday Soccer School: Years 3 to 9": _PF_DESC + " &pound;6 per session, paid on the day.",
     "Girls&rsquo; Saturday Soccer School": "A girls-only session of Parkfield Youth FC&rsquo;s Saturday Soccer School, with the same friendly coaching. "
                                            "The time, age groups and price are still to be confirmed: call or email the club before you go.",
+    "Saturday Small Group Tuition": ("Maths and English for Years 3 to 11, Science for Years 7 to 11, and A-level tuition, in groups of no more than six students. "
+                                     "Families can split their hours between subjects, missed sessions roll forward, and every new student gets a free assessment. "
+                                     "New students also get 75% off the first month. Call 07346 121877 to book."),
+    "Kids&rsquo; Breakdance": _KDC_DESC.format("Breakdance for dancers aged 8 and over: footwork, freezes and power moves, built up step by step."),
+    "Musical Theatre for Kids": _KDC_DESC.format("Singing, acting and dance routines from the musicals, for performers aged 8 and over."),
+    "Toddler Dance": _KDC_DESC.format("A first dance class for 2 to 4 year olds: music, movement and lots of fun."),
+    "Mini Street Dance": _KDC_DESC.format("Street dance for 5 to 7 year olds, learning fun routines to the latest music."),
+    "Junior Street Dance": _KDC_DESC.format("Street dance and hip-hop routines for 8 to 11 year olds."),
+    "Senior Street Dance and Hip-Hop": _KDC_DESC.format("Street dance and hip-hop for dancers aged 12 and over, working on routines for performances and the annual showcase."),
     "Lunchtime Spin": "45 minutes of high-energy spin. Bikes set up for you, towels provided.",
     "Toddler Rhyme Time": "Songs, rhymes and stories for little ones and their grown-ups. Just turn up.",
     "Conversational Spanish": "Relaxed evening course for improvers. Join at any point this term.",
@@ -98,10 +118,17 @@ CLASS_DESC = {
 }
 DAYNAMES = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"]
 # Classes run by real Hub businesses: no Sample badge, indexable page, the business's own photo.
+# "fit": "logo" shows the image whole on white (a logo) instead of cropped; "note" is the line under the description.
 _PF = {"img": "/assets/img/business/parkfield-youth-fc-team.jpg", "alt": "Parkfield Youth FC players in a team huddle",
-       "street": "Uxbridge Road, Hatch End", "postcode": "HA3 6SW"}
+       "street": "Uxbridge Road, Hatch End", "postcode": "HA3 6SW", "note": "Details from the club, checked by Harrow Online."}
+_GS = {"img": "/assets/img/business/gradesmart-tuition-logo.jpg", "alt": "GradeSmart Tuition logo", "fit": "logo",
+       "street": "Christ Church Roxeth, South Harrow", "postcode": "HA2 0JN", "note": "Details from GradeSmart Tuition, checked by Harrow Online."}
+_KDC = {"img": "/assets/img/business/kidology-dance-co-dancers.jpg", "alt": "Young Kidology dancers in KDC T-shirts",
+        "street": "Harrow Arts Centre, 171 Uxbridge Road, Hatch End", "postcode": "HA5 4EA", "note": "Details from Kidology Dance Co, checked by Harrow Online."}
 CLASS_REAL = {"Saturday Soccer School: Reception to Year 2": _PF, "Saturday Soccer School: Years 3 to 9": _PF,
-              "Girls&rsquo; Saturday Soccer School": _PF}
+              "Girls&rsquo; Saturday Soccer School": _PF, "Saturday Small Group Tuition": _GS,
+              **{t: _KDC for t in ("Kids&rsquo; Breakdance", "Musical Theatre for Kids", "Toddler Dance", "Mini Street Dance",
+                                   "Junior Street Dance", "Senior Street Dance and Hip-Hop")}}
 
 
 def class_media(title, ic, cls="ph", eager=False):
@@ -110,6 +137,8 @@ def class_media(title, ic, cls="ph", eager=False):
     if not r:
         return f'<div class="{cls}">{I(ic)}</div>'
     load = 'fetchpriority="high"' if eager else 'loading="lazy" decoding="async"'
+    if r.get("fit") == "logo":
+        return f'<div class="{cls} ph--logo"><img src="{r["img"]}" alt="{r["alt"]}" width="480" height="480" {load}></div>'
     return f'<div class="{cls} ph--photo"><img src="{r["img"]}" alt="{r["alt"]}" width="1200" height="800" {load}></div>'
 
 EVENTS = H.load_events()
@@ -687,6 +716,9 @@ CLASS_PROVIDER = {
     "Saturday Soccer School: Reception to Year 2": "Parkfield Youth FC",
     "Saturday Soccer School: Years 3 to 9": "Parkfield Youth FC",
     "Girls&rsquo; Saturday Soccer School": "Parkfield Youth FC",
+    "Saturday Small Group Tuition": "GradeSmart Tuition",
+    **{t: "Kidology Dance Co" for t in ("Kids&rsquo; Breakdance", "Musical Theatre for Kids", "Toddler Dance", "Mini Street Dance",
+                                        "Junior Street Dance", "Senior Street Dance and Hip-Hop")},
 }
 SCHEMA_DAYS = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"]
 
@@ -776,7 +808,7 @@ def class_page(c, claimed):
     <section class="event-about" aria-labelledby="about-title">
       <h2 id="about-title">About this class</h2>
       <div class="profile-desc"><p>{desc or "Full details from the organiser coming soon."}</p></div>
-      <p class="small muted mb-0">{"Details from the club, checked by Harrow Online." if real else "Made-up sample for the preview."} Check times with the organiser before you go. <a class="report-link" href="/report.html">{I('flag')}Report a problem</a></p>
+      <p class="small muted mb-0">{real.get("note", "Details from the organiser, checked by Harrow Online.") if real else "Made-up sample for the preview."} Check times with the organiser before you go. <a class="report-link" href="/report.html">{I('flag')}Report a problem</a></p>
     </section>
 {org_row}
     <section class="event-more" aria-labelledby="more-title">

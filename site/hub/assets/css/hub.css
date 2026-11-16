@@ -1786,6 +1786,13 @@ main:has(> .auth) + .ho-footer { margin-top: 0; }
 .gallery.gallery--1 { grid-template-columns: 1fr; }
 .gallery.gallery--2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 .gallery.gallery--1 .ph, .gallery.gallery--2 .ph { grid-row: auto; grid-column: auto; height: auto; min-height: 0; aspect-ratio: 4 / 3; }
+/* 3 or 4 own photos: the first one large, the rest beside it (phones keep the swipe strip) */
+@media (min-width: 768px) {
+  .gallery.gallery--3 { grid-template-columns: 2fr 1fr; }
+  .gallery.gallery--4 .ph:nth-child(4) { grid-column: 2 / 4; }
+}
+/* A cover image shown whole on its own colour (e.g. a flyer with text), instead of cropped */
+.ph.ph--contain > img { object-fit: contain; }
 
 /* Homepage "Get found by Harrow" keeps its original look (client asked to keep it): grey section, step cards, dark band */
 .section--soft.biz-section { background: var(--ho-soft); }

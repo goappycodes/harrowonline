@@ -1,5 +1,5 @@
 {
-  "_about": "Claimed businesses for the design preview. Entries WITHOUT \"real\": true are fictional samples: names, addresses and offers are made up; phone numbers use Ofcom's reserved drama range (020 7946 0xxx). Entries WITH \"real\": true are real businesses supplied by Harrow Online (no Sample label, indexable). Real-only optional fields: website, email, logo, image_alts, social_urls, status + schedule_title + schedule + schedule_note (instead of 7-day hours), other_locations, verified_note. In WordPress this data comes from claimed listings, offers and events. tier: basic | enhanced | premium | partner. Days: Mon..Sun.",
+  "_about": "Claimed businesses for the design preview. Entries WITHOUT \"real\": true are fictional samples: names, addresses and offers are made up; phone numbers use Ofcom's reserved drama range (020 7946 0xxx). Entries WITH \"real\": true are real businesses supplied by Harrow Online (no Sample label, indexable). Real-only optional fields: website, email, logo, image_alts, social_urls, status + schedule_title + schedule + schedule_note (instead of 7-day hours), other_locations, verified_note, replaces (unclaimed listing ids it takes over), service_area (mobile business: no address), cover + cover_bg + cover_alt (own cover image, shown whole on that colour), phones_extra, hours_note, seo_title (page title for very long names), slug (cleaner URL). Offers of real businesses may leave out ends (no end date). In WordPress this data comes from claimed listings, offers and events. tier: basic | enhanced | premium | partner. Days: Mon..Sun.",
   "businesses": [
     {
       "name": "Hill Street Kitchen", "images": ["/assets/img/sample/hill-street-kitchen-1.jpg", "/assets/img/sample/hill-street-kitchen-2.jpg", "/assets/img/sample/hill-street-kitchen-3.jpg"], "cat": "restaurants", "sub": "British restaurant", "area": "harrow-on-the-hill",
@@ -253,6 +253,569 @@
         {"title": "Saturday Soccer School: Years 3 to 9", "when": "Every Saturday, 11am to 12pm", "d": "14", "m": "Nov", "w": "Sat", "price": "&pound;6", "class": true, "featured": true},
         {"title": "Girls&rsquo; Saturday Soccer School", "when": "Every Saturday, time to be confirmed", "d": "14", "m": "Nov", "w": "Sat", "price": "Ask the club", "class": true, "featured": true}
       ],
+      "news": []
+    },
+    {
+      "_note": "REAL business (not a sample): supplied by Harrow Online, 16 Nov 2026. Complimentary Featured listing. Replaces its unclaimed directory entry. Subscriber-only offer code from the client.",
+      "real": true,
+      "replaces": [
+        "87aa1232-9d69-499d-b01d-9f8410c2debd"
+      ],
+      "slug": "aj-pizzas-harrow-town-centre",
+      "name": "AJ Pizza's",
+      "cat": "cafes-and-takeaways",
+      "sub": "Pizza takeaway and delivery",
+      "area": "harrow-town-centre",
+      "address": "123 Headstone Road",
+      "postcode": "HA1 1PG",
+      "phone": "020 8488 9310",
+      "website": "https://ajpizzas.co.uk/",
+      "tier": "premium",
+      "icon": "food",
+      "claimed": "November 2026",
+      "images": [
+        "/assets/img/business/aj-pizzas-pizzas.jpg",
+        "/assets/img/business/aj-pizzas-shopfront.jpg",
+        "/assets/img/business/aj-pizzas-pizza.jpg"
+      ],
+      "image_alts": [
+        "A spread of pizzas and sides from AJ Pizza's",
+        "The AJ Pizza's shopfront on Headstone Road",
+        "A freshly made pizza from AJ Pizza's"
+      ],
+      "photos": 3,
+      "social": [
+        "facebook",
+        "instagram"
+      ],
+      "social_urls": {
+        "facebook": "https://www.facebook.com/p/Aj-pizzas-61557582134145/",
+        "instagram": "https://www.instagram.com/ajpizzas_harrow/"
+      },
+      "tagline": "Local pizza takeaway on Headstone Road in Harrow, serving freshly prepared pizzas, sides and drinks for collection and delivery.",
+      "description": [
+        "AJ Pizza&rsquo;s is a pizza takeaway on Headstone Road, a short walk from Harrow town centre. Alongside favourites such as Margherita and pepperoni, the menu has speciality pizzas including Peri Peri Chicken, Chicken Tikka, Meat Feast and AJ&rsquo;s Special, plus vegetarian choices such as Paneer Tikka and Veg Supreme.",
+        "Sides include chicken wings, garlic bread, mozzarella sticks and curly fries, with desserts, soft drinks and bubble tea. Order for collection or home delivery, with meal deals for one, for families and for groups.",
+        "Open every day from 12pm to 11pm. You can order online at <a href=\"https://ajpizzas.co.uk/order-now\" target=\"_blank\" rel=\"noopener\">ajpizzas.co.uk</a>."
+      ],
+      "hours": [
+        "12pm to 11pm",
+        "12pm to 11pm",
+        "12pm to 11pm",
+        "12pm to 11pm",
+        "12pm to 11pm",
+        "12pm to 11pm",
+        "12pm to 11pm"
+      ],
+      "hours_note": "Collection and delivery from 12pm to 11pm every day.",
+      "verified_note": "Details supplied by the business and checked by Harrow Online in November 2026.",
+      "offers": [
+        {
+          "title": "Two-pizza collection deal from &pound;7.99 each",
+          "value": "FROM &pound;7.99",
+          "text": "Buy two pizzas for collection and pay &pound;7.99 each for mediums, &pound;9.99 for large or &pound;11.99 for extra-large. Qualifying orders also get a free drink and garlic bread.",
+          "code": "HO5657",
+          "sub": true,
+          "featured": true,
+          "icon": "food",
+          "redeem": "Ask for the two-pizza collection deal and give your code when you order.",
+          "terms": [
+            "For collection only, when you buy two pizzas.",
+            "Medium pizzas &pound;7.99 each, large &pound;9.99 each, extra-large &pound;11.99 each.",
+            "A free drink and portion of garlic bread with qualifying pizza orders.",
+            "The free drink and garlic bread do not apply to the &pound;3.99 and &pound;5.99 pizza deals."
+          ]
+        }
+      ],
+      "events": [],
+      "news": []
+    },
+    {
+      "_note": "REAL business (not a sample): supplied by Harrow Online, 16 Nov 2026. Complimentary Featured listing.",
+      "real": true,
+      "name": "Empire Chase Estate Agents",
+      "cat": "property-and-estate-agents",
+      "sub": "Estate and letting agent",
+      "area": "harrow-town-centre",
+      "address": "14 Peterborough Road",
+      "postcode": "HA1 2BQ",
+      "phone": "020 8422 7722",
+      "email": "info@empirechase.co.uk",
+      "website": "https://www.empirechase.co.uk/",
+      "tier": "premium",
+      "icon": "key",
+      "claimed": "November 2026",
+      "logo": "/assets/img/business/empire-chase-logo.jpg",
+      "images": [
+        "/assets/img/business/empire-chase-house.jpg",
+        "/assets/img/business/empire-chase-interior.jpg"
+      ],
+      "image_alts": [
+        "A large family home marketed by Empire Chase",
+        "Open-plan kitchen and living room in a home marketed by Empire Chase"
+      ],
+      "photos": 2,
+      "social": [
+        "facebook",
+        "instagram"
+      ],
+      "social_urls": {
+        "facebook": "https://www.facebook.com/empirechaseestateagents/",
+        "instagram": "https://www.instagram.com/empire_chase/"
+      },
+      "tagline": "Independent estate and letting agents in Harrow Town Centre, helping people sell, buy, let and manage property across north-west London since 2012.",
+      "description": [
+        "Empire Chase is an independent estate and letting agency on Peterborough Road in Harrow Town Centre, specialising in residential sales, lettings and property management. It was founded in 2012 and says it now manages more than 650 properties.",
+        "The team works with homeowners who want to sell, buyers looking for their next home, tenants, and landlords who need help finding tenants or managing their properties. Homes are marketed with professional photography, digital marketing and social media, and the agency has won a number of industry awards for its sales and lettings work.",
+        "For investors, developers and landlords, Empire Chase also offers block management, Build to Rent services, property investment and asset management, and property market research. It covers Harrow, Harrow on the Hill, Kenton, Wealdstone, Pinner, Wembley, Kingsbury, North Harrow, South Harrow and nearby areas.",
+        "Property management enquiries: <a href=\"mailto:propertymanagement@empirechase.co.uk\">propertymanagement@empirechase.co.uk</a>. Search homes for sale and to rent at <a href=\"https://empirechase.co.uk/find-a-property\" target=\"_blank\" rel=\"noopener\">empirechase.co.uk</a>."
+      ],
+      "hours": [
+        "9.30am to 6pm",
+        "9.30am to 6pm",
+        "9.30am to 6pm",
+        "9.30am to 6pm",
+        "9.30am to 6pm",
+        "10am to 3pm",
+        "Closed"
+      ],
+      "verified_note": "Details supplied by the business and checked by Harrow Online in November 2026.",
+      "offers": [],
+      "events": [],
+      "news": []
+    },
+    {
+      "_note": "REAL business (not a sample): supplied by Harrow Online, 16 Nov 2026. Complimentary Featured listing. The flyer is shown whole as the cover; there are no other photos yet.",
+      "real": true,
+      "name": "GradeSmart Tuition",
+      "cat": "family-and-childcare",
+      "sub": "Tuition centre",
+      "area": "south-harrow",
+      "address": "Christ Church Roxeth",
+      "postcode": "HA2 0JN",
+      "phone": "07346 121877",
+      "website": "https://gradesmart.co.uk/",
+      "tier": "premium",
+      "icon": "edit",
+      "claimed": "November 2026",
+      "logo": "/assets/img/business/gradesmart-tuition-logo.jpg",
+      "cover": "/assets/img/business/gradesmart-tuition-banner.jpg",
+      "cover_bg": "#173E5F",
+      "cover_alt": "GradeSmart Tuition: exam preparation, regular assessments and homework help. Now open for registration.",
+      "images": [],
+      "photos": 0,
+      "social": [
+        "facebook",
+        "instagram",
+        "tiktok"
+      ],
+      "social_urls": {
+        "facebook": "https://www.facebook.com/share/18oNJgcgPR/",
+        "instagram": "https://www.instagram.com/gradesmart.tuition",
+        "tiktok": "https://www.tiktok.com/@gradesmart.tuition"
+      },
+      "tagline": "Affordable Maths, English and Science tuition in South Harrow, in small groups of no more than six, from &pound;8.50 an hour.",
+      "description": [
+        "GradeSmart Tuition gives affordable academic support to children and young people from Year 3 to Year 13. Small group classes run every Saturday at Christ Church Roxeth in South Harrow, covering Maths and English for Years 3 to 11, Science for Years 7 to 11, and A-level subjects, with support across the main GCSE exam boards.",
+        "Groups are capped at six students, so tutors can work closely with each child on the topics they find hardest. Tuition starts from &pound;8.50 an hour, families can split their hours between subjects, and missed sessions roll forward, so paid lessons are not lost.",
+        "Every new student starts with a free assessment of their strengths and the areas to work on. GradeSmart also offers one-to-one home tuition outside the Saturday sessions, arranged directly with the team."
+      ],
+      "hours": [
+        "Closed",
+        "Closed",
+        "Closed",
+        "Closed",
+        "Closed",
+        "10am to 2pm",
+        "Closed"
+      ],
+      "hours_note": "One-to-one home tuition is available outside these hours, by arrangement.",
+      "verified_note": "Details supplied by the business and checked by Harrow Online in November 2026.",
+      "offers": [
+        {
+          "title": "75% off your first month of tuition",
+          "text": "New students get 75% off their first month of small group tuition, plus a free assessment to find the subjects and topics where they need most help.",
+          "featured": true,
+          "icon": "edit",
+          "redeem": "Call 07346 121877 or enquire at gradesmart.co.uk and mention the introductory offer.",
+          "terms": [
+            "For new students only.",
+            "75% off the first month of tuition.",
+            "Includes a free initial assessment.",
+            "Regular tuition starts from &pound;8.50 an hour."
+          ]
+        }
+      ],
+      "events": [
+        {
+          "title": "Saturday Small Group Tuition",
+          "when": "Every Saturday, 10am to 2pm",
+          "d": "14",
+          "m": "Nov",
+          "w": "Sat",
+          "price": "From &pound;8.50 an hour",
+          "class": true,
+          "featured": true
+        }
+      ],
+      "news": []
+    },
+    {
+      "_note": "REAL business (not a sample): supplied by Harrow Online, 16 Nov 2026. Complimentary Featured listing. Mobile business: no public address, so no map or directions.",
+      "real": true,
+      "slug": "greensleaves-harrow",
+      "name": "Greensleaves Construction, Landscaping and Garden Maintenance",
+      "seo_title": "Greensleaves: landscaping and building in Harrow",
+      "cat": "trades-and-home-services",
+      "sub": "Landscaping, gardening and building",
+      "area": "harrow-town-centre",
+      "address": "",
+      "postcode": "",
+      "service_area": "Harrow and nearby areas",
+      "phone": "07310 948600",
+      "website": "https://greensleavesconstruction.co.uk/",
+      "tier": "premium",
+      "icon": "leaf",
+      "claimed": "November 2026",
+      "images": [
+        "/assets/img/business/greensleaves-patio.jpg",
+        "/assets/img/business/greensleaves-fencing.jpg"
+      ],
+      "image_alts": [
+        "A new stone patio laid by Greensleaves",
+        "New fence panels put up by Greensleaves"
+      ],
+      "photos": 2,
+      "social": [
+        "facebook",
+        "instagram"
+      ],
+      "social_urls": {
+        "facebook": "https://www.facebook.com/p/Greensleaves-Construction-Landscaping-and-Garden-Maintenance-100095287536083/",
+        "instagram": "https://www.instagram.com/greensleaves_construction/"
+      },
+      "tagline": "Family-run landscaping, garden maintenance and building firm with more than 20 years&rsquo; experience, working for homes and businesses across Harrow.",
+      "description": [
+        "Greensleaves is a family-run landscaping, construction and garden maintenance business based in Harrow, with more than 20 years&rsquo; experience. It works for homeowners, landlords and commercial customers across Harrow and nearby areas, from regular garden upkeep and one-off clearances to bigger landscaping and building projects.",
+        "In the garden: lawn mowing and treatment, hedge cutting and pruning, planting, garden clearance and overgrown garden restoration, patios, fencing, decking, pond maintenance, jet washing, leaf clearance, and garden design and landscaping.",
+        "Around the home: renovations and new builds, plastering, painting and decorating, kitchen and bathroom improvements, loft projects, plumbing and electrical work, gutter clearing and repairs, and window replacement. Quotes are free with no obligation, for one-off jobs or ongoing and annual maintenance contracts."
+      ],
+      "hours": [
+        "9am to 8pm",
+        "9am to 8pm",
+        "9am to 8pm",
+        "9am to 8pm",
+        "9am to 8pm",
+        "9am to 8pm",
+        "Not listed"
+      ],
+      "verified_note": "Details supplied by the business and checked by Harrow Online in November 2026.",
+      "offers": [],
+      "events": [],
+      "news": []
+    },
+    {
+      "_note": "REAL business (not a sample): supplied by Harrow Online, 16 Nov 2026. Complimentary Featured listing. Website under construction. The supplied logo artwork also shows a personal email address, so only the name block is used.",
+      "real": true,
+      "name": "Kay Construction (UK) Ltd",
+      "cat": "trades-and-home-services",
+      "sub": "Building contractor",
+      "area": "south-harrow",
+      "address": "27 Somervell Road",
+      "postcode": "HA2 8TY",
+      "phone": "07958 271632",
+      "tier": "premium",
+      "icon": "wrench",
+      "claimed": "November 2026",
+      "logo": "/assets/img/business/kay-construction-logo.jpg",
+      "images": [
+        "/assets/img/business/kay-construction-extension.jpg",
+        "/assets/img/business/kay-construction-garden-room.jpg",
+        "/assets/img/business/kay-construction-bathroom.jpg",
+        "/assets/img/business/kay-construction-cloakroom.jpg"
+      ],
+      "image_alts": [
+        "A rear extension with bifold doors built by Kay Construction",
+        "A garden room with a living wall built by Kay Construction",
+        "A refurbished bathroom with a walk-in shower",
+        "A refurbished cloakroom with patterned wallpaper"
+      ],
+      "photos": 4,
+      "social": [
+        "facebook",
+        "instagram"
+      ],
+      "social_urls": {
+        "facebook": "https://www.facebook.com/share/1FVsybXEaW/",
+        "instagram": "https://www.instagram.com/kayconstructionuk.ltd/"
+      },
+      "tagline": "Harrow building company, established in 2012, for new builds, loft conversions, full refurbishments and property maintenance across London and Reading.",
+      "description": [
+        "Kay Construction (UK) Ltd is a Harrow-based building company, established in 2012, working on homes and commercial properties across London and Reading.",
+        "Projects range from maintenance and smaller improvements to loft conversions, complete refurbishments and new builds, helping customers turn their plans into a finished building.",
+        "Services include new builds and house construction, loft conversions, full property refurbishments, home renovations and improvements, residential and commercial building work, and property maintenance."
+      ],
+      "hours": [
+        "Open 24 hours",
+        "Open 24 hours",
+        "Open 24 hours",
+        "Open 24 hours",
+        "Open 24 hours",
+        "Open 24 hours",
+        "Open 24 hours"
+      ],
+      "hours_note": "Closed on bank holidays.",
+      "verified_note": "Details supplied by the business and checked by Harrow Online in November 2026.",
+      "offers": [],
+      "events": [],
+      "news": []
+    },
+    {
+      "_note": "REAL business (not a sample): supplied by Harrow Online, 16 Nov 2026. Complimentary Featured listing. Class times from the business's own listing (prices on request).",
+      "real": true,
+      "name": "Kidology Dance Co",
+      "cat": "family-and-childcare",
+      "sub": "Children's dance school",
+      "area": "hatch-end",
+      "address": "Harrow Arts Centre, 171 Uxbridge Road",
+      "postcode": "HA5 4EA",
+      "phone": "07792 054943",
+      "phones_extra": [
+        "07411 899653"
+      ],
+      "email": "info@kidologydance.co.uk",
+      "website": "https://www.kidologydance.co.uk/",
+      "tier": "premium",
+      "icon": "music",
+      "claimed": "November 2026",
+      "logo": "/assets/img/business/kidology-dance-co-logo.jpg",
+      "images": [
+        "/assets/img/business/kidology-dance-co-banner.jpg",
+        "/assets/img/business/kidology-dance-co-dancers.jpg",
+        "/assets/img/business/kidology-dance-co-stage.jpg"
+      ],
+      "image_alts": [
+        "Kidology Dance Co logo with dancers in silhouette",
+        "Young Kidology dancers in KDC T-shirts",
+        "Dancers in silhouette on a lit stage"
+      ],
+      "photos": 3,
+      "social": [
+        "facebook",
+        "instagram"
+      ],
+      "social_urls": {
+        "facebook": "https://www.facebook.com/share/1CCsD7UA15/",
+        "instagram": "https://www.instagram.com/kidologydanceco"
+      },
+      "tagline": "Street dance, hip-hop, breakdance and musical theatre classes for toddlers to teens at Harrow Arts Centre in Hatch End, since 2010.",
+      "description": [
+        "Kidology Dance Co (KDC) is a dance and performing arts school at Harrow Arts Centre in Hatch End, with classes for children and young people from toddlers to teenagers. It was founded in 2010 by Nicky Rutter and Lauren O&rsquo;Connell.",
+        "Classes cover street dance, hip-hop, breakdance, contemporary and musical theatre, helping young dancers build their skills and confidence and make friends. Students have performed at Move It, the UK Streetdance Championships and the London New Year&rsquo;s Day Parade, and everyone can take part in the annual showcase.",
+        "Classes run by half term and must be booked in advance. A free trial class is available: get in touch to arrange one. KDC also runs dance workshops for schools and community groups, including after-school and breakfast clubs, PE lessons and GCSE dance support."
+      ],
+      "hours": [],
+      "status": "Classes Monday, Thursday and Friday",
+      "schedule_title": "Class times",
+      "schedule": [
+        [
+          "Monday",
+          "Breakdance, 5pm to 6.30pm"
+        ],
+        [
+          "Thursday",
+          "Musical theatre, 5pm to 6pm"
+        ],
+        [
+          "Friday",
+          "Toddler, mini, junior and senior classes, 5pm to 7pm"
+        ]
+      ],
+      "schedule_note": "Classes run by half term and need booking in advance. Ask about a free trial class.",
+      "verified_note": "Details supplied by the business and checked by Harrow Online in November 2026.",
+      "offers": [],
+      "events": [
+        {
+          "title": "Musical Theatre for Kids",
+          "when": "Every Thursday, 5pm to 6pm",
+          "d": "12",
+          "m": "Nov",
+          "w": "Thu",
+          "price": "Free trial, then ask for prices",
+          "class": true,
+          "featured": true
+        },
+        {
+          "title": "Toddler Dance",
+          "when": "Every Friday, 5pm to 5.45pm",
+          "d": "13",
+          "m": "Nov",
+          "w": "Fri",
+          "price": "Free trial, then ask for prices",
+          "class": true,
+          "featured": true
+        },
+        {
+          "title": "Mini Street Dance",
+          "when": "Every Friday, 5pm to 6pm",
+          "d": "13",
+          "m": "Nov",
+          "w": "Fri",
+          "price": "Free trial, then ask for prices",
+          "class": true,
+          "featured": true
+        },
+        {
+          "title": "Junior Street Dance",
+          "when": "Every Friday, 5pm to 6pm",
+          "d": "13",
+          "m": "Nov",
+          "w": "Fri",
+          "price": "Free trial, then ask for prices",
+          "class": true,
+          "featured": true
+        },
+        {
+          "title": "Senior Street Dance and Hip-Hop",
+          "when": "Every Friday, 6pm to 7pm",
+          "d": "13",
+          "m": "Nov",
+          "w": "Fri",
+          "price": "Free trial, then ask for prices",
+          "class": true,
+          "featured": true
+        },
+        {
+          "title": "Kids&rsquo; Breakdance",
+          "when": "Every Monday, 5pm to 6.30pm",
+          "d": "16",
+          "m": "Nov",
+          "w": "Mon",
+          "price": "Free trial, then ask for prices",
+          "class": true,
+          "featured": true
+        }
+      ],
+      "news": []
+    },
+    {
+      "_note": "REAL business (not a sample): supplied by Harrow Online, 16 Nov 2026. Complimentary Featured listing. Club secretary's personal name, mobile and email left off (general club number only). No photos yet: badge only.",
+      "real": true,
+      "name": "Kodak FC",
+      "cat": "sport-and-fitness",
+      "sub": "Football club",
+      "area": "harrow-weald",
+      "address": "Harrow Weald Recreation Ground, Boxtree Lane",
+      "postcode": "HA3 6JU",
+      "phone": "07779 896961",
+      "website": "https://kodakfootballclub.nldoplay.com/",
+      "tier": "premium",
+      "icon": "people",
+      "claimed": "November 2026",
+      "logo": "/assets/img/business/kodak-fc-badge.jpg",
+      "images": [],
+      "photos": 0,
+      "social": [
+        "facebook",
+        "instagram",
+        "x"
+      ],
+      "social_urls": {
+        "facebook": "https://www.facebook.com/kodakfootball",
+        "instagram": "https://www.instagram.com/kodakfootballclub/",
+        "x": "https://x.com/kodakharrow"
+      },
+      "tagline": "Grassroots football club in Harrow Weald since 1935, with adult and youth teams and FA-qualified coaches for its young players.",
+      "description": [
+        "Kodak (Harrow) Football Club, known as Kodak FC, has been part of Harrow&rsquo;s grassroots football since 1935. It was first formed for workers at the Kodak factory on Headstone Drive, and today plays at Harrow Weald Recreation Ground, also known as Boxtree Park.",
+        "The club runs several senior teams in the Middlesex County Football League, with the First Team in the Premier Division, and a youth section in the Harrow Youth Football League. Youth teams are coached by FA-qualified coaches, with the focus on skills, confidence, friendship and enjoying the game. Kodak FC is an FA Accredited club.",
+        "Honours include the Middlesex Intermediate Cup in 2006, the Middlesex County League Division 1 North West title in 2022 and the Alec Smith Premier Division Cup in 2023/24. New players of all ages and abilities are welcome, and so are volunteers. The ground has grass pitches, changing rooms, parking and a coffee shop in the park."
+      ],
+      "hours": [],
+      "status": "Matches every weekend",
+      "schedule_title": "When the club plays",
+      "schedule": [
+        [
+          "Saturday",
+          "Adult matches, times vary"
+        ],
+        [
+          "Sunday",
+          "Youth matches, times vary"
+        ]
+      ],
+      "schedule_note": "Training times depend on the team and age group. Call the club to find the right team.",
+      "verified_note": "Details supplied by the business and checked by Harrow Online in November 2026.",
+      "offers": [],
+      "events": [],
+      "news": []
+    },
+    {
+      "_note": "REAL business (not a sample): supplied by Harrow Online, 16 Nov 2026. Complimentary Featured listing. Replaces its unclaimed directory entry. No website (per the business). Subscriber-only offer code from the client.",
+      "real": true,
+      "replaces": [
+        "9991971c-2a36-480d-9615-742b5e85e696"
+      ],
+      "name": "Meeting Palace",
+      "cat": "restaurants",
+      "sub": "Sri Lankan restaurant",
+      "area": "wealdstone",
+      "address": "34 High Street",
+      "postcode": "HA3 7AB",
+      "phone": "020 8861 6363",
+      "tier": "premium",
+      "icon": "food",
+      "claimed": "November 2026",
+      "images": [
+        "/assets/img/business/meeting-palace-front.jpg",
+        "/assets/img/business/meeting-palace-dining-room.jpg",
+        "/assets/img/business/meeting-palace-food.jpg"
+      ],
+      "image_alts": [
+        "The Meeting Palace restaurant front on Wealdstone High Street",
+        "The Meeting Palace dining room laid for a party",
+        "Sri Lankan starters served at Meeting Palace"
+      ],
+      "photos": 3,
+      "social": [
+        "facebook"
+      ],
+      "social_urls": {
+        "facebook": "https://www.facebook.com/meetingpalaceuk/"
+      },
+      "tagline": "Long-established Sri Lankan restaurant on Wealdstone High Street, open for lunch and dinner every day, with catering for functions and parties.",
+      "description": [
+        "Meeting Palace is a Sri Lankan restaurant on the High Street in Wealdstone, serving traditional Sri Lankan dishes. It has traded under the Meeting Palace name since May 2006 and is part of Wealdstone&rsquo;s local food scene.",
+        "Come for lunch, an evening meal or a get-together with family and friends. The restaurant also caters for functions and private parties."
+      ],
+      "hours": [
+        "12pm to 3pm, 6pm to 10.30pm",
+        "12pm to 3pm, 6pm to 10.30pm",
+        "12pm to 3pm, 6pm to 10.30pm",
+        "12pm to 3pm, 6pm to 10.30pm",
+        "12pm to 3pm, 6pm to 10.30pm",
+        "12pm to 3pm, 6pm to 10.30pm",
+        "12pm to 3pm, 6pm to 10.30pm"
+      ],
+      "verified_note": "Details supplied by the business and checked by Harrow Online in November 2026.",
+      "offers": [
+        {
+          "title": "10% off your meal when you spend over &pound;20",
+          "text": "Save 10% on your dine-in meal at Meeting Palace when the bill is over &pound;20.",
+          "code": "HO4286",
+          "sub": true,
+          "featured": true,
+          "icon": "food",
+          "ends": "28 February 2027",
+          "redeem": "Give your code when you order or pay at the restaurant.",
+          "terms": [
+            "Dine in only.",
+            "Your bill must be over &pound;20.",
+            "10% off the bill."
+          ]
+        }
+      ],
+      "events": [],
       "news": []
     }
   ]

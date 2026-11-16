@@ -57,6 +57,20 @@ def is_sample(x):
     return str(x.get("id", "")).startswith("sample-")
 
 
+def has_address(c):
+    """Mobile, service-based businesses (claimed.json "service_area") publish no street address."""
+    return bool(c.get("address")) and not c.get("service_area")
+
+
+def address_line(x, with_area=False):
+    """'14 High Street, Wealdstone, HA3 7AB', or 'Covers Harrow and nearby areas' for a service-area business."""
+    c = x["claimed"]
+    if not has_address(c):
+        return f'Covers {c.get("service_area") or "Harrow"}'
+    parts = [c["address"]] + ([e(area_name(x["area"]))] if with_area else []) + ([e(x["postcode"])] if x.get("postcode") else [])
+    return ", ".join(parts)
+
+
 def sample_badge():
     return f'<span class="badge badge--sample" title="Made-up business for the preview. Removed before launch.">{icon("alert")}Sample</span>'
 
@@ -101,8 +115,13 @@ def today_status(c):
         # Clubs and groups with a weekly schedule instead of opening hours (claimed.json "status" + "schedule")
         return f'<span class="open-now open-now--info">{c.get("status", "See times")}</span>'
     h = c["hours"][TODAY]
-    return ('<span class="open-now open-now--closed">Closed today</span>' if h.lower() == "closed"
-            else f'<span class="open-now">Open today, {h}</span>')
+    if h.lower() == "closed":
+        return '<span class="open-now open-now--closed">Closed today</span>'
+    if h.lower().startswith("open"):          # "Open 24 hours"
+        return f'<span class="open-now">{h}</span>'
+    if not any(ch.isdigit() for ch in h):     # "Not listed"
+        return f'<span class="open-now open-now--info">Hours {h.lower()} today</span>'
+    return f'<span class="open-now">Open today, {h}</span>'
 
 
 # ------------------------------------------------------------------ rows and cards
@@ -117,7 +136,7 @@ def row(x):
         <div class="biz-row__main">
           <span class="biz-card__cat">{e(cat_name(x["cat"]))} · <span class="muted">{e(x["sub"])}</span></span>
           <h3 class="biz-row__title"><a href="/business/{x["slug"]}.html">{e(x["name"])}</a></h3>
-          <p class="card__meta"><span>{icon("pin")}{c["address"]}, {e(x["postcode"])}</span><span>{e(area_name(x["area"]))}</span></p>
+          <p class="card__meta"><span>{icon("pin")}{address_line(x)}</span><span>{e(area_name(x["area"]))}</span></p>
           <p class="card__text">{c["tagline"]}</p>
           <p class="card__meta">{today_status(c)}{f'<span>{icon("tag")}{len(c["offers"])} offer{"s" if len(c["offers"]) != 1 else ""}</span>' if c["offers"] and tier in PAID else ""}{f'<span>{icon("calendar")}{len(c["events"])} upcoming</span>' if c["events"] else ""}</p>
         </div>
@@ -127,6 +146,8 @@ def row(x):
 
 def ends_label(o):
     """'Ends 30 Nov', 'Ends in 6 days', 'Ends today' or 'Ended 8 Nov' (from hub_data.offer_dates)."""
+    if o["end"] is None:
+        return "No end date"
     d = o["days_left"]
     if d < 0:
         return f'Ended {o["ends_short"]}'
@@ -264,7 +285,7 @@ def offer_page(x, o, live):
     ended = not o["live"]
     title, name, area = o["title"], x["name"], area_name(x["area"])
     end = o["end"]
-    end_long = f'{end.strftime("%A")} {end.day} {end.strftime("%B %Y")}'
+    end_long = f'{end.strftime("%A")} {end.day} {end.strftime("%B %Y")}' if end else ""
     sample = is_sample(x)
     soon = 0 <= o["days_left"] <= SOON_DAYS
 
@@ -280,6 +301,8 @@ def offer_page(x, o, live):
 
     if ended:
         left = "This offer has ended"
+    elif end is None:
+        left = ""
     elif o["days_left"] == 0:
         left = "Last day today"
     else:
@@ -305,7 +328,8 @@ def offer_page(x, o, live):
         </div>'''
 
     terms = "".join(f"<li>{t}</li>" for t in o.get("terms", []))
-    terms += f'<li>{"Ended" if ended else "Ends"} at 11.59pm on {end_long}.</li>'
+    terms += (f'<li>{"Ended" if ended else "Ends"} at 11.59pm on {end_long}.</li>' if end
+              else "<li>No end date has been set. The offer runs until the business ends it.</li>")
     if o.get("code") and not o.get("sub"):
         terms += f'<li>Use the code <strong>{o["code"]}</strong> where asked.</li>'
     terms += f"<li>Run by {e(name)}. The business can end the offer early if it can no longer honour it.</li>"
@@ -337,7 +361,7 @@ def offer_page(x, o, live):
     biz_row = f'''
     <a class="offer-biz" href="/business/{x["slug"]}.html">
       <span class="{ph_cls(x, "ph ph--square offer-biz__pic")}">{photo_inner(x, 0, c.get("icon", "store"))}</span>
-      <span class="offer-biz__main"><strong>{e(name)}</strong><span>{c["address"]}, {e(area)} {e(x["postcode"])}</span></span>
+      <span class="offer-biz__main"><strong>{e(name)}</strong><span>{address_line(x, with_area=True)}</span></span>
       <span class="offer-biz__go">View business {icon("arrow", "ho-icon ho-icon--sm")}</span>
     </a>'''
 
@@ -349,8 +373,9 @@ def offer_page(x, o, live):
   </div>
 </div>''' if ended else ""
     pub = "Made-up sample for the preview." if sample else "Checked by Harrow Online."
-    still = "" if ended else f" &middot; {left}"
-    meta_line = f'{icon("calendar", "ho-icon ho-icon--sm")}{"Ended" if ended else "Ends"} {end.day} {end.strftime("%b %Y")}{still}'
+    still = "" if ended or not left else f" &middot; {left}"
+    meta_line = (f'{icon("calendar", "ho-icon ho-icon--sm")}{"Ended" if ended else "Ends"} {end.day} {end.strftime("%b %Y")}{still}' if end
+                 else f'{icon("calendar", "ho-icon ho-icon--sm")}No end date')
 
     body = f'''<nav class="crumbs ho-container" aria-label="Breadcrumb">
   <ol>
@@ -390,13 +415,16 @@ def offer_page(x, o, live):
     import json
     node = {
         "@type": "Offer", "@id": url + "#offer", "name": plain(title), "description": plain(o["text"]), "url": url,
-        "validThrough": end.isoformat() + "T23:59:00", "availability": "https://schema.org/" + ("Discontinued" if ended else "InStock"),
+        **({"validThrough": end.isoformat() + "T23:59:00"} if end else {}), "availability": "https://schema.org/" + ("Discontinued" if ended else "InStock"),
         "offeredBy": {"@type": "LocalBusiness", "name": plain(name), "url": f'{ORIGIN}/business/{x["slug"]}/'},
     }
     ld = json.dumps({"@context": "https://schema.org", "@graph": [node]}, indent=2, ensure_ascii=False)
     body += f'\n<script type="application/ld+json">\n{ld}\n</script>\n'
-    desc = plain(f'{title} at {name}, {area}. {o["text"]} {"Ended" if ended else "Ends"} {end.day} {end.strftime("%B %Y")}.')
-    meta = {"title": plain(f"{title} at {name}"), "description": desc, "nav": "offers", "hubnav": "offers",
+    when = f'{"Ended" if ended else "Ends"} {end.day} {end.strftime("%B %Y")}.' if end else "No end date."
+    desc = plain(f'{title} at {name}, {area}. {o["text"]} {when}')
+    full = plain(f"{title} at {name}")
+    # Keep the page title within 70 characters: drop "at {business}" when the pair is too long
+    meta = {"title": full if len(full) <= 50 else plain(title), "description": desc, "nav": "offers", "hubnav": "offers",
             "body": "page-offer", "schema": "ItemPage", "path": o["href"]}
     if ended or sample:
         meta["robots"] = "noindex, follow"   # ended offers leave the index; samples never enter it
@@ -434,7 +462,7 @@ def profile_body(x, related_html, crumbs_html):
     c, tier = x["claimed"], x["tier"]
     name, area, cat = x["name"], x["area"], x["cat"]
     top = tier in TOP
-    maps = f'https://www.google.com/maps/search/?api=1&query={quote(name + " " + x["postcode"])}'
+    maps = f'https://www.google.com/maps/search/?api=1&query={quote(H._unescape(name) + " " + x["postcode"])}' if has_address(c) else ""
     sample = is_sample(x)
     if sample:
         # One clear label, plus which plan layout this sample demonstrates (no Verified / plan / BotW claims).
@@ -444,7 +472,15 @@ def profile_body(x, related_html, crumbs_html):
         if c.get("botw"):
             badges = f'<span class="botw">{icon("star")}Business of the Week</span>' + badges
 
-    cover = f'<div class="ho-container profile-cover"><div class="{ph_cls(x, "ph ph--banner ph--dark")}">{photo_inner(x, 0, c.get("icon", "store"), name)}</div></div>' if top else ""
+    if top and c.get("cover"):
+        fit = c.get("cover_bg")
+        style = f' style="background:{fit}"' if fit else ""
+        cover = (f'<div class="ho-container profile-cover"><div class="ph ph--banner ph--photo{" ph--contain" if fit else ""}"{style}>'
+                 f'<img src="{c["cover"]}" alt="{e(c.get("cover_alt", name))}" width="1600" height="600" fetchpriority="high"></div></div>')
+    elif top and (sample or c.get("images")):
+        cover = f'<div class="ho-container profile-cover"><div class="{ph_cls(x, "ph ph--banner ph--dark")}">{photo_inner(x, 0, c.get("icon", "store"), name)}</div></div>'
+    else:
+        cover = ""
 
     # Photos: Basic shows 1; paid plans a gallery (max 5 tiles, "+N more" on the last)
     n = c.get("photos", 1) if tier in PAID else 1
@@ -458,6 +494,8 @@ def profile_body(x, related_html, crumbs_html):
         if n > 5:
             tiles[-1] = f'<div class="gallery__more"><div class="{ph_cls(x)}">{photo_inner(x, 2, c.get("icon", "store"))}</div><span>+{n - 4} photos</span></div>'
         gallery = f'<div class="gallery mb-6" aria-label="Photos">{"".join(tiles)}</div>'
+    elif not sample:
+        gallery = ""   # real business with no photos yet: no placeholder
     else:
         gallery = f'<div class="ph ph--wide mb-6">{icon(c.get("icon", "store"))}</div>'
 
@@ -473,10 +511,13 @@ def profile_body(x, related_html, crumbs_html):
         rows = "".join(event_row(ev, sample) for ev in c["events"])
         sections.append(f'<section class="profile-section"><div class="sec-head"><h2 class="mb-0">Upcoming events and classes</h2><a class="link-arrow" href="/events.html">What&rsquo;s On {icon("arrow")}</a></div><div>{rows}</div></section>')
 
-    info = [
-        f'<li>{icon("pin")}<div><address>{c["address"]}, {e(area_name(area))}, {e(x["postcode"])}</address><a class="small" href="{maps}" target="_blank" rel="noopener">Get directions</a></div></li>',
-        f'<li>{icon("phone")}<a href="tel:{x["phone_raw"][0]}">{e(c["phone"])}</a></li>',
-    ]
+    if has_address(c):
+        where = f'<li>{icon("pin")}<div><address>{address_line(x, with_area=True)}</address><a class="small" href="{maps}" target="_blank" rel="noopener">Get directions</a></div></li>'
+    else:
+        where = f'<li>{icon("pin")}<div><span>{address_line(x)}</span><p class="small muted mb-0">Works at customers&rsquo; homes and premises. No shop or office to visit.</p></div></li>'
+    info = [where, f'<li>{icon("phone")}<a href="tel:{x["phone_raw"][0]}">{e(c["phone"])}</a></li>']
+    for ph in c.get("phones_extra", []):
+        info.append(f'<li>{icon("phone")}<a href="tel:{"".join(ch for ch in ph if ch.isdigit() or ch == "+")}">{e(ph)}</a></li>')
     for w in x.get("web", [])[:1]:
         info.append(f'<li>{icon("globe")}<a href="{e(w)}" target="_blank" rel="noopener">{e(w.split("//", 1)[-1].rstrip("/"))}</a></li>')
     for m in x.get("email", [])[:1]:
@@ -486,7 +527,7 @@ def profile_body(x, related_html, crumbs_html):
         info.append(f'<li>{icon("pin")}<div><span class="small muted">{loc["label"]}</span><address>{loc["name"]}, {loc["address"]}</address><a class="small" href="{lmaps}" target="_blank" rel="noopener">Get directions</a></div></li>')
     sections.append(f'''<section class="profile-section"><h2>Contact and location</h2>
       <div class="grid grid-2"><ul class="info-list">{"".join(info)}</ul>
-      <a class="ph ph--map" href="{maps}" target="_blank" rel="noopener" aria-label="Open {e(name)} in Google Maps">{icon("pin")}</a></div></section>''')
+      {f'<a class="ph ph--map" href="{maps}" target="_blank" rel="noopener" aria-label="Open {e(name)} in Google Maps">{icon("pin")}</a>' if maps else ""}</div></section>''')
 
     # In the news: only real Harrow Online articles tagged with this business (each needs its published URL).
     # In WordPress: posts linked to the listing by the editor, newest first. Nothing linked → no section.
@@ -506,7 +547,8 @@ def profile_body(x, related_html, crumbs_html):
         hours = "".join(f'<tr><th scope="row">{d}</th><td>{h}</td></tr>' for d, h in c["schedule"])
         hours_note = f'<p class="small muted mt-3 mb-0">{c["schedule_note"]}</p>' if c.get("schedule_note") else ""
     else:
-        hours_title, hours_note = "Opening hours", ""
+        hours_title = "Opening hours"
+        hours_note = f'<p class="small muted mt-3 mb-0">{c["hours_note"]}</p>' if c.get("hours_note") else ""
         hours = "".join(f'<tr{today_cls if i == TODAY else ""}><th scope="row">{d}</th><td>{h}</td></tr>' for i, (d, h) in enumerate(zip(DAYS, c["hours"])))
     social = ""
     if tier in PAID and c.get("social"):
@@ -551,7 +593,7 @@ def profile_body(x, related_html, crumbs_html):
       <div class="profile-head__actions">
         <a class="ho-btn ho-btn--primary" href="tel:{x["phone_raw"][0]}">{icon("phone")}Call</a>
         {f'<a class="ho-btn ho-btn--outline" href="{e(x["web"][0])}" target="_blank" rel="noopener">{icon("globe")}Website</a>' if x.get("web") else ""}
-        <a class="ho-btn ho-btn--outline" href="{maps}" target="_blank" rel="noopener">{icon("map")}Directions</a>
+        {f'<a class="ho-btn ho-btn--outline" href="{maps}" target="_blank" rel="noopener">{icon("map")}Directions</a>' if maps else ""}
         <button class="ho-btn ho-btn--outline" type="button" data-copy>{icon("external")}Share</button>
       </div>
     </div>
