@@ -45,7 +45,6 @@ PAGE_PATHS = {
     "report": "/report/",
     "advertise-newsletter": "/advertise/newsletter/",
     "account": "/account/",
-    "account-listings": "/account/listings/",
     "account-listing-edit": "/account/listings/edit/",
     "account-offers": "/account/offers/",
     "account-offer-edit": "/account/offers/edit/",

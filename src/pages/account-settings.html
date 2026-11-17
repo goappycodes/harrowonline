@@ -12,9 +12,10 @@ nl: off
       <span class="mono mono--sm" aria-hidden="true">SR</span>
       <div><strong>Station Road Barbers</strong><span>Featured plan</span></div>
     </div>
+    {{> account-add}}
     <ul>
       <li><a href="/account.html"><svg class="ho-icon"><use href="#i-home"/></svg>Overview</a></li>
-      <li><a href="/account-listings.html"><svg class="ho-icon"><use href="#i-store"/></svg>My listings</a></li>
+      <li><a href="/account-listing-edit.html"><svg class="ho-icon"><use href="#i-store"/></svg>My listing</a></li>
       <li><a href="/account-offers.html"><svg class="ho-icon"><use href="#i-tag"/></svg>Offers<span class="num">1<span class="ho-sr"> offer needs changes</span></span></a></li>
       <li><a href="/account-events.html"><svg class="ho-icon"><use href="#i-calendar"/></svg>Events</a></li>
       <li><a href="/account-classes.html"><svg class="ho-icon"><use href="#i-repeat"/></svg>Classes</a></li>
@@ -29,7 +30,6 @@ nl: off
   </aside>
 
   <div class="dash-main">
-    {{> account-add}}
     <div class="dash-head">
       <div>
         <h1>Settings</h1>
@@ -97,7 +97,7 @@ nl: off
       <fieldset class="fieldset">
         <legend class="ho-sr">Editions</legend>
         <div class="stack">
-          <label class="check"><input type="checkbox" name="editions[]" value="daily" checked> <span>Daily<small>Every morning: the day&rsquo;s Harrow news, what&rsquo;s on and offers</small></span></label>
+          <label class="check"><input type="checkbox" name="editions[]" value="daily" checked> <span>Daily Briefing<small>Every morning: the day&rsquo;s Harrow news, what&rsquo;s on and offers</small></span></label>
           <label class="check"><input type="checkbox" name="editions[]" value="weekend"> <span>The Weekend<small>Thursdays: what&rsquo;s on in Harrow this weekend</small></span></label>
           <label class="check"><input type="checkbox" name="editions[]" value="business" checked> <span>Harrow Business<small>Mondays: local business news, openings and new Hub members</small></span></label>
         </div>

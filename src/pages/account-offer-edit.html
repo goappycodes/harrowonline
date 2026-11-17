@@ -12,9 +12,10 @@ nl: off
       <span class="mono mono--sm" aria-hidden="true">SR</span>
       <div><strong>Station Road Barbers</strong><span>Featured plan</span></div>
     </div>
+    {{> account-add}}
     <ul>
       <li><a href="/account.html"><svg class="ho-icon"><use href="#i-home"/></svg>Overview</a></li>
-      <li><a href="/account-listings.html"><svg class="ho-icon"><use href="#i-store"/></svg>My listings</a></li>
+      <li><a href="/account-listing-edit.html"><svg class="ho-icon"><use href="#i-store"/></svg>My listing</a></li>
       <li><a href="/account-offers.html" aria-current="true"><svg class="ho-icon"><use href="#i-tag"/></svg>Offers<span class="num">1<span class="ho-sr"> offer needs changes</span></span></a></li>
       <li><a href="/account-events.html"><svg class="ho-icon"><use href="#i-calendar"/></svg>Events</a></li>
       <li><a href="/account-classes.html"><svg class="ho-icon"><use href="#i-repeat"/></svg>Classes</a></li>
@@ -29,7 +30,6 @@ nl: off
   </aside>
 
   <div class="dash-main">
-    {{> account-add}}
     <nav class="crumbs mb-4" aria-label="Breadcrumb">
       <ol><li><a href="/account.html">My account</a></li><li><a href="/account-offers.html">Offers</a></li><li><span aria-current="page">Add an offer</span></li></ol>
     </nav>
@@ -110,7 +110,7 @@ One per customer.</textarea>
           <p class="help mb-0">Subscriber offers keep the code hidden until a reader confirms their email.</p>
         </section>
 
-        <div class="form-actions form-actions--sticky form-actions--between">
+        <div class="form-actions form-actions--between">
           <button class="ho-btn ho-btn--outline" type="submit" name="action" value="draft">Save draft</button>
           <button class="ho-btn ho-btn--primary" type="submit" name="action" value="submit"><svg class="ho-icon"><use href="#i-check"/></svg>Send for approval</button>
         </div>

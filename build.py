@@ -75,9 +75,8 @@ def render(meta, body):
     body = INC_RE.sub(lambda m: partial(m.group(1)), body)
     if "is-logged-in" in meta.get("body", ""):   # signed-in dashboard pages only (not sign-in / register)
         # Preview only: the signed-in account, its bookings, statuses, invoices and figures are made up.
-        body = ('<div class="ho-container mt-4 mb-4"><div class="notice notice--sample"><svg class="ho-icon"><use href="#i-alert"/></svg>'
-                '<p><strong>Sample account.</strong> The business, bookings, statuses, invoices and figures on this page are made up '
-                'to show how the dashboard works. None of it is real, and it will be removed before launch.</p></div></div>\n') + body
+        body = ('<div class="ho-container"><p class="sample-bar"><svg class="ho-icon ho-icon--sm"><use href="#i-alert"/></svg>'
+                '<span><strong>Sample account.</strong> Made-up business and figures to show how the account works.</span></p></div>\n') + body
 
     # Hub navigation lives in the header: a "Hub" dropdown on desktop, a Hub section in the phone drawer (no separate Hub bar).
     parts = [partial("head"), partial("header")]
@@ -191,6 +190,9 @@ def write_vercel():
         redirects.append({"source": f"{BASE}/category/{old}/", "destination": dest, "permanent": True})
         redirects.append({"source": f"{BASE}/category/{old}.html", "destination": dest, "permanent": True})
     redirects.append({"source": f"{BASE}/:kind(business|category|area)/:slug.html", "destination": f"{BASE}/:kind/:slug/", "permanent": True})
+    # One listing per account (Nov 2026): the old "My listings" page goes to the listing editor
+    for old in (f"{BASE}/account/listings/", f"{BASE}/account-listings.html"):
+        redirects.append({"source": old, "destination": f"{BASE}/account/listings/edit/", "permanent": True})
     cfg["redirects"] = redirects
     cfg_file.write_text(json.dumps(cfg, indent=2) + "\n", encoding="utf-8", newline="\n")
 

@@ -3,159 +3,188 @@ title: Add your business
 description: Add a missing Harrow business to Harrow Online Hub. Free to list, checked by our team before it goes live.
 hubnav: directory
 robots: noindex, follow
-body: page-add-business is-logged-in
+body: page-add-business
 -->
-<nav class="crumbs ho-container" aria-label="Breadcrumb"><ol><li><a href="/">Hub</a></li><li><a href="/account.html">My account</a></li><li><span aria-current="page">Add a business</span></li></ol></nav>
+<!-- Add a business (cleaned up, Nov 2026): search first, then five short numbered steps; optional extras folded away;
+     "What happens next" beside the form. ?recommend=1 (homepage "Recommend a business") switches the wording for
+     readers suggesting a business they don't own. hub.js section 5g: duplicate check, recommend mode. -->
+<nav class="crumbs ho-container" aria-label="Breadcrumb"><ol><li><a href="/">Hub</a></li><li><a href="/for-businesses.html">For businesses</a></li><li><span aria-current="page" data-add-crumb>Add a business</span></li></ol></nav>
 
-<header class="page-head ho-container ho-container--mid">
-  <h1 class="page-head__title">Add your business</h1>
-  <p class="page-head__lead">Not on the Hub yet? Add it free. Most Harrow businesses are already listed, so <a href="/search.html">search first</a> and claim yours if it&rsquo;s there.</p>
+<header class="page-head ho-container">
+  <h1 class="page-head__title" data-add-title>Add your business</h1>
+  <p class="page-head__lead" data-add-lead>Free to list and takes about two minutes. Our team checks it before it goes live.</p>
 </header>
 
-<div class="ho-container ho-container--mid">
-  <div class="notice mb-5">
-    <svg class="ho-icon"><use href="#i-info"/></svg>
-    <div>
-      <p><strong>New listings are checked before they go live.</strong></p>
-      <p>Your listing stays pending until a member of the Harrow Online team approves it, usually within 2 working days. We&rsquo;ll email you either way. You can see its status in <a href="/account.html">your account</a>.</p>
-    </div>
-  </div>
+<div class="ho-container add-biz">
+  <div class="add-biz__main">
+    <form class="add-biz__check" action="/search.html" method="get" role="search">
+      <input type="hidden" name="type" value="businesses">
+      <div>
+        <p class="add-biz__check-title"><svg class="ho-icon"><use href="#i-search"/></svg>Is it already on the Hub?</p>
+        <p class="add-biz__check-text">Most Harrow businesses are listed. If yours is, claim it instead: it&rsquo;s quicker.</p>
+      </div>
+      <div class="add-biz__check-row">
+        <label class="ho-sr" for="a-find">Business name</label>
+        <input class="input" id="a-find" type="search" name="q" placeholder="Search by business name" autocomplete="off">
+        <button class="ho-btn ho-btn--dark" type="submit">Search</button>
+      </div>
+    </form>
 
-  <form class="form form-card" action="/account.html" method="get">
-    <fieldset class="fieldset">
-      <legend>The basics</legend>
-      <div class="stack">
+    <form class="form form-card add-biz__form" action="/claim-submitted.html" method="get" data-add-form>
+      <!-- Same steps, names and order as the listing edit page (account/listings/edit), minus what Basic doesn't show
+           (logo, gallery, social links). -->
+      <section class="form-step" aria-labelledby="ab1">
+        <h2 class="form-step__title" id="ab1"><span>1</span>The basics</h2>
         <div class="field">
-          <label for="a-name">Business name <span class="req" aria-hidden="true">*</span></label>
-          <input class="input" id="a-name" type="text" name="name" required value="Ancona Italian Coffee House" autocomplete="organization">
-          <p class="help">The name on your sign, without the area. For example, &ldquo;Station Road Barbers&rdquo;.</p>
-        </div>
-        <div class="field">
-          <label for="a-cat">Main category <span class="req" aria-hidden="true">*</span></label>
-          <select class="select" id="a-cat" name="cat" required><option value="">Choose a category</option>{{> gen-cat-options}}</select>
+          <label for="a-name">Business name</label>
+          <input class="input" id="a-name" type="text" name="name" required autocomplete="organization" placeholder="For example, Station Road Barbers">
+          <p class="help">The name on the sign, without the area.</p>
         </div>
         <div class="row row-2">
           <div class="field">
-            <label for="a-cat2">Extra category <span class="opt">(optional)</span></label>
-            <select class="select" id="a-cat2" name="cat_extra[]"><option value="">None</option>{{> gen-cat-options}}</select>
+            <label for="a-cat">Category</label>
+            <select class="select" id="a-cat" name="cat" required><option value="">Choose a category</option>{{> gen-cat-options}}</select>
           </div>
           <div class="field">
-            <label for="a-cat3">Another extra category <span class="opt">(optional)</span></label>
-            <select class="select" id="a-cat3" name="cat_extra[]"><option value="">None</option>{{> gen-cat-options}}</select>
+            <label for="a-type">Business type</label>
+            <input class="input" id="a-type" type="text" name="business_type" required placeholder="For example, Barber shop">
           </div>
         </div>
-        <p class="help">One main category and up to 2 extra ones. People find you under all three.</p>
-      </div>
-    </fieldset>
-
-    <hr class="mt-0 mb-0">
-
-    <fieldset class="fieldset">
-      <legend>Where you are</legend>
-      <div class="stack">
+        <details class="add-biz__more">
+          <summary><svg class="ho-icon ho-icon--sm"><use href="#i-plus"/></svg>Add more categories <span class="opt">(optional)</span></summary>
+          <div class="row row-2 mt-3">
+            <div class="field">
+              <label for="a-cat2">Second category</label>
+              <select class="select" id="a-cat2" name="cat_extra[]"><option value="">None</option>{{> gen-cat-options}}</select>
+            </div>
+            <div class="field">
+              <label for="a-cat3">Third category</label>
+              <select class="select" id="a-cat3" name="cat_extra[]"><option value="">None</option>{{> gen-cat-options}}</select>
+            </div>
+          </div>
+        </details>
         <div class="field">
-          <label for="a-addr">Street address <span class="req" aria-hidden="true">*</span></label>
+          <label for="a-summary">One-line summary</label>
+          <input class="input" id="a-summary" type="text" name="summary" maxlength="120" required data-counter placeholder="For example, Classic cuts and hot towel shaves, six days a week.">
+          <p class="help">Shown on your card in search and category pages.</p>
+        </div>
+      </section>
+
+      <section class="form-step" aria-labelledby="ab2">
+        <h2 class="form-step__title" id="ab2"><span>2</span>Where you are</h2>
+        <div class="field">
+          <label for="a-addr">Street address</label>
           <input class="input" id="a-addr" type="text" name="address" required autocomplete="address-line1" placeholder="309 Station Road">
         </div>
         <div class="row row-2">
           <div class="field">
-            <label for="a-pc">Postcode <span class="req" aria-hidden="true">*</span></label>
-            <input class="input" id="a-pc" type="text" name="postcode" required value="HA1 2TA" autocomplete="postal-code">
+            <label for="a-pc">Postcode</label>
+            <input class="input" id="a-pc" type="text" name="postcode" required autocomplete="postal-code" placeholder="HA1 2TA">
           </div>
           <div class="field">
-            <label for="a-area">Area <span class="req" aria-hidden="true">*</span></label>
+            <label for="a-area">Area</label>
             <select class="select" id="a-area" name="area" required><option value="">Choose an area</option>{{> gen-area-options}}</select>
-            <p class="help">We suggest one from your postcode. Our team can change it.</p>
           </div>
         </div>
-
-        <div class="notice notice--warn" role="status">
+        <!-- Shown by hub.js when the name and postcode match a business already on the Hub -->
+        <div class="notice notice--warn" role="status" data-add-dupe hidden>
           <svg class="ho-icon"><use href="#i-alert"/></svg>
           <div>
-            <p><strong>A business with the same name and postcode is already listed:</strong> <a href="/business/ancona-italian-coffee-house-harrow-town-centre.html">Ancona Italian Coffee House</a>, 309 Station Rd, HA1 2TA.</p>
-            <p>Is this yours? <a href="/claim.html?listing=ancona-italian-coffee-house-harrow-town-centre">Claim it instead</a>. It&rsquo;s quicker and keeps one listing for your business. If it&rsquo;s a different business, carry on.</p>
+            <p><strong>This looks like it&rsquo;s already listed:</strong> <a href="/search.html" data-add-dupe-link>see the listing</a>.</p>
+            <p data-owner-only>If it&rsquo;s yours, <a href="#" data-add-dupe-claim>claim it instead</a>. If it&rsquo;s a different business, carry on.</p>
           </div>
         </div>
-      </div>
-    </fieldset>
+      </section>
 
-    <hr class="mt-0 mb-0">
-
-    <fieldset class="fieldset">
-      <legend>How people contact you</legend>
-      <div class="row row-3">
-        <div class="field">
-          <label for="a-phone">Phone <span class="req" aria-hidden="true">*</span></label>
-          <input class="input" id="a-phone" type="tel" name="phone" required autocomplete="tel" placeholder="020 8123 4567">
+      <section class="form-step" aria-labelledby="ab3">
+        <h2 class="form-step__title" id="ab3"><span>3</span>Contact details</h2>
+        <div class="row row-2">
+          <div class="field">
+            <label for="a-phone">Phone</label>
+            <input class="input" id="a-phone" type="tel" name="phone" required autocomplete="tel" placeholder="020 8123 4567">
+          </div>
+          <div class="field">
+            <label for="a-web">Website <span class="opt">(optional)</span></label>
+            <input class="input" id="a-web" type="url" name="website" autocomplete="url" placeholder="https://">
+          </div>
         </div>
-        <div class="field">
-          <label for="a-web">Website <span class="opt">(optional)</span></label>
-          <input class="input" id="a-web" type="url" name="website" autocomplete="url" placeholder="https://">
-        </div>
-        <div class="field">
-          <label for="a-email">Public email <span class="opt">(optional)</span></label>
+        <div class="field" data-owner-only>
+          <label for="a-email">Email for customers <span class="opt">(optional)</span></label>
           <input class="input" id="a-email" type="email" name="email" autocomplete="email" placeholder="hello@yourbusiness.co.uk">
         </div>
+      </section>
+
+      <section class="form-step" aria-labelledby="ab4">
+        <h2 class="form-step__title" id="ab4"><span>4</span>About your business</h2>
+        <div class="field">
+          <label for="a-desc">Description</label>
+          <textarea class="textarea" id="a-desc" name="description" maxlength="1500" rows="5" required data-counter aria-describedby="a-desc-help" placeholder="What you do, who for and what makes you different."></textarea>
+          <p class="help" id="a-desc-help">At least 50 words helps you show up in Google. No prices or deals here: those go in Local Offers.</p>
+        </div>
+        <fieldset class="facilities" data-owner-only>
+          <legend>Facilities <span class="opt">(tick all that apply)</span></legend>
+          <ul class="check-list facilities__list">
+            <li><label class="check"><input type="checkbox" name="facilities[]" value="wheelchair"> Wheelchair access</label></li>
+            <li><label class="check"><input type="checkbox" name="facilities[]" value="parking"> Parking nearby</label></li>
+            <li><label class="check"><input type="checkbox" name="facilities[]" value="card"> Card payments</label></li>
+            <li><label class="check"><input type="checkbox" name="facilities[]" value="wifi"> Free Wi-Fi</label></li>
+            <li><label class="check"><input type="checkbox" name="facilities[]" value="toilets"> Toilets</label></li>
+            <li><label class="check"><input type="checkbox" name="facilities[]" value="children"> Child friendly</label></li>
+            <li><label class="check"><input type="checkbox" name="facilities[]" value="booking"> Online booking</label></li>
+            <li><label class="check"><input type="checkbox" name="facilities[]" value="walkin"> Walk-ins welcome</label></li>
+            <li><label class="check"><input type="checkbox" name="facilities[]" value="delivery"> Delivery</label></li>
+            <li><label class="check"><input type="checkbox" name="facilities[]" value="outdoor"> Outdoor seating</label></li>
+          </ul>
+        </fieldset>
+      </section>
+
+      <section class="form-step" aria-labelledby="ab5" data-owner-only>
+        <h2 class="form-step__title" id="ab5"><span>5</span>Opening hours <small class="form-step__opt">(optional)</small></h2>
+        <div class="hours-edit">
+            <span class="day">Monday</span><input class="input input--sm" type="time" name="hours[mon][open]" value="09:00" aria-label="Monday opening time"><input class="input input--sm" type="time" name="hours[mon][close]" value="17:30" aria-label="Monday closing time"><label class="check"><input type="checkbox" name="hours[mon][closed]" value="1"> Closed</label>
+            <span class="day">Tuesday</span><input class="input input--sm" type="time" name="hours[tue][open]" value="09:00" aria-label="Tuesday opening time"><input class="input input--sm" type="time" name="hours[tue][close]" value="17:30" aria-label="Tuesday closing time"><label class="check"><input type="checkbox" name="hours[tue][closed]" value="1"> Closed</label>
+            <span class="day">Wednesday</span><input class="input input--sm" type="time" name="hours[wed][open]" value="09:00" aria-label="Wednesday opening time"><input class="input input--sm" type="time" name="hours[wed][close]" value="17:30" aria-label="Wednesday closing time"><label class="check"><input type="checkbox" name="hours[wed][closed]" value="1"> Closed</label>
+            <span class="day">Thursday</span><input class="input input--sm" type="time" name="hours[thu][open]" value="09:00" aria-label="Thursday opening time"><input class="input input--sm" type="time" name="hours[thu][close]" value="17:30" aria-label="Thursday closing time"><label class="check"><input type="checkbox" name="hours[thu][closed]" value="1"> Closed</label>
+            <span class="day">Friday</span><input class="input input--sm" type="time" name="hours[fri][open]" value="09:00" aria-label="Friday opening time"><input class="input input--sm" type="time" name="hours[fri][close]" value="17:30" aria-label="Friday closing time"><label class="check"><input type="checkbox" name="hours[fri][closed]" value="1"> Closed</label>
+            <span class="day">Saturday</span><input class="input input--sm" type="time" name="hours[sat][open]" value="10:00" aria-label="Saturday opening time"><input class="input input--sm" type="time" name="hours[sat][close]" value="16:00" aria-label="Saturday closing time"><label class="check"><input type="checkbox" name="hours[sat][closed]" value="1"> Closed</label>
+            <span class="day">Sunday</span><input class="input input--sm" type="time" name="hours[sun][open]" aria-label="Sunday opening time"><input class="input input--sm" type="time" name="hours[sun][close]" aria-label="Sunday closing time"><label class="check"><input type="checkbox" name="hours[sun][closed]" value="1" checked> Closed</label>
+          </div>
+        <p class="help">Tick Closed for days you don&rsquo;t open. Leave them out if they vary.</p>
+      </section>
+
+      <section class="form-step" aria-labelledby="ab6" data-owner-only>
+        <h2 class="form-step__title" id="ab6"><span>6</span>Photo <small class="form-step__opt">(optional)</small></h2>
+        <label class="dropzone dropzone--compact" for="a-photo">
+          <svg class="ho-icon"><use href="#i-upload"/></svg>
+          <span><strong>Add a photo</strong><small>Shop front, team or your work. JPG or PNG, up to 8MB.</small></span>
+          <input class="ho-sr" id="a-photo" type="file" name="photo" accept=".jpg,.jpeg,.png">
+        </label>
+        <p class="help">The free Basic listing shows one photo. A logo, more photos and social links come with Featured; add them from your account after you upgrade.</p>
+      </section>
+
+      <div class="add-biz__submit">
+        <label class="check">
+          <input type="checkbox" name="declaration" value="1" required>
+          <span data-add-declare>I own or manage this business, or have permission to list it, and I agree to the <a href="/terms.html">terms</a>.</span>
+        </label>
+        <div class="add-biz__actions">
+          <button class="ho-btn ho-btn--primary" type="submit" name="save" value="pending" data-add-submit>Send for checking</button>
+          <a class="ho-btn ho-btn--ghost" href="/for-businesses.html">Cancel</a>
+        </div>
       </div>
-      <div class="limited-note mt-4">
-        <svg class="ho-icon"><use href="#i-lock"/></svg>
-        <p class="mb-0">Social links (Instagram, Facebook, TikTok and others) show on paid plans. You can add them from your account once the listing is live. <a href="/pricing.html">See plans</a>.</p>
-      </div>
-    </fieldset>
+    </form>
+  </div>
 
-    <hr class="mt-0 mb-0">
-
-    <fieldset class="fieldset">
-      <legend>About your business</legend>
-      <div class="field">
-        <label for="a-desc">Description <span class="req" aria-hidden="true">*</span></label>
-        <textarea class="textarea" id="a-desc" name="description" maxlength="750" required data-counter aria-describedby="a-desc-help" placeholder="What you do, what makes you different and who you serve. Plain and friendly works best."></textarea>
-        <p class="help" id="a-desc-help">Up to 750 characters. Please don&rsquo;t add prices or offers here; paid plans can post Local Offers.</p>
-      </div>
-    </fieldset>
-
-    <hr class="mt-0 mb-0">
-
-    <fieldset class="fieldset">
-      <legend>Opening hours</legend>
-      <div class="hours-edit">
-        <span class="day">Monday</span><input class="input input--sm" type="time" name="hours[mon][open]" value="09:00" aria-label="Monday opening time"><input class="input input--sm" type="time" name="hours[mon][close]" value="17:30" aria-label="Monday closing time"><label class="check"><input type="checkbox" name="hours[mon][closed]" value="1"> Closed</label>
-        <span class="day">Tuesday</span><input class="input input--sm" type="time" name="hours[tue][open]" value="09:00" aria-label="Tuesday opening time"><input class="input input--sm" type="time" name="hours[tue][close]" value="17:30" aria-label="Tuesday closing time"><label class="check"><input type="checkbox" name="hours[tue][closed]" value="1"> Closed</label>
-        <span class="day">Wednesday</span><input class="input input--sm" type="time" name="hours[wed][open]" value="09:00" aria-label="Wednesday opening time"><input class="input input--sm" type="time" name="hours[wed][close]" value="17:30" aria-label="Wednesday closing time"><label class="check"><input type="checkbox" name="hours[wed][closed]" value="1"> Closed</label>
-        <span class="day">Thursday</span><input class="input input--sm" type="time" name="hours[thu][open]" value="09:00" aria-label="Thursday opening time"><input class="input input--sm" type="time" name="hours[thu][close]" value="17:30" aria-label="Thursday closing time"><label class="check"><input type="checkbox" name="hours[thu][closed]" value="1"> Closed</label>
-        <span class="day">Friday</span><input class="input input--sm" type="time" name="hours[fri][open]" value="09:00" aria-label="Friday opening time"><input class="input input--sm" type="time" name="hours[fri][close]" value="17:30" aria-label="Friday closing time"><label class="check"><input type="checkbox" name="hours[fri][closed]" value="1"> Closed</label>
-        <span class="day">Saturday</span><input class="input input--sm" type="time" name="hours[sat][open]" value="10:00" aria-label="Saturday opening time"><input class="input input--sm" type="time" name="hours[sat][close]" value="16:00" aria-label="Saturday closing time"><label class="check"><input type="checkbox" name="hours[sat][closed]" value="1"> Closed</label>
-        <span class="day">Sunday</span><input class="input input--sm" type="time" name="hours[sun][open]" aria-label="Sunday opening time"><input class="input input--sm" type="time" name="hours[sun][close]" aria-label="Sunday closing time"><label class="check"><input type="checkbox" name="hours[sun][closed]" value="1" checked> Closed</label>
-      </div>
-      <p class="help mt-4">Leave hours blank if they vary. You can add holiday hours later from your account.</p>
-    </fieldset>
-
-    <hr class="mt-0 mb-0">
-
-    <fieldset class="fieldset">
-      <legend>Photo</legend>
-      <label class="dropzone" for="a-photo">
-        <svg class="ho-icon"><use href="#i-upload"/></svg>
-        <strong>Add one photo</strong>
-        <p>Your shop front, your team or your work. JPG or PNG, at least 1200 pixels wide, up to 8MB.</p>
-        <input class="ho-sr" id="a-photo" type="file" name="photo" accept=".jpg,.jpeg,.png">
-      </label>
-      <p class="help mt-2">Free listings show 1 photo. Paid plans add a gallery and a cover photo.</p>
-    </fieldset>
-
-    <hr class="mt-0 mb-0">
-
-    <label class="check">
-      <input type="checkbox" name="declaration" value="1" required>
-      <span>I own or manage this business, or have permission to list it, and the details are correct. I agree to the <a href="/terms.html">terms</a>. <small>You&rsquo;ll manage the listing at Basic, free, once it&rsquo;s approved.</small></span>
-    </label>
-
-    <div class="form-actions form-actions--sticky form-actions--between">
-      <a class="ho-btn ho-btn--ghost" href="/account.html">Cancel</a>
-      <div class="cluster">
-        <button class="ho-btn ho-btn--outline" type="submit" name="save" value="draft">Save as draft</button>
-        <button class="ho-btn ho-btn--primary" type="submit" name="save" value="pending">Submit for approval</button>
-      </div>
+  <aside class="add-biz__side" aria-label="What happens next">
+    <div class="add-biz__panel">
+      <h2 class="add-biz__panel-title">What happens next</h2>
+      <ol class="add-biz__next">
+        <li><span>1</span><div><strong>We check it</strong><small>Usually within 2 working days.</small></div></li>
+        <li><span>2</span><div><strong>We email you</strong><small>Whether it&rsquo;s approved or we need something.</small></div></li>
+        <li data-owner-only><span>3</span><div><strong>It goes live, free</strong><small>Manage it from your account on the Basic plan.</small></div></li>
+        <li data-recommend-only hidden><span>3</span><div><strong>It goes live</strong><small>The owner can claim it free at any time.</small></div></li>
+      </ol>
+      <p class="add-biz__panel-note" data-owner-only>Want offers, events and classes? <a href="/pricing.html">Upgrade any time</a>.</p>
     </div>
-  </form>
+  </aside>
 </div>

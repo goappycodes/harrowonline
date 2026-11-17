@@ -2401,3 +2401,172 @@ input[type="search"]::-ms-clear, input[type="search"]::-ms-reveal { display: non
 .popular--one { flex-wrap: nowrap; overflow: hidden; }
 .popular--one > * { flex: none; white-space: nowrap; }
 .popular--one > a[hidden] { display: none; }
+
+/* ==========================================================================
+   Add a business (cleaned up, Nov 2026): search first, numbered steps, "What happens next" beside the form
+   ========================================================================== */
+.add-biz { display: grid; grid-template-columns: minmax(0, 1fr) 320px; gap: var(--ho-s6); align-items: start; }
+.add-biz__main { display: flex; flex-direction: column; gap: var(--ho-s4); min-width: 0; }
+.add-biz__check { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.1fr); gap: var(--ho-s4); align-items: center; padding: 18px 20px; border-radius: var(--ho-radius-lg); background: var(--ho-soft); }
+.add-biz__check-title { display: flex; align-items: center; gap: 8px; margin: 0; font: 700 17px/1.3 var(--ho-font-head); color: var(--ho-ink); }
+.add-biz__check-title .ho-icon { width: 18px; height: 18px; color: var(--ho-red); }
+.add-biz__check-text { margin: 4px 0 0; font-size: 14px; line-height: 1.45; color: var(--ho-muted); }
+.add-biz__check-row { display: flex; gap: 8px; }
+.add-biz__check-row .input { flex: 1; min-width: 0; background: #fff; }
+.add-biz__form { padding-top: 8px; }
+.add-biz__form .form-step:last-of-type { border-bottom: 0; }
+.form-step__title .form-step__opt { margin-left: 2px; font: 500 14px var(--ho-font-ui); color: var(--ho-muted); }
+/* Compact upload box: title above the hint, never run together */
+.dropzone--compact > span { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.dropzone--compact > span strong { font: 700 15px/1.3 var(--ho-font-ui); }
+.dropzone--compact > span small { font-size: 13px; line-height: 1.4; color: var(--ho-muted); }
+.add-biz__more { border: 1px solid var(--ho-line); border-radius: var(--ho-radius); padding: 0 14px; }
+.add-biz__more > summary { display: flex; align-items: center; gap: 8px; padding: 12px 0; font: 600 15px var(--ho-font-ui); color: var(--ho-ink); cursor: pointer; list-style: none; }
+.add-biz__more > summary::-webkit-details-marker { display: none; }
+.add-biz__more > summary .ho-icon { color: var(--ho-red); }
+.add-biz__more > summary .opt { font-weight: 500; color: var(--ho-muted); }
+.add-biz__more[open] { padding-bottom: 14px; }
+.add-biz__more[open] > summary { border-bottom: 1px solid var(--ho-line); }
+.add-biz__submit { display: flex; flex-direction: column; gap: var(--ho-s4); padding-top: var(--ho-s4); border-top: 1px solid var(--ho-line); }
+.add-biz__actions { display: flex; flex-wrap: wrap; align-items: center; gap: var(--ho-s2); }
+.add-biz__side { position: sticky; top: calc(var(--ho-header-h, 84px) + 16px); }
+.add-biz__panel { padding: 22px; border-radius: var(--ho-radius-lg); background: #fff; border: 1px solid var(--ho-line); }
+.add-biz__panel-title { margin: 0 0 14px; font: 700 18px/1.3 var(--ho-font-head); color: var(--ho-ink); }
+.add-biz__next { margin: 0; padding: 0; list-style: none; }
+.add-biz__next li { display: grid; grid-template-columns: 28px minmax(0, 1fr); gap: 12px; padding: 10px 0; }
+.add-biz__next li[hidden] { display: none; }
+.add-biz__next li > span { display: inline-flex; align-items: center; justify-content: center; width: 28px; height: 28px; border-radius: 50%; background: var(--ho-red-tint); color: var(--ho-red); font: 800 13px/1 var(--ho-font-ui); }
+.add-biz__next strong { display: block; font: 700 15px/1.3 var(--ho-font-ui); color: var(--ho-ink); }
+.add-biz__next small { display: block; margin-top: 2px; font-size: 14px; line-height: 1.4; color: var(--ho-muted); }
+.add-biz__panel-note { margin: 12px 0 0; padding-top: 14px; border-top: 1px solid var(--ho-line); font-size: 14px; color: var(--ho-muted); }
+.add-biz__done { display: flex; flex-direction: column; align-items: flex-start; gap: 10px; padding: 32px; }
+.add-biz__done h2 { margin: 0; font: 700 26px/1.2 var(--ho-font-head); }
+.add-biz__done p { margin: 0 0 8px; color: #444; }
+.add-biz__done-icon { display: inline-flex; align-items: center; justify-content: center; width: 52px; height: 52px; border-radius: 50%; background: var(--ho-ok); color: #fff; }
+.add-biz__done-icon .ho-icon { width: 26px; height: 26px; }
+[data-owner-only][hidden] { display: none !important; }
+@media (max-width: 1018px) {
+  .add-biz { grid-template-columns: minmax(0, 1fr); }
+  .add-biz__side { position: static; }   /* below the form on tablets and phones */
+}
+@media (max-width: 767px) {
+  .add-biz__check { grid-template-columns: minmax(0, 1fr); gap: 12px; padding: 16px; }
+  .add-biz__done { padding: 22px; }
+}
+
+/* What's On: Featured events block above the days */
+.day-group--featured .day-group__title { display: flex; align-items: center; gap: 8px; }
+.day-group--featured .day-group__title > .ho-icon { width: 20px; height: 20px; color: var(--ho-red); }
+.day-group--featured .day-group__title small { margin-left: 4px; }
+
+/* Listing edit: facilities, logo row, gallery sub-heading */
+.facilities { margin: 0; padding: 0; border: 0; min-width: 0; }
+.facilities > legend { margin-bottom: 10px; padding: 0; font: 700 15px/1.3 var(--ho-font-ui); color: var(--ho-ink); }
+.facilities > legend .opt { font-weight: 500; color: var(--ho-muted); }
+.facilities__list { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 10px 16px; }
+.logo-row { display: grid; grid-template-columns: 72px minmax(0, 1fr); gap: 14px; align-items: center; }
+.logo-row__img { display: flex; align-items: center; justify-content: center; width: 72px; height: 72px; border-radius: 16px; background: var(--ho-soft); border: 1px solid var(--ho-line); color: var(--ho-muted); }
+.logo-row__img .ho-icon { width: 28px; height: 28px; }
+.form-sub { margin: 8px 0 0; font: 700 15px/1.3 var(--ho-font-ui); color: var(--ho-ink); }
+.form-sub .badge { margin-left: 8px; vertical-align: middle; }
+
+/* Listing rows with initials (imported or no picture), on phones: everything lines up with the name.
+   The initials sit at the top; the badge and Call share one line under the address, starting where the text starts. */
+@media (max-width: 767px) {
+  .biz-row--mono { align-items: start; }
+  .biz-row--mono > .biz-row__side { grid-column: 2 / -1; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 8px 12px; }
+  .biz-row__side .badge--unclaimed { max-width: none; text-align: left; white-space: normal; line-height: 1.35; }
+  .biz-row--mono > .biz-row__side .badge--unclaimed { flex: 1 1 140px; }
+  .biz-row--mono > .biz-row__side .ho-btn { flex: none; }
+}
+@media (max-width: 767px) {
+  .biz-row--mono > .biz-row__side .badge--unclaimed { text-transform: none; letter-spacing: 0; font-size: 12px; font-weight: 600; padding: 5px 9px; }
+}
+
+/* Listing edit (cleaned up, Nov 2026): card preview and "Your listing" checklist beside the steps */
+.listing-form .form-step { scroll-margin-top: calc(var(--ho-header-h, 84px) + 16px); }
+.lp-card { display: grid; grid-template-columns: 52px minmax(0, 1fr); gap: 12px; padding: 16px; border-radius: var(--ho-radius-lg); background: #fff; border: 1px solid var(--ho-line); box-shadow: 0 10px 24px -18px rgba(20, 20, 20, .4); }
+.lp-card__logo { display: flex; align-items: center; justify-content: center; width: 52px; height: 52px; border-radius: 14px; background: var(--ho-red-tint); color: var(--ho-red); }
+.lp-card__name { display: block; margin: 2px 0 4px; font: 700 18px/1.25 var(--ho-font-head); color: var(--ho-ink); word-break: break-word; }
+.lp-card__summary { display: block; font-size: 14px; line-height: 1.45; color: #444; }
+.lp-card__where { display: flex; align-items: center; gap: 4px; margin-top: 8px; font-size: 13px; color: var(--ho-muted); }
+.lp-check { margin-top: var(--ho-s5); padding: 18px; border-radius: var(--ho-radius-lg); background: var(--ho-soft); }
+.lp-check__title { display: flex; align-items: baseline; justify-content: space-between; gap: 8px; margin: 0 0 10px; font: 700 16px/1.3 var(--ho-font-head); color: var(--ho-ink); }
+.lp-check__score { font: 600 13px var(--ho-font-ui); color: var(--ho-ok); }
+.lp-check ul { margin: 0; padding: 0; list-style: none; }
+.lp-check li { position: relative; padding: 6px 0 6px 28px; font-size: 14px; }
+.lp-check li::before { content: ""; position: absolute; left: 0; top: 7px; width: 18px; height: 18px; border-radius: 50%; border: 2px solid var(--ho-line-2); background: #fff; box-sizing: border-box; }
+.lp-check li.is-done::before { border-color: var(--ho-ok); background: var(--ho-ok) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='m6 12.5 4 4L18 8' fill='none' stroke='%23fff' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") center / 11px no-repeat; }
+.lp-check li a { color: var(--ho-ink); text-decoration: none; }
+.lp-check li a:hover { color: var(--ho-red); text-decoration: underline; }
+.lp-check__google { display: flex; align-items: center; gap: 6px; margin: 10px 0 0; padding-top: 10px; border-top: 1px solid var(--ho-line); font: 600 13px var(--ho-font-ui); color: var(--ho-ok); }
+.listing-form .form-step .facilities { margin-top: 4px; }
+.listing-form .form-step__opt, .add-biz__form .form-step__opt { font-weight: 500; }
+
+/* ==========================================================================
+   Account pages (cleanup, Nov 2026): calmer, consistent, no sticky bars
+   ========================================================================== */
+/* Save bars sit at the end of the form, never fixed over it */
+.form-actions--sticky, .form-actions { position: static; }
+.form-card .form-actions { margin: var(--ho-s5) 0 0; padding: var(--ho-s4) 0 0; background: none; border-top: 1px solid var(--ho-line); box-shadow: none; backdrop-filter: none; }
+/* Slim "Sample account" line instead of a big yellow box */
+.sample-bar { display: flex; align-items: center; gap: 8px; margin: var(--ho-s4) 0 0; padding: 8px 14px; border-radius: 999px; background: #FFF6DB; font-size: 13px; line-height: 1.4; color: #6B5300; width: fit-content; max-width: 100%; }
+.sample-bar .ho-icon { flex: none; color: #B58100; }
+/* "+ Add" lives in the account menu: one full-width button under the business name */
+.dash-nav .dash-add { display: block; margin: 0 0 var(--ho-s3); }
+.dash-nav .add-menu > summary { display: flex; justify-content: center; width: 100%; }
+.dash-nav .add-menu__pop { left: 0; right: auto; width: 100%; min-width: 240px; }
+.dash-nav .add-menu__item { grid-template-columns: 32px minmax(0, 1fr); gap: 10px; padding: 8px; }
+.dash-nav .add-menu__icon { width: 32px; height: 32px; }
+/* Page head: title, one line and the main action, same on every account page */
+.dash-head { margin-bottom: var(--ho-s5); align-items: flex-start; }
+.dash-head h1 { margin-bottom: 4px; }
+.dash-head p { margin: 0; color: var(--ho-muted); }
+/* Billing: collapsible questions */
+.faq-mini { border-top: 1px solid var(--ho-line); padding: 10px 0; }
+.faq-mini:first-of-type { border-top: 0; padding-top: 0; }
+.faq-mini > summary { font: 600 15px var(--ho-font-ui); color: var(--ho-ink); cursor: pointer; }
+.faq-mini[open] > summary { margin-bottom: 8px; }
+.faq-mini .ticks { margin-bottom: 8px; }
+[data-example-state][hidden] { display: none; }
+.setup[hidden] { display: none; }
+/* Account menu as a sideways strip (tablets and phones): no "+ Add" in it (a scrolling strip would clip its pop-up;
+   every page has its own Add button), and room between the strip and the page title */
+@media (max-width: 1018px) {
+  .dash-nav .dash-add { display: none; }
+  .dash-main { padding-top: var(--ho-s3); }
+}
+/* One divider above the buttons: a step's own bottom line already separates them */
+.form-card .form-step + .form-actions, .form-card .fieldset + .form-actions, .form-card hr + .form-actions { border-top: 0; margin-top: 0; }
+.form-card .form-step + .form-actions { padding-top: 18px; }
+/* Buttons never draw their own divider; steps and sections already separate the content */
+.form-card .form-actions { border-top: 0; padding-top: 0; }
+.form-card .form-step + .form-actions { padding-top: 18px; }
+
+/* ==========================================================================
+   Business page (cleanup, Nov 2026): header card, one side card, hours first on phones
+   ========================================================================== */
+.profile-head--card .profile-head__row { padding: 24px; border-radius: 20px; background: linear-gradient(135deg, #fff 0%, #fff 55%, var(--ho-red-tint) 140%); border: 1px solid var(--ho-line); box-shadow: 0 16px 36px -28px rgba(20, 20, 20, .45); }
+.profile-head--card .profile-head__main { display: flex; flex-direction: column; gap: 10px; min-width: 0; }
+.profile-head--card .profile-head__main > .cluster { margin: 0; }
+.profile-head--card .profile-head__title { margin: 0; }
+.profile-head__summary { margin: -2px 0 0; max-width: 720px; font-size: 17px; line-height: 1.45; color: #444; }
+.profile-head--card .profile-head__actions { margin-top: 4px; }
+.profile-head--card .mono--lg { width: 104px; height: 104px; flex: none; }
+.profile-main > .profile-section:first-child, .profile-main > .gallery + .profile-section { border-top: 0; padding-top: 0; }
+.profile-card { padding: 22px; }
+.profile-card__h { margin: 0 0 8px; font: 700 14px/1.3 var(--ho-font-ui); color: var(--ho-ink); }
+.profile-card__follow { margin-top: 18px; padding-top: 16px; border-top: 1px solid var(--ho-line); }
+.profile-card__trust { display: flex; align-items: flex-start; gap: 8px; margin: 18px 0 0; padding-top: 16px; border-top: 1px solid var(--ho-line); font-size: 13px; line-height: 1.45; color: var(--ho-muted); }
+.profile-card__trust .ho-icon { flex: none; margin-top: 1px; color: var(--ho-ok); }
+@media (max-width: 1018px) {
+  .profile-layout > .profile-aside { order: -1; position: static; }   /* hours and Call right under the header on tablets and phones */
+}
+@media (max-width: 767px) {
+  .profile-head--card .profile-head__row { flex-direction: column; gap: 14px; padding: 18px; border-radius: 16px; }
+  .profile-head--card .mono--lg { width: 72px; height: 72px; font-size: 26px; }
+  .profile-head__summary { font-size: 15px; }
+  .profile-head--card .profile-head__actions { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
+  .profile-head--card .profile-head__actions .ho-btn { justify-content: center; }
+  .profile-card { padding: 18px; }
+}

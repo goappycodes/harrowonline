@@ -107,16 +107,29 @@
     </div>
 
 <main id="main">
-<div class="ho-container mt-4 mb-4"><div class="notice notice--sample"><svg class="ho-icon"><use href="/hub/assets/img/icons.svg#i-alert"/></svg><p><strong>Sample account.</strong> The business, bookings, statuses, invoices and figures on this page are made up to show how the dashboard works. None of it is real, and it will be removed before launch.</p></div></div>
+<div class="ho-container"><p class="sample-bar"><svg class="ho-icon ho-icon--sm"><use href="/hub/assets/img/icons.svg#i-alert"/></svg><span><strong>Sample account.</strong> Made-up business and figures to show how the account works.</span></p></div>
 <div class="ho-container dash">
   <aside class="dash-nav" aria-label="Account">
     <div class="dash-nav__who">
       <span class="mono mono--sm" aria-hidden="true">SR</span>
       <div><strong>Station Road Barbers</strong><span>Featured plan</span></div>
     </div>
+    <div class="dash-add">
+      <!-- "+ Add" on every account page (client plan, Nov 2026): an event, a class or an offer, one tap from anywhere. -->
+      <details class="add-menu" data-add-menu>
+        <summary class="ho-btn ho-btn--primary ho-btn--sm"><svg class="ho-icon"><use href="/hub/assets/img/icons.svg#i-plus"/></svg>Add</summary>
+        <div class="add-menu__pop">
+          <p class="add-menu__label">Add to the Hub</p>
+          <a class="add-menu__item" href="/hub/account/events/edit/"><span class="add-menu__icon"><svg class="ho-icon"><use href="/hub/assets/img/icons.svg#i-calendar"/></svg></span><span><strong>Event</strong><small>A one-off date, on What&rsquo;s On</small></span></a>
+          <a class="add-menu__item" href="/hub/account/classes/edit/"><span class="add-menu__icon"><svg class="ho-icon"><use href="/hub/assets/img/icons.svg#i-repeat"/></svg></span><span><strong>Class</strong><small>Runs every week, on Classes</small></span></a>
+          <a class="add-menu__item" href="/hub/account/offers/edit/"><span class="add-menu__icon"><svg class="ho-icon"><use href="/hub/assets/img/icons.svg#i-tag"/></svg></span><span><strong>Offer</strong><small>A deal for Harrow Online readers</small></span></a>
+        </div>
+      </details>
+    </div>
+
     <ul>
       <li><a href="/hub/account/"><svg class="ho-icon"><use href="/hub/assets/img/icons.svg#i-home"/></svg>Overview</a></li>
-      <li><a href="/hub/account/listings/"><svg class="ho-icon"><use href="/hub/assets/img/icons.svg#i-store"/></svg>My listings</a></li>
+      <li><a href="/hub/account/listings/edit/"><svg class="ho-icon"><use href="/hub/assets/img/icons.svg#i-store"/></svg>My listing</a></li>
       <li><a href="/hub/account/offers/"><svg class="ho-icon"><use href="/hub/assets/img/icons.svg#i-tag"/></svg>Offers<span class="num">1<span class="ho-sr"> offer needs changes</span></span></a></li>
       <li><a href="/hub/account/events/" aria-current="true"><svg class="ho-icon"><use href="/hub/assets/img/icons.svg#i-calendar"/></svg>Events</a></li>
       <li><a href="/hub/account/classes/"><svg class="ho-icon"><use href="/hub/assets/img/icons.svg#i-repeat"/></svg>Classes</a></li>
@@ -131,19 +144,6 @@
   </aside>
 
   <div class="dash-main">
-    <div class="dash-add">
-      <!-- "+ Add" on every account page (client plan, Nov 2026): an event, a class or an offer, one tap from anywhere. -->
-      <details class="add-menu" data-add-menu>
-        <summary class="ho-btn ho-btn--primary ho-btn--sm"><svg class="ho-icon"><use href="/hub/assets/img/icons.svg#i-plus"/></svg>Add</summary>
-        <div class="add-menu__pop">
-          <p class="add-menu__label">Add to the Hub</p>
-          <a class="add-menu__item" href="/hub/account/events/edit/"><span class="add-menu__icon"><svg class="ho-icon"><use href="/hub/assets/img/icons.svg#i-calendar"/></svg></span><span><strong>Event</strong><small>A one-off date, on What&rsquo;s On</small></span></a>
-          <a class="add-menu__item" href="/hub/account/classes/edit/"><span class="add-menu__icon"><svg class="ho-icon"><use href="/hub/assets/img/icons.svg#i-repeat"/></svg></span><span><strong>Class</strong><small>Runs every week, on Classes</small></span></a>
-          <a class="add-menu__item" href="/hub/account/offers/edit/"><span class="add-menu__icon"><svg class="ho-icon"><use href="/hub/assets/img/icons.svg#i-tag"/></svg></span><span><strong>Offer</strong><small>A deal for Harrow Online readers</small></span></a>
-        </div>
-      </details>
-    </div>
-
     <nav class="crumbs mb-4" aria-label="Breadcrumb">
       <ol><li><a href="/hub/account/">My account</a></li><li><a href="/hub/account/events/">Events</a></li><li><span aria-current="page">Christmas charity cut-a-thon</span></li></ol>
     </nav>
@@ -241,7 +241,7 @@
           </div>
         </section>
 
-        <div class="form-actions form-actions--sticky form-actions--between">
+        <div class="form-actions form-actions--between">
           <button class="ho-btn ho-btn--outline" type="submit" name="action" value="draft">Save draft</button>
           <button class="ho-btn ho-btn--primary" type="submit" name="action" value="submit"><svg class="ho-icon"><use href="/hub/assets/img/icons.svg#i-check"/></svg>Send for approval</button>
         </div>
