@@ -46,6 +46,34 @@
     btn.setAttribute("aria-expanded", String(!panel.hidden));
     if (!panel.hidden) $("input", panel).focus();
   }));
+  // Account "+ Add" menu (Event, Class or Offer): close on a click outside or Escape
+  $$("[data-add-menu]").forEach((m) => {
+    document.addEventListener("click", (e) => { if (m.open && !m.contains(e.target)) m.open = false; });
+    m.addEventListener("keydown", (e) => { if (e.key === "Escape" && m.open) { m.open = false; $("summary", m).focus(); } });
+  });
+
+  // Account Overview "Getting started" checklist: progress from the ticked tasks.
+  // Preview only: ?welcome=1 shows a business that has just had its claim approved (only the claim is done).
+  // WP: each task's done state comes from the listing (description and hours, photos, first event, class or offer).
+  const setup = $("[data-setup]");
+  if (setup) {
+    if (new URLSearchParams(location.search).get("welcome") === "1") {
+      $$("[data-task]", setup).forEach((li) => li.classList.toggle("is-done", li.dataset.task === "claim"));
+      setup.open = true;
+      $$("[data-not-welcome]").forEach((el) => { el.hidden = true; });
+      $$("[data-welcome-only]").forEach((el) => { el.hidden = false; });
+      $$("[data-welcome-text]").forEach((el) => { el.innerHTML = el.dataset.welcomeText; });
+    }
+    const items = $$("[data-task]", setup);
+    const done = items.filter((li) => li.classList.contains("is-done")).length;
+    $("[data-setup-count]", setup).textContent = done === items.length ? `All ${done} done` : `${done} of ${items.length} done`;
+    $("[data-setup-bar]", setup).style.width = Math.round((done / items.length) * 100) + "%";
+    items.forEach((li) => {
+      const t = $(".setup__tick", li);
+      if (t) t.setAttribute("aria-label", li.classList.contains("is-done") ? "Done" : "Not done yet");
+    });
+  }
+
   // Hub header search: "Search news instead" carries what was typed to the news site's search
   $$("[data-news-search]").forEach((a) => {
     const inp = $("input[type=search]", a.closest("form") || a.parentElement.parentElement);
@@ -234,7 +262,8 @@
       return s;
     };
     const update = () => {
-      const weekly = (checked("recurrence") || {}).value === "weekly";
+      // The class form (data-kind="class") is always weekly; the event form is always one-off
+      const weekly = eventForm.dataset.kind === "class" || (checked("recurrence") || {}).value === "weekly";
       const cat = checked("category");
       if (out("kind")) { out("kind").style.display = weekly ? "" : "none"; }
       if (out("cat") && cat) out("cat").textContent = cat.parentElement.textContent.trim();
@@ -251,7 +280,11 @@
       if (out("where")) out("where").textContent = home ? "Harrow Town Centre" : (val("#ev-venue") || "Venue to be set");
       const hint = $("[data-venue-home]", eventForm);
       if (hint) hint.style.display = home ? "" : "none";
-      if (out("price")) out("price").textContent = val("#ev-price") || "Free";
+      // Class form: "£8 a session", "£60 a term"; a free trial is added after the price
+      const per = val("#cl-per");
+      const trial = $('input[name="free_trial"]', eventForm);
+      const price = val("#ev-price") ? val("#ev-price") + (per ? ` a ${per}` : "") : "Free";
+      if (out("price")) out("price").textContent = price + (trial && trial.checked && val("#ev-price") ? ", first class free" : "");
       if (out("age")) out("age").textContent = val("#ev-age") || "All ages";
     };
     eventForm.addEventListener("input", update);
@@ -550,7 +583,7 @@
     const TYPES = [["all", "All"], ["events", "What&rsquo;s On"], ["classes", "Classes"], ["offers", "Offers"], ["businesses", "Businesses"]];
     const LABEL = Object.fromEntries(TYPES);
     const NOUN = { events: ["event", "events"], classes: ["class", "classes"], offers: ["offer", "offers"] };
-    const SECTION = { events: ["/events/", "See everything on What&rsquo;s On", "calendar"], classes: ["/classes/", "See all weekly classes", "repeat"], offers: ["/offers/", "See all offers", "tag"] };
+    const SECTION = { events: ["/events/", "See everything on What&rsquo;s On", "calendar"], classes: ["/events/classes/", "See all weekly classes", "repeat"], offers: ["/offers/", "See all offers", "tag"] };
     const INTENTS = [
       ["events", ["what's on", "whats on", "what is on", "things to do", "this weekend", "this week", "weekend", "tonight", "today", "tomorrow", "events", "event"]],
       ["classes", ["weekly classes", "classes", "class", "lessons", "lesson", "courses", "course"]],

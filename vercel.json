@@ -53,6 +53,11 @@
       "permanent": true
     },
     {
+      "source": "/hub/for-businesses.html",
+      "destination": "/hub/for-businesses/",
+      "permanent": true
+    },
+    {
       "source": "/hub/add-business.html",
       "destination": "/hub/add-business/",
       "permanent": true
@@ -110,6 +115,16 @@
     {
       "source": "/hub/account-event-edit.html",
       "destination": "/hub/account/events/edit/",
+      "permanent": true
+    },
+    {
+      "source": "/hub/account-classes.html",
+      "destination": "/hub/account/classes/",
+      "permanent": true
+    },
+    {
+      "source": "/hub/account-class-edit.html",
+      "destination": "/hub/account/classes/edit/",
       "permanent": true
     },
     {

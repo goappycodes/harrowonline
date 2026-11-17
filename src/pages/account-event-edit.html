@@ -1,6 +1,6 @@
 <!--
-title: Edit event or class
-description: Add or edit an event or class on Harrow Online Hub: dates, venue, prices, booking link, photos and age range.
+title: Edit event
+description: Add or edit a one-off event on Harrow Online Hub: date, time, venue, price, booking link, photo and age range.
 body: is-logged-in
 hubnav: account
 robots: noindex, nofollow
@@ -16,7 +16,8 @@ nl: off
       <li><a href="/account.html"><svg class="ho-icon"><use href="#i-home"/></svg>Overview</a></li>
       <li><a href="/account-listings.html"><svg class="ho-icon"><use href="#i-store"/></svg>My listings</a></li>
       <li><a href="/account-offers.html"><svg class="ho-icon"><use href="#i-tag"/></svg>Offers<span class="num">1<span class="ho-sr"> offer needs changes</span></span></a></li>
-      <li><a href="/account-events.html" aria-current="true"><svg class="ho-icon"><use href="#i-calendar"/></svg>Events and classes</a></li>
+      <li><a href="/account-events.html" aria-current="true"><svg class="ho-icon"><use href="#i-calendar"/></svg>Events</a></li>
+      <li><a href="/account-classes.html"><svg class="ho-icon"><use href="#i-repeat"/></svg>Classes</a></li>
       <li><a href="/account-bookings.html"><svg class="ho-icon"><use href="#i-megaphone"/></svg>Newsletter and promotions</a></li>
       <li><a href="/account-billing.html"><svg class="ho-icon"><use href="#i-card"/></svg>Plan and billing</a></li>
       <li><a href="/account-settings.html"><svg class="ho-icon"><use href="#i-settings"/></svg>Settings</a></li>
@@ -28,26 +29,26 @@ nl: off
   </aside>
 
   <div class="dash-main">
+    {{> account-add}}
     <nav class="crumbs mb-4" aria-label="Breadcrumb">
-      <ol><li><a href="/account.html">My account</a></li><li><a href="/account-events.html">Events and classes</a></li><li><span aria-current="page">Barbering taster class</span></li></ol>
+      <ol><li><a href="/account.html">My account</a></li><li><a href="/account-events.html">Events</a></li><li><span aria-current="page">Christmas charity cut-a-thon</span></li></ol>
     </nav>
     <div class="dash-head">
       <div>
-        <h1>Your event or class</h1>
-        <p>Barbering taster class &middot; <span class="status status--published">Published</span></p>
+        <h1>Your event</h1>
+        <p>Christmas charity cut-a-thon &middot; <span class="status status--pending">Being checked</span></p>
       </div>
-      <a class="ho-btn ho-btn--outline" href="/classes.html"><svg class="ho-icon"><use href="#i-external"/></svg>View on What&rsquo;s On</a>
+      <a class="ho-btn ho-btn--outline" href="/events.html"><svg class="ho-icon"><use href="#i-external"/></svg>View What&rsquo;s On</a>
     </div>
 
-    <div class="notice notice--warn mb-5">
-      <svg class="ho-icon"><use href="#i-info"/></svg>
+    <div class="notice notice--plain mb-5">
+      <svg class="ho-icon"><use href="#i-repeat"/></svg>
       <div>
-        <p><strong>Edits to an approved class may need approval again.</strong> Your class stays live as it is while we check the changes.</p>
+        <p><strong>Runs every week?</strong> <a href="/account-class-edit.html">Add it as a class</a> instead. Classes have their own form, with the day, time and term.</p>
       </div>
     </div>
-    <!-- OPEN QUESTION (brief 01, 6.9 and 10): should edits to an approved class need re-approval? Copy above assumes yes, with the live version kept until approved. -->
 
-    <!-- Simplified event form (client feedback, Nov 2026): five short steps and a live preview. -->
+    <!-- Event form (client plan, Nov 2026): one-off events only. Weekly classes have their own form (account-class-edit). -->
     <div class="layout-aside offer-form">
       <form class="form-card form" action="#" method="post" data-event-form>
         <input type="hidden" name="organiser_listing" value="station-road-barbers">
@@ -56,11 +57,11 @@ nl: off
           <h2 class="form-step__title" id="es1"><span>1</span>What is it?</h2>
           <div class="field">
             <label for="ev-title">Title</label>
-            <input class="input" id="ev-title" type="text" name="title" maxlength="80" value="Barbering taster class" required data-preview="title">
+            <input class="input" id="ev-title" type="text" name="title" maxlength="80" value="Christmas charity cut-a-thon" required data-preview="title">
           </div>
           <div class="field">
             <label for="ev-desc">Short description</label>
-            <textarea class="textarea" id="ev-desc" name="description" rows="3" maxlength="600">Learn the basics of clipper work, fading and beard shaping with our senior barbers. All tools provided.</textarea>
+            <textarea class="textarea" id="ev-desc" name="description" rows="3" maxlength="600">Our barbers cut hair all day for Harrow Food Bank. Walk in, pay what you like and every penny goes to the charity.</textarea>
           </div>
           <label class="dropzone dropzone--compact" for="ev-img">
             <svg class="ho-icon"><use href="#i-upload"/></svg>
@@ -70,19 +71,14 @@ nl: off
         </section>
 
         <section class="form-step" aria-labelledby="es2">
-          <h2 class="form-step__title" id="es2"><span>2</span>What kind?</h2>
-          <div class="choice-row">
-            <label class="choice choice--pill"><input type="radio" name="recurrence" value="once" data-reveal="#ev-once" data-preview="kind"><span>One-off event</span></label>
-            <label class="choice choice--pill"><input type="radio" name="recurrence" value="weekly" checked data-reveal="#ev-weekly" data-preview="kind"><span><svg class="ho-icon ho-icon--sm"><use href="#i-repeat"/></svg>Weekly class</span></label>
-          </div>
+          <h2 class="form-step__title" id="es2"><span>2</span>What kind of event?</h2>
           <div class="field">
             <span class="field__label" id="ev-cat-label">Category</span>
             <div class="choice-row" role="radiogroup" aria-labelledby="ev-cat-label">
-              <label class="choice choice--pill"><input type="radio" name="category" value="classes" checked data-preview="cat"><span>Classes and activities</span></label>
               <label class="choice choice--pill"><input type="radio" name="category" value="family" data-preview="cat"><span>Family</span></label>
               <label class="choice choice--pill"><input type="radio" name="category" value="music" data-preview="cat"><span>Music</span></label>
               <label class="choice choice--pill"><input type="radio" name="category" value="food-and-drink" data-preview="cat"><span>Food and drink</span></label>
-              <label class="choice choice--pill"><input type="radio" name="category" value="community" data-preview="cat"><span>Community</span></label>
+              <label class="choice choice--pill"><input type="radio" name="category" value="community" checked data-preview="cat"><span>Community</span></label>
               <label class="choice choice--pill"><input type="radio" name="category" value="nightlife" data-preview="cat"><span>Nightlife</span></label>
             </div>
           </div>
@@ -90,26 +86,12 @@ nl: off
 
         <section class="form-step" aria-labelledby="es3">
           <h2 class="form-step__title" id="es3"><span>3</span>When?</h2>
-          <div id="ev-once" hidden>
-            <div class="row row-3">
-              <div class="field"><label for="ev-sd">Date</label><input class="input" id="ev-sd" type="date" name="start_date" data-preview="date"></div>
-              <div class="field"><label for="ev-st">Starts</label><input class="input" id="ev-st" type="time" name="start_time" data-preview="time"></div>
-              <div class="field"><label for="ev-et">Ends <span class="opt">(optional)</span></label><input class="input" id="ev-et" type="time" name="end_time"></div>
-            </div>
+          <div class="row row-3">
+            <div class="field"><label for="ev-sd">Date</label><input class="input" id="ev-sd" type="date" name="start_date" value="2026-12-13" data-preview="date"></div>
+            <div class="field"><label for="ev-st">Starts</label><input class="input" id="ev-st" type="time" name="start_time" value="10:00" data-preview="time"></div>
+            <div class="field"><label for="ev-et">Ends <span class="opt">(optional)</span></label><input class="input" id="ev-et" type="time" name="end_time" value="16:00"></div>
           </div>
-          <div id="ev-weekly">
-            <div class="row row-3 slot">
-              <div class="field"><label for="sl1-day">Every</label>
-                <select class="select" id="sl1-day" name="slots[0][day]" data-preview="day"><option>Monday</option><option selected>Tuesday</option><option>Wednesday</option><option>Thursday</option><option>Friday</option><option>Saturday</option><option>Sunday</option></select></div>
-              <div class="field"><label for="sl1-s">From</label><input class="input" id="sl1-s" type="time" name="slots[0][start]" value="18:30" data-preview="time"></div>
-              <div class="field"><label for="sl1-e">To</label><input class="input" id="sl1-e" type="time" name="slots[0][end]" value="20:00"></div>
-            </div>
-            <div class="row row-2 mt-3">
-              <div class="field"><label for="ev-from">Starting</label><input class="input" id="ev-from" type="date" name="series_start" value="2026-09-08"></div>
-              <div class="field"><label for="ev-until">Until <span class="opt">(optional)</span></label><input class="input" id="ev-until" type="date" name="series_end"></div>
-            </div>
-            <p class="help mb-0">Runs on another day too? Add it in the description and we&rsquo;ll set it up when we check your class.</p>
-          </div>
+          <p class="help mb-0">On for more than one day? Add the other dates in the description and we&rsquo;ll set them up when we check your event.</p>
         </section>
 
         <section class="form-step" aria-labelledby="es4">
@@ -132,11 +114,11 @@ nl: off
           <div class="row row-2">
             <div class="field">
               <label for="ev-age">Who is it for?</label>
-              <select class="select" id="ev-age" name="age" data-preview="age"><option>All ages</option><option>Under 5s</option><option>Ages 5 to 11</option><option>Ages 12 to 17</option><option selected>Ages 16+</option><option>Adults</option><option>Over 60s</option></select>
+              <select class="select" id="ev-age" name="age" data-preview="age"><option selected>All ages</option><option>Under 5s</option><option>Ages 5 to 11</option><option>Ages 12 to 17</option><option>Ages 16+</option><option>Adults</option><option>Over 60s</option></select>
             </div>
             <div class="field">
               <label for="ev-price">Price <span class="opt">(leave blank if free)</span></label>
-              <input class="input" id="ev-price" type="text" name="price" value="&pound;25" placeholder="e.g. &pound;10 or &pound;5 for children" data-preview="price">
+              <input class="input" id="ev-price" type="text" name="price" value="Pay what you like" placeholder="e.g. &pound;10 or &pound;5 for children" data-preview="price">
             </div>
           </div>
           <div class="field">
@@ -154,27 +136,26 @@ nl: off
       <aside class="sticky offer-form__aside" aria-label="Preview">
         <p class="eyebrow">Preview</p>
         <article class="card event-card event-preview" aria-live="polite">
-          <div class="card__badges"><span class="badge badge--outline" data-ev-out="kind"><svg class="ho-icon"><use href="#i-repeat"/></svg>Weekly class</span></div>
           <div class="ph"><svg class="ho-icon"><use href="#i-scissors"/></svg></div>
           <div class="card__body">
-            <span class="biz-card__cat" data-ev-out="cat">Classes and activities</span>
-            <h3 class="card__title" data-ev-out="title">Barbering taster class</h3>
-            <p class="card__meta"><span><svg class="ho-icon"><use href="#i-clock"/></svg><span data-ev-out="when">Every Tuesday, 6.30pm</span></span><span><svg class="ho-icon"><use href="#i-pin"/></svg><span data-ev-out="where">Harrow Town Centre</span></span></p>
-            <p class="card__meta"><span><svg class="ho-icon"><use href="#i-ticket"/></svg><span data-ev-out="price">&pound;25</span></span><span><svg class="ho-icon"><use href="#i-people"/></svg><span data-ev-out="age">Ages 16+</span></span></p>
+            <span class="biz-card__cat" data-ev-out="cat">Community</span>
+            <h3 class="card__title" data-ev-out="title">Christmas charity cut-a-thon</h3>
+            <p class="card__meta"><span><svg class="ho-icon"><use href="#i-clock"/></svg><span data-ev-out="when">Sun 13 Dec, 10am</span></span><span><svg class="ho-icon"><use href="#i-pin"/></svg><span data-ev-out="where">Harrow Town Centre</span></span></p>
+            <p class="card__meta"><span><svg class="ho-icon"><use href="#i-ticket"/></svg><span data-ev-out="price">Pay what you like</span></span><span><svg class="ho-icon"><use href="#i-people"/></svg><span data-ev-out="age">All ages</span></span></p>
           </div>
         </article>
-        <p class="help mt-3">How it looks on What&rsquo;s On. We check every event and class before it goes live, usually within 2 working days.</p>
+        <p class="help mt-3">How it looks on What&rsquo;s On. We check every event before it goes live, usually within 2 working days.</p>
 
         <div class="feature-box">
           <div class="feature-box__head">
             <span class="feature-box__icon"><svg class="ho-icon"><use href="#i-star"/></svg></span>
-            <div><h2>Feature this</h2><p>Shown first on What&rsquo;s On and Classes, and at the top of The Weekend newsletter.</p></div>
+            <div><h2>Feature this</h2><p>Shown first on What&rsquo;s On, and at the top of The Weekend newsletter.</p></div>
           </div>
           <div class="feature-box__buy">
             <p><strong>&pound;15</strong> for 7 days</p>
             <a class="ho-btn ho-btn--dark ho-btn--sm" href="#stripe-checkout">Feature it</a>
           </div>
-          <p class="help mb-0"><span class="badge badge--featured">Featured until 16 Nov</span> Featuring again adds 7 more days.</p>
+          <p class="help mb-0">Pay now; the 7 days start when the event is approved and live.</p>
         </div>
         <!-- WP: #stripe-checkout = one-off Checkout Session for "Featured event, 7 days" (brief 02 N7). -->
       </aside>
