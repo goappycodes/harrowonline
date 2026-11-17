@@ -3,11 +3,10 @@ title: Harrow Online Hub: local businesses, offers and what's on in Harrow
 description: Discover what's happening in Harrow. Find local businesses, events, classes and exclusive offers from across the borough, from Harrow Online.
 nav: hub
 body: page-home
-nl: off
 -->
 <!-- Section order (client's ChatGPT mock-up, Nov 2026): the first screen is a simple choice. One search, four big
      buttons (businesses, What's On, classes, offers). Then this
-     weekend: two events, one offer and the newsletter. Stats, the "Just joined" ticker and featured businesses sit lower. -->
+     weekend: two events, one offer and the newsletter. Then more offers, the numbers, featured businesses, categories and areas. -->
 <section class="hero hero--choose">
   <div class="ho-container hero__grid">
    <div class="hero__main">
@@ -48,6 +47,8 @@ nl: off
   </div>
 </section>
 
+{{> gen-just-joined}}
+
 <section class="section" aria-labelledby="wknd-title">
   <div class="ho-container">
     <div class="sec-head">
@@ -76,18 +77,6 @@ nl: off
   </div>
 </section>
 
-<section class="section" aria-labelledby="feat-title">
-  <div class="ho-container">
-    <div class="sec-head">
-      <div><h2 class="sec-title" id="feat-title">Featured local businesses</h2><p class="sec-sub">Premium members, hand-picked by the Harrow Online team.</p></div>
-      <a class="link-arrow hide-mobile" href="/pricing.html">Get featured <svg class="ho-icon"><use href="#i-arrow"/></svg></a>
-    </div>
-    <div class="grid grid-4">
-      {{> sample-featured-cards}}
-    </div>
-  </div>
-</section>
-
 <section class="section section--soft" aria-labelledby="offers-title">
   <div class="ho-container">
     <div class="sec-head">
@@ -100,7 +89,25 @@ nl: off
   </div>
 </section>
 
-<section class="section" id="categories" aria-labelledby="cats-title">
+<section class="stats-band" aria-label="The Hub in numbers">
+  <div class="ho-container">
+    {{> gen-live-stats}}
+  </div>
+</section>
+
+<section class="section" aria-labelledby="feat-title">
+  <div class="ho-container">
+    <div class="sec-head">
+      <div><h2 class="sec-title" id="feat-title">Featured local businesses</h2><p class="sec-sub">Premium members, hand-picked by the Harrow Online team.</p></div>
+      <a class="link-arrow hide-mobile" href="/pricing.html">Get featured <svg class="ho-icon"><use href="#i-arrow"/></svg></a>
+    </div>
+    <div class="grid grid-4">
+      {{> sample-featured-cards}}
+    </div>
+  </div>
+</section>
+
+<section class="section section--soft" id="categories" aria-labelledby="cats-title">
   <div class="ho-container">
     <div class="sec-head">
       <div><h2 class="sec-title" id="cats-title">Popular categories</h2><p class="sec-sub">The categories with the most Harrow businesses.</p></div>
@@ -110,7 +117,7 @@ nl: off
   </div>
 </section>
 
-<section class="section section--soft" id="areas" aria-labelledby="areas-title">
+<section class="section" id="areas" aria-labelledby="areas-title">
   <div class="ho-container">
     <div class="sec-head">
       <div><h2 class="sec-title" id="areas-title">Browse by area</h2><p class="sec-sub">From Pinner to Edgware, find what&rsquo;s near you.</p></div>
@@ -122,14 +129,6 @@ nl: off
     </div>
   </div>
 </section>
-
-<section class="stats-band" aria-label="The Hub in numbers">
-  <div class="ho-container">
-    {{> gen-live-stats}}
-  </div>
-</section>
-
-{{> gen-just-joined}}
 
 <!-- For businesses: one panel, text and actions left, the three steps as a timeline right (redesign, Nov 2026) -->
 <section class="section" aria-labelledby="biz-title">
@@ -147,7 +146,7 @@ nl: off
       </div>
       <ol class="biz-steps">
         <li><span class="biz-steps__num" aria-hidden="true">1</span><div><h3>Claim or add your listing</h3><p>Most Harrow businesses are already listed. Find yours and claim it free, or add it in two minutes.</p></div></li>
-        <li><span class="biz-steps__num" aria-hidden="true">2</span><div><h3>Add events, classes and offers</h3><p>Your events go on What&rsquo;s On, weekly classes on Classes and deals on Offers.</p></div></li>
+        <li><span class="biz-steps__num" aria-hidden="true">2</span><div><h3>Add events, classes and offers</h3><p>On the Featured or Local Partner plan, your events go on What&rsquo;s On, weekly classes on Classes and deals on Offers.</p></div></li>
         <li><span class="biz-steps__num" aria-hidden="true">3</span><div><h3>Manage everything in one place</h3><p>One account for your listing, events, classes, offers and plan, with a checklist to get you started.</p></div></li>
       </ol>
     </div>
