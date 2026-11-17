@@ -222,7 +222,7 @@ def write_list():
     w0, w1 = WEEKEND
     body = f'''<!--
 title: What's On in Harrow: events this week and weekend
-description: Events, things to do and classes across Harrow this week and weekend: family days out, live music, markets, community events and more. Schools, clubs and charities list events free.
+description: Events, things to do and classes across Harrow this week and weekend: family days out, live music, markets, community events and more. Free for schools, clubs and charities to list; businesses list events on a paid plan.
 nav: events
 hubnav: events
 body: page-events
@@ -233,7 +233,7 @@ body: page-events
 
 <header class="page-head ho-container">
   <h1 class="page-head__title">What&rsquo;s On in Harrow</h1>
-  <p class="page-head__lead">Events, days out and regular classes across the borough, checked by the Harrow Online team. Running something? <a href="/register.html">Add your event</a>: free for schools, clubs and charities.</p>
+  <p class="page-head__lead">Events, days out and regular classes across the borough, checked by the Harrow Online team. Running something? <a href="/register.html">Add your event</a>. It&rsquo;s free for schools, clubs and charities, and included in the Featured and Local Partner plans for businesses.</p>
 </header>
 
 <div class="ho-container">
@@ -350,7 +350,7 @@ body: page-events
   <div class="cta-band mt-7">
     <div>
       <h2>Running an event in Harrow?</h2>
-      <p>Schools, clubs, charities and community groups list events and classes free. Businesses add events and classes on the Featured plan. We check every listing before it goes live, usually within one working day.</p>
+      <p>Businesses add events and classes on the Featured or Local Partner plan. Schools, clubs, charities and community groups add them free with an organiser account. We check every listing before it goes live, usually within one working day.</p>
     </div>
     <div class="cta-band__actions">
       <a class="ho-btn ho-btn--primary" href="/register.html">{I('plus')}Add your event</a>
@@ -488,7 +488,7 @@ body: page-events
   <div class="cta-band mt-7">
     <div>
       <h2>Running an event in Harrow?</h2>
-      <p>Schools, clubs, charities and community groups list events and classes free. Businesses add events and classes on the Featured plan. Every listing is checked before it goes live.</p>
+      <p>Businesses add events and classes on the Featured or Local Partner plan. Schools, clubs, charities and community groups add them free with an organiser account. Every listing is checked before it goes live.</p>
     </div>
     <div class="cta-band__actions">
       <a class="ho-btn ho-btn--primary" href="/register.html">{I('plus')}Add your event</a>

@@ -180,7 +180,7 @@ body: page-classes
   <div class="cta-band mt-7">
     <div>
       <h2>Run a class in Harrow?</h2>
-      <p>Schools, clubs, charities and community groups list classes free with an organiser account. Businesses add classes on the Featured plan. You keep one page up to date all year, and we check it before it goes live.</p>
+      <p>Businesses add classes on the Featured or Local Partner plan. Schools, clubs, charities and community groups add them free with an organiser account. You keep one page up to date all year, and we check it before it goes live.</p>
     </div>
     <div class="cta-band__actions">
       <a class="ho-btn ho-btn--primary" href="/register.html">{I('plus')}List your class</a>
