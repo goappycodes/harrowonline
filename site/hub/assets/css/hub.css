@@ -2570,3 +2570,6 @@ input[type="search"]::-ms-clear, input[type="search"]::-ms-reveal { display: non
   .profile-head--card .profile-head__actions .ho-btn { justify-content: center; }
   .profile-card { padding: 18px; }
 }
+
+/* Homepage: "Get found by Harrow" sits closer to the areas above and the newsletter strip below */
+.page-home section[aria-labelledby="biz-title"] { padding-top: 0; padding-bottom: 0; }
