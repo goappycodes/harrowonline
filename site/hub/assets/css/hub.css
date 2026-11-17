@@ -736,6 +736,7 @@ address { font-style: normal; }
 .event-row__side { display: flex; flex-direction: column; align-items: flex-end; gap: 6px; text-align: right; }
 .event-row--featured { margin: 0 calc(var(--ho-s4) * -1); padding-left: var(--ho-s4); padding-right: var(--ho-s4); background: var(--ho-red-tint); border-radius: var(--ho-radius-lg); border-top-color: transparent; }
 .event-row--featured + .event-row { border-top-color: transparent; }
+.event-row--featured + .event-row--featured { margin-top: var(--ho-s2); }
 @media (max-width: 860px) {
   .event-row { grid-template-columns: 60px minmax(0, 1fr); }
   .event-row .ph { display: none; }
@@ -955,6 +956,7 @@ address { font-style: normal; }
 .social-row a:hover { background: var(--ho-red); color: #fff; }
 
 .limited-note { display: flex; gap: var(--ho-s3); align-items: flex-start; padding: var(--ho-s4); border-radius: var(--ho-radius); background: var(--ho-soft); font-size: 14px; color: var(--ho-muted); }
+.limited-note[hidden] { display: none; }
 .limited-note .ho-icon { color: var(--ho-muted); }
 
 /* Business of the week ribbon */

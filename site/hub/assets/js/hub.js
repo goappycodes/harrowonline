@@ -582,7 +582,7 @@
        words still filter that tab ("dance classes", "pizza deals", "kids events this weekend"). ---- */
     const TYPES = [["all", "All"], ["events", "What&rsquo;s On"], ["classes", "Classes"], ["offers", "Offers"], ["businesses", "Businesses"]];
     const LABEL = Object.fromEntries(TYPES);
-    const NOUN = { events: ["event", "events"], classes: ["class", "classes"], offers: ["offer", "offers"] };
+    const NOUN = { events: ["event", "events"], classes: ["class", "classes"], offers: ["offer", "offers"], businesses: ["business", "businesses"] };
     const SECTION = { events: ["/events/", "See everything on What&rsquo;s On", "calendar"], classes: ["/events/classes/", "See all weekly classes", "repeat"], offers: ["/offers/", "See all offers", "tag"] };
     const INTENTS = [
       ["events", ["what's on", "whats on", "what is on", "things to do", "this weekend", "this week", "weekend", "tonight", "today", "tomorrow", "events", "event"]],
@@ -715,11 +715,13 @@
 
       if (type === "all" && p.q) {
         if (countEl) countEl.innerHTML = `<strong>${num(total)}</strong> ${total === 1 ? "result" : "results"}${forQ}`;
-        const secs = ["events", "classes", "offers"].filter((k) => G[k].length).map((k) => `<section class="search-group">
+        // Every group gets the same preview: the top 3 and a "See all" link to its tab.
+        // Only when businesses are the one group with results does All show the full, paged list.
+        const keys = ["events", "classes", "offers", "businesses"].filter((k) => G[k].length);
+        if (keys.length > 1 || (keys.length === 1 && keys[0] !== "businesses")) groupsEl.innerHTML = keys.map((k) => `<section class="search-group">
           <div class="search-group__head"><h2>${LABEL[k]}<span class="count">${num(G[k].length)}</span></h2>${G[k].length > 3 ? `<a href="${href(k)}" data-nav>See all ${num(G[k].length)} ${NOUN[k][1]}${ICON("arrow", "ho-icon ho-icon--sm")}</a>` : ""}</div>
-          ${cards(k, G[k].slice(0, 3))}
+          ${k === "businesses" ? G[k].slice(0, 3).map(row).join("") : cards(k, G[k].slice(0, 3))}
         </section>`).join("");
-        groupsEl.innerHTML = secs + (secs && items.length ? `<div class="search-group__head"><h2>Businesses<span class="count">${num(items.length)}</span></h2></div>` : "");
       } else if (SECTION[type]) {
         const xs = G[type];
         const whenOnly = type === qi.intent && qi.when && !qi.rest.length;
@@ -758,8 +760,12 @@
       items = items.map((x, i) => [x, i]).sort((a, b) => (tierRank[a[0].t || "unclaimed"] - tierRank[b[0].t || "unclaimed"]) || (p.sort === "name" ? a[0].n.localeCompare(b[0].n) : a[1] - b[1])).map((a) => a[0]);
 
       const type = ALL ? renderGroups(p, items) : "businesses";
-      const bizView = type === "all" || type === "businesses";
       const overview = type === "all" && !!p.q;   // "All" with a search: count and sections set by renderGroups
+      const grouped = overview && !!groupsEl.innerHTML;   // businesses are a section of the overview: no list, no pager
+      const bizView = (type === "all" || type === "businesses") && !grouped;
+      if (grouped) resultsEl.innerHTML = "";
+      const bizNote = $("[data-biz-note]", dir);   // "Can't find a business?" only where businesses are listed
+      if (bizNote) bizNote.hidden = !bizView && !grouped;
 
       const total = items.length;
       const pages = bizView ? Math.max(1, Math.ceil(total / PAGE)) : 1;
