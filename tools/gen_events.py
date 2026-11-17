@@ -169,6 +169,40 @@ def long_date(d):
 
 
 # ---------------------------------------------------------------- list view
+def _age_buckets(age):
+    """Age groups an event or class suits, matching the Age filter values (under-5, 5-11, 12-17, adults, 60-plus)."""
+    import re as _re
+    a = _re.sub(r"<[^>]+>|&[a-z]+;", " ", age or "").lower()
+    if not a.strip() or "all ages" in a or "everyone" in a:
+        return "under-5 5-11 12-17 adults 60-plus"
+    if "60" in a or "over-60" in a or "older" in a:
+        return "60-plus adults"
+    if "adult" in a and not any(ch.isdigit() for ch in a):
+        return "adults 60-plus"
+    nums = [int(n) for n in _re.findall(r"\d+", a)]
+    if "under" in a and nums:
+        lo, hi = 0, nums[0] - 1
+    elif "+" in a and nums:
+        lo, hi = nums[0], 120
+    elif len(nums) >= 2:
+        lo, hi = nums[0], nums[1]
+    elif nums:
+        lo, hi = nums[0], nums[0]
+    else:
+        return "under-5 5-11 12-17 adults 60-plus"
+    out = [n for n, a0, a1 in (("under-5", 0, 4), ("5-11", 5, 11), ("12-17", 12, 17), ("adults", 18, 59), ("60-plus", 60, 120)) if lo <= a1 and hi >= a0]
+    return " ".join(out)
+
+
+def _filters_attrs(x):
+    """data-* for the What's On filters (hub.js 6b): category, area, ages and free."""
+    import re as _re
+    cat = "classes" if x["kind"] == "class" else _re.sub(r"[^a-z0-9]+", "-", _re.sub(r"<[^>]+>|&[a-z]+;", "", x["cat"]).lower().replace("&", "and")).strip("-")
+    area_slug = {n: s for s, n, _a, _b in H.AREAS}.get(_re.sub(r"<[^>]+>", "", x["area"]).replace("&rsquo;", "’"), "")
+    free = 1 if _re.sub(r"<[^>]+>", "", x["price"] or "").strip().lower().startswith("free") else 0
+    return f' data-cat="{cat}" data-area="{area_slug}" data-ages="{_age_buckets(x["age"])}" data-free="{free}"'
+
+
 def event_row(x, day):
     ph_cls = "ph ph--red" if x["featured"] and x["kind"] == "event" else ("ph ph--dark" if x["featured"] else "ph")
     extra = f'<span class="badge badge--outline">{I("repeat")}Weekly class</span>' if x["kind"] == "class" else ""
@@ -176,7 +210,7 @@ def event_row(x, day):
     when = f'Every {DAYNAMES[day.weekday()]}, {x["time"]}' if x["kind"] == "class" else x["time"]
     when_icon = "repeat" if x["kind"] == "class" else "clock"
     desc = f'\n      <p class="card__text">{x["desc"]}</p>' if x["desc"] else ""
-    return f'''    <article class="event-row{' event-row--featured' if x['featured'] else ''}" data-kind="{x['kind']}" data-date="{day.isoformat()}">
+    return f'''    <article class="event-row{' event-row--featured' if x['featured'] else ''}" data-kind="{x['kind']}" data-date="{day.isoformat()}"{_filters_attrs(x)}>
       <time class="date-tile" datetime="{day.isoformat()}"><span class="date-tile__m">{day.strftime('%b')}</span><span class="date-tile__d">{day.day}</span><span class="date-tile__w">{day.strftime('%a')}</span></time>
       {class_media(x['title'], x['icon'], ph_cls) if x['kind'] == 'class' else f'<div class="{ph_cls}">{I(x["icon"])}</div>'}
       <div>

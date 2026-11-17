@@ -52,6 +52,19 @@ def verified():
     return f'<span class="badge badge--verified">{icon("verified")}Verified by the business</span>'
 
 
+def checked_badge():
+    return f'<span class="badge badge--checked">{icon("check")}Checked by Harrow Online</span>'
+
+
+def imported_badge():
+    return '<span class="badge badge--unclaimed">Information imported from public data</span>'
+
+
+def listing_status(x):
+    """The one status badge for a listing that isn't claimed: checked by the team, or imported from public data."""
+    return checked_badge() if x.get("checked") else imported_badge()
+
+
 def is_sample(x):
     """Made-up preview business (hub_data gives them ids "sample-…"). Real ones ("real": true in claimed.json) get "claimed-…"."""
     return str(x.get("id", "")).startswith("sample-")

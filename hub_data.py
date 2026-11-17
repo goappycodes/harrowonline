@@ -140,6 +140,10 @@ def load_listings():
     claimed = load_claimed()
     # A real business that joins the Hub replaces its old unclaimed entry (claimed.json "replaces": [listing ids])
     replaced = {i for c in claimed for i in c.get("replaces", [])}
+    # Three statuses (client feedback, Nov 2026): verified by the business (claimed), checked by Harrow Online (data/checked.json),
+    # or information imported from public data (everything else)
+    checked_file = ROOT / "data/checked.json"
+    checked = {c["id"]: c.get("date", "") for c in json.loads(checked_file.read_text(encoding="utf-8")).get("checked", [])} if checked_file.exists() else {}
     used = set()
     out = []
     for r in raw:
@@ -169,6 +173,7 @@ def load_listings():
             "lat": r["lat"],
             "lng": r["lng"],
             "sources": r["src"],
+            **({"checked": checked[r["id"]] or True} if r["id"] in checked else {}),
         })
     for c in claimed:
         base = c.get("slug") or slugify(f'{c["name"]} {AREA_BY_SLUG[c["area"]][1]}')   # "slug": a cleaner URL for awkward names
