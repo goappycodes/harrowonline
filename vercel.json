@@ -211,6 +211,16 @@
       "source": "/hub/:kind(business|category|area)/:slug.html",
       "destination": "/hub/:kind/:slug/",
       "permanent": true
+    },
+    {
+      "source": "/hub/account/listings/",
+      "destination": "/hub/account/listings/edit/",
+      "permanent": true
+    },
+    {
+      "source": "/hub/account-listings.html",
+      "destination": "/hub/account/listings/edit/",
+      "permanent": true
     }
   ],
   "headers": [
