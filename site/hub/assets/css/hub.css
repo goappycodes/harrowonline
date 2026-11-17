@@ -2252,6 +2252,8 @@ main:has(> .auth) + .ho-footer { margin-top: 0; }
 .fb-step > p { color: #444; }
 .fb-step .ticks { margin-bottom: var(--ho-s4); }
 .fb-step__actions { display: flex; flex-wrap: wrap; gap: var(--ho-s2); margin-top: auto; padding-top: var(--ho-s2); }
+/* Buttons full width, stacked at the bottom: with three cards side by side the last button lines up across them; on phones they stay even */
+@media (min-width: 1019px), (max-width: 600px) { .fb-step__actions { flex-direction: column; } .fb-step__actions .ho-btn { width: 100%; justify-content: center; } }
 .fb-adds { margin: 0 0 var(--ho-s3); padding: 0; list-style: none; }
 .fb-adds li { display: grid; grid-template-columns: 22px minmax(0, 1fr); gap: 10px; align-items: start; padding: 10px 0; border-top: 1px solid var(--ho-line); font-size: 15px; line-height: 1.45; }
 .fb-adds li:first-child { border-top: 0; padding-top: 0; }
