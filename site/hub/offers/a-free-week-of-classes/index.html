@@ -127,7 +127,7 @@
     </div>
     <div class="offer-simple__side">
       <div class="voucher voucher--simple" id="redeem">
-          <p class="small mb-0">Your code appears here once you confirm your email.</p>
+          <div data-sub-gate data-offer="a-free-week-of-classes" data-has-code="1"><p class="small mb-0">Your code appears here once you confirm your email.</p>
           <div class="offer__lock">
             <p><svg class="ho-icon ho-icon--sm"><use href="/hub/assets/img/icons.svg#i-lock"/></svg>Subscriber-only. Enter your email to unlock.</p>
             <form data-unlock action="/hub/wp-json/ho/v1/unlock" method="post">
@@ -137,7 +137,7 @@
               <input id="unlock-wealdstone-fitness-s-4" type="email" name="email" placeholder="Your email" autocomplete="email" required>
               <button class="ho-btn ho-btn--sm ho-btn--primary" type="submit">Unlock</button>
             </form>
-          </div>
+          </div></div>
           <p class="voucher__how">Book online and enter the code at checkout.</p>
         </div>
       <p class="offer-simple__meta"><svg class="ho-icon ho-icon--sm"><use href="/hub/assets/img/icons.svg#i-calendar"/></svg>Ends 14 Dec 2026 &middot; 33 days left &middot; <a href="#terms">Terms</a></p>

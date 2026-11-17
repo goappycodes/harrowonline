@@ -2,8 +2,9 @@
 Copy the live harrowonline.org header and footer into the Hub partials, verbatim, with only these changes:
   - Hub pages use the Hub logo (hub-logo.svg / hub-logo-white.svg), linking to the Hub homepage
   - an account icon in the header actions (Hub pages only): Sign in when signed out, My account when signed in
-  - a "Hub" section in the phone menu drawer (Businesses, Categories, Areas, Pricing, List your business),
+  - a "Hub" section in the phone menu drawer (Businesses, Categories, Areas, For businesses, Pricing, List your business),
     (desktop gets the same links as a "Hub" dropdown in the main menu)
+  - Hub pages: the header and phone-menu search search the Hub (with "Search news instead")
   - one extra line in the footer legal block on Hub pages: data attribution + Hub legal pages (brief 01, 6.2)
 
     curl -s https://harrowonline.org/ -o live.html
@@ -48,6 +49,7 @@ DRAWER_HUB = ('{{site:hub}}<nav class="ho-drawer__hub" aria-label="Hub">'
               '<li><a href="/search.html">Businesses</a></li>'
               '<li><a href="/categories.html">Categories</a></li>'
               '<li><a href="/#areas">Areas</a></li>'
+              '<li><a href="/for-businesses.html">For businesses</a></li>'
               '<li><a href="/pricing.html">Pricing</a></li>'
               '<li><a href="/add-business.html">List your business</a></li>'
               '</ul></nav>{{/site}}\n            ')
@@ -66,6 +68,36 @@ header = swap(header,
 header = swap(header, LOGO_LAZY,
               '{{site:hub}}<img src="/assets/img/hub-logo.svg" width="146" height="100" alt="Harrow Online Hub" loading="lazy">{{/site}}{{site:news}}' + LOGO_LAZY + '{{/site}}')
 header = swap(header, DRAWER_NL, DRAWER_HUB + DRAWER_NL)
+
+
+def hub_search(text, open_tag, label_old, input_old, hub_label_input, tail=""):
+    """Hub pages search the Hub (/search.html?q=, hub.js section 11); news pages keep the live search."""
+    import re
+    m = re.search(re.escape(open_tag) + r".*?" + re.escape(input_old), text, flags=re.S)
+    assert m, f"search form not found: {open_tag[:60]!r}"
+    live = m.group(0)
+    assert label_old in live, label_old
+    hub = live.replace('action="https://harrowonline.org/"', 'action="/search.html"', 1)
+    hub = hub[:hub.find(label_old)] + hub_label_input
+    return text[:m.start()] + "{{site:hub}}" + hub + tail + "{{/site}}{{site:news}}" + live + "{{/site}}" + text[m.end():]
+
+
+# Header search panel: Hub pages search businesses, events, classes and offers, with "Search news instead"
+_m = __import__("re").search(r'(<form class="ho-search__form".*?</form>)', header, flags=__import__("re").S)
+assert _m, "header search form"
+_live = _m.group(1)
+_hub = ('<form class="ho-search__form ho-search__form--hub" role="search" method="get" action="/search.html">\n'
+        '                    <label class="ho-sr" for="ho-search-input">Search the Hub</label>\n'
+        '                    <input class="ho-search__input" id="ho-search-input" type="search" name="q" value="" placeholder="Search businesses, events, classes and offers&hellip;" autocomplete="off">\n'
+        '                    <button class="ho-btn ho-btn--primary" type="submit">Search</button>\n'
+        '                    <a class="ho-search__alt" href="https://harrowonline.org/?s=" data-news-search>Search news instead</a>\n'
+        '                </form>')
+header = header[:_m.start()] + "{{site:hub}}" + _hub + "{{/site}}{{site:news}}" + _live + "{{/site}}" + header[_m.end():]
+# Phone drawer search: the form's opening, label and input differ on Hub pages; the submit button is shared
+_DRAWER_INPUT = '<input id="ho-drawer-search" type="search" name="s" placeholder="Search Harrow news&hellip;" autocomplete="off">'
+header = hub_search(header, '<form class="ho-drawer__search"', '<label class="ho-sr" for="ho-drawer-search">', _DRAWER_INPUT,
+                    '<label class="ho-sr" for="ho-drawer-search">Search the Hub</label>\n'
+                    '                <input id="ho-drawer-search" type="search" name="q" placeholder="Search the Hub&hellip;" autocomplete="off">')
 # Hub pages use the shared main menu from brief 01, section 3 (News, What's On, Classes, Offers, Hub), in the live
 # menu's markup and styling. No "Newsletter" item: the red Newsletter button in the header (and "Get the newsletter"
 # in the phone drawer) already covers it. News-site mock pages keep the live menu.
@@ -83,6 +115,7 @@ HUB_MENU = [
 HUB_SUBMENU = [
     ("categories", "/categories.html", "Categories"),
     ("", "/#areas", "Areas"),
+    ("for-businesses", "/for-businesses.html", "For businesses"),
     ("pricing", "/pricing.html", "Pricing"),
 ]
 

@@ -150,14 +150,82 @@
     if (msg) msg.textContent = form.dataset.nlDone || "Thanks! Your first newsletter arrives tomorrow morning.";
   }));
 
-  /* 6. Subscriber-only offers: the code is NOT in the page. Submitting starts the email confirmation;
-        WordPress returns the code only after the reader confirms (POST /wp-json/ho/v1/unlock → confirm link → code). */
+  /* 6. Subscriber-only offers. The code is NEVER in the page (pages are cached and public). Who sees codes:
+        - a reader who tapped the confirmation link in their email: WordPress checks the email is a newsletter
+          subscriber (Beehiiv), sets a signed, HttpOnly "ho_sub" cookie (90 days) and redirects to the offer
+          without the token. They stay recognised while signed out, on every offer, until the cookie ends.
+        - a signed-in reader whose account email is a subscriber.
+        - anyone else: the unlock form, no code.
+        WordPress flow:
+          POST /wp-json/ho/v1/unlock {email, offer}  → emails a confirm link (and signs them up if they are not yet)
+          GET  /hub/offers/{slug}/?ho_confirm=TOKEN   → checks the token, sets the cookie, redirects to the clean URL
+          GET  /wp-json/ho/v1/codes?offers=a,b        → (credentials: include, never cached) {subscriber: true,
+               email: "…", codes: {slug: "CODE"}} for a known subscriber, otherwise {subscriber: false}
+          POST /wp-json/ho/v1/forget                  → clears the cookie ("Not you?")
+        The preview has no server: ?ho_confirm=… sets a readable preview cookie instead, and the codes shown are
+        made-up preview codes, so no real subscriber code is ever published here. */
+  const SUB_COOKIE = "ho_sub_preview";
+  const subQuery = new URLSearchParams(location.search);
+  if (subQuery.has("ho_confirm")) {
+    let who = "";
+    try { who = sessionStorage.getItem("ho_sub_email") || ""; } catch (_) { /* private mode */ }
+    document.cookie = `${SUB_COOKIE}=${encodeURIComponent(who || "1")}; path=/; max-age=${60 * 60 * 24 * 90}; SameSite=Lax`;
+    subQuery.delete("ho_confirm");
+    history.replaceState(null, "", location.pathname + (subQuery.toString() ? "?" + subQuery : "") + location.hash);
+  }
+  const subCookie = () => (document.cookie.split("; ").find((c) => c.startsWith(SUB_COOKIE + "=")) || "").slice(SUB_COOKIE.length + 1);
+  // Preview stand-in for GET /wp-json/ho/v1/codes
+  const fetchCodes = (slugs) => {
+    const who = subCookie();
+    if (!who) return Promise.resolve({ subscriber: false });
+    const fake = (s) => "PREVIEW" + String([...s].reduce((h, c) => (h * 31 + c.charCodeAt(0)) % 9000, 7) + 1000);
+    return Promise.resolve({ subscriber: true, email: who === "1" ? "" : decodeURIComponent(who), codes: Object.fromEntries(slugs.map((s) => [s, fake(s)])) });
+  };
+  const gates = $$("[data-sub-gate]"), cardCodes = $$("[data-sub-code]");
+  if (gates.length || cardCodes.length) {
+    const slugs = [...new Set([...gates, ...cardCodes].map((el) => el.dataset.offer))];
+    fetchCodes(slugs).then((r) => {
+      if (!r.subscriber) return;
+      const who = r.email ? ` as <strong>${esc(r.email)}</strong>` : "";
+      const forget = `<button class="link-btn" type="button" data-sub-forget>Not you?</button>`;
+      gates.forEach((g) => {
+        const code = r.codes[g.dataset.offer];
+        g.innerHTML = (g.dataset.hasCode === "1" && code ?
+          `<div class="voucher__row"><span class="voucher__code">${esc(code)}</span><button class="ho-btn ho-btn--dark" type="button" data-copy="${esc(code)}" data-copied="Code copied">Copy code</button></div>` :
+          `<p class="voucher__state">No code needed</p>`) +
+          `<p class="sub-known">${ICON("check", "ho-icon ho-icon--sm")}<span>Unlocked for subscribers${who}. ${forget}</span></p>`;
+      });
+      cardCodes.forEach((c) => {
+        const code = r.codes[c.dataset.offer];
+        if (!code) return;
+        c.textContent = code;
+        c.classList.remove("offer__code--pending");
+        const card = c.closest(".offer");
+        const lock = card && $(".offer__lock", card);
+        if (lock) lock.remove();
+        if (card) card.classList.remove("offer--locked");
+      });
+    });
+  }
+  document.addEventListener("click", (e) => {
+    if (!e.target.closest("[data-sub-forget]")) return;
+    document.cookie = `${SUB_COOKIE}=; path=/; max-age=0; SameSite=Lax`;   // WordPress: POST /wp-json/ho/v1/forget
+    location.reload();
+  });
+  // Unlock form: starts the email confirmation. Preview: a link stands in for the email's confirm link.
   $$("[data-unlock]").forEach((form) => form.addEventListener("submit", (e) => {
     e.preventDefault();
     const lock = form.closest(".offer__lock");
     if (!lock) return;
-    const email = esc(($("input[type=email]", form) || {}).value || "your inbox");
-    lock.innerHTML = `<p role="status">${ICON("mail", "ho-icon ho-icon--sm")}Check ${email} and tap the confirmation link. Your code appears here once you have confirmed.</p>`;
+    const raw = (($("input[type=email]", form) || {}).value || "").trim();
+    const email = esc(raw || "your inbox");
+    const offer = ($("input[name=offer]", form) || {}).value || "";
+    try { sessionStorage.setItem("ho_sub_email", raw); } catch (_) { /* private mode */ }   // never in the URL
+    const intro = form.closest("[data-sub-gate]") && $("[data-sub-gate] > p.small", form.closest(".voucher") || document);
+    if (intro) intro.remove();   // the "Check your email" message says it; no second "Your code appears here" line
+    const back = `${BASE}/offers/${offer}/?ho_confirm=preview`;
+    lock.innerHTML = `<p role="status">${ICON("mail", "ho-icon ho-icon--sm")}Check ${email} and tap the confirmation link. Your code appears here once you have confirmed.</p>
+      <p class="sub-preview">Preview: <a href="${back}">open the confirmation link</a></p>`;
   }));
 
   /* 5b. Homepage stats: numbers count up once when the strip scrolls into view.
@@ -477,10 +545,26 @@
     update();
   });
 
+  /* 8b. Homepage "Popular": one line only. Chips that don't fit whole are hidden (none cut in half). */
+  $$(".popular--one").forEach((row) => {
+    const chips = $$("a", row);
+    const fit = () => {
+      chips.forEach((c) => { c.hidden = false; });
+      const right = row.getBoundingClientRect().right;
+      let full = false;   // keep the order: once one doesn't fit, the rest go too
+      chips.forEach((c) => { if (full || c.getBoundingClientRect().right > right + 0.5) { full = true; c.hidden = true; } });
+    };
+    fit();
+    window.addEventListener("resize", fit);
+  });
+
   /* 9. Share / copy link */
-  $$("[data-copy]").forEach((b) => b.addEventListener("click", async () => {
+  // Delegated: also covers subscriber codes added after the page loads (section 6)
+  document.addEventListener("click", async (e) => {
+    const b = e.target.closest("[data-copy]");
+    if (!b) return;
     try { await navigator.clipboard.writeText(b.dataset.copy || location.href); b.textContent = b.dataset.copied || "Link copied"; } catch (_) { /* ignore */ }
-  }));
+  });
 
   /* 10. Choice cards that reveal a panel: <input data-reveal="#panel-id"> */
   const syncReveal = () => $$("[data-reveal]").forEach((inp) => {
@@ -741,12 +825,16 @@
 
     const render = () => {
       const p = params();
-      const terms = p.q.toLowerCase().split(/\s+/).filter(Boolean);
+      // Filler words ("plumber near me", "cafe in pinner") are skipped, like the events, classes and offers search;
+      // a search made only of them ("harrow") still uses them
+      const typed = p.q.toLowerCase().split(/\s+/).filter(Boolean);
+      const kept = typed.filter((t) => !STOP.has(t));
+      const terms = kept.length ? kept : typed;
       let items = INDEX.items.filter((x) =>
         (!p.cat || x.c === p.cat) && (!p.area || x.a === p.area) && (!p.web || x.w) && (!p.phone || x.p));
       if (terms.length) {
         items = items.map((x) => {
-          const hay = (x.n + " " + (x.s || "") + " " + (INDEX.cats[x.c] || {}).n + " " + x.pc + " " + (x.ad || "")).toLowerCase();
+          const hay = (x.n + " " + (x.s || "") + " " + (INDEX.cats[x.c] || {}).n + " " + x.pc + " " + (x.ad || "") + " " + (INDEX.areas[x.a] || "")).toLowerCase();   // area name: "cafe in pinner"
           const name = x.n.toLowerCase();
           let score = 0;
           for (const t of terms) {

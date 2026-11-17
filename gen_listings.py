@@ -323,7 +323,9 @@ def write_partials(cat_counts, area_counts):
     offers = C.all_offers(listings())
     (PARTIALS / "gen-offers.html").write_text("\n".join(C.offer_list_card(x, o) for x, o in offers), encoding="utf-8")
     # Homepage: value-first offer tiles (six), "Just joined" ticker and live stats strip (cues from the client's reference site)
-    (PARTIALS / "gen-offers-home.html").write_text("\n".join(C.offer_tile(x, o) for x, o in offers[:6]), encoding="utf-8")
+    # The first (featured) offer sits beside this weekend's events on the homepage; the tiles further down show the next six
+    (PARTIALS / "gen-offer-pick.html").write_text(C.offer_list_card(*offers[0]) if offers else "", encoding="utf-8")
+    (PARTIALS / "gen-offers-home.html").write_text("\n".join(C.offer_tile(x, o) for x, o in offers[1:7]), encoding="utf-8")
     write_home_extras(offers)
     (PARTIALS / "gen-offer-count.html").write_text(str(len(offers)), encoding="utf-8")
     by_cat = Counter(x["cat"] for x, _o in offers)

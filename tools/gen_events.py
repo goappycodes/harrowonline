@@ -535,6 +535,9 @@ def weekend_events():
 def write_weekend_partial():
     cards = "\n      ".join(event_card(e) for e in weekend_events()[:4])
     (PARTIALS / "gen-weekend-cards.html").write_text(cards + "\n", encoding="utf-8", newline="\n")
+    # Homepage first screen (client's mock-up, Nov 2026): two events this weekend beside one offer and the newsletter
+    two = "\n      ".join(event_card(e) for e in weekend_events()[:2])
+    (PARTIALS / "gen-weekend-two.html").write_text(two + "\n", encoding="utf-8", newline="\n")
 
 
 # ---------------------------------------------------------------- one page per event
