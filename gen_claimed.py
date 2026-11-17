@@ -195,7 +195,7 @@ def offer_card(x, o, show_biz=True, heading="h3"):
     badges += f'<span class="biz-card__cat">{e(cat_name(x["cat"]))}</span>'
     if o.get("sub"):
         # Never put a subscriber-only code in the page (it was only blurred). WordPress returns it after email confirmation.
-        code = '<span class="offer__code offer__code--pending">Code shown after you confirm your email</span>' if o.get("code") else "<span>No code needed</span>"
+        code = f'<span class="offer__code offer__code--pending" data-sub-code data-offer="{o["slug"]}">Code shown after you confirm your email</span>' if o.get("code") else "<span>No code needed</span>"
     else:
         code = f'<span class="offer__code">{o["code"]}</span>' if o.get("code") else "<span>No code needed</span>"
     lock = unlock_box(x, o) if o.get("sub") else ""
@@ -317,7 +317,8 @@ def offer_page(x, o, live):
           <a class="ho-btn ho-btn--primary mt-4" href="/offers.html">See current offers</a>'''
     elif o.get("sub"):
         what = "Your code appears here once you confirm your email." if o.get("code") else "Full details appear here once you confirm your email."
-        voucher_main = f'''<p class="small mb-0">{what}</p>{unlock_box(x, o, note=False)}'''
+        # hub.js section 6 swaps this for the code when the reader is a known subscriber (confirm-link cookie or signed in)
+        voucher_main = f'''<div data-sub-gate data-offer="{o["slug"]}" data-has-code="{1 if o.get("code") else 0}"><p class="small mb-0">{what}</p>{unlock_box(x, o, note=False)}</div>'''
     elif o.get("code"):
         voucher_main = f'''<div class="voucher__row"><span class="voucher__code">{o["code"]}</span>
           <button class="ho-btn ho-btn--dark" type="button" data-copy="{o["code"]}" data-copied="Code copied">Copy code</button></div>'''

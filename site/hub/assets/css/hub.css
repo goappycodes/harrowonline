@@ -649,7 +649,7 @@ address { font-style: normal; }
 .offer__foot { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: var(--ho-s2); margin-top: auto; padding-top: var(--ho-s2); font-size: 13px; color: var(--ho-muted); }
 .offer__code { display: inline-flex; align-items: center; gap: 8px; padding: 6px 12px; border-radius: var(--ho-radius-sm); background: var(--ho-soft); font: 700 14px/1.2 ui-monospace, "SFMono-Regular", Consolas, monospace; letter-spacing: .08em; color: var(--ho-ink); }
 .offer--featured { border: 2px solid var(--ho-red); }
-.offer--locked .offer__text, .offer--locked .offer__code { filter: blur(5px); user-select: none; }
+/* Subscriber-only offers: the code is never in the page (WordPress returns it after email confirmation), so nothing is blurred */
 .offer__lock {
   display: grid; grid-template-columns: minmax(0, 1fr); gap: var(--ho-s2); margin-top: var(--ho-s2); padding: var(--ho-s3);
   border-radius: var(--ho-radius); background: var(--ho-red-tint);
@@ -2318,3 +2318,94 @@ main:has(> .auth) + .ho-footer { margin-top: 0; }
 .dash-simple > .setup { margin: 0; }
 .dash-simple > .dash-add { margin-bottom: calc(var(--ho-s3) - 36px); }   /* the Overview spaces its sections 36px apart */
 [data-not-welcome][hidden], [data-welcome-only][hidden] { display: none !important; }
+
+/* ==========================================================================
+   Homepage first screen (client's mock-up, Nov 2026): one search, four big choices, "Claim your free listing",
+   then this weekend: two events, the offer of the week and the newsletter
+   ========================================================================== */
+.hero--choose { padding: var(--ho-s8) 0; }
+/* Two columns on wide screens: words, search and Popular on the left; the four ways in on the right */
+.hero__grid { display: grid; grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr); gap: var(--ho-s7); align-items: center; }
+.hero__main { min-width: 0; }
+.hero--choose .hero__title { max-width: 680px; }
+.hero--choose .hero__lead { max-width: 560px; }
+.hero--choose .searchbar { max-width: none; }
+/* The four ways in: quiet glass tiles on the dark hero, icon on top, red on hover */
+.choose { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--ho-s3); margin: 0; }
+.choose__item { position: relative; display: flex; flex-direction: column; align-items: flex-start; gap: 14px; padding: 22px; border-radius: 18px; background: rgba(255, 255, 255, .06); border: 1px solid rgba(255, 255, 255, .12); color: #fff; text-decoration: none; transition: background-color .15s ease, border-color .15s ease, transform .15s ease; }
+.choose__item:hover, .choose__item:focus-visible { background: rgba(255, 255, 255, .11); border-color: rgba(223, 32, 40, .7); transform: translateY(-2px); color: #fff; }
+.choose__icon { display: inline-flex; align-items: center; justify-content: center; width: 46px; height: 46px; border-radius: 14px; background: var(--ho-red); color: #fff; }
+.choose__icon .ho-icon { width: 22px; height: 22px; }
+.choose__text strong { display: block; font: 700 19px/1.25 var(--ho-font-head); color: #fff; }
+.choose__text span { display: block; margin-top: 4px; font-size: 14px; line-height: 1.4; color: rgba(255, 255, 255, .68); }
+.choose__go { position: absolute; top: 22px; right: 22px; width: 18px; height: 18px; color: rgba(255, 255, 255, .45); transition: transform .15s ease, color .15s ease; }
+.choose__item:hover .choose__go { transform: translateX(3px); color: #fff; }
+
+.home-now { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: var(--ho-s4); align-items: stretch; }
+.home-now__offer { display: flex; flex-direction: column; }
+.home-now__offer .offer-card { flex: 1; }
+.home-nl { display: flex; flex-direction: column; padding: 20px; border-radius: var(--ho-radius-lg); background: var(--ho-ink); color: #fff; }
+.home-nl__icon { display: inline-flex; align-items: center; justify-content: center; width: 44px; height: 44px; margin-bottom: 12px; border-radius: 12px; background: var(--ho-red); color: #fff; }
+.home-nl__title { margin: 0 0 6px; font: 700 20px/1.25 var(--ho-font-head); color: #fff; }
+.home-nl__text { margin: 0 0 14px; font-size: 14px; line-height: 1.5; color: rgba(255, 255, 255, .75); }
+.home-nl__form { display: grid; gap: 8px; margin-top: auto; }
+.home-nl__form .input { width: 100%; border-color: transparent; }
+.home-nl__msg { margin: 0; font-size: 13px; color: rgba(255, 255, 255, .8); }
+.home-nl__msg:empty { display: none; }
+
+@media (max-width: 1180px) {
+  .home-now { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+@media (max-width: 1018px) {
+  .hero__grid { grid-template-columns: minmax(0, 1fr); gap: var(--ho-s5); }
+  .choose { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+}
+@media (max-width: 767px) {
+  .hero--choose { padding: var(--ho-s5) 0 var(--ho-s6); }
+  .choose { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+  .choose__item { gap: 10px; padding: 14px; border-radius: 14px; }
+  .choose__icon { width: 38px; height: 38px; border-radius: 11px; }
+  .choose__icon .ho-icon { width: 19px; height: 19px; }
+  .choose__text strong { font-size: 16px; }
+  .choose__text span { font-size: 13px; }
+  .choose__go { display: none; }
+  .home-now { grid-template-columns: minmax(0, 1fr); }
+}
+@media (max-width: 767px) { .home-now .event-card .ph { aspect-ratio: 2 / 1; height: auto; } }
+
+/* Subscriber-only codes (hub.js section 6): known subscriber line, "Not you?", preview confirm link */
+.sub-known { display: flex; align-items: flex-start; gap: 6px; margin: 10px 0 0; font-size: 14px; line-height: 1.45; color: var(--ho-muted); }
+.sub-known .ho-icon { flex: none; margin-top: 2px; color: var(--ho-ok); }
+.sub-known strong { color: var(--ho-ink); word-break: break-all; }
+.sub-known .link-btn, .link-btn { padding: 0; border: 0; background: none; font: inherit; color: var(--ho-ink); text-decoration: underline; text-underline-offset: 3px; cursor: pointer; }
+.sub-known .link-btn:hover { color: var(--ho-red); }
+.sub-preview { margin: 8px 0 0; font-size: 13px; color: var(--ho-muted); }
+.sub-preview a { font-weight: 600; }
+
+/* Search boxes: the browser's clear "x" in the site's style (Chrome, Edge, Safari): a small soft-grey circle with a
+   dark cross, red on hover. Firefox has no clear button; old Edge/IE's is hidden. */
+input[type="search"] { -webkit-appearance: none; appearance: none; }
+input[type="search"]::-webkit-search-decoration,
+input[type="search"]::-webkit-search-results-button,
+input[type="search"]::-webkit-search-results-decoration { -webkit-appearance: none; display: none; }
+input[type="search"]::-webkit-search-cancel-button {
+  -webkit-appearance: none; appearance: none; flex: none; width: 22px; height: 22px; margin: 0 0 0 8px; border-radius: 50%; cursor: pointer;
+  background: #EEEDEA url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M7 7l10 10M17 7 7 17' fill='none' stroke='%23141414' stroke-width='2.6' stroke-linecap='round'/%3E%3C/svg%3E") center / 12px no-repeat;
+  transition: background-color .15s ease;
+}
+input[type="search"]::-webkit-search-cancel-button:hover {
+  background: #DF2028 url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M7 7l10 10M17 7 7 17' fill='none' stroke='%23fff' stroke-width='2.6' stroke-linecap='round'/%3E%3C/svg%3E") center / 12px no-repeat;
+}
+.ho-drawer__search input[type="search"]::-webkit-search-cancel-button { margin-right: 4px; }
+input[type="search"]::-ms-clear, input[type="search"]::-ms-reveal { display: none; width: 0; height: 0; }
+
+/* Filter bars: the checkbox sits on the same line as the selects and the button (bottom-aligned, same height) */
+.filter-bar .check { align-self: end; display: flex; align-items: center; min-height: 0; height: var(--fb-h, 44px); margin: 0; }
+.filter-bar { --fb-h: 44px; }
+.filter-bar .select--sm, .filter-bar > .ho-btn--sm { height: var(--fb-h); }
+@media (max-width: 1018px) { .filter-bar .check { height: auto; min-height: 40px; } }
+
+/* Homepage "Popular": always one line; chips that would wrap are hidden (hub.js trims to what fits) */
+.popular--one { flex-wrap: nowrap; overflow: hidden; }
+.popular--one > * { flex: none; white-space: nowrap; }
+.popular--one > a[hidden] { display: none; }

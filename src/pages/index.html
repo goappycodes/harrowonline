@@ -3,11 +3,14 @@ title: Harrow Online Hub: local businesses, offers and what's on in Harrow
 description: Discover what's happening in Harrow. Find local businesses, events, classes and exclusive offers from across the borough, from Harrow Online.
 nav: hub
 body: page-home
+nl: off
 -->
-<!-- Section order (client feedback, Nov 2026): search, this weekend, Local Offers, featured businesses,
-     six popular categories, areas, business sign-up. Events and offers are the reasons to come back. -->
-<section class="hero">
-  <div class="ho-container">
+<!-- Section order (client's ChatGPT mock-up, Nov 2026): the first screen is a simple choice. One search, four big
+     buttons (businesses, What's On, classes, offers). Then this
+     weekend: two events, one offer and the newsletter. Stats, the "Just joined" ticker and featured businesses sit lower. -->
+<section class="hero hero--choose">
+  <div class="ho-container hero__grid">
+   <div class="hero__main">
     <p class="eyebrow" style="color:#fff;opacity:.8">Harrow Online Hub</p>
     <h1 class="hero__title">Discover what&rsquo;s happening <em>in&nbsp;Harrow</em></h1>
     <p class="hero__lead">Find local businesses, events, classes and exclusive offers from across the borough.</p>
@@ -16,7 +19,7 @@ body: page-home
       <div class="searchbar__field">
         <svg class="ho-icon"><use href="#i-search"/></svg>
         <label class="ho-sr" for="hero-q">What are you looking for?</label>
-        <input id="hero-q" type="search" name="q" placeholder="Plumber, Indian restaurant, dentist&hellip;" autocomplete="off">
+        <input id="hero-q" type="search" name="q" placeholder="Plumber, Indian restaurant&hellip;" autocomplete="off">
       </div>
       <div class="searchbar__field">
         <svg class="ho-icon"><use href="#i-pin"/></svg>
@@ -26,60 +29,50 @@ body: page-home
       <button class="ho-btn ho-btn--primary" type="submit">Search</button>
     </form>
 
-    <div class="popular">
+    <div class="popular popular--one">
       <span>Popular:</span>
       <a href="/category/restaurants.html">Restaurants</a>
       <a href="/category/hair-and-beauty.html">Hair &amp; Beauty</a>
       <a href="/category/home-and-garden.html">Home &amp; Garden</a>
       <a href="/category/doctors-dentists-and-clinics.html">Dentists</a>
-      <a href="/category/motoring.html">MOT and garages</a>
     </div>
 
-    <div class="hero__stats">
-      <div><strong>{{> gen-count}}</strong>local businesses</div>
-      <div><strong>19</strong>Harrow areas</div>
-      <div><strong>Free</strong>to claim your listing</div>
-    </div>
+   </div>
+
+    <nav class="choose" aria-label="Browse the Hub">
+      <a class="choose__item" href="/search.html"><span class="choose__icon"><svg class="ho-icon"><use href="#i-store"/></svg></span><span class="choose__text"><strong>Find a business</strong><span>Shops, trades and services</span></span><svg class="ho-icon choose__go"><use href="#i-arrow"/></svg></a>
+      <a class="choose__item" href="/events.html"><span class="choose__icon"><svg class="ho-icon"><use href="#i-calendar"/></svg></span><span class="choose__text"><strong>What&rsquo;s On</strong><span>Events and days out</span></span><svg class="ho-icon choose__go"><use href="#i-arrow"/></svg></a>
+      <a class="choose__item" href="/classes.html"><span class="choose__icon"><svg class="ho-icon"><use href="#i-repeat"/></svg></span><span class="choose__text"><strong>Classes &amp; clubs</strong><span>Regular activities for all ages</span></span><svg class="ho-icon choose__go"><use href="#i-arrow"/></svg></a>
+      <a class="choose__item" href="/offers.html"><span class="choose__icon"><svg class="ho-icon"><use href="#i-tag"/></svg></span><span class="choose__text"><strong>Local offers</strong><span>Deals from Harrow businesses</span></span><svg class="ho-icon choose__go"><use href="#i-arrow"/></svg></a>
+    </nav>
   </div>
 </section>
-
-{{> gen-just-joined}}
 
 <section class="section" aria-labelledby="wknd-title">
   <div class="ho-container">
     <div class="sec-head">
       <div><h2 class="sec-title" id="wknd-title">This weekend in Harrow</h2><p class="sec-sub">Friday 13 to Sunday 15 November</p></div>
-      <a class="link-arrow" href="/events.html">All events <svg class="ho-icon"><use href="#i-arrow"/></svg></a>
+      <a class="link-arrow" href="/events.html?when=weekend">Everything this weekend <svg class="ho-icon"><use href="#i-arrow"/></svg></a>
     </div>
-    <div class="grid grid-4">
-      {{> gen-weekend-cards}}
+    <div class="home-now">
+      {{> gen-weekend-two}}
+      <div class="home-now__offer">
+        {{> gen-offer-pick}}
+      </div>
+      <div class="home-nl">
+        <span class="home-nl__icon"><svg class="ho-icon"><use href="#i-mail"/></svg></span>
+        <h3 class="home-nl__title">Harrow in your inbox</h3>
+        <p class="home-nl__text">Local news, what&rsquo;s on and the best offers, every morning. Free.</p>
+        <form class="home-nl__form" action="https://harrowonline.org/wp-json/ho/v1/subscribe" method="post" data-nl-form>
+          <input type="hidden" name="signup_source" value="hub-home">
+          <input type="hidden" name="editions[]" value="daily">
+          <label class="ho-sr" for="home-nl-email">Email address</label>
+          <input class="input" id="home-nl-email" type="email" name="email" placeholder="Your email address" autocomplete="email" required>
+          <button class="ho-btn ho-btn--primary ho-btn--block" type="submit">Sign up free</button>
+          <p class="home-nl__msg" role="status" aria-live="polite"></p>
+        </form>
+      </div>
     </div>
-    <div class="cluster mt-5">
-      <a class="chip" href="/events.html?when=weekend">This weekend</a>
-      <a class="chip" href="/classes.html">Classes and activities</a>
-      <a class="chip" href="/events.html?cat=family">Family</a>
-      <a class="chip" href="/events.html?cat=music">Music</a>
-      <a class="chip" href="/events.html?cat=food-and-drink">Food and drink</a>
-      <a class="chip" href="/events.html?cat=community">Community</a>
-    </div>
-  </div>
-</section>
-
-<section class="section section--soft" aria-labelledby="offers-title">
-  <div class="ho-container">
-    <div class="sec-head">
-      <div><h2 class="sec-title" id="offers-title">Local Offers</h2><p class="sec-sub">Deals from Harrow businesses. Some are just for newsletter subscribers.</p></div>
-      <a class="link-arrow" href="/offers.html">All offers <svg class="ho-icon"><use href="#i-arrow"/></svg></a>
-    </div>
-    <div class="offer-tiles">
-      {{> gen-offers-home}}
-    </div>
-  </div>
-</section>
-
-<section class="stats-band" aria-label="The Hub in numbers">
-  <div class="ho-container">
-    {{> gen-live-stats}}
   </div>
 </section>
 
@@ -95,7 +88,19 @@ body: page-home
   </div>
 </section>
 
-<section class="section section--soft" id="categories" aria-labelledby="cats-title">
+<section class="section section--soft" aria-labelledby="offers-title">
+  <div class="ho-container">
+    <div class="sec-head">
+      <div><h2 class="sec-title" id="offers-title">More Local Offers</h2><p class="sec-sub">Deals from Harrow businesses. Some are just for newsletter subscribers.</p></div>
+      <a class="link-arrow" href="/offers.html">All offers <svg class="ho-icon"><use href="#i-arrow"/></svg></a>
+    </div>
+    <div class="offer-tiles">
+      {{> gen-offers-home}}
+    </div>
+  </div>
+</section>
+
+<section class="section" id="categories" aria-labelledby="cats-title">
   <div class="ho-container">
     <div class="sec-head">
       <div><h2 class="sec-title" id="cats-title">Popular categories</h2><p class="sec-sub">The categories with the most Harrow businesses.</p></div>
@@ -105,7 +110,7 @@ body: page-home
   </div>
 </section>
 
-<section class="section" id="areas" aria-labelledby="areas-title">
+<section class="section section--soft" id="areas" aria-labelledby="areas-title">
   <div class="ho-container">
     <div class="sec-head">
       <div><h2 class="sec-title" id="areas-title">Browse by area</h2><p class="sec-sub">From Pinner to Edgware, find what&rsquo;s near you.</p></div>
@@ -117,6 +122,14 @@ body: page-home
     </div>
   </div>
 </section>
+
+<section class="stats-band" aria-label="The Hub in numbers">
+  <div class="ho-container">
+    {{> gen-live-stats}}
+  </div>
+</section>
+
+{{> gen-just-joined}}
 
 <!-- For businesses: one panel, text and actions left, the three steps as a timeline right (redesign, Nov 2026) -->
 <section class="section" aria-labelledby="biz-title">
