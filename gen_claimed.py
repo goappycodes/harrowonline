@@ -558,35 +558,30 @@ def profile_body(x, related_html, crumbs_html):
         urls = c.get("social_urls", {})
         links = "".join(f'<a href="{e(urls[s])}" target="_blank" rel="noopener" aria-label="{SOCIAL_LABEL[s]}">{icon(s)}</a>' if s in urls
                         else f'<a href="#" aria-label="{SOCIAL_LABEL[s]}">{icon(s)}</a>' for s in c["social"])
-        social = f'<div class="mt-5"><h3 class="panel__title">Follow</h3><div class="social-row">{links}</div></div>'
+        social = f'<div class="profile-card__follow"><h3 class="profile-card__h">Follow</h3><div class="social-row">{links}</div></div>'
 
-    aside = f'''<aside class="sticky">
-    <div class="panel">
+    trust = (f"""<p class="profile-card__trust">{icon("alert", "ho-icon ho-icon--sm")}<span><strong>Sample listing.</strong> Made up for the preview; removed before launch.</span></p>""" if sample
+             else f"""<p class="profile-card__trust">{icon("verified", "ho-icon ho-icon--sm")}<span>{c.get("verified_note") or f"Verified by the business since {c['claimed']}."}</span></p>""")
+    aside = f'''<aside class="sticky profile-aside">
+    <div class="panel profile-card">
       <h2 class="panel__title">{hours_title}</h2>
-      <p class="mb-4">{today_status(c)}</p>
+      <p class="mb-3">{today_status(c)}</p>
       <table class="hours"><caption class="ho-sr">{hours_title}</caption><tbody>{hours}</tbody></table>{hours_note}
-      <a class="ho-btn ho-btn--primary ho-btn--block mt-5" href="tel:{x["phone_raw"][0]}">{icon("phone")}Call {e(c["phone"])}</a>
+      <a class="ho-btn ho-btn--primary ho-btn--block mt-4" href="tel:{x["phone_raw"][0]}">{icon("phone")}Call {e(c["phone"])}</a>
       {social}
-    </div>
-    {f"""<div class="notice notice--sample">{icon("alert")}<p><strong>Sample listing.</strong> A made-up business showing the {H.TIER_LABEL[tier]} plan layout. The Verified badge shows how a real claimed listing looks. It will be removed before launch.</p></div>""" if sample else f"""<div class="panel panel--soft">
-      <p class="small mb-2">{verified()}</p>
-      <p class="small muted mb-0">{c.get("verified_note") or f"Claimed and checked by the owner since {c['claimed']}. Details are kept up to date by the business."}</p>
-    </div>"""}
-    <div class="panel mt-4">
-      <h3 class="panel__title">Get Harrow&rsquo;s best offers</h3>
-      <p class="small muted">Local Offers and what&rsquo;s on, every morning in the Harrow Online Newsletter.</p>
-      <a class="link-arrow" href="https://harrowonline.org/newsletter/">Sign up free {icon("arrow")}</a>
+      {trust}
     </div>
   </aside>'''
 
     return f'''{crumbs_html}
 {cover}
-<section class="profile-head ho-container{" profile-head--premium" if top else ""}">
+<section class="profile-head profile-head--card ho-container{" profile-head--premium" if top else ""}">
   <div class="profile-head__row">
     {f'<span class="mono mono--lg mono--logo"><img src="{c["logo"]}" alt="{e(name)} badge" width="480" height="480"></span>' if c.get("logo") else f'<span class="mono mono--lg{" mono--red" if top else ""}" aria-hidden="true">{e(initials(name))}</span>'}
     <div class="profile-head__main">
       <div class="cluster">{badges}</div>
       <h1 class="profile-head__title">{e(name)}</h1>
+      {f'<p class="profile-head__summary">{c["tagline"]}</p>' if c.get("tagline") else ""}
       <p class="profile-head__meta">
         <a href="/category/{cat}.html">{icon("tag")}{e(cat_name(cat))}</a>
         <span>{e(x["sub"])}</span>
@@ -603,8 +598,8 @@ def profile_body(x, related_html, crumbs_html):
   </div>
 </section>
 
-<div class="ho-container layout-aside">
-  <div>
+<div class="ho-container layout-aside profile-layout">
+  <div class="profile-main">
     {gallery}
     {"".join(sections)}
     <p class="mt-4"><a class="report-link" href="/report.html?listing={x["slug"]}">{icon("flag")}Report a mistake on this listing</a></p>

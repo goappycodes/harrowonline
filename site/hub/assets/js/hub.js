@@ -72,7 +72,17 @@
       const t = $(".setup__tick", li);
       if (t) t.setAttribute("aria-label", li.classList.contains("is-done") ? "Done" : "Not done yet");
     });
+    // Once everything is done the checklist has nothing left to say: hide it
+    if (done === items.length) setup.hidden = true;
   }
+  // Account menu as a sideways strip (phones): scroll the current page's tab into view
+  const navCur = $(".dash-nav a[aria-current]");
+  if (navCur) {
+    const strip = navCur.closest("ul");
+    if (strip && strip.scrollWidth > strip.clientWidth) strip.scrollLeft = Math.max(0, navCur.offsetLeft - strip.offsetLeft - 16);
+  }
+  // Billing: the failed-payment example only shows with ?state=failed (WordPress: after invoice.payment_failed)
+  if (new URLSearchParams(location.search).get("state") === "failed") $$('[data-example-state="failed"]').forEach((el) => { el.hidden = false; });
 
   // Hub header search: "Search news instead" carries what was typed to the news site's search
   $$("[data-news-search]").forEach((a) => {
@@ -145,10 +155,85 @@
     const msg = $(".ho-nl__msg", form) || $("[role=status]", form);
     const email = $("input[type=email]", form);
     if (!email || !email.value.includes("@")) { if (msg) msg.textContent = "Please enter a valid email address."; return; }
+    // Each edition is its own opt-in: the reader gets only the ones ticked (or the one a dedicated form names)
+    const ticks = $$('input[type=checkbox][name="editions[]"]', form);
+    const NAMES = { daily: "The Daily Briefing (every morning)", weekend: "The Weekend (Thursdays)", business: "Harrow Business (Mondays)" };
+    if (ticks.length) {
+      const chosen = ticks.filter((t) => t.checked).map((t) => NAMES[t.value] || t.value);
+      if (!chosen.length) { if (msg) msg.textContent = "Tick at least one newsletter."; return; }
+      const list = chosen.length > 1 ? chosen.slice(0, -1).join(", ") + " and " + chosen[chosen.length - 1] : chosen[0];
+      form.dataset.nlDone = `Thanks! Check your inbox to confirm. You've signed up to ${list}.`;
+    }
     const btn = $("button[type=submit]", form);
     if (btn) { btn.innerHTML = ICON("check") + "<span>You&rsquo;re signed up</span>"; btn.disabled = true; }
     if (msg) msg.textContent = form.dataset.nlDone || "Thanks! Your first newsletter arrives tomorrow morning.";
   }));
+
+  /* 5h. Listing edit: the card preview follows the name, category, type and summary as they're typed */
+  const listingForm = $("[data-listing-form]");
+  if (listingForm) {
+    const sync = () => $$("[data-lp-in]", listingForm).forEach((inp) => {
+      const out = $(`[data-lp-out="${inp.dataset.lpIn}"]`);
+      if (!out) return;
+      const v = inp.tagName === "SELECT" ? inp.options[inp.selectedIndex].text : inp.value.trim();
+      out.textContent = v || out.dataset.empty || "";
+    });
+    listingForm.addEventListener("input", sync);
+    listingForm.addEventListener("change", sync);
+  }
+
+  /* 5g. Add a business: "Recommend a business" wording (?recommend=1), duplicate check against the Hub, thank-you.
+         WordPress: the duplicate check and the thank-you come from the server; the form posts to the listing queue. */
+  const addForm = $("[data-add-form]");
+  if (addForm) {
+    const recommend = new URLSearchParams(location.search).get("recommend") === "1";
+    if (recommend) {
+      const set = (sel, html) => { const el = $(sel); if (el) el.innerHTML = html; };
+      set("[data-add-title]", "Recommend a business");
+      set("[data-add-crumb]", "Recommend a business");
+      set("[data-add-lead]", "Know a Harrow business that&rsquo;s missing? Tell us and we&rsquo;ll add it. Our team checks every one first.");
+      set("[data-add-declare]", "The details are correct as far as I know, and I agree to the <a href=\"" + BASE + "/terms/\">terms</a>.");
+      set("[data-add-submit]", "Send recommendation");
+      $$("[data-owner-only]").forEach((el) => { el.hidden = true; $$("input, select, textarea", el).forEach((f) => { f.disabled = true; }); });
+      $$("[data-recommend-only]").forEach((el) => { el.hidden = false; });
+      document.title = document.title.replace("Add your business", "Recommend a business");
+    }
+    // Same name and postcode as a business already on the Hub: say so, link to it and offer the claim
+    const dupe = $("[data-add-dupe]");
+    let IDX = null;
+    const key = (s) => (s || "").toLowerCase().replace(/&/g, "and").replace(/[^a-z0-9]/g, "");
+    const check = () => {
+      if (!IDX || !dupe) return;
+      const n = key($("#a-name").value), pc = key($("#a-pc").value);
+      const hit = n.length > 2 && pc.length > 4 && IDX.items.find((x) => key(x.pc) === pc && (key(x.n) === n || key(x.n).startsWith(n) || n.startsWith(key(x.n))));
+      dupe.hidden = !hit;
+      if (hit) {
+        const a = $("[data-add-dupe-link]", dupe);
+        a.href = `${BASE}/business/${hit.k}/`;
+        a.textContent = `${hit.n}, ${hit.ad ? hit.ad + ", " : ""}${hit.pc}`;
+        const c = $("[data-add-dupe-claim]", dupe);
+        if (c) c.href = `${BASE}/claim/?listing=${hit.k}`;
+      }
+    };
+    fetch(BASE + "/data/hub-index.json").then((r) => r.json()).then((d) => { IDX = d; check(); }).catch(() => {});
+    ["#a-name", "#a-pc"].forEach((s) => { const el = $(s); if (el) el.addEventListener("change", check); });
+    // Preview: the browser has already checked the required fields; show the thank-you in place
+    addForm.addEventListener("submit", (e) => {
+      e.preventDefault();
+      const name = esc($("#a-name").value.trim());
+      const box = document.createElement("div");
+      box.className = "add-biz__done form-card";
+      box.setAttribute("role", "status");
+      box.innerHTML = `<span class="add-biz__done-icon">${ICON("check")}</span>
+        <h2>${recommend ? "Thanks for the recommendation" : "Thanks, we&rsquo;re checking it"}</h2>
+        <p>We&rsquo;ve got <strong>${name}</strong>. A member of the Harrow Online team will check it, usually within 2 working days${recommend ? "" : ", and email you either way"}.</p>
+        <div class="cluster"><a class="ho-btn ho-btn--primary" href="${BASE}/">Back to the Hub</a>${recommend ? `<a class="ho-btn ho-btn--outline" href="${BASE}/add-business/?recommend=1">Recommend another</a>` : `<a class="ho-btn ho-btn--outline" href="${BASE}/account/">Go to my account</a>`}</div>`;
+      addForm.replaceWith(box);
+      const check2 = $(".add-biz__check");
+      if (check2) check2.remove();
+      box.scrollIntoView({ block: "center" });
+    });
+  }
 
   /* 6. Subscriber-only offers. The code is NEVER in the page (pages are cached and public). Who sees codes:
         - a reader who tapped the confirmation link in their email: WordPress checks the email is a newsletter
@@ -435,6 +520,21 @@
         g.style.display = on ? "" : "none";
         if (on) n += $$(".event-row", g).length;
       });
+      // Featured events block: keep only the rows inside the chosen dates; hide the block when none are
+      $$("[data-featured-group]", evList).forEach((g) => {
+        let k = 0;
+        $$(".event-row", g).forEach((row) => {
+          const on = row.dataset.date >= from && row.dataset.date <= to;
+          row.hidden = !on;
+          row.style.display = on ? "" : "none";
+          if (on) k += 1;
+        });
+        g.hidden = !k;
+        g.style.display = k ? "" : "none";
+        const c = $("[data-day-count]", g);
+        if (c) c.textContent = `${k} on these dates`;
+        n += k;
+      });
       const span = from === to ? nice(from) : `${nice(from)} to ${nice(to)}`;
       const count = $("[data-events-count]", evList);
       if (count) count.innerHTML = `<strong>${n}</strong> ${n === 1 ? "event or class" : "events and classes"}, ${esc(span)}`;
@@ -700,14 +800,16 @@
       }
       return { intent, when, rest: s.trim().split(" ").filter((w) => w && !STOP.has(w)) };
     };
-    const rank = (list, terms) => !terms.length ? list : list.map((x, i) => {
+    // Order: best match first (when searching), then Featured, then the list's own order (date for events,
+    // weekday for classes). With no search words, Featured events, classes and offers come first.
+    const rank = (list, terms) => list.map((x, i) => {
       let score = 0;
       for (const t of terms) {
         if (!has(x._h, t)) return null;
         score += x._n.startsWith(t) ? 6 : x._n.includes(t) ? 4 : 1;
       }
-      return [score, i, x];
-    }).filter(Boolean).sort((a, b) => b[0] - a[0] || a[1] - b[1]).map((a) => a[2]);
+      return [score, x.f ? 1 : 0, i, x];
+    }).filter(Boolean).sort((a, b) => b[0] - a[0] || b[1] - a[1] || a[2] - b[2]).map((a) => a[3]);
     const addDays = (iso, n) => { const d = new Date(iso + "T12:00:00"); d.setDate(d.getDate() + n); return d.toISOString().slice(0, 10); };
     const onWhen = (x, when) => {
       const T = INDEX.today;

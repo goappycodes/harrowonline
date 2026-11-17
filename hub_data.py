@@ -190,7 +190,7 @@ def load_listings():
 
 
 TIER_RANK = {"partner": 0, "premium": 0, "enhanced": 1, "basic": 2, "unclaimed": 3}
-TIER_LABEL = {"partner": "Local Partner", "premium": "Premium", "enhanced": "Enhanced", "basic": "Basic", "unclaimed": "Unclaimed"}
+TIER_LABEL = {"partner": "Local Partner", "premium": "Featured", "enhanced": "Featured", "basic": "Basic", "unclaimed": "Unclaimed"}   # three plans: Basic, Featured, Local Partner
 
 
 def load_claimed():

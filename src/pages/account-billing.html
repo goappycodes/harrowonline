@@ -12,9 +12,10 @@ nl: off
       <span class="mono mono--sm" aria-hidden="true">SR</span>
       <div><strong>Station Road Barbers</strong><span>Featured plan</span></div>
     </div>
+    {{> account-add}}
     <ul>
       <li><a href="/account.html"><svg class="ho-icon"><use href="#i-home"/></svg>Overview</a></li>
-      <li><a href="/account-listings.html"><svg class="ho-icon"><use href="#i-store"/></svg>My listings</a></li>
+      <li><a href="/account-listing-edit.html"><svg class="ho-icon"><use href="#i-store"/></svg>My listing</a></li>
       <li><a href="/account-offers.html"><svg class="ho-icon"><use href="#i-tag"/></svg>Offers<span class="num">1<span class="ho-sr"> offer needs changes</span></span></a></li>
       <li><a href="/account-events.html"><svg class="ho-icon"><use href="#i-calendar"/></svg>Events</a></li>
       <li><a href="/account-classes.html"><svg class="ho-icon"><use href="#i-repeat"/></svg>Classes</a></li>
@@ -29,7 +30,6 @@ nl: off
   </aside>
 
   <div class="dash-main">
-    {{> account-add}}
     <div class="dash-head">
       <div>
         <h1>Plan and billing</h1>
@@ -39,7 +39,7 @@ nl: off
     </div>
 
     <!-- Example state: shown only after invoice.payment_failed, until invoice.paid. Hidden in normal use. -->
-    <div class="example-state mb-5">
+    <div class="example-state mb-5" data-example-state="failed" hidden>
       <p class="example-state__label">Example state: failed payment</p>
       <div class="notice notice--warn">
         <svg class="ho-icon"><use href="#i-alert"/></svg>
@@ -59,7 +59,6 @@ nl: off
       </div>
       <div class="plan-card__actions">
         <a class="ho-btn ho-btn--primary ho-btn--sm" href="#stripe-portal">Switch to annual</a>
-        <a class="ho-btn ho-btn--outline ho-btn--sm" href="#stripe-portal">Manage billing</a>
       </div>
     </section>
     <p class="help mt-2"><strong>Manage billing</strong> opens the Stripe customer portal, where you can update your card, download invoices, switch between monthly and annual, change plan or cancel.</p>
@@ -69,8 +68,8 @@ nl: off
     <section class="mt-6" aria-labelledby="plans-title" data-billing="monthly">
       <div class="split mb-4">
         <div>
-          <h2 class="sec-title" id="plans-title">Change plan</h2>
-          <p class="sec-sub">Upgrade or downgrade any time. Stripe works out the difference for the rest of this billing period.</p>
+          <h2 class="dash-h2" id="plans-title">Change plan</h2>
+          <p class="small muted mb-0">Upgrade or downgrade any time. Stripe works out the difference for the rest of this billing period.</p>
         </div>
         <div class="billing-toggle" role="group" aria-label="Billing period">
           <button type="button" data-billing-set="monthly" aria-pressed="true">Monthly</button>
@@ -141,15 +140,27 @@ nl: off
         <p class="help mt-4">Shown from Stripe. We never see or store your full card number.</p>
         <a class="ho-btn ho-btn--sm ho-btn--outline mt-2" href="#stripe-portal">Update card in Stripe</a>
       </section>
-      <section class="panel panel--soft" aria-labelledby="disc-title">
-        <h2 class="panel__title" id="disc-title">Have a discount code?</h2>
-        <p class="small">Enter it on the Stripe payment page when you upgrade. Codes work on Hub memberships only, not on featured spots or sponsor slots.</p>
-        <p class="small mb-0">Already paying? <a href="https://harrowonline.org/contact-us/">Contact us</a> and we&rsquo;ll apply it to your next invoice.</p>
+      <section class="panel panel--soft" aria-labelledby="q-title">
+        <h2 class="panel__title" id="q-title">Questions</h2>
+        <details class="faq-mini">
+          <summary>Have a discount code?</summary>
+          <p class="small">Enter it on the Stripe payment page when you upgrade. Codes work on Hub plans only, not on featured spots or sponsor slots. Already paying? <a href="https://harrowonline.org/contact-us/">Contact us</a> and we&rsquo;ll apply it to your next invoice.</p>
+        </details>
+        <details class="faq-mini">
+          <summary>What happens if I cancel?</summary>
+          <ul class="ticks ticks--dark small">
+        <li>You keep Featured until the end of the period you&rsquo;ve paid for (2 December 2026).</li>
+        <li>Then your listing moves to Basic. It stays verified and stays yours.</li>
+        <li>Nothing is deleted. Extra photos, social links and offers are hidden, and come back if you upgrade again.</li>
+        <li>Live offers end. Events stay published but lose any featured spot.</li>
+      </ul>
+          <a class="ho-btn ho-btn--sm ho-btn--outline mt-2" href="#stripe-portal">Cancel in Stripe</a>
+        </details>
       </section>
     </div>
 
     <section class="mt-6" aria-labelledby="inv-title">
-      <h2 class="sec-title mb-4" id="inv-title">Invoices and receipts</h2>
+      <h2 class="dash-h2 mb-4" id="inv-title">Invoices and receipts</h2>
       <div class="table-wrap">
         <table class="table table--stack">
           <thead>
@@ -157,7 +168,7 @@ nl: off
           </thead>
           <tbody>
             <tr>
-              <td data-label="Date">11 Nov 2026</td><td data-label="Invoice">HOHUB-0009</td><td data-label="For">Sponsor slot: Daily, week of 30 Nov</td><td data-label="Amount">&pound;180.00</td>
+              <td data-label="Date">11 Nov 2026</td><td data-label="Invoice">HOHUB-0009</td><td data-label="For">Sponsor slot: Daily Briefing, week of 30 Nov</td><td data-label="Amount">&pound;180.00</td>
               <td data-label="Status"><span class="status status--paid">Paid</span></td>
               <td><div class="table__actions"><a class="ho-btn ho-btn--sm ho-btn--ghost" href="#invoice-pdf"><svg class="ho-icon"><use href="#i-download"/></svg>PDF</a></div></td>
             </tr>
@@ -208,15 +219,5 @@ nl: off
       <!-- WP: list from Stripe (invoices.list + one-off payment receipts) for this customer; PDF link = invoice.invoice_pdf -->
     </section>
 
-    <section class="panel mt-6" aria-labelledby="cancel-title">
-      <h2 class="panel__title" id="cancel-title">If you cancel</h2>
-      <ul class="ticks ticks--dark small">
-        <li>You keep Featured until the end of the period you&rsquo;ve paid for (2 December 2026).</li>
-        <li>Then your listing moves to Basic. It stays verified and stays yours.</li>
-        <li>Nothing is deleted. Extra photos, social links and offers are hidden, and come back if you upgrade again.</li>
-        <li>Live offers end. Events stay published but lose any featured spot.</li>
-      </ul>
-      <a class="ho-btn ho-btn--sm ho-btn--outline mt-2" href="#stripe-portal">Cancel in Stripe</a>
-    </section>
   </div>
 </div>

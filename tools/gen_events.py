@@ -144,13 +144,17 @@ def class_media(title, ic, cls="ph", eager=False):
 EVENTS = H.load_events()
 
 
+def ev_item(e):
+    return dict(kind="event", time=e["time"], sort=e["start"].hour + e["start"].minute / 60, title=e["title"], cat=e["cat"],
+                venue=e["venue"], area=e["area"], price=e["price"], age=e["age"], icon=e["icon"], featured=is_featured(e),
+                sample=e.get("sample", False), desc=e["desc"], href=e["href"])
+
+
 def items_on(day):
     out = []
     for e in EVENTS:
         if e["day"] == day:
-            out.append(dict(kind="event", time=e["time"], sort=e["start"].hour + e["start"].minute / 60, title=e["title"], cat=e["cat"],
-                            venue=e["venue"], area=e["area"], price=e["price"], age=e["age"], icon=e["icon"], featured=is_featured(e),
-                            sample=e.get("sample", False), desc=e["desc"], href=e["href"]))
+            out.append(ev_item(e))
     if day.month == 11 or day <= D(2026, 12, 12):
         for c in CLASSES:
             if c[0] == day.weekday():
@@ -172,7 +176,7 @@ def event_row(x, day):
     when = f'Every {DAYNAMES[day.weekday()]}, {x["time"]}' if x["kind"] == "class" else x["time"]
     when_icon = "repeat" if x["kind"] == "class" else "clock"
     desc = f'\n      <p class="card__text">{x["desc"]}</p>' if x["desc"] else ""
-    return f'''    <article class="event-row{' event-row--featured' if x['featured'] else ''}" data-kind="{x['kind']}">
+    return f'''    <article class="event-row{' event-row--featured' if x['featured'] else ''}" data-kind="{x['kind']}" data-date="{day.isoformat()}">
       <time class="date-tile" datetime="{day.isoformat()}"><span class="date-tile__m">{day.strftime('%b')}</span><span class="date-tile__d">{day.day}</span><span class="date-tile__w">{day.strftime('%a')}</span></time>
       {class_media(x['title'], x['icon'], ph_cls) if x['kind'] == 'class' else f'<div class="{ph_cls}">{I(x["icon"])}</div>'}
       <div>
@@ -194,9 +198,20 @@ def day_label(day):
 
 def build_list():
     groups, total = [], 0
+    # Featured events first (client feedback, Nov 2026): every upcoming Featured event, soonest first, in its own block
+    # above the days. They aren't repeated in their day below. hub.js 6b filters these rows by date like the days.
+    feat = sorted((e for e in EVENTS if e["day"] >= TODAY and is_featured(e)), key=lambda e: e["start"])
+    if feat:   # not in the count: the count is for the dates shown below
+        rows = "\n".join(event_row(ev_item(e), e["day"]) for e in feat)
+        groups.append(f'''  <section class="day-group day-group--featured" data-featured-group aria-labelledby="day-featured">
+    <h2 class="day-group__title" id="day-featured">{I('star')}Featured events <small data-day-count>{len(feat)} coming up</small></h2>
+    <div>
+{rows}
+    </div>
+  </section>''')
     for n in range(LIST_DAYS):
         day = TODAY + dt.timedelta(days=n)
-        its = items_on(day)
+        its = [x for x in items_on(day) if not (x["kind"] == "event" and x["featured"])]
         total += len(its)
         rows = "\n".join(event_row(x, day) for x in its)
         count = f'{len(its)} {"thing" if len(its) == 1 else "things"} on'
@@ -222,7 +237,7 @@ def write_list():
     w0, w1 = WEEKEND
     body = f'''<!--
 title: What's On in Harrow: events this week and weekend
-description: Events, things to do and classes across Harrow this week and weekend: family days out, live music, markets, community events and more. Free for schools, clubs and charities to list; businesses list events on a paid plan.
+description: Events, things to do and classes across Harrow this week and weekend: family days out, live music, markets and community events.
 nav: events
 hubnav: events
 body: page-events
@@ -340,7 +355,7 @@ body: page-events
               <input class="input" id="wk-email" type="email" name="email" placeholder="Your email" autocomplete="email" required>
               <button class="ho-btn ho-btn--primary ho-btn--sm" type="submit">Get The Weekend</button>
             </div>
-            <p class="help mt-2 mb-0" role="status" aria-live="polite">Free. The Weekend only: it won&rsquo;t sign you up to the Daily or Harrow Business.</p>
+            <p class="help mt-2 mb-0" role="status" aria-live="polite">Free. The Weekend only: it won&rsquo;t sign you up to The Daily Briefing or Harrow Business.</p>
           </form>
         </div>
       </div>

@@ -1,6 +1,6 @@
 <!--
 title: Edit listing
-description: Edit your Harrow Online Hub business listing: description, opening hours, photos, contact details and social links.
+description: Edit your Harrow Online Hub business listing: the basics, location, contact details, description, facilities, opening hours, logo, photos and social links.
 body: is-logged-in
 hubnav: account
 robots: noindex, nofollow
@@ -12,9 +12,10 @@ nl: off
       <span class="mono mono--sm" aria-hidden="true">SR</span>
       <div><strong>Station Road Barbers</strong><span>Featured plan</span></div>
     </div>
+    {{> account-add}}
     <ul>
       <li><a href="/account.html"><svg class="ho-icon"><use href="#i-home"/></svg>Overview</a></li>
-      <li><a href="/account-listings.html" aria-current="true"><svg class="ho-icon"><use href="#i-store"/></svg>My listings</a></li>
+      <li><a href="/account-listing-edit.html" aria-current="page"><svg class="ho-icon"><use href="#i-store"/></svg>My listing</a></li>
       <li><a href="/account-offers.html"><svg class="ho-icon"><use href="#i-tag"/></svg>Offers<span class="num">1<span class="ho-sr"> offer needs changes</span></span></a></li>
       <li><a href="/account-events.html"><svg class="ho-icon"><use href="#i-calendar"/></svg>Events</a></li>
       <li><a href="/account-classes.html"><svg class="ho-icon"><use href="#i-repeat"/></svg>Classes</a></li>
@@ -29,80 +30,71 @@ nl: off
   </aside>
 
   <div class="dash-main">
-    {{> account-add}}
     <nav class="crumbs mb-4" aria-label="Breadcrumb">
-      <ol><li><a href="/account.html">My account</a></li><li><a href="/account-listings.html">My listings</a></li><li><span aria-current="page">Station Road Barbers</span></li></ol>
+      <ol><li><a href="/account.html">My account</a></li><li><span aria-current="page">My listing</span></li></ol>
     </nav>
     <div class="dash-head">
       <div>
-        <h1>Edit listing</h1>
+        <h1>Edit your listing</h1>
         <p>Station Road Barbers &middot; <span class="badge badge--dark">Featured</span> <span class="badge badge--verified"><svg class="ho-icon"><use href="#i-verified"/></svg>Verified by the business</span></p>
       </div>
       <a class="ho-btn ho-btn--outline" href="/business/station-road-barbers-harrow-town-centre.html"><svg class="ho-icon"><use href="#i-external"/></svg>View listing</a>
     </div>
 
-    <div class="notice mb-5">
-      <svg class="ho-icon"><use href="#i-info"/></svg>
-      <div>
-        <p><strong>Showing up in Google.</strong> We only ask search engines to list Hub pages that are filled in: a description of at least 50 words, plus opening hours or a photo. Yours meets this.</p>
-        <p>Google decides if and where it shows any page, so we can&rsquo;t promise a ranking. A full, accurate listing gives you the best chance.</p>
-      </div>
-    </div>
-    <!-- WP: index/noindex rule from brief 03 (thresholds editable in admin). If the listing doesn't meet it, swap this for .notice--warn: "Your listing is hidden from search engines until it has..." -->
+    <!-- One account = one listing for now ("My listing" opens this page). Later an account may hold several listings, but only one of them can be on a paid Featured plan.
+         Listing edit (cleaned up, Nov 2026): seven short steps; live card preview and a checklist beside the form.
+         WP: the checklist's done states and the Google line come from the listing (index rule from brief 03). -->
+    <div class="layout-aside offer-form listing-form">
+      <form class="form-card form" action="#" method="post" data-listing-form>
 
-    <form class="form-card form" action="#" method="post">
-      <fieldset class="fieldset">
-        <legend>Business details</legend>
-        <div class="stack">
+        <section class="form-step" id="basics" aria-labelledby="ls1">
+          <h2 class="form-step__title" id="ls1"><span>1</span>The basics</h2>
           <div class="field">
             <label for="le-name">Business name</label>
-            <input class="input" id="le-name" type="text" name="name" value="Station Road Barbers" aria-describedby="le-name-help" required>
-            <p class="help" id="le-name-help">Changing the name sends it to our team to check first. Your current name stays live until it&rsquo;s approved.</p>
+            <input class="input" id="le-name" type="text" name="name" value="Station Road Barbers" required data-lp-in="name">
+            <p class="help">A new name is checked by our team first. The current one stays live until then.</p>
           </div>
-          <div class="row row-3">
+          <div class="row row-2">
             <div class="field">
-              <label for="le-cat">Main category</label>
+              <label for="le-cat">Category</label>
               <!-- WP: render the category list with the listing's current category selected -->
-              <select class="select" id="le-cat" name="category">
+              <select class="select" id="le-cat" name="category" data-lp-in="cat">
                 <option value="hair-and-beauty" selected>Hair &amp; Beauty</option>
                 {{> gen-cat-options}}
               </select>
             </div>
             <div class="field">
-              <label for="le-cat2">Second category <span class="opt">(optional)</span></label>
-              <select class="select" id="le-cat2" name="category_extra[]">
-                <option value="">None</option>
-                {{> gen-cat-options}}
-              </select>
-            </div>
-            <div class="field">
-              <label for="le-cat3">Third category <span class="opt">(optional)</span></label>
-              <select class="select" id="le-cat3" name="category_extra[]">
-                <option value="">None</option>
-                {{> gen-cat-options}}
-              </select>
+              <label for="le-type">Business type</label>
+              <input class="input" id="le-type" type="text" name="business_type" value="Barber shop" data-lp-in="type" placeholder="For example, Barber shop">
             </div>
           </div>
-          <p class="help mt-2">Pick one main category and up to two more. You appear in all of them.</p>
-        </div>
-      </fieldset>
-
-      <fieldset class="fieldset">
-        <legend>Address</legend>
-        <div class="stack">
+          <details class="add-biz__more">
+            <summary><svg class="ho-icon ho-icon--sm"><use href="#i-plus"/></svg>Add more categories <span class="opt">(optional)</span></summary>
+            <div class="row row-2 mt-3">
+              <div class="field">
+                <label for="le-cat2">Second category</label>
+                <select class="select" id="le-cat2" name="category_extra[]"><option value="">None</option>{{> gen-cat-options}}</select>
+              </div>
+              <div class="field">
+                <label for="le-cat3">Third category</label>
+                <select class="select" id="le-cat3" name="category_extra[]"><option value="">None</option>{{> gen-cat-options}}</select>
+              </div>
+            </div>
+          </details>
           <div class="field">
-            <label for="le-ad1">Address line 1</label>
+            <label for="le-summary">One-line summary</label>
+            <input class="input" id="le-summary" type="text" name="summary" maxlength="120" data-counter value="Classic cuts, skin fades and hot towel shaves, six days a week." data-lp-in="summary">
+            <p class="help">Shown on your card in search and category pages.</p>
+          </div>
+        </section>
+
+        <section class="form-step" id="location" aria-labelledby="ls2">
+          <h2 class="form-step__title" id="ls2"><span>2</span>Where you are</h2>
+          <div class="field">
+            <label for="le-ad1">Street address</label>
             <input class="input" id="le-ad1" type="text" name="address_1" value="48 Station Road" autocomplete="address-line1" required>
           </div>
-          <div class="field">
-            <label for="le-ad2">Address line 2 <span class="opt">(optional)</span></label>
-            <input class="input" id="le-ad2" type="text" name="address_2" autocomplete="address-line2">
-          </div>
-          <div class="row row-3">
-            <div class="field">
-              <label for="le-town">Town</label>
-              <input class="input" id="le-town" type="text" name="town" value="Harrow" autocomplete="address-level2">
-            </div>
+          <div class="row row-2">
             <div class="field">
               <label for="le-pc">Postcode</label>
               <input class="input" id="le-pc" type="text" name="postcode" value="HA1 2RS" autocomplete="postal-code" required>
@@ -110,45 +102,58 @@ nl: off
             <div class="field">
               <label for="le-area">Area</label>
               <input class="input" id="le-area" type="text" value="Harrow Town Centre" readonly aria-describedby="le-area-help">
-              <p class="help" id="le-area-help">Set by our team from your postcode. <a href="/report.html">Tell us if it&rsquo;s wrong</a>.</p>
+              <p class="help" id="le-area-help">Set from your postcode. <a href="/report.html">Wrong?</a></p>
             </div>
           </div>
-        </div>
-      </fieldset>
+          <input type="hidden" name="town" value="Harrow">
+        </section>
 
-      <fieldset class="fieldset">
-        <legend>Contact details</legend>
-        <div class="stack">
+        <section class="form-step" id="contact" aria-labelledby="ls3">
+          <h2 class="form-step__title" id="ls3"><span>3</span>Contact details</h2>
           <div class="row row-2">
             <div class="field">
               <label for="le-phone">Phone</label>
               <input class="input" id="le-phone" type="tel" name="phone" value="020 8427 0000" autocomplete="tel">
             </div>
             <div class="field">
-              <label for="le-email">Public email <span class="opt">(optional)</span></label>
-              <input class="input" id="le-email" type="email" name="email" value="bookings@stationroadbarbers.co.uk" aria-describedby="le-email-help">
-              <p class="help" id="le-email-help">Shown on your listing. Account emails go to the address in <a href="/account-settings.html">Settings</a>.</p>
+              <label for="le-web">Website <span class="opt">(optional)</span></label>
+              <input class="input" id="le-web" type="url" name="website" value="https://stationroadbarbers.co.uk" placeholder="https://">
             </div>
           </div>
           <div class="field">
-            <label for="le-web">Website <span class="opt">(optional)</span></label>
-            <input class="input" id="le-web" type="url" name="website" value="https://stationroadbarbers.co.uk" placeholder="https://">
+            <label for="le-email">Email for customers <span class="opt">(optional)</span></label>
+            <input class="input" id="le-email" type="email" name="email" value="bookings@stationroadbarbers.co.uk">
+            <p class="help">Shown on your listing. Account emails go to the address in <a href="/account-settings.html">Settings</a>.</p>
           </div>
-        </div>
-      </fieldset>
+        </section>
 
-      <fieldset class="fieldset">
-        <legend>Description</legend>
-        <div class="field">
-          <label for="le-desc">About your business</label>
-          <textarea class="textarea" id="le-desc" name="description" maxlength="1500" data-counter aria-describedby="le-desc-help">Family-run barbers on Station Road since 2009. We do classic cuts, skin fades, hot towel shaves and beard trims, with walk-ins welcome six days a week and online booking for evenings. Kids are welcome, and we offer a quieter chair for anyone who finds busy shops hard. Three experienced barbers, a fresh coffee while you wait, and five minutes from Harrow-on-the-Hill station.</textarea>
-          <p class="help" id="le-desc-help">Say what you do, who for, and what makes you different. At least 50 words helps you show up in search.</p>
-        </div>
-      </fieldset>
+        <section class="form-step" id="about" aria-labelledby="ls4">
+          <h2 class="form-step__title" id="ls4"><span>4</span>About your business</h2>
+          <div class="field">
+            <label for="le-desc">Description</label>
+            <textarea class="textarea" id="le-desc" name="description" rows="6" maxlength="1500" data-counter aria-describedby="le-desc-help">Family-run barbers on Station Road since 2009. We do classic cuts, skin fades, hot towel shaves and beard trims, with walk-ins welcome six days a week and online booking for evenings. Kids are welcome, and we offer a quieter chair for anyone who finds busy shops hard. Three experienced barbers, a fresh coffee while you wait, and five minutes from Harrow-on-the-Hill station.</textarea>
+            <p class="help" id="le-desc-help">What you do, who for and what makes you different. At least 50 words helps you show up in Google.</p>
+          </div>
+          <fieldset class="facilities">
+            <legend>Facilities <span class="opt">(tick all that apply)</span></legend>
+            <ul class="check-list facilities__list">
+              <li><label class="check"><input type="checkbox" name="facilities[]" value="wheelchair" checked> Wheelchair access</label></li>
+              <li><label class="check"><input type="checkbox" name="facilities[]" value="parking"> Parking nearby</label></li>
+              <li><label class="check"><input type="checkbox" name="facilities[]" value="card" checked> Card payments</label></li>
+              <li><label class="check"><input type="checkbox" name="facilities[]" value="wifi" checked> Free Wi-Fi</label></li>
+              <li><label class="check"><input type="checkbox" name="facilities[]" value="toilets"> Toilets</label></li>
+              <li><label class="check"><input type="checkbox" name="facilities[]" value="children" checked> Child friendly</label></li>
+              <li><label class="check"><input type="checkbox" name="facilities[]" value="booking" checked> Online booking</label></li>
+              <li><label class="check"><input type="checkbox" name="facilities[]" value="walkin" checked> Walk-ins welcome</label></li>
+              <li><label class="check"><input type="checkbox" name="facilities[]" value="delivery"> Delivery</label></li>
+              <li><label class="check"><input type="checkbox" name="facilities[]" value="outdoor"> Outdoor seating</label></li>
+            </ul>
+          </fieldset>
+        </section>
 
-      <fieldset class="fieldset">
-        <legend>Opening hours</legend>
-        <div class="hours-edit">
+        <section class="form-step" id="hours" aria-labelledby="ls5">
+          <h2 class="form-step__title" id="ls5"><span>5</span>Opening hours</h2>
+          <div class="hours-edit">
           <span class="day">Monday</span>
           <label class="ho-sr" for="h-mon-o">Monday opens</label><input class="input input--sm" id="h-mon-o" type="time" name="hours[mon][open]" value="09:00">
           <label class="ho-sr" for="h-mon-c">Monday closes</label><input class="input input--sm" id="h-mon-c" type="time" name="hours[mon][close]" value="19:00">
@@ -184,19 +189,22 @@ nl: off
           <label class="ho-sr" for="h-sun-c">Sunday closes</label><input class="input input--sm" id="h-sun-c" type="time" name="hours[sun][close]" disabled>
           <label class="check"><input type="checkbox" name="hours[sun][closed]" value="1" checked> Closed</label>
         </div>
-        <p class="help mt-4">Tick Closed for days you don&rsquo;t open. Hours show on your listing with today highlighted.</p>
-      </fieldset>
+          <p class="help">Tick Closed for days you don&rsquo;t open. Today&rsquo;s hours are highlighted on your listing.</p>
+        </section>
 
-      <fieldset class="fieldset" id="photos">
-        <legend>Photos</legend>
-        <div class="stack">
-          <div class="usage">
-            <div class="usage__label"><span>3 photos added. Your Featured plan includes additional photographs.</span></div>
+        <section class="form-step" id="photos" aria-labelledby="ls6">
+          <h2 class="form-step__title" id="ls6"><span>6</span>Logo and photos</h2>
+          <div class="logo-row">
+            <div class="logo-row__img" aria-hidden="true"><svg class="ho-icon"><use href="#i-scissors"/></svg></div>
+            <label class="dropzone dropzone--compact" for="le-logo">
+              <svg class="ho-icon"><use href="#i-upload"/></svg>
+              <span><strong>Logo or profile image</strong><small>Featured and Local Partner. Square, at least 400 &times; 400 pixels.</small></span>
+              <input class="ho-sr" id="le-logo" type="file" name="logo" accept="image/jpeg,image/png,image/svg+xml">
+            </label>
           </div>
-          <label class="dropzone" for="le-photos">
+          <label class="dropzone dropzone--compact" for="le-photos">
             <svg class="ho-icon"><use href="#i-upload"/></svg>
-            <strong>Drop photos here or choose files</strong>
-            <p>JPG or PNG, up to 8MB each. The first photo is your main image.</p>
+            <span><strong>Add gallery photos</strong><small>JPG or PNG, up to 8MB each. The first photo is your main image.</small></span>
             <input class="ho-sr" id="le-photos" type="file" name="photos[]" accept="image/jpeg,image/png" multiple>
           </label>
           <div class="thumbs">
@@ -205,17 +213,12 @@ nl: off
             <div class="thumb"><div class="ph"><svg class="ho-icon"><use href="#i-store"/></svg></div><button type="button" aria-label="Remove photo 3"><svg class="ho-icon"><use href="#i-close"/></svg></button></div>
             <div class="thumb thumb--empty"><div class="ph"><svg class="ho-icon"><use href="#i-plus"/></svg></div><span class="ho-sr">Empty photo slot</span></div>
             <div class="thumb thumb--empty"><div class="ph"><svg class="ho-icon"><use href="#i-plus"/></svg></div><span class="ho-sr">Empty photo slot</span></div>
-            <div class="thumb thumb--locked" data-plan="Premium"><div class="ph"><svg class="ho-icon"><use href="#i-lock"/></svg></div><span class="ho-sr">Locked: more photos on Premium</span></div>
-            <div class="thumb thumb--locked" data-plan="Premium"><div class="ph"><svg class="ho-icon"><use href="#i-lock"/></svg></div><span class="ho-sr">Locked: more photos on Premium</span></div>
           </div>
-          <p class="help">If your plan ends, your first photo stays on your listing and the rest are hidden, not deleted. They come back if you upgrade again.</p>
-        </div>
-      </fieldset>
+          <p class="help">3 photos added. Basic listings show one photo; Featured and Local Partner show them all. If your plan ends, the extra photos are hidden, not deleted.</p>
+        </section>
 
-      <fieldset class="fieldset">
-        <legend>Social links</legend>
-        <div class="stack">
-          <p class="help"><span class="badge badge--outline">Paid plans only</span> Social links show on Featured and Local Partner listings. They&rsquo;re on for you.</p>
+        <section class="form-step" id="social" aria-labelledby="ls7">
+          <h2 class="form-step__title" id="ls7"><span>7</span>Social links <small class="form-step__opt">Featured and Local Partner</small></h2>
           <div class="row row-2">
             <div class="field">
               <label for="le-fb">Facebook</label>
@@ -225,25 +228,58 @@ nl: off
               <label for="le-ig">Instagram</label>
               <div class="input-group"><span class="input-group__addon">instagram.com/</span><input class="input" id="le-ig" type="text" name="social[instagram]" value="stationroadbarbers"></div>
             </div>
-            <div class="field">
-              <label for="le-tt">TikTok <span class="opt">(optional)</span></label>
-              <div class="input-group"><span class="input-group__addon">tiktok.com/@</span><input class="input" id="le-tt" type="text" name="social[tiktok]"></div>
+          </div>
+          <details class="add-biz__more">
+            <summary><svg class="ho-icon ho-icon--sm"><use href="#i-plus"/></svg>Add TikTok or X <span class="opt">(optional)</span></summary>
+            <div class="row row-2 mt-3">
+              <div class="field">
+                <label for="le-tt">TikTok</label>
+                <div class="input-group"><span class="input-group__addon">tiktok.com/@</span><input class="input" id="le-tt" type="text" name="social[tiktok]"></div>
+              </div>
+              <div class="field">
+                <label for="le-x">X</label>
+                <div class="input-group"><span class="input-group__addon">x.com/</span><input class="input" id="le-x" type="text" name="social[x]"></div>
+              </div>
             </div>
-            <div class="field">
-              <label for="le-x">X <span class="opt">(optional)</span></label>
-              <div class="input-group"><span class="input-group__addon">x.com/</span><input class="input" id="le-x" type="text" name="social[x]"></div>
-            </div>
+          </details>
+        </section>
+
+        <div class="form-actions form-actions--between">
+          <p class="help mb-0">Changes go live straight away. A new name is checked first.</p>
+          <div class="cluster">
+            <a class="ho-btn ho-btn--ghost" href="/account.html">Cancel</a>
+            <button class="ho-btn ho-btn--primary" type="submit"><svg class="ho-icon"><use href="#i-check"/></svg>Save changes</button>
           </div>
         </div>
-      </fieldset>
+      </form>
 
-      <div class="form-actions form-actions--sticky form-actions--between">
-        <p class="help mb-0">Most changes go live straight away. A new name is checked by our team first.</p>
-        <div class="cluster">
-          <a class="ho-btn ho-btn--ghost" href="/account-listings.html">Cancel</a>
-          <button class="ho-btn ho-btn--primary" type="submit"><svg class="ho-icon"><use href="#i-check"/></svg>Save changes</button>
+      <aside class="sticky offer-form__aside listing-form__aside" aria-label="Your listing">
+        <p class="eyebrow">Preview</p>
+        <div class="lp-card" aria-live="polite">
+          <span class="lp-card__logo" aria-hidden="true"><svg class="ho-icon"><use href="#i-scissors"/></svg></span>
+          <div>
+            <span class="biz-card__cat"><span data-lp-out="cat">Hair &amp; Beauty</span> &middot; <span class="muted" data-lp-out="type">Barber shop</span></span>
+            <strong class="lp-card__name" data-lp-out="name">Station Road Barbers</strong>
+            <span class="lp-card__summary" data-lp-out="summary">Classic cuts, skin fades and hot towel shaves, six days a week.</span>
+            <span class="lp-card__where"><svg class="ho-icon ho-icon--sm"><use href="#i-pin"/></svg>48 Station Road, HA1 2RS</span>
+          </div>
         </div>
-      </div>
-    </form>
+        <p class="help mt-3">How your card looks in search and category pages.</p>
+
+        <div class="lp-check">
+          <h2 class="lp-check__title">Your listing <span class="lp-check__score">7 of 7 done</span></h2>
+          <ul>
+            <li class="is-done"><a href="#basics">Name, type and summary</a></li>
+            <li class="is-done"><a href="#about">Description of 50+ words</a></li>
+            <li class="is-done"><a href="#hours">Opening hours</a></li>
+            <li class="is-done"><a href="#contact">Phone and website</a></li>
+            <li class="is-done"><a href="#photos">Logo and photos</a></li>
+            <li class="is-done"><a href="#about">Facilities</a></li>
+            <li class="is-done"><a href="#social">Social links</a></li>
+          </ul>
+          <p class="lp-check__google"><svg class="ho-icon ho-icon--sm"><use href="#i-check"/></svg>Complete enough to show in Google.</p>
+        </div>
+      </aside>
+    </div>
   </div>
 </div>

@@ -1,6 +1,6 @@
 <!--
 title: Sponsor the Harrow Online newsletter: book a Presented by slot
-description: Book a "Presented by" sponsor slot in the Harrow Online Daily, The Weekend or Harrow Business newsletter. Pick dates, add your logo and pay online.
+description: Book a "Presented by" sponsor slot in the Harrow Online Daily Briefing, The Weekend or Harrow Business newsletter. Pick dates, add your logo and pay online.
 nav: hub
 body: is-logged-in page-sponsor
 -->
@@ -22,7 +22,7 @@ body: is-logged-in page-sponsor
   </div>
   -->
   <div class="split mb-5">
-    <p class="small mb-0"><svg class="ho-icon ho-icon--sm"><use href="#i-user"/></svg> Signed in as <strong>Hill Street Kitchen</strong> (Premium). <a href="/account.html">My account</a></p>
+    <p class="small mb-0"><svg class="ho-icon ho-icon--sm"><use href="#i-user"/></svg> Signed in as <strong>Hill Street Kitchen</strong> (Featured). <a href="/account.html">My account</a></p>
     <a class="link-quiet" href="/news-advertise.html">Other ways to advertise</a>
   </div>
 
@@ -51,7 +51,7 @@ body: is-logged-in page-sponsor
             <label class="choice">
               <input type="radio" name="edition" value="daily" checked data-reveal="#ed-daily">
               <span>
-                <span class="choice__title">Daily</span>
+                <span class="choice__title">Daily Briefing</span>
                 <span class="choice__text">Monday to Friday, every morning. <strong>&pound;45 a day</strong> or <strong>&pound;180 a week</strong>.</span>
               </span>
             </label>
@@ -80,7 +80,7 @@ body: is-logged-in page-sponsor
         </div>
 
         <!-- Panels are in this DOM order on purpose: hub.js updates the summary from each [data-slots] on load,
-             so the default panel (Daily, single days) comes last and its pre-selected dates show in the summary. -->
+             so the default panel (Daily Briefing, single days) comes last and its pre-selected dates show in the summary. -->
         <div id="ed-weekend" class="mt-5" hidden>
           <h3>The Weekend: Thursday issues</h3>
           <div class="slots" data-slots data-price="60" role="group" aria-label="The Weekend issues">
@@ -125,8 +125,8 @@ body: is-logged-in page-sponsor
           </fieldset>
 
           <div id="daily-weeks" class="mt-5" hidden>
-            <h3>Daily: full weeks</h3>
-            <div class="slots" data-slots data-price="180" role="group" aria-label="Daily edition weeks">
+            <h3>Daily Briefing: full weeks</h3>
+            <div class="slots" data-slots data-price="180" role="group" aria-label="Daily Briefing weeks">
             <button type="button" class="slot is-taken" aria-disabled="true" aria-label="Week commencing Monday 16 November, booked"><small>w/c Nov</small><b>16</b><small>Booked</small></button>
             <button type="button" class="slot is-taken" aria-disabled="true" aria-label="Week commencing Monday 23 November, booked"><small>w/c Nov</small><b>23</b><small>Booked</small></button>
             <button type="button" class="slot is-taken" aria-disabled="true" aria-label="Week commencing Monday 30 November, booked"><small>w/c Nov</small><b>30</b><small>Booked</small></button>
@@ -139,8 +139,8 @@ body: is-logged-in page-sponsor
           </div>
 
           <div id="daily-days" class="mt-5">
-            <h3>Daily: 16 November to 18 December 2026</h3>
-            <div class="slots" data-slots data-price="45" role="group" aria-label="Daily edition dates">
+            <h3>Daily Briefing: 16 November to 18 December 2026</h3>
+            <div class="slots" data-slots data-price="45" role="group" aria-label="Daily Briefing dates">
             <span class="slots__dow" aria-hidden="true">Mon</span><span class="slots__dow" aria-hidden="true">Tue</span><span class="slots__dow" aria-hidden="true">Wed</span><span class="slots__dow" aria-hidden="true">Thu</span><span class="slots__dow" aria-hidden="true">Fri</span><span class="slots__dow" aria-hidden="true">Sat</span><span class="slots__dow" aria-hidden="true">Sun</span>
             <button type="button" class="slot is-taken" aria-disabled="true" aria-label="Monday 16 November, booked"><small>Nov</small><b>16</b><small>Booked</small></button>
             <button type="button" class="slot is-taken" aria-disabled="true" aria-label="Tuesday 17 November, booked"><small>Nov</small><b>17</b><small>Booked</small></button>
@@ -178,7 +178,7 @@ body: is-logged-in page-sponsor
             <span class="slot is-off" aria-hidden="true"></span>
             <span class="slot is-off" aria-hidden="true"></span>
             </div>
-            <p class="help mt-2">Daily issues go out Monday to Friday. Later dates open as each month is published.</p>
+            <p class="help mt-2">The Daily Briefing goes out Monday to Friday. Later dates open as each month is published.</p>
           </div>
         </div>
       </section>
@@ -235,7 +235,7 @@ body: is-logged-in page-sponsor
       <div class="panel">
         <h2 class="panel__title">3. Your order</h2>
         <ul class="summary">
-          <li><span>Edition</span><strong>Daily</strong></li>
+          <li><span>Edition</span><strong>Daily Briefing</strong></li>
           <li><span>Dates selected</span><strong><span data-slot-count>2</span></strong></li>
           <li><span>Price each</span><span>&pound;45.00</span></li>
           <li class="total"><span>Total</span><span data-slot-total>&pound;90.00</span></li>

@@ -88,11 +88,6 @@
       "permanent": true
     },
     {
-      "source": "/hub/account-listings.html",
-      "destination": "/hub/account/listings/",
-      "permanent": true
-    },
-    {
       "source": "/hub/account-listing-edit.html",
       "destination": "/hub/account/listings/edit/",
       "permanent": true
