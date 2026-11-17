@@ -195,7 +195,7 @@
       <p>Claim this listing for free to add photos, opening hours and a description, and to get a verified badge.</p>
       <ul class="ticks"><li>Free forever on the Basic plan</li><li>Ranked above unclaimed listings</li><li>Offers, events and classes on Featured or Local Partner</li></ul>
       <a class="ho-btn ho-btn--primary ho-btn--block" href="/hub/claim/?listing=m-t-kotecha-canons-park">Claim this business</a>
-      <p class="xsmall mt-4 mb-0" style="color:rgba(255,255,255,.6)">Takes about 2 minutes. We check every claim before it goes live.</p>
+      <p class="xsmall mt-3 mb-0 muted">Takes about 2 minutes. We check every claim before it goes live.</p>
     </div>
     <div class="panel mt-4">
       <h3 class="panel__title">Get Harrow&rsquo;s best offers</h3>
@@ -205,25 +205,31 @@
   </aside>
 </div>
 </main>
-<section class="ho-container" aria-label="Newsletter sign-up">
-  <div class="ho-nl ho-nl--strip">
-    <div>
-      <p class="ho-nl__title">Harrow in your inbox, every morning</p>
-      <p class="ho-nl__text">The day&rsquo;s local news, what&rsquo;s on and the best Local Offers. Free, from Harrow Online Newsletter.</p>
+<!-- Newsletter sign-up above the footer (Nov 2026): same design as the homepage band; the reader picks each edition
+     separately (hub.js 5i shows known subscribers a short "you're signed up" line instead). -->
+<section class="nl-band nl-band--strip" aria-label="Newsletter sign-up">
+  <div class="ho-container">
+    <div class="nl-band__box">
+      <div class="nl-band__text">
+        <p class="nl-band__title">Harrow in your inbox, every morning</p>
+        <p>The day&rsquo;s local news, what&rsquo;s on and the best Local Offers. Free, from Harrow Online Newsletter.</p>
+      </div>
+      <form class="nl-band__form" action="https://harrowonline.org/wp-json/ho/v1/subscribe" method="post" data-nl-form>
+        <input type="hidden" name="signup_source" value="hub-strip">
+        <fieldset class="nl-band__editions">
+          <legend class="ho-sr">Choose your newsletters</legend>
+          <label class="nl-pick"><input type="checkbox" name="editions[]" value="daily" checked><span><strong>Daily Briefing</strong><small>Every morning: Harrow&rsquo;s news</small></span></label>
+          <label class="nl-pick"><input type="checkbox" name="editions[]" value="weekend"><span><strong>The Weekend</strong><small>Thursdays: what&rsquo;s on and offers</small></span></label>
+          <label class="nl-pick"><input type="checkbox" name="editions[]" value="business"><span><strong>Harrow Business</strong><small>Mondays: local business news</small></span></label>
+        </fieldset>
+        <div class="nl-band__row">
+          <label class="ho-sr" for="nl-email">Email address</label>
+          <input class="input" id="nl-email" type="email" name="email" placeholder="Your email address" autocomplete="email" required>
+          <button class="ho-btn ho-btn--primary" type="submit">Sign up free</button>
+        </div>
+        <p class="ho-nl__msg nl-band__msg" role="status" aria-live="polite"></p>
+      </form>
     </div>
-    <form class="ho-nl__form" action="https://harrowonline.org/wp-json/ho/v1/subscribe" method="post" data-nl-form>
-      <input type="hidden" name="signup_source" value="hub-strip">
-      <label class="ho-sr" for="nl-email">Email address</label>
-      <input class="ho-nl__input" id="nl-email" type="email" name="email" placeholder="Your email address" autocomplete="email" required>
-      <button class="ho-btn ho-btn--on-red ho-nl__btn" type="submit">Sign up free</button>
-      <fieldset class="ho-nl__editions">
-        <legend class="ho-sr">Editions</legend>
-        <label><input type="checkbox" name="editions[]" value="daily" checked> Daily Briefing</label>
-        <label><input type="checkbox" name="editions[]" value="weekend"> The Weekend (Thu)</label>
-        <label><input type="checkbox" name="editions[]" value="business"> Harrow Business (Mon)</label>
-      </fieldset>
-      <p class="ho-nl__msg" role="status" aria-live="polite"></p>
-    </form>
   </div>
 </section>
 

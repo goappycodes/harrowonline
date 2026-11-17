@@ -1,0 +1,4 @@
+{
+  "_about": "Listings the Harrow Online team has checked (phoned the business or visited) but the owner hasn't claimed yet. Shown as 'Checked by Harrow Online'. Add the listing id from data/listings.json and the date it was checked. Only add a business once it has really been checked.",
+  "checked": []
+}

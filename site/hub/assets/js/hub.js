@@ -167,7 +167,20 @@
     const btn = $("button[type=submit]", form);
     if (btn) { btn.innerHTML = ICON("check") + "<span>You&rsquo;re signed up</span>"; btn.disabled = true; }
     if (msg) msg.textContent = form.dataset.nlDone || "Thanks! Your first newsletter arrives tomorrow morning.";
+    // Preview: remember the reader, like the confirmation link does, so other sign-up forms don't ask again
+    document.cookie = `ho_sub_preview=${encodeURIComponent(email.value.trim())}; path=/; max-age=${60 * 60 * 24 * 90}; SameSite=Lax`;
   }));
+
+  /* 5i. Existing subscribers aren't asked to sign up again. Known reader (confirmation-link cookie, or signed in as a
+         subscriber): each newsletter sign-up form becomes a short "you're signed up" line with a link to manage editions.
+         WordPress: the same check as GET /wp-json/ho/v1/codes ({subscriber: true}); the preview reads its own cookie. */
+  const knownReader = (document.cookie.split("; ").find((c) => c.startsWith("ho_sub_preview=")) || "").slice(15);
+  if (knownReader) {
+    const who = decodeURIComponent(knownReader);
+    $$("[data-nl-form]").forEach((form) => {
+      form.innerHTML = `<p class="nl-known" role="status">${ICON("check")}<span>You&rsquo;re signed up to Harrow Online newsletters${who.includes("@") ? ` as <strong>${esc(who)}</strong>` : ""}. <a href="https://harrowonline.org/newsletter/">Choose your editions</a></span></p>`;
+    });
+  }
 
   /* 5h. Listing edit: the card preview follows the name, category, type and summary as they're typed */
   const listingForm = $("[data-listing-form]");
@@ -499,7 +512,9 @@
     }
   }
 
-  /* 6b. What's On list: date filter from ?when=today|weekend|7days|date (&date=YYYY-MM-DD).
+  /* 6b. What's On list filters: date (?when=today|weekend|7days|date&date=YYYY-MM-DD), category (?cat= or cat[]=),
+        area, age (age[]=), free (?free=1) and "hide weekly classes" (?classes=0). Chips and the sidebar form use the
+        same parameters. Each row carries data-date, data-cat, data-area, data-ages, data-free and data-kind.
         The preview has a fixed "today" (data-today); WordPress filters server-side with the same parameters. */
   const evList = $("[data-events-list]");
   if (evList) {
@@ -511,20 +526,27 @@
     const nice = (iso) => new Date(iso + "T12:00:00").toLocaleDateString("en-GB", { weekday: "long", day: "numeric", month: "long" });
     const ranges = { today: [today, today], weekend: [w0, w1], "7days": [today, addDays(today, 6)] };
     const range = when === "date" && /^\d{4}-\d{2}-\d{2}$/.test(q.get("date") || "") ? [q.get("date"), q.get("date")] : ranges[when];
-    if (range) {
-      const [from, to] = range;
+    const cats = [...q.getAll("cat"), ...q.getAll("cat[]")].filter(Boolean);
+    const ages = [...q.getAll("age"), ...q.getAll("age[]")].filter(Boolean);
+    const area = q.get("area") || "";
+    const free = q.get("free") === "1";
+    const noClasses = q.get("classes") === "0";
+    const other = cats.length || ages.length || area || free || noClasses;
+    const rowOn = (row, useDate) => (!useDate || !range || (row.dataset.date >= range[0] && row.dataset.date <= range[1]))
+      && (!cats.length || cats.includes(row.dataset.cat) || (cats.includes("classes") && row.dataset.kind === "class")
+        // "Family": the Family category, plus anything that welcomes children (ages under 5 or 5 to 11)
+        || (cats.includes("family") && /(^| )(under-5|5-11)( |$)/.test(row.dataset.ages || "")))
+      && (!area || row.dataset.area === area)
+      && (!ages.length || ages.some((a) => (row.dataset.ages || "").split(" ").includes(a)))
+      && (!free || row.dataset.free === "1")
+      && (!noClasses || row.dataset.kind !== "class");
+    if (range || other) {
       let n = 0;
       $$(".day-group[data-date]", evList).forEach((g) => {
-        const on = g.dataset.date >= from && g.dataset.date <= to;
-        g.hidden = !on;
-        g.style.display = on ? "" : "none";
-        if (on) n += $$(".event-row", g).length;
-      });
-      // Featured events block: keep only the rows inside the chosen dates; hide the block when none are
-      $$("[data-featured-group]", evList).forEach((g) => {
+        const inDates = !range || (g.dataset.date >= range[0] && g.dataset.date <= range[1]);
         let k = 0;
         $$(".event-row", g).forEach((row) => {
-          const on = row.dataset.date >= from && row.dataset.date <= to;
+          const on = inDates && rowOn(row, false);
           row.hidden = !on;
           row.style.display = on ? "" : "none";
           if (on) k += 1;
@@ -532,21 +554,57 @@
         g.hidden = !k;
         g.style.display = k ? "" : "none";
         const c = $("[data-day-count]", g);
-        if (c) c.textContent = `${k} on these dates`;
+        if (c && other) c.textContent = `${k} ${k === 1 ? "thing" : "things"} on`;
         n += k;
       });
-      const span = from === to ? nice(from) : `${nice(from)} to ${nice(to)}`;
+      // Featured events block: rows inside the chosen dates and filters; hide the block when none are
+      $$("[data-featured-group]", evList).forEach((g) => {
+        let k = 0;
+        $$(".event-row", g).forEach((row) => {
+          const on = rowOn(row, true);
+          row.hidden = !on;
+          row.style.display = on ? "" : "none";
+          if (on) k += 1;
+        });
+        g.hidden = !k;
+        g.style.display = k ? "" : "none";
+        const c = $("[data-day-count]", g);
+        if (c) c.textContent = range ? `${k} on these dates` : `${k} coming up`;
+        n += k;
+      });
+      const span = range ? (range[0] === range[1] ? nice(range[0]) : `${nice(range[0])} to ${nice(range[1])}`) : "";
       const count = $("[data-events-count]", evList);
-      if (count) count.innerHTML = `<strong>${n}</strong> ${n === 1 ? "event or class" : "events and classes"}, ${esc(span)}`;
+      if (count) {
+        const what = [cats.length ? cats.map((c) => c.replace(/-/g, " ")).join(", ") : "", free ? "free" : ""].filter(Boolean).join(", ");
+        count.innerHTML = `<strong>${n}</strong> ${n === 1 ? "event or class" : "events and classes"}${what ? ` (${esc(what)})` : ""}${span ? `, ${esc(span)}` : ""}`;
+      }
       const shown = $("[data-events-range]", evList);
-      if (shown) shown.textContent = `Showing ${span}.`;
+      if (shown && span) shown.textContent = `Showing ${span}.`;
       const empty = $("[data-events-empty]", evList);
       if (empty) empty.hidden = n > 0;
-      $$("[data-when]", evList).forEach((c) => c.toggleAttribute("aria-current", c.dataset.when === when));
-      const radio = $(`#filters input[name="when"][value="${when}"]`);
+    }
+    // Chips: the one matching the page's filters is shown as selected (date chips by data-when, others by their link)
+    $$(".chip", evList).forEach((c) => {
+      let on = false;
+      if (c.dataset.when !== undefined) on = c.dataset.when === when;
+      else if ((c.getAttribute("href") || "").includes("?")) {
+        const cq = new URL(c.href, location.href).searchParams;
+        on = [...cq.keys()].length > 0 && [...cq.entries()].every(([k, v]) => (k === "cat" ? cats.includes(v) : q.get(k) === v));
+      }
+      c.toggleAttribute("aria-current", on);
+    });
+    // Sidebar form shows the current filters
+    const form = $("#filters form");
+    if (form) {
+      const radio = $(`input[name="when"][value="${when}"]`, form);
       if (radio) radio.checked = true;
-      const pick = $("#f-date");
-      if (pick && when === "date") { pick.value = from; const box = $("#pick-date"); if (box) box.hidden = false; }
+      const pick = $("#f-date", form);
+      if (pick && when === "date" && range) { pick.value = range[0]; const box = $("#pick-date"); if (box) box.hidden = false; }
+      $$('input[name="cat[]"]', form).forEach((i) => { i.checked = cats.includes(i.value); });
+      $$('input[name="age[]"]', form).forEach((i) => { i.checked = ages.includes(i.value); });
+      const ar = $('select[name="area"]', form); if (ar) ar.value = area;
+      const fr = $('input[name="free"]', form); if (fr) fr.checked = free;
+      const nc = $('input[name="classes"]', form); if (nc) nc.checked = noClasses;
     }
   }
 
@@ -733,7 +791,8 @@
       const initials = x.n.replace(/[^A-Za-z0-9 ]/g, "").split(/\s+/).filter(Boolean).slice(0, 2).map((w) => w[0]).join("").toUpperCase() || "?";
       const tier = x.t || "unclaimed";
       // Claimed listings (sample or real) show Verified; Featured for Premium and Local Partner
-      const badge = tier === "unclaimed" ? `<span class="badge badge--unclaimed">Information imported from public data</span>` :
+      // Three statuses: verified by the business (claimed), checked by Harrow Online, or imported from public data
+      const badge = tier === "unclaimed" ? (x.ck ? `<span class="badge badge--checked">${ICON("check")}Checked by Harrow Online</span>` : `<span class="badge badge--unclaimed">Information imported from public data</span>`) :
         `<span class="badge badge--verified">${ICON("verified")}Verified by the business</span>`;
       if (tier !== "unclaimed") {
         // Claimed listing: photo, tagline, verified; Premium and Local Partner are featured (brief 01, 6.2)
@@ -947,7 +1006,8 @@
         }).filter(Boolean).sort((a, b) => b[0] - a[0]).map((a) => a[1]);
       }
       // Ranking rule (brief 01, 6.2): paid featured first, then claimed, then unclaimed
-      items = items.map((x, i) => [x, i]).sort((a, b) => (tierRank[a[0].t || "unclaimed"] - tierRank[b[0].t || "unclaimed"]) || (p.sort === "name" ? a[0].n.localeCompare(b[0].n) : a[1] - b[1])).map((a) => a[0]);
+      const rankOf = (x) => tierRank[x.t || "unclaimed"] - (x.ck ? 0.5 : 0);   // checked by Harrow Online above imported
+      items = items.map((x, i) => [x, i]).sort((a, b) => (rankOf(a[0]) - rankOf(b[0])) || (p.sort === "name" ? a[0].n.localeCompare(b[0].n) : a[1] - b[1])).map((a) => a[0]);
 
       const type = ALL ? renderGroups(p, items) : "businesses";
       const overview = type === "all" && !!p.q;   // "All" with a search: count and sections set by renderGroups

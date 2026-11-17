@@ -70,7 +70,7 @@ def biz_row(x):
           <h3 class="biz-row__title"><a href="/business/{x["slug"]}.html">{e(x["name"])}</a></h3>
           <p class="card__meta"><span>{icon("pin")}{addr}{e(x["postcode"])}</span><span>{e(area_name(x["area"]))}</span></p>
         </div>
-        <div class="biz-row__side"><span class="badge badge--unclaimed">Information imported from public data</span>{call}</div>
+        <div class="biz-row__side">{C.listing_status(x)}{call}</div>
       </article>'''
 
 
@@ -133,7 +133,7 @@ def profile(x, related):
   <div class="profile-head__row">
     <span class="mono mono--lg mono--soft" aria-hidden="true">{e(initials(x["name"]))}</span>
     <div class="profile-head__main">
-      <div class="cluster"><span class="badge badge--unclaimed">Information imported from public data</span></div>
+      <div class="cluster">{C.listing_status(x)}</div>
       <h1 class="profile-head__title">{e(x["name"])}</h1>
       <p class="profile-head__meta">
         <a href="/category/{cat}.html">{icon("tag")}{e(cat_name(cat))}</a>
@@ -183,7 +183,7 @@ def profile(x, related):
       <p>Claim this listing for free to add photos, opening hours and a description, and to get a verified badge.</p>
       <ul class="ticks"><li>Free forever on the Basic plan</li><li>Ranked above unclaimed listings</li><li>Offers, events and classes on Featured or Local Partner</li></ul>
       <a class="ho-btn ho-btn--primary ho-btn--block" href="/claim.html?listing={x["slug"]}">Claim this business</a>
-      <p class="xsmall mt-4 mb-0" style="color:rgba(255,255,255,.6)">Takes about 2 minutes. We check every claim before it goes live.</p>
+      <p class="xsmall mt-3 mb-0 muted">Takes about 2 minutes. We check every claim before it goes live.</p>
     </div>
     <div class="panel mt-4">
       <h3 class="panel__title">Get Harrow&rsquo;s best offers</h3>
@@ -460,6 +460,7 @@ def build_all():
                 "ad": unescape(x["address"]), "pc": x["postcode"], "p": x["phone_raw"][0] if x["phone_raw"] else "",
                 "w": 1 if x["web"] else 0,
                 "t": x.get("tier", ""), "i": x["claimed"].get("icon", "") if x.get("claimed") else "",
+                "ck": 1 if x.get("checked") else 0,   # Checked by Harrow Online
                 "tg": unescape(x["claimed"]["tagline"]) if x.get("claimed") else "",
                 "im": (x.get("claimed") or {}).get("logo") or ((x.get("claimed") or {}).get("images") or [""])[0],   # logo, else first photo, for the results row
                 "lg": 1 if (x.get("claimed") or {}).get("logo") else 0,   # "im" is a logo: show it whole, not cropped

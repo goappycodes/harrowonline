@@ -165,6 +165,17 @@
     </li>
   </ol>
 
+  <section class="section pb-0" aria-labelledby="fb-labels">
+    <h2 class="sec-title mb-2" id="fb-labels">What the labels mean</h2>
+    <p class="sec-sub mb-0">Every listing shows where its details come from.</p>
+    <ul class="status-key">
+      <li><span class="badge badge--verified"><svg class="ho-icon"><use href="/hub/assets/img/icons.svg#i-verified"/></svg>Verified by the business</span><p>The owner has claimed the listing and keeps the details up to date.</p></li>
+      <li><span class="badge badge--checked"><svg class="ho-icon"><use href="/hub/assets/img/icons.svg#i-check"/></svg>Checked by Harrow Online</span><p>Our team has checked the details with the business. The owner hasn&rsquo;t claimed it yet.</p></li>
+      <li><span class="badge badge--unclaimed">Information imported from public data</span><p>Taken from public sources and not checked yet. If it&rsquo;s your business, claim it free to update it.</p></li>
+    </ul>
+    <p class="help mt-4">Only verified or checked businesses appear in homepage features, recommendations and paid spots. Imported listings stay searchable and can be claimed.</p>
+  </section>
+
   <section class="section" aria-labelledby="fb-plans">
     <h2 class="sec-title mb-5" id="fb-plans">Plans</h2>
     <div class="grid grid-3 fb-plans">
@@ -203,25 +214,31 @@
   </div>
 </div>
 </main>
-<section class="ho-container" aria-label="Newsletter sign-up">
-  <div class="ho-nl ho-nl--strip">
-    <div>
-      <p class="ho-nl__title">Harrow in your inbox, every morning</p>
-      <p class="ho-nl__text">The day&rsquo;s local news, what&rsquo;s on and the best Local Offers. Free, from Harrow Online Newsletter.</p>
+<!-- Newsletter sign-up above the footer (Nov 2026): same design as the homepage band; the reader picks each edition
+     separately (hub.js 5i shows known subscribers a short "you're signed up" line instead). -->
+<section class="nl-band nl-band--strip" aria-label="Newsletter sign-up">
+  <div class="ho-container">
+    <div class="nl-band__box">
+      <div class="nl-band__text">
+        <p class="nl-band__title">Harrow in your inbox, every morning</p>
+        <p>The day&rsquo;s local news, what&rsquo;s on and the best Local Offers. Free, from Harrow Online Newsletter.</p>
+      </div>
+      <form class="nl-band__form" action="https://harrowonline.org/wp-json/ho/v1/subscribe" method="post" data-nl-form>
+        <input type="hidden" name="signup_source" value="hub-strip">
+        <fieldset class="nl-band__editions">
+          <legend class="ho-sr">Choose your newsletters</legend>
+          <label class="nl-pick"><input type="checkbox" name="editions[]" value="daily" checked><span><strong>Daily Briefing</strong><small>Every morning: Harrow&rsquo;s news</small></span></label>
+          <label class="nl-pick"><input type="checkbox" name="editions[]" value="weekend"><span><strong>The Weekend</strong><small>Thursdays: what&rsquo;s on and offers</small></span></label>
+          <label class="nl-pick"><input type="checkbox" name="editions[]" value="business"><span><strong>Harrow Business</strong><small>Mondays: local business news</small></span></label>
+        </fieldset>
+        <div class="nl-band__row">
+          <label class="ho-sr" for="nl-email">Email address</label>
+          <input class="input" id="nl-email" type="email" name="email" placeholder="Your email address" autocomplete="email" required>
+          <button class="ho-btn ho-btn--primary" type="submit">Sign up free</button>
+        </div>
+        <p class="ho-nl__msg nl-band__msg" role="status" aria-live="polite"></p>
+      </form>
     </div>
-    <form class="ho-nl__form" action="https://harrowonline.org/wp-json/ho/v1/subscribe" method="post" data-nl-form>
-      <input type="hidden" name="signup_source" value="hub-strip">
-      <label class="ho-sr" for="nl-email">Email address</label>
-      <input class="ho-nl__input" id="nl-email" type="email" name="email" placeholder="Your email address" autocomplete="email" required>
-      <button class="ho-btn ho-btn--on-red ho-nl__btn" type="submit">Sign up free</button>
-      <fieldset class="ho-nl__editions">
-        <legend class="ho-sr">Editions</legend>
-        <label><input type="checkbox" name="editions[]" value="daily" checked> Daily Briefing</label>
-        <label><input type="checkbox" name="editions[]" value="weekend"> The Weekend (Thu)</label>
-        <label><input type="checkbox" name="editions[]" value="business"> Harrow Business (Mon)</label>
-      </fieldset>
-      <p class="ho-nl__msg" role="status" aria-live="polite"></p>
-    </form>
   </div>
 </section>
 
