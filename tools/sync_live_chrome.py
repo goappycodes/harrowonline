@@ -49,7 +49,6 @@ DRAWER_HUB = ('{{site:hub}}<nav class="ho-drawer__hub" aria-label="Hub">'
               '<li><a href="/search.html">Businesses</a></li>'
               '<li><a href="/categories.html">Categories</a></li>'
               '<li><a href="/#areas">Areas</a></li>'
-              '<li><a href="/for-businesses.html">For businesses</a></li>'
               '<li><a href="/pricing.html">Pricing</a></li>'
               '<li><a href="/add-business.html">List your business</a></li>'
               '</ul></nav>{{/site}}\n            ')
@@ -67,7 +66,7 @@ header = swap(header,
               '<a class="ho-drawer__logo{{site:hub}} ho-drawer__logo--hub{{/site}}" href="{{site:hub}}/{{/site}}{{site:news}}https://harrowonline.org/{{/site}}">')
 header = swap(header, LOGO_LAZY,
               '{{site:hub}}<img src="/assets/img/hub-logo.svg" width="146" height="100" alt="Harrow Online Hub" loading="lazy">{{/site}}{{site:news}}' + LOGO_LAZY + '{{/site}}')
-header = swap(header, DRAWER_NL, DRAWER_HUB + DRAWER_NL)
+# (Nov 2026) no separate Hub section in the phone menu: Businesses holds those links, like the desktop dropdown
 
 
 def hub_search(text, open_tag, label_old, input_old, hub_label_input, tail=""):
@@ -95,9 +94,11 @@ _hub = ('<form class="ho-search__form ho-search__form--hub" role="search" method
 header = header[:_m.start()] + "{{site:hub}}" + _hub + "{{/site}}{{site:news}}" + _live + "{{/site}}" + header[_m.end():]
 # Phone drawer search: the form's opening, label and input differ on Hub pages; the submit button is shared
 _DRAWER_INPUT = '<input id="ho-drawer-search" type="search" name="s" placeholder="Search Harrow news&hellip;" autocomplete="off">'
-header = hub_search(header, '<form class="ho-drawer__search"', '<label class="ho-sr" for="ho-drawer-search">', _DRAWER_INPUT,
-                    '<label class="ho-sr" for="ho-drawer-search">Search the Hub</label>\n'
-                    '                <input id="ho-drawer-search" type="search" name="q" placeholder="Search the Hub&hellip;" autocomplete="off">')
+# Phone menu search: news pages only (Hub pages use the header search icon)
+import re as _re
+_dm = _re.search(r'<form class="ho-drawer__search".*?</form>', header, flags=_re.S)
+assert _dm, "drawer search form"
+header = header[:_dm.start()] + "{{site:news}}" + _dm.group(0) + "{{/site}}" + header[_dm.end():]
 # Hub pages use the shared main menu from brief 01, section 3 (News, What's On, Classes, Offers, Hub), in the live
 # menu's markup and styling. No "Newsletter" item: the red Newsletter button in the header (and "Get the newsletter"
 # in the phone drawer) already covers it. News-site mock pages keep the live menu.
@@ -108,6 +109,7 @@ HUB_MENU = [
     ("classes", "/classes.html", "Classes"),
     ("offers", "/offers.html", "Offers"),
     ("businesses", "/search.html", "Businesses"),
+    ("advertise", "/advertise-newsletter.html", "Advertise"),
 ]
 
 
@@ -115,37 +117,36 @@ HUB_MENU = [
 HUB_SUBMENU = [
     ("categories", "/categories.html", "Categories"),
     ("", "/#areas", "Areas"),
-    ("for-businesses", "/for-businesses.html", "For businesses"),
     ("pricing", "/pricing.html", "Pricing"),
 ]
 
 
-def hub_submenu():
+def hub_submenu(menu_id="ho-hub-menu"):
     items = "".join(f'<li><a href="{href}"{"{{hubnav:" + key + "}}" if key else ""}>{label}</a></li>' for key, href, label in HUB_SUBMENU)
     cta = '<li class="sub-menu__cta"><a href="/add-business.html"><svg class="ho-icon"><use href="#i-plus"/></svg>List your business</a></li>'
-    return ('<button class="ho-nav__toggle" type="button" aria-expanded="false" aria-controls="ho-hub-menu" aria-label="More business pages" data-ho-sub-toggle>'
+    return ('<button class="ho-nav__toggle" type="button" aria-expanded="false" aria-controls="{menu_id}" aria-label="More business pages" data-ho-sub-toggle>'
             '<svg class="ho-icon"><use href="#i-chevron-down"/></svg></button>'
-            f'<ul class="sub-menu" id="ho-hub-menu">{items}{cta}</ul>')
+            f'<ul class="sub-menu" id="{menu_id}">{items}{cta}</ul>')
 
 
-def hub_menu(dropdown=False):
+def hub_menu(dropdown=False, menu_id="ho-hub-menu"):
     out = []
     for key, href, label in HUB_MENU:
         sub = dropdown and key == "businesses"
         cls = "menu-item" + (" menu-item-has-children" if sub else "") + "{{navcls:" + key + "}}"
-        out.append(f'<li class="{cls}"><a href="{href}"{"{{navaria:" + key + "}}"}>{label}</a>{hub_submenu() if sub else ""}</li>')
+        out.append(f'<li class="{cls}"><a href="{href}"{"{{navaria:" + key + "}}"}>{label}</a>{hub_submenu(menu_id) if sub else ""}</li>')
     return "\n".join(out)
 
 
-def menu_swap(text, ul_id, dropdown=False):
+def menu_swap(text, ul_id, dropdown=False, menu_id="ho-hub-menu"):
     import re
     m = re.search(rf'(<ul id="{ul_id}" class="[^"]+">)(.*?)(</ul>)', text, flags=re.S)
     assert m, ul_id
-    return text[:m.start(2)] + "{{site:hub}}" + hub_menu(dropdown) + "{{/site}}{{site:news}}" + m.group(2) + "{{/site}}" + text[m.end(2):]
+    return text[:m.start(2)] + "{{site:hub}}" + hub_menu(dropdown, menu_id) + "{{/site}}{{site:news}}" + m.group(2) + "{{/site}}" + text[m.end(2):]
 
 
 header = menu_swap(header, "ho-menu", dropdown=True)   # desktop: Hub dropdown
-header = menu_swap(header, "ho-menu-mobile")           # phone drawer: has its own Hub section below the menu
+header = menu_swap(header, "ho-menu-mobile", dropdown=True, menu_id="ho-hub-menu-m")   # phone drawer: Businesses expands
 (PARTIALS / "header.html").write_text(header, encoding="utf-8", newline="\n")
 
 # ---- footer

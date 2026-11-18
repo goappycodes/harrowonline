@@ -75,15 +75,30 @@ body: page-pricing
       </section>
     </div>
 
-    <div class="notice notice--plain mt-6">
-      <svg class="ho-icon"><use href="#i-info"/></svg>
+    <div class="price-note">
+      <svg class="ho-icon ho-icon--sm"><use href="#i-info"/></svg>
       <p><strong>Not claimed yet?</strong> Unclaimed listings show only the basics we imported from open map data (name, address, phone and website) with a Claim button, and they stay out of search engines until someone claims them and fills them in. <a href="/data-sources.html">About our data</a>.</p>
     </div>
   </div>
 
-  <section class="section" aria-labelledby="compare-title">
+<!-- What the labels mean (moved from the For businesses page, Nov 2026) -->
+  <section class="section section--tight" aria-labelledby="fb-labels">
     <div class="ho-container">
-      <div class="sec-head"><div><h2 class="sec-title" id="compare-title">Compare every plan</h2><p class="sec-sub">Prices shown <span class="price-monthly">monthly</span><span class="price-annual">for a year</span>. Switch at the top of the page.</p></div></div>
+    <h2 class="sec-title mb-2" id="fb-labels">What the labels mean</h2>
+    <p class="sec-sub mb-0">Every business page shows where its details come from, with one of these icons next to its name. In lists and search results only verified and checked businesses carry an icon. Hover or tap an icon to see what it means.</p>
+    <ul class="status-key">
+      <li><span class="status-key__name"><span class="card__tick card__tick--verified" aria-hidden="true"><svg class="ho-icon"><use href="#i-verified"/></svg></span>Verified by the business</span><p>The owner has claimed the listing and keeps the details up to date.</p></li>
+      <li><span class="status-key__name"><span class="card__tick card__tick--checked" aria-hidden="true"><svg class="ho-icon"><use href="#i-check"/></svg></span>Checked by Harrow Online</span><p>Our team has checked the details with the business. The owner hasn&rsquo;t claimed it yet.</p></li>
+      <li><span class="status-key__name"><span class="card__tick card__tick--imported" aria-hidden="true"><svg class="ho-icon"><use href="#i-globe"/></svg></span>Information imported from public data</span><p>Taken from public sources and not checked yet. If it&rsquo;s your business, claim it free to update it.</p></li>
+    </ul>
+    <p class="help mt-4">Only verified or checked businesses appear in homepage features, recommendations and paid spots. Imported listings stay searchable and can be claimed.</p>
+    </div>
+  </section>
+
+  <section class="section section--tight" aria-labelledby="compare-title">
+    <div class="ho-container">
+      <details class="compare-fold">
+        <summary><span><span class="compare-fold__title" id="compare-title">Compare every plan</span><span class="compare-fold__sub">Prices shown <span class="price-monthly">monthly</span><span class="price-annual">for a year</span>. Switch at the top of the page.</span></span><span class="compare-fold__btn">Show the full comparison</span></summary>
       <div class="compare-wrap">
         <table class="compare">
           <caption class="ho-sr">Features included in each Harrow Online Hub plan</caption>
@@ -136,6 +151,7 @@ body: page-pricing
           </tbody>
         </table>
       </div>
+      </details>
     </div>
   </section>
 </div>
@@ -179,9 +195,9 @@ body: page-pricing
 </section>
 
 <section class="section" aria-labelledby="faq-title">
-  <div class="ho-container ho-container--narrow">
+  <div class="ho-container">
     <h2 class="sec-title mb-5" id="faq-title">Questions</h2>
-    <div class="faq">
+    <div class="faq faq--2col">
       <details>
         <summary>Is claiming really free?</summary>
         <div><p>Yes. Claiming puts you on the Basic plan, which is free for as long as you like. You get a verified listing, your business details and opening hours, one photograph, and you can keep the listing up to date yourself.</p></div>
@@ -218,6 +234,8 @@ body: page-pricing
         <summary>Can I list an event without a paid plan?</summary>
         <div><p>Businesses add events and classes on the Featured or Local Partner plan; the free Basic plan doesn&rsquo;t include them. Schools, clubs, charities and community groups can open a free organiser account and add events and classes without a plan. <a href="/register.html">Create a free account</a>.</p></div>
       </details>
+      <details><summary>What is the difference between an event and a class?</summary><div><p>An event happens on a set date, like a quiz night or a market, and leaves What&rsquo;s On once it&rsquo;s over. A class runs every week, like a dance class or a football session, and keeps the same page for as long as it runs.</p></div></details>
+      <details><summary>Can I manage more than one business?</summary><div><p>For now, each account manages one business listing. If you run more than one business, <a href="https://harrowonline.org/contact-us/">contact us</a> and we&rsquo;ll help.</p></div></details>
     </div>
   </div>
 </section>

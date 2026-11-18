@@ -189,12 +189,21 @@ def load_listings():
             "web": [c["website"]] if c.get("website") else [], "email": [c["email"]] if c.get("email") else [],
             "social": c.get("social", []), "lat": None, "lng": None, "sources": [],
             "tier": c["tier"], "claimed": c,
+            **({"checked": True} if c.get("listing_status") == "checked" else {}),
         })
     out.sort(key=lambda x: x["name"].lower())
     return out
 
 
 TIER_RANK = {"partner": 0, "premium": 0, "enhanced": 1, "basic": 2, "unclaimed": 3}
+
+
+def status_rank(x):
+    """Listing order everywhere (18 Nov 2026): Verified by the business first, then Checked by Harrow Online,
+    then information imported from public data. The plan tier orders listings within each group."""
+    if x.get("checked"):
+        return 1
+    return 0 if x.get("claimed") else 2
 TIER_LABEL = {"partner": "Local Partner", "premium": "Featured", "enhanced": "Featured", "basic": "Basic", "unclaimed": "Unclaimed"}   # three plans: Basic, Featured, Local Partner
 
 

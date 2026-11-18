@@ -67,10 +67,10 @@ def biz_row(x):
         <span class="mono mono--soft" aria-hidden="true">{e(initials(x["name"]))}</span>
         <div class="biz-row__main">
           <span class="biz-card__cat">{e(cat_name(x["cat"]))}{sub}</span>
-          <h3 class="biz-row__title"><a href="/business/{x["slug"]}.html">{e(x["name"])}</a></h3>
+          <h3 class="biz-row__title"><a href="/business/{x["slug"]}.html">{C.name_with_tick(x)}</a></h3>
           <p class="card__meta"><span>{icon("pin")}{addr}{e(x["postcode"])}</span><span>{e(area_name(x["area"]))}</span></p>
         </div>
-        <div class="biz-row__side">{C.listing_status(x)}{call}</div>
+        <div class="biz-row__side">{call}</div>
       </article>'''
 
 
@@ -133,8 +133,7 @@ def profile(x, related):
   <div class="profile-head__row">
     <span class="mono mono--lg mono--soft" aria-hidden="true">{e(initials(x["name"]))}</span>
     <div class="profile-head__main">
-      <div class="cluster">{C.listing_status(x)}</div>
-      <h1 class="profile-head__title">{e(x["name"])}</h1>
+      <h1 class="profile-head__title">{C.name_with_tick(x, linked=False)}</h1>
       <p class="profile-head__meta">
         <a href="/category/{cat}.html">{icon("tag")}{e(cat_name(cat))}</a>
         {f'<span>{e(x["sub"])}</span>' if x["sub"] else ""}
@@ -212,7 +211,7 @@ def archive(kind, slug, items, counts_other):
         chips_title = "Areas"
         chips = "".join(f'<a class="chip" href="/search.html?cat={slug}&amp;area={a}">{e(area_name(a))} <span class="count">{n}</span></a>' for a, n in counts_other)
         data_attr = f'data-cat="{slug}"'
-        other_filter = f'''<div class="field"><label for="f-area">Area</label><select class="select" id="f-area" name="area"><option value="">All areas</option>{gen_area_options()}</select></div>'''
+        other_filter = f'''<label class="fsel"><span class="ho-sr">Area</span><select id="f-area" name="area"><option value="">All areas</option>{gen_area_options()}</select></label>'''
         hidden = f'<input type="hidden" name="cat" value="{slug}">'
     else:
         name = area_name(slug)
@@ -222,7 +221,7 @@ def archive(kind, slug, items, counts_other):
         chips_title = "Categories"
         chips = "".join(f'<a class="chip" href="/search.html?area={slug}&amp;cat={c}">{e(cat_name(c))} <span class="count">{n}</span></a>' for c, n in counts_other)
         data_attr = f'data-area="{slug}"'
-        other_filter = f'''<div class="field"><label for="f-cat">Category</label><select class="select" id="f-cat" name="cat"><option value="">All categories</option>{gen_cat_options()}</select></div>'''
+        other_filter = f'''<label class="fsel"><span class="ho-sr">Category</span><select id="f-cat" name="cat"><option value="">All categories</option>{gen_cat_options()}</select></label>'''
         hidden = f'<input type="hidden" name="area" value="{slug}">'
 
     first = "".join(biz_row(x) for x in items[:20])
@@ -233,30 +232,24 @@ def archive(kind, slug, items, counts_other):
 </header>
 
 <div class="ho-container">
-  <p class="eyebrow">{chips_title}</p>
-  <div class="chips mb-6">{chips}</div>
+  <!-- Clean layout (Nov 2026): no filter sidebar. Search and small filters on one line, quick links as one chip row. -->
+  <form class="dline" id="filters" data-directory-form action="" method="get" role="search" aria-label="Search and filter">
+    {hidden}
+    <label class="fsearch">{icon("search")}<span class="ho-sr">Search {e(title)}</span><input id="f-q" type="search" name="q" placeholder="Search by name or service" autocomplete="off"></label>
+    {other_filter}
+    <label class="fcheck"><input type="checkbox" name="web" value="1"> Has a website</label>
+    <label class="fcheck"><input type="checkbox" name="phone" value="1"> Has a phone</label>
+  </form>
 
-  <div class="layout-filters">
-    <form class="filters" id="filters" data-directory-form action="" method="get">
-      {hidden}
-      <div class="filters__head"><h2>Filter</h2><button class="ho-header__icon-btn filters__close" type="button" data-filters-close aria-label="Close filters">{icon("close")}</button></div>
-      <div class="filters__group"><div class="field"><label for="f-q">Keyword</label><input class="input" id="f-q" type="search" name="q" placeholder="Name or service"></div></div>
-      <div class="filters__group">{other_filter}</div>
-      <fieldset class="filters__group"><legend>Contact details</legend>
-        <ul class="check-list"><li><label><input type="checkbox" name="web" value="1"> Has a website</label></li><li><label><input type="checkbox" name="phone" value="1"> Has a phone number</label></li></ul>
-      </fieldset>
-      <div class="filters__foot"><a class="ho-btn ho-btn--ghost" href="?">Clear</a><button class="ho-btn ho-btn--primary" type="submit">Show results</button></div>
-    </form>
-
-    <div data-directory {data_attr} data-page-size="20">
-      <div class="toolbar">
-        <p class="toolbar__count" data-count><strong>{len(items):,}</strong> businesses</p>
-        <div class="toolbar__right"><button class="ho-btn ho-btn--sm ho-btn--outline filters-toggle" type="button" data-filters-open aria-controls="filters" aria-expanded="false">{icon("filter")}Filters</button></div>
-      </div>
-      <div class="active-filters" data-active hidden></div>
-      <div data-results>{first}</div>
-      <nav class="pager" data-pager aria-label="Pages"></nav>
+  <div data-directory {data_attr} data-page-size="20">
+    <h2 class="ho-sr">Listings</h2>
+    <div class="toolbar dtoolbar">
+      <div class="dtoolbar__lead"><p class="toolbar__count" data-count><strong>{len(items):,}</strong> businesses</p><a class="dtoolbar__key" href="/pricing.html#fb-labels"><svg class="ho-icon" aria-hidden="true"><use href="#i-info"/></svg>What the icons mean</a></div>
+      <label class="fsel fsel--sort"><span class="dtoolbar__label">Sort</span><select id="f-sort" name="sort" form="filters"><option value="relevance">Best match</option><option value="name">Name (A to Z)</option></select></label>
     </div>
+    <div class="active-filters" data-active hidden></div>
+    <div data-results>{first}</div>
+    <nav class="pager" data-pager aria-label="Pages"></nav>
   </div>
 
   <div class="cta-band mt-6">
@@ -281,7 +274,7 @@ _LISTINGS = None
 def listings():
     global _LISTINGS
     if _LISTINGS is None:
-        _LISTINGS = sorted(H.load_listings(), key=lambda x: (H.TIER_RANK[x.get("tier", "unclaimed")], x["name"].lower()))
+        _LISTINGS = sorted(H.load_listings(), key=lambda x: (H.status_rank(x), H.TIER_RANK[x.get("tier", "unclaimed")], x["name"].lower()))
     return _LISTINGS
 
 
@@ -327,6 +320,7 @@ def write_partials(cat_counts, area_counts):
     (PARTIALS / "gen-offer-pick.html").write_text(C.offer_list_card(*offers[0]) if offers else "", encoding="utf-8")
     (PARTIALS / "gen-offers-home.html").write_text("\n".join(C.offer_tile(x, o) for x, o in offers[1:7]), encoding="utf-8")
     write_home_extras(offers)
+    write_featured_home()
     (PARTIALS / "gen-offer-count.html").write_text(str(len(offers)), encoding="utf-8")
     by_cat = Counter(x["cat"] for x, _o in offers)
     chips = [f'<a class="chip" href="/offers.html" data-cat="" aria-current="page">All offers <span class="count">{len(offers)}</span></a>']
@@ -342,6 +336,41 @@ def write_partials(cat_counts, area_counts):
 def offer_pages():
     """One page per Local Offer, live and ended (gen_claimed.offer_page)."""
     return C.offer_pages(listings())
+
+
+def write_featured_home():
+    """Homepage "Featured local businesses": real businesses on a paid Featured / Local Partner plan only, never samples
+    (client feedback: only verified or Harrow Online-checked businesses in homepage features). Four cards, one per category."""
+    picks, seen = [], set()
+    pool = sorted((x for x in listings() if x.get("tier") in C.TOP and not C.is_sample(x)),
+                  key=lambda x: (not (x["claimed"].get("images") or x["claimed"].get("cover")), x["name"].lower()))
+    for x in pool:
+        if x["cat"] in seen:
+            continue
+        picks.append(x); seen.add(x["cat"])
+        if len(picks) == 4:
+            break
+    cards = []
+    for x in picks:
+        c = x["claimed"]
+        if c.get("images"):
+            media = f'<div class="{C.ph_cls(x)}">{C.photo_inner(x, 0, c.get("icon", "store"), e(x["name"]))}</div>'
+        elif c.get("logo"):
+            media = C.logo_slot(c, "ph ph--logo", e(x["name"]))
+        else:
+            media = f'<div class="ph">{icon(c.get("icon", "store"))}</div>'
+        partner = '<span class="badge badge--partner">Local Partner</span>' if x["tier"] == "partner" else f'<span class="badge badge--featured">{icon("star")}Featured</span>'
+        cards.append(f'''<article class="card card--featured">
+        <div class="card__badges">{partner}</div>
+        {media}
+        <div class="card__body">
+          <span class="biz-card__cat">{e(C.cat_name(x["cat"]))}</span>
+          <h3 class="card__title"><a href="/business/{x["slug"]}.html">{C.name_with_tick(x)}</a></h3>
+          <p class="card__meta"><span>{icon("pin")}{e(C.area_name(x["area"]))}</span></p>
+          {f'<p class="card__text">{c["tagline"]}</p>' if c.get("tagline") else ""}
+        </div>
+      </article>''')
+    (PARTIALS / "gen-featured-home.html").write_text("\n      ".join(cards) + "\n", encoding="utf-8", newline="\n")
 
 
 def write_home_extras(offers):

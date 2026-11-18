@@ -15,7 +15,8 @@ body: page-classes
 </header>
 
 <div class="ho-container">
-  <div class="chips chips--scroll mb-4" aria-label="Class type">
+  <!-- Filters (clean, Nov 2026): class type chips, then one line with the count and three small filters that apply on change -->
+  <div class="chips chips--scroll" aria-label="Class type">
     <a class="chip" data-type="" href="/classes.html" aria-current="page">All classes <span class="count">23</span></a>
     <a class="chip" data-type="childrens-activities" href="/classes.html?type=childrens-activities">Children&rsquo;s activities <span class="count">8</span></a>
     <a class="chip" data-type="fitness" href="/classes.html?type=fitness">Fitness <span class="count">5</span></a>
@@ -23,42 +24,18 @@ body: page-classes
     <a class="chip" data-type="workshops" href="/classes.html?type=workshops">Workshops <span class="count">1</span></a>
     <a class="chip" data-type="other" href="/classes.html?type=other">Other regular classes <span class="count">1</span></a>
   </div>
-
-  <form class="filter-bar" action="/classes.html" method="get" aria-label="Filter classes">
-    <div class="field">
-      <label for="c-age">Age</label>
-      <select class="select select--sm" id="c-age" name="age">
-        <option value="">Any age</option>
-        <option value="under-5">Under 5s</option>
-        <option value="5-11">5 to 11</option>
-        <option value="12-17">12 to 17</option>
-        <option value="adults">Adults</option>
-        <option value="60-plus">Over 60s</option>
-      </select>
+  <div class="fline">
+    <div class="fline__count">
+      <p class="toolbar__count" data-classes-count><strong>23</strong> classes and activities</p>
     </div>
-    <div class="field">
-      <label for="c-area">Area</label>
-      <select class="select select--sm" id="c-area" name="area"><option value="">All of Harrow</option>{{> gen-area-options}}</select>
-    </div>
-    <div class="field">
-      <label for="c-day">Day of the week</label>
-      <select class="select select--sm" id="c-day" name="day">
-        <option value="">Any day</option>
-        <option value="mon">Monday</option>
-        <option value="tue">Tuesday</option>
-        <option value="wed">Wednesday</option>
-        <option value="thu">Thursday</option>
-        <option value="fri">Friday</option>
-        <option value="sat">Saturday</option>
-        <option value="sun">Sunday</option>
-      </select>
-    </div>
-    <button class="ho-btn ho-btn--dark ho-btn--sm" type="submit">Show classes</button>
-  </form>
-
-  <div class="toolbar mt-6">
-    <p class="toolbar__count" data-classes-count><strong>23</strong> classes and activities</p>
-    <a class="link-quiet" href="/events.html">See one-off events in What&rsquo;s On</a>
+    <form class="fline__form" action="/classes.html" method="get" aria-label="Filter classes" data-autofilter>
+      <input type="hidden" name="type" value="" data-keep-type>
+      <label class="fsel"><span class="ho-sr">Age</span><select id="c-age" name="age"><option value="">Any age</option> <option value="under-5">Under 5s</option> <option value="5-11">5 to 11</option> <option value="12-17">12 to 17</option> <option value="adults">Adults</option> <option value="60-plus">Over 60s</option></select></label>
+      <label class="fsel"><span class="ho-sr">Area</span><select id="c-area" name="area"><option value="">All of Harrow</option>{{> gen-area-options}}</select></label>
+      <label class="fsel"><span class="ho-sr">Day of the week</span><select id="c-day" name="day"><option value="">Any day</option> <option value="mon">Monday</option> <option value="tue">Tuesday</option> <option value="wed">Wednesday</option> <option value="thu">Thursday</option> <option value="fri">Friday</option> <option value="sat">Saturday</option> <option value="sun">Sunday</option></select></label>
+      <button class="ho-btn ho-btn--dark ho-btn--sm fpanel__go" type="submit">Show classes</button>
+      <a class="fpanel__clear" href="/classes.html" data-filter-clear hidden>Clear</a>
+    </form>
   </div>
 
   <h2 class="ho-sr" id="classes-list">All classes and activities</h2>
@@ -234,7 +211,7 @@ body: page-classes
         </div>
       </article>
       <article class="card event-card" data-type="childrens-activities" data-area="kenton" data-day="sat" data-ages="5-11 12-17">
-        <div class="card__badges"><span class="badge badge--sample" title="Made-up class for the preview. Removed before launch."><svg class="ho-icon"><use href="#i-alert"/></svg>Sample</span></div>
+        <div class="card__badges"></div>
         <div class="ph"><svg class="ho-icon"><use href="#i-family"/></svg></div>
         <div class="card__body">
           <span class="biz-card__cat">Children&rsquo;s activities</span>
@@ -246,7 +223,7 @@ body: page-classes
         </div>
       </article>
       <article class="card event-card" data-type="childrens-activities" data-area="hatch-end" data-day="sat" data-ages="under-5 5-11">
-        <div class="card__badges"><span class="badge badge--sample" title="Made-up class for the preview. Removed before launch."><svg class="ho-icon"><use href="#i-alert"/></svg>Sample</span></div>
+        <div class="card__badges"></div>
         <div class="ph"><svg class="ho-icon"><use href="#i-cup"/></svg></div>
         <div class="card__body">
           <span class="biz-card__cat">Children&rsquo;s activities</span>
@@ -258,7 +235,7 @@ body: page-classes
         </div>
       </article>
       <article class="card event-card" data-type="dance-schools" data-area="pinner" data-day="sat" data-ages="under-5 5-11">
-        <div class="card__badges"><span class="badge badge--sample" title="Made-up class for the preview. Removed before launch."><svg class="ho-icon"><use href="#i-alert"/></svg>Sample</span></div>
+        <div class="card__badges"></div>
         <div class="ph"><svg class="ho-icon"><use href="#i-music"/></svg></div>
         <div class="card__body">
           <span class="biz-card__cat">Dance schools</span>
@@ -270,7 +247,7 @@ body: page-classes
         </div>
       </article>
       <article class="card event-card" data-type="dance-schools" data-area="rayners-lane" data-day="fri" data-ages="12-17">
-        <div class="card__badges"><span class="badge badge--sample" title="Made-up class for the preview. Removed before launch."><svg class="ho-icon"><use href="#i-alert"/></svg>Sample</span></div>
+        <div class="card__badges"></div>
         <div class="ph"><svg class="ho-icon"><use href="#i-music"/></svg></div>
         <div class="card__body">
           <span class="biz-card__cat">Dance schools</span>
@@ -282,7 +259,7 @@ body: page-classes
         </div>
       </article>
       <article class="card event-card" data-type="workshops" data-area="hatch-end" data-day="tue" data-ages="adults">
-        <div class="card__badges"><span class="badge badge--sample" title="Made-up class for the preview. Removed before launch."><svg class="ho-icon"><use href="#i-alert"/></svg>Sample</span></div>
+        <div class="card__badges"></div>
         <div class="ph"><svg class="ho-icon"><use href="#i-edit"/></svg></div>
         <div class="card__body">
           <span class="biz-card__cat">Workshops</span>
@@ -294,7 +271,7 @@ body: page-classes
         </div>
       </article>
       <article class="card event-card" data-type="childrens-activities" data-area="stanmore" data-day="thu" data-ages="under-5">
-        <div class="card__badges"><span class="badge badge--sample" title="Made-up class for the preview. Removed before launch."><svg class="ho-icon"><use href="#i-alert"/></svg>Sample</span></div>
+        <div class="card__badges"></div>
         <div class="ph"><svg class="ho-icon"><use href="#i-family"/></svg></div>
         <div class="card__body">
           <span class="biz-card__cat">Children&rsquo;s activities</span>
@@ -306,7 +283,7 @@ body: page-classes
         </div>
       </article>
       <article class="card event-card" data-type="fitness" data-area="wealdstone" data-day="wed" data-ages="adults">
-        <div class="card__badges"><span class="badge badge--sample" title="Made-up class for the preview. Removed before launch."><svg class="ho-icon"><use href="#i-alert"/></svg>Sample</span></div>
+        <div class="card__badges"></div>
         <div class="ph"><svg class="ho-icon"><use href="#i-dumbbell"/></svg></div>
         <div class="card__body">
           <span class="biz-card__cat">Fitness</span>
@@ -318,7 +295,7 @@ body: page-classes
         </div>
       </article>
       <article class="card event-card" data-type="fitness" data-area="headstone" data-day="mon" data-ages="60-plus adults">
-        <div class="card__badges"><span class="badge badge--sample" title="Made-up class for the preview. Removed before launch."><svg class="ho-icon"><use href="#i-alert"/></svg>Sample</span></div>
+        <div class="card__badges"></div>
         <div class="ph"><svg class="ho-icon"><use href="#i-heart"/></svg></div>
         <div class="card__body">
           <span class="biz-card__cat">Fitness</span>
@@ -330,7 +307,7 @@ body: page-classes
         </div>
       </article>
       <article class="card event-card" data-type="other" data-area="north-harrow" data-day="thu" data-ages="adults">
-        <div class="card__badges"><span class="badge badge--sample" title="Made-up class for the preview. Removed before launch."><svg class="ho-icon"><use href="#i-alert"/></svg>Sample</span></div>
+        <div class="card__badges"></div>
         <div class="ph"><svg class="ho-icon"><use href="#i-people"/></svg></div>
         <div class="card__body">
           <span class="biz-card__cat">Other regular classes</span>

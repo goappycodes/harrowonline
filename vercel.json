@@ -53,11 +53,6 @@
       "permanent": true
     },
     {
-      "source": "/hub/for-businesses.html",
-      "destination": "/hub/for-businesses/",
-      "permanent": true
-    },
-    {
       "source": "/hub/add-business.html",
       "destination": "/hub/add-business/",
       "permanent": true

@@ -608,6 +608,86 @@
     }
   }
 
+  /* 6f. Search, category and area pages: the filter line applies as soon as a select or tick changes
+         (hub.js section 11 handles the submit without a reload). */
+  $$(".dline[data-directory-form]").forEach((form) => {
+    const go = () => { if (form.requestSubmit) form.requestSubmit(); else form.dispatchEvent(new Event("submit", { cancelable: true })); };
+    form.addEventListener("change", (e) => { if (e.target.matches("select, input[type=checkbox]")) go(); });
+    // Controls outside the form (form="filters": sort, and the Search page's filters on the count line)
+    $$('[form="' + form.id + '"]').forEach((el) => { if (el.matches("select, input[type=checkbox]")) el.addEventListener("change", go); });
+    const kw = $("input[type=search]", form);
+    if (kw) kw.addEventListener("search", go);   // the clear (x) button
+  });
+
+  /* 6h. Status icon hover names: shift the label sideways so it stays inside its card (or the screen) */
+  const placeTip = (t) => {
+    t.style.setProperty("--tip-x", "0px");
+    const tip = getComputedStyle(t, "::after");
+    const w = parseFloat(tip.width) || 0;
+    if (!w) return;
+    let box = { left: 0, right: document.documentElement.clientWidth };
+    for (let el = t.parentElement; el && el !== document.body; el = el.parentElement) {
+      if (getComputedStyle(el).overflowX !== "visible") { const r = el.getBoundingClientRect(); box = { left: Math.max(box.left, r.left), right: Math.min(box.right, r.right) }; break; }
+    }
+    const r = t.getBoundingClientRect(), mid = r.left + r.width / 2, pad = 6;
+    let shift = 0;
+    if (mid - w / 2 < box.left + pad) shift = box.left + pad - (mid - w / 2);
+    else if (mid + w / 2 > box.right - pad) shift = box.right - pad - (mid + w / 2);
+    t.style.setProperty("--tip-x", `${Math.round(shift)}px`);
+  };
+  const noHover = window.matchMedia("(hover: none)");
+  let tipOpen = null, tipTimer = 0;
+  const closeTip = () => { if (tipOpen) { tipOpen.classList.remove("is-tip"); tipOpen = null; } clearTimeout(tipTimer); };
+  document.addEventListener("click", (e) => {
+    const t = e.target.closest && e.target.closest(".card__tick");
+    if (!t || !noHover.matches) { closeTip(); return; }
+    e.preventDefault();          // the icon sits inside the name link: show the name, don't open the page
+    e.stopPropagation();
+    if (tipOpen === t) { closeTip(); return; }
+    closeTip();
+    t.classList.add("is-tip");
+    placeTip(t);
+    tipOpen = t;
+    tipTimer = setTimeout(closeTip, 3000);
+  }, true);
+  window.addEventListener("scroll", closeTip, { passive: true });
+  ["pointerover", "focusin"].forEach((ev) => document.addEventListener(ev, (e) => {
+    const t = e.target.closest && (e.target.closest(".card__tick") || (e.type === "focusin" && e.target.querySelector(".card__tick")));
+    if (t) placeTip(t);
+  }));
+
+  /* 6g. What's On month view: ?area= and ?cat= filter the calendar and the agenda (same data-* as the list view) */
+  const monthCal = $("[data-month-cal]");
+  if (monthCal) {
+    const q = new URLSearchParams(location.search);
+    const area = q.get("area") || "", cat = q.get("cat") || "";
+    ["area", "cat"].forEach((k) => { const sel = $(`#m-${k}`); if (sel) sel.value = q.get(k) || ""; });
+    if (area || cat) {
+      $$(".cal__ev", monthCal).forEach((ev) => {
+        const okCat = !cat || ev.dataset.cat === cat || (cat === "family" && /(^| )(under-5|5-11)( |$)/.test(ev.dataset.ages || ""));
+        const on = okCat && (!area || ev.dataset.area === area);
+        ev.hidden = !on;
+      });
+      $$(".cal__more", monthCal).forEach((m) => { m.hidden = true; });   // the "+N more" counts no longer apply
+      $$(".cal__agenda .day-group", monthCal).forEach((g) => { g.hidden = !$$(".cal__ev", g).some((ev) => !ev.hidden); });
+    }
+  }
+
+  /* 6e. Filter panels (Offers, Classes): filters apply as soon as they change (the Show button stays for no-JS),
+         empty fields are left out of the address, the class type chosen with a chip is kept, and "Clear filters"
+         shows when anything is filtered. */
+  $$("[data-autofilter]").forEach((form) => {
+    const q = new URLSearchParams(location.search);
+    const keep = $("[data-keep-type]", form);
+    if (keep) keep.value = q.get("type") || "";
+    const go = $(".fpanel__go", form);
+    if (go) go.hidden = true;
+    const clear = $("[data-filter-clear]", form);
+    if (clear) clear.hidden = ![...q.entries()].some(([k, v]) => v && k !== "v");
+    form.addEventListener("submit", () => { $$("input, select", form).forEach((f) => { if (!f.value || (f.type === "checkbox" && !f.checked)) f.disabled = true; }); });
+    form.addEventListener("change", () => { if (form.requestSubmit) form.requestSubmit(); else form.submit(); });
+  });
+
   /* 6d. Chip rows that run off the edge (.chips--scroll, and every chip row on phones).
         A mouse has no sideways scroll, so: arrow buttons at each end, drag to scroll, and the
         selected chip scrolled into view. Touch keeps its native swipe; the arrows are hidden there. */
@@ -790,10 +870,20 @@
       const area = INDEX.areas[x.a] || "";
       const initials = x.n.replace(/[^A-Za-z0-9 ]/g, "").split(/\s+/).filter(Boolean).slice(0, 2).map((w) => w[0]).join("").toUpperCase() || "?";
       const tier = x.t || "unclaimed";
+      // Status as a small tick after the name (Checked by Harrow Online / Verified by the business); imported keeps its label
+      const [tickKind, tickText, tickIcon] = x.ck ? ["checked", "Checked by Harrow Online", "check"]
+        : tier !== "unclaimed" ? ["verified", "Verified by the business", "verified"]
+        : ["imported", "Information imported from public data", "globe"];
+      const tick = `<span class="card__tick card__tick--${tickKind}" role="img" aria-label="${tickText}" data-tip="${tickText}"><svg class="ho-icon" aria-hidden="true"><use href="${BASE}/assets/img/icons.svg#i-${tickIcon}"/></svg></span>`;
+      // last word + icon in one no-wrap span: the icon never sits on a line of its own
+      // no icon for imported listings in results (only Verified and Checked stand out)
+      const nameTick = tickKind === "imported" ? esc(x.n) : (() => { const n = x.n.trim(), k = n.lastIndexOf(" "); return (k > 0 ? esc(n.slice(0, k)) + " " : "") + `<span class="name-end">${esc(n.slice(k + 1))}${tick}</span>`; })();
       // Claimed listings (sample or real) show Verified; Featured for Premium and Local Partner
       // Three statuses: verified by the business (claimed), checked by Harrow Online, or imported from public data
       const badge = tier === "unclaimed" ? (x.ck ? `<span class="badge badge--checked">${ICON("check")}Checked by Harrow Online</span>` : `<span class="badge badge--unclaimed">Information imported from public data</span>`) :
-        `<span class="badge badge--verified">${ICON("verified")}Verified by the business</span>`;
+        /* no Sample tag (18 Nov 2026) */ false ? `<span class="badge badge--sample" title="Made-up business for the preview. Removed before launch.">${ICON("alert")}Sample</span>`
+          : x.ck ? `<span class="badge badge--checked">${ICON("check")}Checked by Harrow Online</span>`
+          : `<span class="badge badge--verified">${ICON("verified")}Verified by the business</span>`;   // a sample is never Verified or Featured
       if (tier !== "unclaimed") {
         // Claimed listing: photo, tagline, verified; Premium and Local Partner are featured (brief 01, 6.2)
         const top = tier === "premium" || tier === "partner";
@@ -802,21 +892,21 @@
         <div class="ph${x.lg ? " ph--logo" : x.im ? " ph--photo" : ""}">${x.im ? `<img src="${BASE}${esc(x.im)}" alt="" width="1200" height="800" loading="lazy" decoding="async">` : ICON(x.i || "store")}</div>
         <div class="biz-row__main">
           <span class="biz-card__cat">${esc(cat.n || "")}${x.s ? ` · <span class="muted">${esc(x.s)}</span>` : ""}</span>
-          <h3 class="biz-row__title"><a href="${BASE}/business/${x.k}/">${esc(x.n)}</a></h3>
+          <h3 class="biz-row__title"><a href="${BASE}/business/${x.k}/">${nameTick}</a></h3>
           <p class="card__meta"><span>${ICON("pin")}${esc(x.ad ? x.ad + ", " : "")}${esc(x.pc)}</span><span>${esc(area)}</span></p>
           ${x.tg ? `<p class="card__text">${esc(x.tg)}</p>` : ""}
         </div>
-        <div class="biz-row__side"><div class="cluster">${top ? `<span class="badge badge--featured">${ICON("star")}Featured</span>` : ""}${badge}</div>${x.p ? `<a class="ho-btn ho-btn--sm ho-btn--outline" href="tel:${esc(x.p)}">${ICON("phone")}Call</a>` : ""}</div>
+        <div class="biz-row__side"><div class="cluster">${top ? `<span class="badge badge--featured">${ICON("star")}Featured</span>` : ""}</div>${x.p ? `<a class="ho-btn ho-btn--sm ho-btn--outline" href="tel:${esc(x.p)}">${ICON("phone")}Call</a>` : ""}</div>
       </article>`;
       }
       return `<article class="biz-row biz-row--mono${tier === "unclaimed" ? " biz-row--unclaimed" : ""}">
         <span class="mono mono--soft" aria-hidden="true">${esc(initials)}</span>
         <div class="biz-row__main">
           <span class="biz-card__cat">${esc(cat.n || "")}${x.s ? ` · <span class="muted">${esc(x.s)}</span>` : ""}</span>
-          <h3 class="biz-row__title"><a href="${BASE}/business/${x.k}/">${esc(x.n)}</a></h3>
+          <h3 class="biz-row__title"><a href="${BASE}/business/${x.k}/">${nameTick}</a></h3>
           <p class="card__meta"><span>${ICON("pin")}${esc(x.ad ? x.ad + ", " : "")}${esc(x.pc)}</span><span>${esc(area)}</span></p>
         </div>
-        <div class="biz-row__side">${badge}${x.p ? `<a class="ho-btn ho-btn--sm ho-btn--outline" href="tel:${esc(x.p)}">${ICON("phone")}Call</a>` : ""}</div>
+        <div class="biz-row__side">${x.p ? `<a class="ho-btn ho-btn--sm ho-btn--outline" href="tel:${esc(x.p)}">${ICON("phone")}Call</a>` : ""}</div>
       </article>`;
     };
 
@@ -895,7 +985,7 @@
         <time class="date-tile" datetime="${x.d}"><span class="date-tile__m">${MON[d.getMonth()]}</span><span class="date-tile__d">${d.getDate()}</span><span class="date-tile__w">${WD[d.getDay()]}</span></time>
         ${media(x, x.f ? "ph ph--red" : "ph")}
         <div>
-          <div class="cluster mb-2">${x.f ? FEAT : x.sm ? SAMPLE : ""}<span class="biz-card__cat">${esc(x.c)}</span></div>
+          <div class="cluster mb-2">${x.f ? FEAT : ""}<span class="biz-card__cat">${esc(x.c)}</span></div>
           <h3 class="event-row__title"><a href="${BASE}${x.h}">${esc(x.t)}</a></h3>
           <p class="card__meta"><span>${ICON("clock")}${esc(x.tm)}</span><span>${ICON("pin")}${esc(x.v)}, ${esc(x.an)}</span>${x.ag ? `<span>${ICON("people")}${esc(x.ag)}</span>` : ""}</p>
         </div>
@@ -906,7 +996,7 @@
         <span class="date-tile date-tile--day"><span class="date-tile__m">Every</span><span class="date-tile__d">${DAYS[x.wd].slice(0, 3)}</span></span>
         ${media(x, x.f ? "ph ph--dark" : "ph")}
         <div>
-          <div class="cluster mb-2">${x.f ? FEAT : x.sm ? SAMPLE : ""}<span class="badge badge--outline">${ICON("repeat")}Weekly class</span><span class="biz-card__cat">${esc(x.c)}</span></div>
+          <div class="cluster mb-2">${x.f ? FEAT : ""}<span class="badge badge--outline">${ICON("repeat")}Weekly class</span><span class="biz-card__cat">${esc(x.c)}</span></div>
           <h3 class="event-row__title"><a href="${BASE}${x.h}">${esc(x.t)}</a></h3>
           <p class="card__meta"><span>${ICON("repeat")}Every ${DAYS[x.wd]}, ${esc(x.tm)}</span><span>${ICON("pin")}${esc(x.v)}, ${esc(x.an)}</span>${x.ag ? `<span>${ICON("people")}${esc(x.ag)}</span>` : ""}</p>
         </div>
@@ -1003,13 +1093,24 @@
             score += name.startsWith(t) ? 6 : name.includes(t) ? 4 : 1;
           }
           return [score, x];
-        }).filter(Boolean).sort((a, b) => b[0] - a[0]).map((a) => a[1]);
+        }).filter(Boolean);
+      } else {
+        items = items.map((x) => [0, x]);
       }
-      // Ranking rule (brief 01, 6.2): paid featured first, then claimed, then unclaimed
-      const rankOf = (x) => tierRank[x.t || "unclaimed"] - (x.ck ? 0.5 : 0);   // checked by Harrow Online above imported
-      items = items.map((x, i) => [x, i]).sort((a, b) => (rankOf(a[0]) - rankOf(b[0])) || (p.sort === "name" ? a[0].n.localeCompare(b[0].n) : a[1] - b[1])).map((a) => a[0]);
+      // Order (18 Nov 2026): Verified by the business, then Checked by Harrow Online, then imported from public data;
+      // the plan tier (brief 01, 6.2: paid featured first) orders listings within each group.
+      // Best match with search words: the closest name match comes first and the status order breaks ties,
+      // so a pizzeria called "... Pizza" is not pushed below every Verified business that mentions pizza.
+      const statusOf = (x) => x.ck ? 1 : (x.t && x.t !== "unclaimed") ? 0 : 2;
+      const rankOf = (x) => statusOf(x) * 10 + tierRank[x.t || "unclaimed"];
+      const byMatch = p.sort !== "name" && terms.length;
+      items = items.map((a, i) => [a[0], a[1], i]).sort((a, b) =>
+        (byMatch ? b[0] - a[0] : 0) || (rankOf(a[1]) - rankOf(b[1])) || (p.sort === "name" ? a[1].n.localeCompare(b[1].n) : a[2] - b[2])
+      ).map((a) => a[1]);
 
       const type = ALL ? renderGroups(p, items) : "businesses";
+      // Business filters (category, website, phone, sort) only show where businesses are listed
+      $$(".dline:not(.dline--bare), .dtoolbar .fsel--sort, [data-biz-filters], .dtoolbar__key").forEach((el) => { el.hidden = !(type === "all" || type === "businesses"); });
       const overview = type === "all" && !!p.q;   // "All" with a search: count and sections set by renderGroups
       const grouped = overview && !!groupsEl.innerHTML;   // businesses are a section of the overview: no list, no pager
       const bizView = (type === "all" || type === "businesses") && !grouped;

@@ -38,7 +38,6 @@ PAGE_PATHS = {
     "classes": "/events/classes/",
     "class": "/events/saturday-kids-coding-club/",
     "pricing": "/pricing/",
-    "for-businesses": "/for-businesses/",
     "add-business": "/add-business/",
     "claim": "/claim/",
     "claim-submitted": "/claim/submitted/",

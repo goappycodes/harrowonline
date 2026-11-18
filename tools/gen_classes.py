@@ -86,7 +86,7 @@ for t, ty, when, area, age, price, icon, feat, prov, text in C:
     # All classes are made-up samples: Sample badge, plus Featured where set
     feat_b = f'<span class="badge badge--featured">{I("star")}Featured</span>' if feat else ""
     real = REAL.get(t)
-    sample_b = "" if feat or real else f'<span class="badge badge--sample" title="Made-up class for the preview. Removed before launch.">{I("alert")}Sample</span>'
+    sample_b = ""   # 18 Nov 2026: no "Sample" tag anywhere
     badges = f'<div class="card__badges">{sample_b}{feat_b}</div>\n        '
     ph = "ph ph--dark" if feat else "ph"
     if real and real[4] == "logo":
@@ -129,45 +129,22 @@ body: page-classes
 </header>
 
 <div class="ho-container">
-  <div class="chips chips--scroll mb-4" aria-label="Class type">
+  <!-- Filters (clean, Nov 2026): class type chips, then one line with the count and three small filters that apply on change -->
+  <div class="chips chips--scroll" aria-label="Class type">
 {chips}
   </div>
-
-  <form class="filter-bar" action="/classes.html" method="get" aria-label="Filter classes">
-    <div class="field">
-      <label for="c-age">Age</label>
-      <select class="select select--sm" id="c-age" name="age">
-        <option value="">Any age</option>
-        <option value="under-5">Under 5s</option>
-        <option value="5-11">5 to 11</option>
-        <option value="12-17">12 to 17</option>
-        <option value="adults">Adults</option>
-        <option value="60-plus">Over 60s</option>
-      </select>
+  <div class="fline">
+    <div class="fline__count">
+      <p class="toolbar__count" data-classes-count><strong>{len(C)}</strong> classes and activities</p>
     </div>
-    <div class="field">
-      <label for="c-area">Area</label>
-      <select class="select select--sm" id="c-area" name="area"><option value="">All of Harrow</option>{{{{> gen-area-options}}}}</select>
-    </div>
-    <div class="field">
-      <label for="c-day">Day of the week</label>
-      <select class="select select--sm" id="c-day" name="day">
-        <option value="">Any day</option>
-        <option value="mon">Monday</option>
-        <option value="tue">Tuesday</option>
-        <option value="wed">Wednesday</option>
-        <option value="thu">Thursday</option>
-        <option value="fri">Friday</option>
-        <option value="sat">Saturday</option>
-        <option value="sun">Sunday</option>
-      </select>
-    </div>
-    <button class="ho-btn ho-btn--dark ho-btn--sm" type="submit">Show classes</button>
-  </form>
-
-  <div class="toolbar mt-6">
-    <p class="toolbar__count" data-classes-count><strong>{len(C)}</strong> classes and activities</p>
-    <a class="link-quiet" href="/events.html">See one-off events in What&rsquo;s On</a>
+    <form class="fline__form" action="/classes.html" method="get" aria-label="Filter classes" data-autofilter>
+      <input type="hidden" name="type" value="" data-keep-type>
+      <label class="fsel"><span class="ho-sr">Age</span><select id="c-age" name="age"><option value="">Any age</option> <option value="under-5">Under 5s</option> <option value="5-11">5 to 11</option> <option value="12-17">12 to 17</option> <option value="adults">Adults</option> <option value="60-plus">Over 60s</option></select></label>
+      <label class="fsel"><span class="ho-sr">Area</span><select id="c-area" name="area"><option value="">All of Harrow</option>{{{{> gen-area-options}}}}</select></label>
+      <label class="fsel"><span class="ho-sr">Day of the week</span><select id="c-day" name="day"><option value="">Any day</option> <option value="mon">Monday</option> <option value="tue">Tuesday</option> <option value="wed">Wednesday</option> <option value="thu">Thursday</option> <option value="fri">Friday</option> <option value="sat">Saturday</option> <option value="sun">Sunday</option></select></label>
+      <button class="ho-btn ho-btn--dark ho-btn--sm fpanel__go" type="submit">Show classes</button>
+      <a class="fpanel__clear" href="/classes.html" data-filter-clear hidden>Clear</a>
+    </form>
   </div>
 
   <h2 class="ho-sr" id="classes-list">All classes and activities</h2>
