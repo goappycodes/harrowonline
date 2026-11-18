@@ -1,0 +1,10 @@
+Local WordPress admin (development only)
+URL: http://localhost:8020/hub/wp-admin/
+User: admin
+Password: 9CTGCE8awNhhECm5f8Km
+
+User: binita
+Password: tH2V07vDcRN80y12S1WM
+
+User: shubhankar
+Password: KVSlmrWkVf5wHLoOemEs

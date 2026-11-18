@@ -1,0 +1,276 @@
+<?php
+/**
+ * Harrow Online Hub: local businesses, offers and what's on in Harrow (converted from src/pages/index.html).
+ * URL: /
+ */
+defined( 'ABSPATH' ) || exit;
+hub_set_page( array(
+	'body' => 'page-home',
+	'description' => 'Discover what\'s happening in Harrow. Find local businesses, events, classes and exclusive offers from across the borough, from Harrow Online.',
+	'nav' => 'hub',
+	'title' => 'Harrow Online Hub: local businesses, offers and what\'s on in Harrow',
+) );
+get_header();
+?>
+<!-- Section order (client's ChatGPT mock-up, Nov 2026): the first screen is a simple choice. One search, four big
+     buttons (businesses, What's On, classes, offers). Then this
+     weekend: two events, one offer and the newsletter. Then more offers, the numbers, featured businesses, categories and areas. -->
+<section class="hero hero--choose">
+  <div class="ho-container hero__grid">
+   <div class="hero__main">
+    <p class="eyebrow" style="color:#fff;opacity:.8">Harrow Online Hub</p>
+    <h1 class="hero__title">Discover what&rsquo;s happening <em>in&nbsp;Harrow</em></h1>
+    <p class="hero__lead">Find local businesses, events, classes and exclusive offers from across the borough.</p>
+
+    <form class="searchbar" action="<?php echo esc_url( hub_url( 'search/' ) ); ?>" method="get" role="search">
+      <div class="searchbar__field">
+        <svg class="ho-icon"><use href="#i-search"/></svg>
+        <label class="ho-sr" for="hero-q">What are you looking for?</label>
+        <input id="hero-q" type="search" name="q" placeholder="Plumber, Indian restaurant&hellip;" autocomplete="off">
+      </div>
+      <div class="searchbar__field">
+        <svg class="ho-icon"><use href="#i-pin"/></svg>
+        <label class="ho-sr" for="hero-area">Area</label>
+        <select id="hero-area" name="area"><option value="">All of Harrow</option><option value="belmont">Belmont</option><option value="canons-park">Canons Park</option><option value="edgware">Edgware</option><option value="greenhill">Greenhill</option><option value="harrow-town-centre">Harrow Town Centre</option><option value="harrow-weald">Harrow Weald</option><option value="harrow-on-the-hill">Harrow on the Hill</option><option value="hatch-end">Hatch End</option><option value="headstone">Headstone</option><option value="kenton">Kenton</option><option value="north-harrow">North Harrow</option><option value="pinner">Pinner</option><option value="queensbury">Queensbury</option><option value="rayners-lane">Rayners Lane</option><option value="south-harrow">South Harrow</option><option value="stanmore">Stanmore</option><option value="sudbury-hill">Sudbury Hill and Roxeth</option><option value="wealdstone">Wealdstone</option><option value="west-harrow">West Harrow</option></select>
+      </div>
+      <button class="ho-btn ho-btn--primary" type="submit">Search</button>
+    </form>
+
+    <div class="popular popular--one">
+      <span>Popular:</span>
+      <a href="<?php echo esc_url( hub_url( 'category/restaurants/' ) ); ?>">Restaurants</a>
+      <a href="<?php echo esc_url( hub_url( 'category/hair-and-beauty/' ) ); ?>">Hair &amp; Beauty</a>
+      <a href="<?php echo esc_url( hub_url( 'category/home-and-garden/' ) ); ?>">Home &amp; Garden</a>
+      <a href="<?php echo esc_url( hub_url( 'category/doctors-dentists-and-clinics/' ) ); ?>">Dentists</a>
+    </div>
+
+   </div>
+
+    <div class="hero__side">
+      <nav class="choose" aria-label="Browse the Hub">
+        <a class="choose__item" href="<?php echo esc_url( hub_url( 'search/' ) ); ?>"><span class="choose__icon"><svg class="ho-icon"><use href="#i-store"/></svg></span><span class="choose__text"><strong>Find a business</strong><span>Shops, trades and services</span></span><svg class="ho-icon choose__go"><use href="#i-arrow"/></svg></a>
+        <a class="choose__item" href="<?php echo esc_url( hub_url( 'events/' ) ); ?>"><span class="choose__icon"><svg class="ho-icon"><use href="#i-calendar"/></svg></span><span class="choose__text"><strong>What&rsquo;s On</strong><span>Events and days out</span></span><svg class="ho-icon choose__go"><use href="#i-arrow"/></svg></a>
+        <a class="choose__item" href="<?php echo esc_url( hub_url( 'events/classes/' ) ); ?>"><span class="choose__icon"><svg class="ho-icon"><use href="#i-repeat"/></svg></span><span class="choose__text"><strong>Classes &amp; clubs</strong><span>Regular activities for all ages</span></span><svg class="ho-icon choose__go"><use href="#i-arrow"/></svg></a>
+        <a class="choose__item" href="<?php echo esc_url( hub_url( 'offers/' ) ); ?>"><span class="choose__icon"><svg class="ho-icon"><use href="#i-tag"/></svg></span><span class="choose__text"><strong>Local offers</strong><span>Deals from Harrow businesses</span></span><svg class="ho-icon choose__go"><use href="#i-arrow"/></svg></a>
+      </nav>
+      <!-- Client request (18 Nov 2026): quick routes for organisers and businesses under the four choices -->
+      <div class="choose-add">
+        <a class="ho-btn ho-btn--on-dark" href="<?php echo esc_url( hub_url( 'register/' ) ); ?>"><svg class="ho-icon"><use href="#i-plus"/></svg>Add your event</a>
+        <a class="ho-btn ho-btn--on-dark" href="<?php echo esc_url( hub_url( 'add-business/' ) ); ?>"><svg class="ho-icon"><use href="#i-plus"/></svg>Add your business</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="ticker" aria-label="Businesses that recently joined the Hub"><span class="ticker__label"><i aria-hidden="true"></i>Just joined</span><div class="ticker__track"><div class="ticker__run"><a class="ticker__item" href="<?php echo esc_url( hub_url( 'business/aj-pizzas-harrow-town-centre/' ) ); ?>">AJ Pizza&#x27;s, Harrow Town Centre</a><a class="ticker__item" href="<?php echo esc_url( hub_url( 'business/empire-chase-estate-agents-harrow-town-centre/' ) ); ?>">Empire Chase Estate Agents, Harrow Town Centre</a><a class="ticker__item" href="<?php echo esc_url( hub_url( 'business/gradesmart-tuition-south-harrow/' ) ); ?>">GradeSmart Tuition, South Harrow</a><a class="ticker__item" href="<?php echo esc_url( hub_url( 'business/greensleaves-harrow/' ) ); ?>">Greensleaves Construction, Landscaping and Garden Maintenance, Harrow Town Centre</a><a class="ticker__item" href="<?php echo esc_url( hub_url( 'business/kay-construction-uk-ltd-south-harrow/' ) ); ?>">Kay Construction (UK) Ltd, South Harrow</a><a class="ticker__item" href="<?php echo esc_url( hub_url( 'business/kidology-dance-co-hatch-end/' ) ); ?>">Kidology Dance Co, Hatch End</a><a class="ticker__item" href="<?php echo esc_url( hub_url( 'business/kodak-fc-harrow-weald/' ) ); ?>">Kodak FC, Harrow Weald</a><a class="ticker__item" href="<?php echo esc_url( hub_url( 'business/meeting-palace-wealdstone/' ) ); ?>">Meeting Palace, Wealdstone</a><a class="ticker__item" href="<?php echo esc_url( hub_url( 'business/parkfield-youth-fc-hatch-end/' ) ); ?>">Parkfield Youth FC, Hatch End</a><a class="ticker__item" href="<?php echo esc_url( hub_url( 'business/edgware-heating-plumbing-edgware/' ) ); ?>">Edgware Heating &amp; Plumbing, Edgware</a></div><div class="ticker__run" aria-hidden="true"><a class="ticker__item" href="<?php echo esc_url( hub_url( 'business/aj-pizzas-harrow-town-centre/' ) ); ?>">AJ Pizza&#x27;s, Harrow Town Centre</a><a class="ticker__item" href="<?php echo esc_url( hub_url( 'business/empire-chase-estate-agents-harrow-town-centre/' ) ); ?>">Empire Chase Estate Agents, Harrow Town Centre</a><a class="ticker__item" href="<?php echo esc_url( hub_url( 'business/gradesmart-tuition-south-harrow/' ) ); ?>">GradeSmart Tuition, South Harrow</a><a class="ticker__item" href="<?php echo esc_url( hub_url( 'business/greensleaves-harrow/' ) ); ?>">Greensleaves Construction, Landscaping and Garden Maintenance, Harrow Town Centre</a><a class="ticker__item" href="<?php echo esc_url( hub_url( 'business/kay-construction-uk-ltd-south-harrow/' ) ); ?>">Kay Construction (UK) Ltd, South Harrow</a><a class="ticker__item" href="<?php echo esc_url( hub_url( 'business/kidology-dance-co-hatch-end/' ) ); ?>">Kidology Dance Co, Hatch End</a><a class="ticker__item" href="<?php echo esc_url( hub_url( 'business/kodak-fc-harrow-weald/' ) ); ?>">Kodak FC, Harrow Weald</a><a class="ticker__item" href="<?php echo esc_url( hub_url( 'business/meeting-palace-wealdstone/' ) ); ?>">Meeting Palace, Wealdstone</a><a class="ticker__item" href="<?php echo esc_url( hub_url( 'business/parkfield-youth-fc-hatch-end/' ) ); ?>">Parkfield Youth FC, Hatch End</a><a class="ticker__item" href="<?php echo esc_url( hub_url( 'business/edgware-heating-plumbing-edgware/' ) ); ?>">Edgware Heating &amp; Plumbing, Edgware</a></div></div></div>
+
+<section class="section" aria-labelledby="wknd-title">
+  <div class="ho-container">
+    <div class="sec-head">
+      <div><h2 class="sec-title" id="wknd-title">This weekend in Harrow</h2><p class="sec-sub">Friday 13 to Sunday 15 November</p></div>
+      <a class="link-arrow" href="<?php echo esc_url( hub_url( 'events/?when=weekend' ) ); ?>">Everything this weekend <svg class="ho-icon"><use href="#i-arrow"/></svg></a>
+    </div>
+    <div class="home-now">
+      <article class="card event-card">
+        <time class="date-tile" datetime="2026-11-13"><span class="date-tile__m">Nov</span><span class="date-tile__d">13</span><span class="date-tile__w">Fri</span></time>
+        <div class="ph ph--photo"><img src="<?php echo esc_url( hub_asset( 'img/sample/event-friday-night-comedy.jpg' ) ); ?>" alt="" width="1200" height="800" loading="lazy" decoding="async"></div>
+        <div class="card__body">
+          <span class="biz-card__cat">Nightlife</span>
+          <h3 class="card__title"><a href="<?php echo esc_url( hub_url( 'events/friday-night-comedy/' ) ); ?>">Friday Night Comedy</a></h3>
+          <p class="card__meta"><span><svg class="ho-icon"><use href="#i-clock"/></svg>8pm</span><span><svg class="ho-icon"><use href="#i-pin"/></svg>Hatch End</span></p>
+          <p class="card__meta"><span><svg class="ho-icon"><use href="#i-ticket"/></svg>&pound;15</span></p>
+        </div>
+      </article>
+      <article class="card event-card">
+        <time class="date-tile" datetime="2026-11-14"><span class="date-tile__m">Nov</span><span class="date-tile__d">14</span><span class="date-tile__w">Sat</span></time>
+        <div class="ph ph--photo"><img src="<?php echo esc_url( hub_asset( 'img/sample/event-canons-park-tree-planting.jpg' ) ); ?>" alt="" width="1200" height="800" loading="lazy" decoding="async"></div>
+        <div class="card__body">
+          <span class="biz-card__cat">Community</span>
+          <h3 class="card__title"><a href="<?php echo esc_url( hub_url( 'events/canons-park-tree-planting/' ) ); ?>">Canons Park Tree Planting</a></h3>
+          <p class="card__meta"><span><svg class="ho-icon"><use href="#i-clock"/></svg>10am to 1pm</span><span><svg class="ho-icon"><use href="#i-pin"/></svg>Canons Park</span></p>
+          <p class="card__meta"><span><svg class="ho-icon"><use href="#i-ticket"/></svg>Free, book a place</span></p>
+        </div>
+      </article>
+
+      <div class="home-now__offer">
+        <a class="offer-card offer-card--featured" href="<?php echo esc_url( hub_url( 'offers/two-pizza-collection-deal-from-7-99-each/' ) ); ?>" data-cat="food-and-drink" data-area="harrow-town-centre" data-sub="1">
+        <span class="offer-card__top"><span class="biz-card__cat">Food &amp; Drink</span><span class="badge badge--featured"><svg class="ho-icon"><use href="#i-star"/></svg>Featured</span><span class="card__tick card__tick--sub" role="img" aria-label="Subscribers only" data-tip="Subscribers only"><svg class="ho-icon"><use href="#i-lock"/></svg></span></span>
+        <strong class="offer-card__value">FROM &pound;7.99</strong>
+        <span class="offer-card__title">Two-pizza collection deal from &pound;7.99 each</span>
+        <span class="offer-card__biz">AJ Pizza&#x27;s &middot; Harrow Town Centre</span>
+        <span class="offer-card__foot"><span><svg class="ho-icon ho-icon--sm"><use href="#i-calendar"/></svg>No end date</span><span class="offer-card__go">View offer <svg class="ho-icon ho-icon--sm"><use href="#i-arrow"/></svg></span></span>
+      </a>
+      </div>
+      <div class="home-nl">
+        <span class="home-nl__icon"><svg class="ho-icon"><use href="#i-mail"/></svg></span>
+        <h3 class="home-nl__title">Get Harrow&rsquo;s best events and local offers every Thursday</h3>
+        <p class="home-nl__text">Free. Pick the newsletters you want; each one is separate.</p>
+        <form class="home-nl__form" action="https://harrowonline.org/wp-json/ho/v1/subscribe" method="post" data-nl-form>
+          <input type="hidden" name="signup_source" value="hub-home">
+          <fieldset class="home-nl__editions">
+            <legend class="ho-sr">Choose your newsletters</legend>
+            <label><input type="checkbox" name="editions[]" value="daily"> Daily News <small>(Mon&ndash;Fri)</small></label>
+            <label><input type="checkbox" name="editions[]" value="weekend" checked> The Weekend <small>(Thu)</small></label>
+            <label><input type="checkbox" name="editions[]" value="business"> Harrow Business <small>(Mon)</small></label>
+          </fieldset>
+          <label class="ho-sr" for="home-nl-email">Email address</label>
+          <input class="input" id="home-nl-email" type="email" name="email" placeholder="Your email address" autocomplete="email" required>
+          <button class="ho-btn ho-btn--primary ho-btn--block" type="submit">Sign up free</button>
+          <p class="home-nl__msg" role="status" aria-live="polite"></p>
+        </form>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section section--soft" aria-labelledby="offers-title">
+  <div class="ho-container">
+    <div class="sec-head">
+      <div><h2 class="sec-title" id="offers-title">More Local Offers</h2><p class="sec-sub">Deals from Harrow businesses. Some are just for newsletter subscribers.</p></div>
+      <a class="link-arrow" href="<?php echo esc_url( hub_url( 'offers/' ) ); ?>">All offers <svg class="ho-icon"><use href="#i-arrow"/></svg></a>
+    </div>
+    <div class="offer-tiles">
+      <a class="offer-tile" href="<?php echo esc_url( hub_url( 'offers/75-off-your-first-month-of-tuition/' ) ); ?>">
+        
+        <span class="offer-tile__biz">GradeSmart Tuition, South Harrow</span>
+        <strong class="offer-tile__value">75% OFF</strong>
+        <span class="offer-tile__title">75% off your first month of tuition</span>
+      </a>
+<a class="offer-tile" href="<?php echo esc_url( hub_url( 'offers/10-off-your-meal-when-you-spend-over-20/' ) ); ?>">
+        <span class="offer-tile__lock" title="Subscribers only"><svg class="ho-icon ho-icon--sm"><use href="#i-lock"/></svg><span class="offer-tile__lock-text">Subscribers</span></span>
+        <span class="offer-tile__biz">Meeting Palace, Wealdstone</span>
+        <strong class="offer-tile__value">10% OFF</strong>
+        <span class="offer-tile__title">10% off your meal when you spend over &pound;20</span>
+      </a>
+<a class="offer-tile" href="<?php echo esc_url( hub_url( 'offers/2-for-1-mains-monday-to-thursday/' ) ); ?>">
+        
+        <span class="offer-tile__biz">Hill Street Kitchen, Harrow on the Hill</span>
+        <strong class="offer-tile__value">2-FOR-1</strong>
+        <span class="offer-tile__title">2-for-1 mains, Monday to Thursday</span>
+      </a>
+<a class="offer-tile" href="<?php echo esc_url( hub_url( 'offers/free-poppadoms-and-chutneys-with-any-takeaway-over-20/' ) ); ?>">
+        
+        <span class="offer-tile__biz">Rayners Lane Spice House, Rayners Lane</span>
+        <strong class="offer-tile__value">FREE POPPADOMS</strong>
+        <span class="offer-tile__title">Free poppadoms and chutneys with any takeaway over &pound;20</span>
+      </a>
+<a class="offer-tile" href="<?php echo esc_url( hub_url( 'offers/25-off-your-first-hygienist-visit/' ) ); ?>">
+        
+        <span class="offer-tile__biz">Stanmore Family Dental, Stanmore</span>
+        <strong class="offer-tile__value">£25 OFF</strong>
+        <span class="offer-tile__title">&pound;25 off your first hygienist visit</span>
+      </a>
+<a class="offer-tile" href="<?php echo esc_url( hub_url( 'offers/a-free-week-of-classes/' ) ); ?>">
+        <span class="offer-tile__lock" title="Subscribers only"><svg class="ho-icon ho-icon--sm"><use href="#i-lock"/></svg><span class="offer-tile__lock-text">Subscribers</span></span>
+        <span class="offer-tile__biz">Wealdstone Fitness Studio, Wealdstone</span>
+        <strong class="offer-tile__value">FREE WEEK</strong>
+        <span class="offer-tile__title">A free week of classes</span>
+      </a>
+    </div>
+  </div>
+</section>
+
+<section class="stats-band" aria-label="The Hub in numbers">
+  <div class="ho-container">
+    <div class="stats-strip"><a class="stat" href="<?php echo esc_url( hub_url( 'offers/' ) ); ?>"><span class="stat__label">Offers live</span><strong class="stat__value" data-count="18">18</strong><span class="stat__note">and counting</span></a><a class="stat" href="<?php echo esc_url( hub_url( 'events/' ) ); ?>"><span class="stat__label">This week</span><strong class="stat__value" data-count="12">12</strong><span class="stat__note">events across Harrow</span></a><a class="stat" href="<?php echo esc_url( hub_url( 'events/classes/' ) ); ?>"><span class="stat__label">Every week</span><strong class="stat__value" data-count="21">21</strong><span class="stat__note">regular classes</span></a><a class="stat" href="<?php echo esc_url( hub_url( 'search/' ) ); ?>"><span class="stat__label">Local businesses</span><strong class="stat__value" data-count="2609">2,609</strong><span class="stat__note">across 19 areas</span></a></div>
+  </div>
+</section>
+
+<section class="section" aria-labelledby="feat-title">
+  <div class="ho-container">
+    <div class="sec-head">
+      <div><h2 class="sec-title" id="feat-title">Featured local businesses</h2><p class="sec-sub">Featured and Local Partner businesses on the Hub.</p></div>
+      <a class="link-arrow hide-mobile" href="<?php echo esc_url( hub_url( 'pricing/' ) ); ?>">Get featured <svg class="ho-icon"><use href="#i-arrow"/></svg></a>
+    </div>
+    <div class="grid grid-4">
+      <article class="card card--featured">
+        <div class="card__badges"><span class="badge badge--featured"><svg class="ho-icon"><use href="#i-star"/></svg>Featured</span></div>
+        <div class="ph ph--photo"><img src="<?php echo esc_url( hub_asset( 'img/business/aj-pizzas-pizzas.jpg' ) ); ?>" alt="AJ Pizza&amp;#x27;s" width="1200" height="800" loading="lazy" decoding="async"></div>
+        <div class="card__body">
+          <span class="biz-card__cat">Food &amp; Drink</span>
+          <h3 class="card__title"><a href="<?php echo esc_url( hub_url( 'business/aj-pizzas-harrow-town-centre/' ) ); ?>">AJ <span class="name-end">Pizza&#x27;s<span class="card__tick card__tick--verified" role="img" aria-label="Verified by the business" data-tip="Verified by the business"><svg class="ho-icon" aria-hidden="true"><use href="#i-verified"/></svg></span></span></a></h3>
+          <p class="card__meta"><span><svg class="ho-icon"><use href="#i-pin"/></svg>Harrow Town Centre</span></p>
+          <p class="card__text">Local pizza takeaway on Headstone Road in Harrow, serving freshly prepared pizzas, sides and drinks for collection and delivery.</p>
+        </div>
+      </article>
+      <article class="card card--featured">
+        <div class="card__badges"><span class="badge badge--featured"><svg class="ho-icon"><use href="#i-star"/></svg>Featured</span></div>
+        <div class="ph ph--photo"><img src="<?php echo esc_url( hub_asset( 'img/business/empire-chase-house.jpg' ) ); ?>" alt="Empire Chase Estate Agents" width="1200" height="800" loading="lazy" decoding="async"></div>
+        <div class="card__body">
+          <span class="biz-card__cat">Property &amp; Estate Agents</span>
+          <h3 class="card__title"><a href="<?php echo esc_url( hub_url( 'business/empire-chase-estate-agents-harrow-town-centre/' ) ); ?>">Empire Chase Estate <span class="name-end">Agents<span class="card__tick card__tick--verified" role="img" aria-label="Verified by the business" data-tip="Verified by the business"><svg class="ho-icon" aria-hidden="true"><use href="#i-verified"/></svg></span></span></a></h3>
+          <p class="card__meta"><span><svg class="ho-icon"><use href="#i-pin"/></svg>Harrow Town Centre</span></p>
+          <p class="card__text">Independent estate and letting agents in Harrow Town Centre, helping people sell, buy, let and manage property across north-west London since 2012.</p>
+        </div>
+      </article>
+      <article class="card card--featured">
+        <div class="card__badges"><span class="badge badge--featured"><svg class="ho-icon"><use href="#i-star"/></svg>Featured</span></div>
+        <div class="ph ph--logo"><img src="<?php echo esc_url( hub_asset( 'img/business/gradesmart-tuition-logo.jpg' ) ); ?>" alt="GradeSmart Tuition" width="480" height="480" loading="lazy" decoding="async"></div>
+        <div class="card__body">
+          <span class="biz-card__cat">Education &amp; Tuition</span>
+          <h3 class="card__title"><a href="<?php echo esc_url( hub_url( 'business/gradesmart-tuition-south-harrow/' ) ); ?>">GradeSmart <span class="name-end">Tuition<span class="card__tick card__tick--verified" role="img" aria-label="Verified by the business" data-tip="Verified by the business"><svg class="ho-icon" aria-hidden="true"><use href="#i-verified"/></svg></span></span></a></h3>
+          <p class="card__meta"><span><svg class="ho-icon"><use href="#i-pin"/></svg>South Harrow</span></p>
+          <p class="card__text">Affordable Maths, English and Science tuition in South Harrow, in small groups of no more than six, from &pound;8.50 an hour.</p>
+        </div>
+      </article>
+      <article class="card card--featured">
+        <div class="card__badges"><span class="badge badge--featured"><svg class="ho-icon"><use href="#i-star"/></svg>Featured</span></div>
+        <div class="ph ph--photo"><img src="<?php echo esc_url( hub_asset( 'img/business/greensleaves-patio.jpg' ) ); ?>" alt="Greensleaves Construction, Landscaping and Garden Maintenance" width="1200" height="800" loading="lazy" decoding="async"></div>
+        <div class="card__body">
+          <span class="biz-card__cat">Home &amp; Garden</span>
+          <h3 class="card__title"><a href="<?php echo esc_url( hub_url( 'business/greensleaves-harrow/' ) ); ?>">Greensleaves Construction, Landscaping and Garden <span class="name-end">Maintenance<span class="card__tick card__tick--verified" role="img" aria-label="Verified by the business" data-tip="Verified by the business"><svg class="ho-icon" aria-hidden="true"><use href="#i-verified"/></svg></span></span></a></h3>
+          <p class="card__meta"><span><svg class="ho-icon"><use href="#i-pin"/></svg>Harrow Town Centre</span></p>
+          <p class="card__text">Family-run landscaping, garden maintenance and building firm with more than 20 years&rsquo; experience, working for homes and businesses across Harrow.</p>
+        </div>
+      </article>
+
+    </div>
+  </div>
+</section>
+
+<section class="section section--soft" id="categories" aria-labelledby="cats-title">
+  <div class="ho-container">
+    <div class="sec-head">
+      <div><h2 class="sec-title" id="cats-title">Popular categories</h2><p class="sec-sub">The categories with the most Harrow businesses.</p></div>
+      <a class="link-arrow" href="<?php echo esc_url( hub_url( 'categories/' ) ); ?>">View all categories <svg class="ho-icon"><use href="#i-arrow"/></svg></a>
+    </div>
+    <div class="cat-cards"><a class="cat-card" href="<?php echo esc_url( hub_url( 'category/shops/' ) ); ?>"><span class="cat-card__icon"><svg class="ho-icon"><use href="#i-gift"/></svg></span><span class="cat-card__body"><span class="cat-card__name">Shops &amp; Specialists</span><span class="cat-card__count">372 businesses</span></span><span class="cat-card__go"><svg class="ho-icon"><use href="#i-arrow"/></svg></span><span class="cat-card__mark" aria-hidden="true"><svg class="ho-icon"><use href="#i-gift"/></svg></span></a><a class="cat-card" href="<?php echo esc_url( hub_url( 'category/restaurants/' ) ); ?>"><span class="cat-card__icon"><svg class="ho-icon"><use href="#i-food"/></svg></span><span class="cat-card__body"><span class="cat-card__name">Restaurants</span><span class="cat-card__count">275 businesses</span></span><span class="cat-card__go"><svg class="ho-icon"><use href="#i-arrow"/></svg></span><span class="cat-card__mark" aria-hidden="true"><svg class="ho-icon"><use href="#i-food"/></svg></span></a><a class="cat-card" href="<?php echo esc_url( hub_url( 'category/doctors-dentists-and-clinics/' ) ); ?>"><span class="cat-card__icon"><svg class="ho-icon"><use href="#i-medical"/></svg></span><span class="cat-card__body"><span class="cat-card__name">Doctors, Dentists &amp; Clinics</span><span class="cat-card__count">253 businesses</span></span><span class="cat-card__go"><svg class="ho-icon"><use href="#i-arrow"/></svg></span><span class="cat-card__mark" aria-hidden="true"><svg class="ho-icon"><use href="#i-medical"/></svg></span></a><a class="cat-card" href="<?php echo esc_url( hub_url( 'category/hair-and-beauty/' ) ); ?>"><span class="cat-card__icon"><svg class="ho-icon"><use href="#i-scissors"/></svg></span><span class="cat-card__body"><span class="cat-card__name">Hair &amp; Beauty</span><span class="cat-card__count">232 businesses</span></span><span class="cat-card__go"><svg class="ho-icon"><use href="#i-arrow"/></svg></span><span class="cat-card__mark" aria-hidden="true"><svg class="ho-icon"><use href="#i-scissors"/></svg></span></a><a class="cat-card" href="<?php echo esc_url( hub_url( 'category/motoring/' ) ); ?>"><span class="cat-card__icon"><svg class="ho-icon"><use href="#i-car"/></svg></span><span class="cat-card__body"><span class="cat-card__name">Motoring</span><span class="cat-card__count">149 businesses</span></span><span class="cat-card__go"><svg class="ho-icon"><use href="#i-arrow"/></svg></span><span class="cat-card__mark" aria-hidden="true"><svg class="ho-icon"><use href="#i-car"/></svg></span></a><a class="cat-card" href="<?php echo esc_url( hub_url( 'category/finance-and-accountants/' ) ); ?>"><span class="cat-card__icon"><svg class="ho-icon"><use href="#i-pound"/></svg></span><span class="cat-card__body"><span class="cat-card__name">Finance &amp; Accountants</span><span class="cat-card__count">128 businesses</span></span><span class="cat-card__go"><svg class="ho-icon"><use href="#i-arrow"/></svg></span><span class="cat-card__mark" aria-hidden="true"><svg class="ho-icon"><use href="#i-pound"/></svg></span></a></div>
+  </div>
+</section>
+
+<section class="section" id="areas" aria-labelledby="areas-title">
+  <div class="ho-container">
+    <div class="sec-head">
+      <div><h2 class="sec-title" id="areas-title">Browse by area</h2><p class="sec-sub">From Pinner to Edgware, find what&rsquo;s near you.</p></div>
+    </div>
+    <div class="area-cards"><a class="area-card" href="<?php echo esc_url( hub_url( 'area/belmont/' ) ); ?>"><span class="area-card__pin"><svg class="ho-icon"><use href="#i-pin"/></svg></span><span class="area-card__body"><span class="area-card__name">Belmont</span><span class="area-card__count">79 businesses</span><span class="area-card__bar" aria-hidden="true"><i style="width:25%"></i></span></span><span class="area-card__go"><svg class="ho-icon"><use href="#i-chevron"/></svg></span></a><a class="area-card" href="<?php echo esc_url( hub_url( 'area/canons-park/' ) ); ?>"><span class="area-card__pin"><svg class="ho-icon"><use href="#i-pin"/></svg></span><span class="area-card__body"><span class="area-card__name">Canons Park</span><span class="area-card__count">130 businesses</span><span class="area-card__bar" aria-hidden="true"><i style="width:41%"></i></span></span><span class="area-card__go"><svg class="ho-icon"><use href="#i-chevron"/></svg></span></a><a class="area-card" href="<?php echo esc_url( hub_url( 'area/edgware/' ) ); ?>"><span class="area-card__pin"><svg class="ho-icon"><use href="#i-pin"/></svg></span><span class="area-card__body"><span class="area-card__name">Edgware</span><span class="area-card__count">178 businesses</span><span class="area-card__bar" aria-hidden="true"><i style="width:56%"></i></span></span><span class="area-card__go"><svg class="ho-icon"><use href="#i-chevron"/></svg></span></a><a class="area-card" href="<?php echo esc_url( hub_url( 'area/greenhill/' ) ); ?>"><span class="area-card__pin"><svg class="ho-icon"><use href="#i-pin"/></svg></span><span class="area-card__body"><span class="area-card__name">Greenhill</span><span class="area-card__count">150 businesses</span><span class="area-card__bar" aria-hidden="true"><i style="width:47%"></i></span></span><span class="area-card__go"><svg class="ho-icon"><use href="#i-chevron"/></svg></span></a><a class="area-card" href="<?php echo esc_url( hub_url( 'area/harrow-town-centre/' ) ); ?>"><span class="area-card__pin"><svg class="ho-icon"><use href="#i-pin"/></svg></span><span class="area-card__body"><span class="area-card__name">Harrow Town Centre</span><span class="area-card__count">318 businesses</span><span class="area-card__bar" aria-hidden="true"><i style="width:100%"></i></span></span><span class="area-card__go"><svg class="ho-icon"><use href="#i-chevron"/></svg></span></a><a class="area-card" href="<?php echo esc_url( hub_url( 'area/harrow-weald/' ) ); ?>"><span class="area-card__pin"><svg class="ho-icon"><use href="#i-pin"/></svg></span><span class="area-card__body"><span class="area-card__name">Harrow Weald</span><span class="area-card__count">105 businesses</span><span class="area-card__bar" aria-hidden="true"><i style="width:33%"></i></span></span><span class="area-card__go"><svg class="ho-icon"><use href="#i-chevron"/></svg></span></a><a class="area-card" href="<?php echo esc_url( hub_url( 'area/harrow-on-the-hill/' ) ); ?>"><span class="area-card__pin"><svg class="ho-icon"><use href="#i-pin"/></svg></span><span class="area-card__body"><span class="area-card__name">Harrow on the Hill</span><span class="area-card__count">55 businesses</span><span class="area-card__bar" aria-hidden="true"><i style="width:17%"></i></span></span><span class="area-card__go"><svg class="ho-icon"><use href="#i-chevron"/></svg></span></a><a class="area-card" href="<?php echo esc_url( hub_url( 'area/hatch-end/' ) ); ?>"><span class="area-card__pin"><svg class="ho-icon"><use href="#i-pin"/></svg></span><span class="area-card__body"><span class="area-card__name">Hatch End</span><span class="area-card__count">130 businesses</span><span class="area-card__bar" aria-hidden="true"><i style="width:41%"></i></span></span><span class="area-card__go"><svg class="ho-icon"><use href="#i-chevron"/></svg></span></a><a class="area-card" href="<?php echo esc_url( hub_url( 'area/headstone/' ) ); ?>"><span class="area-card__pin"><svg class="ho-icon"><use href="#i-pin"/></svg></span><span class="area-card__body"><span class="area-card__name">Headstone</span><span class="area-card__count">62 businesses</span><span class="area-card__bar" aria-hidden="true"><i style="width:19%"></i></span></span><span class="area-card__go"><svg class="ho-icon"><use href="#i-chevron"/></svg></span></a><a class="area-card" href="<?php echo esc_url( hub_url( 'area/kenton/' ) ); ?>"><span class="area-card__pin"><svg class="ho-icon"><use href="#i-pin"/></svg></span><span class="area-card__body"><span class="area-card__name">Kenton</span><span class="area-card__count">100 businesses</span><span class="area-card__bar" aria-hidden="true"><i style="width:31%"></i></span></span><span class="area-card__go"><svg class="ho-icon"><use href="#i-chevron"/></svg></span></a><a class="area-card" href="<?php echo esc_url( hub_url( 'area/north-harrow/' ) ); ?>"><span class="area-card__pin"><svg class="ho-icon"><use href="#i-pin"/></svg></span><span class="area-card__body"><span class="area-card__name">North Harrow</span><span class="area-card__count">102 businesses</span><span class="area-card__bar" aria-hidden="true"><i style="width:32%"></i></span></span><span class="area-card__go"><svg class="ho-icon"><use href="#i-chevron"/></svg></span></a><a class="area-card" href="<?php echo esc_url( hub_url( 'area/pinner/' ) ); ?>"><span class="area-card__pin"><svg class="ho-icon"><use href="#i-pin"/></svg></span><span class="area-card__body"><span class="area-card__name">Pinner</span><span class="area-card__count">210 businesses</span><span class="area-card__bar" aria-hidden="true"><i style="width:66%"></i></span></span><span class="area-card__go"><svg class="ho-icon"><use href="#i-chevron"/></svg></span></a><a class="area-card" href="<?php echo esc_url( hub_url( 'area/queensbury/' ) ); ?>"><span class="area-card__pin"><svg class="ho-icon"><use href="#i-pin"/></svg></span><span class="area-card__body"><span class="area-card__name">Queensbury</span><span class="area-card__count">131 businesses</span><span class="area-card__bar" aria-hidden="true"><i style="width:41%"></i></span></span><span class="area-card__go"><svg class="ho-icon"><use href="#i-chevron"/></svg></span></a><a class="area-card" href="<?php echo esc_url( hub_url( 'area/rayners-lane/' ) ); ?>"><span class="area-card__pin"><svg class="ho-icon"><use href="#i-pin"/></svg></span><span class="area-card__body"><span class="area-card__name">Rayners Lane</span><span class="area-card__count">207 businesses</span><span class="area-card__bar" aria-hidden="true"><i style="width:65%"></i></span></span><span class="area-card__go"><svg class="ho-icon"><use href="#i-chevron"/></svg></span></a><a class="area-card" href="<?php echo esc_url( hub_url( 'area/south-harrow/' ) ); ?>"><span class="area-card__pin"><svg class="ho-icon"><use href="#i-pin"/></svg></span><span class="area-card__body"><span class="area-card__name">South Harrow</span><span class="area-card__count">207 businesses</span><span class="area-card__bar" aria-hidden="true"><i style="width:65%"></i></span></span><span class="area-card__go"><svg class="ho-icon"><use href="#i-chevron"/></svg></span></a><a class="area-card" href="<?php echo esc_url( hub_url( 'area/stanmore/' ) ); ?>"><span class="area-card__pin"><svg class="ho-icon"><use href="#i-pin"/></svg></span><span class="area-card__body"><span class="area-card__name">Stanmore</span><span class="area-card__count">136 businesses</span><span class="area-card__bar" aria-hidden="true"><i style="width:43%"></i></span></span><span class="area-card__go"><svg class="ho-icon"><use href="#i-chevron"/></svg></span></a><a class="area-card" href="<?php echo esc_url( hub_url( 'area/sudbury-hill/' ) ); ?>"><span class="area-card__pin"><svg class="ho-icon"><use href="#i-pin"/></svg></span><span class="area-card__body"><span class="area-card__name">Sudbury Hill and Roxeth</span><span class="area-card__count">25 businesses</span><span class="area-card__bar" aria-hidden="true"><i style="width:8%"></i></span></span><span class="area-card__go"><svg class="ho-icon"><use href="#i-chevron"/></svg></span></a><a class="area-card" href="<?php echo esc_url( hub_url( 'area/wealdstone/' ) ); ?>"><span class="area-card__pin"><svg class="ho-icon"><use href="#i-pin"/></svg></span><span class="area-card__body"><span class="area-card__name">Wealdstone</span><span class="area-card__count">194 businesses</span><span class="area-card__bar" aria-hidden="true"><i style="width:61%"></i></span></span><span class="area-card__go"><svg class="ho-icon"><use href="#i-chevron"/></svg></span></a><a class="area-card" href="<?php echo esc_url( hub_url( 'area/west-harrow/' ) ); ?>"><span class="area-card__pin"><svg class="ho-icon"><use href="#i-pin"/></svg></span><span class="area-card__body"><span class="area-card__name">West Harrow</span><span class="area-card__count">90 businesses</span><span class="area-card__bar" aria-hidden="true"><i style="width:28%"></i></span></span><span class="area-card__go"><svg class="ho-icon"><use href="#i-chevron"/></svg></span></a></div>
+    <div class="suggest mt-6">
+      <div><p class="eyebrow mb-1">Local favourites</p><h2 class="suggest__title">Know a hidden gem?</h2><p class="mb-0">Tell us about a Harrow business you love. We&rsquo;re always looking for great local places.</p></div>
+      <a class="ho-btn ho-btn--outline" href="<?php echo esc_url( hub_url( 'add-business/?recommend=1' ) ); ?>">Recommend a business</a>
+    </div>
+  </div>
+</section>
+
+<!-- For businesses: one panel, text and actions left, the three steps as a timeline right (redesign, Nov 2026) -->
+<section class="section" aria-labelledby="biz-title">
+  <div class="ho-container">
+    <div class="biz-panel">
+      <div class="biz-panel__intro">
+        <p class="eyebrow">For businesses</p>
+        <h2 class="biz-panel__title" id="biz-title">Run a business in Harrow?</h2>
+        <p class="biz-panel__lead">Claim your free listing, publish Local Offers and reach Harrow Online readers.</p>
+        <div class="biz-panel__actions">
+          <a class="ho-btn ho-btn--primary" href="<?php echo esc_url( hub_url( 'search/?type=businesses' ) ); ?>">Find my business</a>
+          <a class="ho-btn ho-btn--outline" href="<?php echo esc_url( hub_url( 'pricing/' ) ); ?>">See business plans</a>
+        </div>
+        <p class="biz-panel__note"><svg class="ho-icon ho-icon--sm"><use href="#i-check"/></svg>Plans from free to Local Partner. <a href="<?php echo esc_url( hub_url( 'pricing/' ) ); ?>">See what&rsquo;s included</a></p>
+      </div>
+      <ol class="biz-steps">
+        <li><span class="biz-steps__num" aria-hidden="true">1</span><div><h3>Claim or add your listing</h3><p>Most Harrow businesses are already listed. Find yours and claim it free, or add it in two minutes.</p></div></li>
+        <li><span class="biz-steps__num" aria-hidden="true">2</span><div><h3>Add events, classes and offers</h3><p>On the Featured or Local Partner plan, your events go on What&rsquo;s On, weekly classes on Classes and deals on Offers.</p></div></li>
+        <li><span class="biz-steps__num" aria-hidden="true">3</span><div><h3>Manage everything in one place</h3><p>One account for your listing, events, classes, offers and plan, with a checklist to get you started.</p></div></li>
+      </ol>
+    </div>
+  </div>
+</section>
+<?php get_footer();

@@ -4,3 +4,15 @@ venv/
 __pycache__/
 .claude/
 .vercel/
+
+# Local WordPress for the Hub (wp-local/hub, served at http://localhost:8020/hub/ like harrowonline.org/hub/).
+# Everything is committed (WordPress, the SQLite plugin, the theme, the local wp-config.php and the database
+# wp-content/database/hub.sqlite) so every developer runs the same site. Only logs, caches and SQLite's
+# temporary files stay out.
+/wp-local/hub/wp-content/debug.log
+/wp-local/hub/wp-content/cache/
+/wp-local/hub/wp-content/upgrade/
+/wp-local/hub/wp-content/database/*.sqlite-journal
+/wp-local/hub/wp-content/database/*.sqlite-wal
+/wp-local/hub/wp-content/database/*.sqlite-shm
+/wp-local/hub/wp-content/database/*.lock

@@ -1,0 +1,93 @@
+<?php
+/** Newsletter strip, phone tab bar and footer (converted from the prototype partials). */
+defined( 'ABSPATH' ) || exit;
+?>
+</main>
+<?php if ( hub_page( 'layout' ) !== 'bare' && hub_page( 'nl' ) !== 'off' ) : ?>
+<!-- Newsletter sign-up above the footer (Nov 2026): same design as the homepage band; the reader picks each edition
+     separately (hub.js 5i shows known subscribers a short "you're signed up" line instead). -->
+<section class="nl-band nl-band--strip" aria-label="Newsletter sign-up">
+  <div class="ho-container">
+    <div class="nl-band__box">
+      <div class="nl-band__text">
+        <p class="nl-band__title">Harrow in your inbox, every morning</p>
+        <p>The day&rsquo;s local news, what&rsquo;s on and the best Local Offers. Free, from Harrow Online Newsletter.</p>
+      </div>
+      <form class="nl-band__form" action="https://harrowonline.org/wp-json/ho/v1/subscribe" method="post" data-nl-form>
+        <input type="hidden" name="signup_source" value="hub-strip">
+        <fieldset class="nl-band__editions">
+          <legend class="ho-sr">Choose your newsletters</legend>
+          <label class="nl-pick"><input type="checkbox" name="editions[]" value="daily" checked><span><strong>Daily News</strong><small>Every morning: Harrow&rsquo;s news</small></span></label>
+          <label class="nl-pick"><input type="checkbox" name="editions[]" value="weekend"><span><strong>The Weekend</strong><small>Thursdays: what&rsquo;s on and offers</small></span></label>
+          <label class="nl-pick"><input type="checkbox" name="editions[]" value="business"><span><strong>Harrow Business</strong><small>Mondays: local business news</small></span></label>
+        </fieldset>
+        <div class="nl-band__row">
+          <label class="ho-sr" for="nl-email">Email address</label>
+          <input class="input" id="nl-email" type="email" name="email" placeholder="Your email address" autocomplete="email" required>
+          <button class="ho-btn ho-btn--primary" type="submit">Sign up free</button>
+        </div>
+        <p class="ho-nl__msg nl-band__msg" role="status" aria-live="polite"></p>
+      </form>
+    </div>
+  </div>
+</section>
+
+<?php endif; ?>
+<?php if ( hub_page( 'layout' ) !== 'bare' ) : ?>
+<nav class="tabbar" aria-label="Hub quick links">
+  <a class="tabbar__item" href="<?php echo esc_url( hub_url( '' ) ); ?>"<?php hub_tab_attr( 'home' ); ?>><svg class="ho-icon"><use href="#i-home"/></svg><span>Hub</span></a>
+  <a class="tabbar__item" href="<?php echo esc_url( hub_url( 'search/' ) ); ?>"<?php hub_tab_attr( 'search' ); ?>><svg class="ho-icon"><use href="#i-search"/></svg><span>Search</span></a>
+  <a class="tabbar__item" href="<?php echo esc_url( hub_url( 'offers/' ) ); ?>"<?php hub_tab_attr( 'offers' ); ?>><svg class="ho-icon"><use href="#i-tag"/></svg><span>Offers</span></a>
+  <a class="tabbar__item" href="<?php echo esc_url( hub_url( 'events/' ) ); ?>"<?php hub_tab_attr( 'events' ); ?>><svg class="ho-icon"><use href="#i-calendar"/></svg><span>What&rsquo;s On</span></a>
+  <a class="tabbar__item hub-bar__out" href="<?php echo esc_url( hub_url( 'sign-in/' ) ); ?>"><svg class="ho-icon"><use href="#i-user"/></svg><span>Sign in</span></a>
+  <a class="tabbar__item hub-bar__in" href="<?php echo esc_url( hub_url( 'account/' ) ); ?>"<?php hub_tab_attr( 'account' ); ?>><svg class="ho-icon"><use href="#i-user"/></svg><span>Account</span></a>
+</nav>
+
+<?php endif; ?>
+<footer class="ho-footer">
+        <div class="ho-container ho-footer__grid">
+            <div class="ho-footer__brand">
+                <a class="ho-footer__logo ho-footer__logo--hub" href="<?php echo esc_url( hub_url( '' ) ); ?>">
+                    <img src="<?php echo esc_url( hub_asset( 'img/hub-logo-white.svg' ) ); ?>" width="146" height="100" alt="Harrow Online Hub" loading="lazy">
+                </a>
+                <p class="ho-footer__tagline">Local news for a stronger Harrow.</p>
+                <ul class="ho-social ho-social--light"><li><a class="ho-social__link ho-social__link--facebook" href="https://www.facebook.com/harrowonline" target="_blank" rel="noopener" aria-label="Facebook"><svg class="ho-icon ho-icon--facebook" viewBox="0 0 24 24" width="24" height="24" aria-hidden="true" focusable="false"><path fill="currentColor" d="M13.5 21v-7.5h2.6l.4-3h-3V8.6c0-.9.3-1.5 1.5-1.5h1.6V4.4c-.3 0-1.2-.1-2.3-.1-2.3 0-3.9 1.4-3.9 4v2.2H8v3h2.6V21h2.9z"/></svg></a></li><li><a class="ho-social__link ho-social__link--x" href="https://twitter.com/harrowonline" target="_blank" rel="noopener" aria-label="X (Twitter)"><svg class="ho-icon ho-icon--x" viewBox="0 0 24 24" width="24" height="24" aria-hidden="true" focusable="false"><path fill="currentColor" d="M17.8 3h3.1l-6.8 7.8L22 21h-6.2l-4.9-6.4L5.3 21H2.2l7.3-8.3L2 3h6.4l4.4 5.8L17.8 3zm-1.1 16.2h1.7L7.4 4.7H5.6l11.1 14.5z"/></svg></a></li><li><a class="ho-social__link ho-social__link--instagram" href="https://www.instagram.com/harrowonline1/" target="_blank" rel="noopener" aria-label="Instagram"><svg class="ho-icon ho-icon--instagram" viewBox="0 0 24 24" width="24" height="24" aria-hidden="true" focusable="false"><rect x="3.5" y="3.5" width="17" height="17" rx="5" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="12" cy="12" r="4" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="17.3" cy="6.7" r="1.2" fill="currentColor"/></svg></a></li><li><a class="ho-social__link ho-social__link--tiktok" href="https://www.tiktok.com/@harrowonline" target="_blank" rel="noopener" aria-label="TikTok"><svg class="ho-icon ho-icon--tiktok" viewBox="0 0 24 24" width="24" height="24" aria-hidden="true" focusable="false"><path fill="currentColor" d="M16.6 3c.3 2.2 1.6 3.7 3.9 3.9v2.8c-1.4.1-2.7-.3-3.9-1.1v6c0 3.6-2.6 5.9-5.8 5.9-3.1 0-5.6-2.4-5.6-5.6 0-3.6 3.2-6.1 6.8-5.5v3c-1.6-.4-3.8.4-3.8 2.5 0 1.5 1.2 2.7 2.7 2.7 1.7 0 2.8-1 2.8-3V3h2.9z"/></svg></a></li><li><a class="ho-social__link ho-social__link--whatsapp" href="https://whatsapp.com/channel/0029Va9qE38HgZWZQVM1jc3S" target="_blank" rel="noopener" aria-label="WhatsApp Channel"><svg class="ho-icon ho-icon--whatsapp" viewBox="0 0 24 24" width="24" height="24" aria-hidden="true" focusable="false"><path fill="currentColor" d="M12 2.5a9.5 9.5 0 0 0-8.2 14.3L2.5 21.5l4.8-1.3A9.5 9.5 0 1 0 12 2.5zm0 17.2c-1.5 0-2.9-.4-4.1-1.1l-.3-.2-2.8.8.8-2.8-.2-.3A7.7 7.7 0 1 1 12 19.7zm4.3-5.8c-.2-.1-1.4-.7-1.6-.8-.2-.1-.4-.1-.5.1l-.7.9c-.1.2-.3.2-.5.1a6.3 6.3 0 0 1-3.1-2.7c-.2-.4.2-.4.7-1.3.1-.2 0-.3 0-.4l-.7-1.7c-.2-.4-.4-.4-.5-.4h-.5c-.2 0-.4.1-.6.3-.2.2-.8.8-.8 1.9s.8 2.2.9 2.4c.1.2 1.6 2.5 4 3.5 1.5.6 2.1.7 2.8.6.5-.1 1.4-.6 1.6-1.1.2-.5.2-1 .1-1.1l-.6-.3z"/></svg></a></li></ul>            </div>
+
+            <nav class="ho-footer__col" aria-label="Sections"><p class="ho-footer__title">Sections</p><ul class="ho-footer__links"><li><a href="https://harrowonline.org/category/news/">News</a></li><li><a href="https://harrowonline.org/category/articles/">Articles</a></li><li><a href="https://harrowonline.org/category/crime/">Crime</a></li><li><a href="https://harrowonline.org/category/business/">Business</a></li><li><a href="<?php echo esc_url( hub_url( 'events/' ) ); ?>">Events</a></li></ul></nav><nav class="ho-footer__col" aria-label="About"><p class="ho-footer__title">About</p><ul class="ho-footer__links"><li><a href="https://harrowonline.org/about-us/">About us</a></li><li><a href="https://harrowonline.org/editorial-team/">Editorial team</a></li><li><a href="https://harrowonline.org/newsletter/">Newsletter</a></li><li><a href="https://harrowonline.org/advertise/">Advertise</a></li><li><a href="https://harrowonline.org/contact-us/">Contact us</a></li></ul></nav><nav class="ho-footer__col" aria-label="Legal"><p class="ho-footer__title">Legal</p><ul class="ho-footer__links"><li><a href="https://harrowonline.org/privacy-policy-2/">Privacy policy</a></li><li><a href="https://harrowonline.org/policies/">Policies</a></li><li><a href="https://harrowonline.org/complaints-procedure/">Complaints procedure</a></li></ul></nav>
+            <div class="ho-footer__news">
+                <p class="ho-footer__title">Newsletter</p>
+                <p class="ho-footer__text">Harrow&rsquo;s local news, free in your inbox.</p>
+                <a class="ho-btn ho-btn--primary" href="https://harrowonline.org/newsletter/"><svg class="ho-icon ho-icon--mail" viewBox="0 0 24 24" width="24" height="24" aria-hidden="true" focusable="false"><rect x="3" y="5" width="18" height="14" rx="2.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="m4 7 8 6 8-6" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg><span>Sign up free</span></a>
+                <a class="ho-footer__wa" href="https://whatsapp.com/channel/0029Va9qE38HgZWZQVM1jc3S" target="_blank" rel="noopener"><svg class="ho-icon ho-icon--whatsapp" viewBox="0 0 24 24" width="24" height="24" aria-hidden="true" focusable="false"><path fill="currentColor" d="M12 2.5a9.5 9.5 0 0 0-8.2 14.3L2.5 21.5l4.8-1.3A9.5 9.5 0 1 0 12 2.5zm0 17.2c-1.5 0-2.9-.4-4.1-1.1l-.3-.2-2.8.8.8-2.8-.2-.3A7.7 7.7 0 1 1 12 19.7zm4.3-5.8c-.2-.1-1.4-.7-1.6-.8-.2-.1-.4-.1-.5.1l-.7.9c-.1.2-.3.2-.5.1a6.3 6.3 0 0 1-3.1-2.7c-.2-.4.2-.4.7-1.3.1-.2 0-.3 0-.4l-.7-1.7c-.2-.4-.4-.4-.5-.4h-.5c-.2 0-.4.1-.6.3-.2.2-.8.8-.8 1.9s.8 2.2.9 2.4c.1.2 1.6 2.5 4 3.5 1.5.6 2.1.7 2.8.6.5-.1 1.4-.6 1.6-1.1.2-.5.2-1 .1-1.1l-.6-.3z"/></svg><span>Follow our WhatsApp Channel</span></a>
+            </div>
+        </div>
+
+        <div class="ho-container">
+            <nav class="ho-footer__topics" aria-label="Topics"><p class="ho-footer__title">Topics</p><ul><li><a href="https://harrowonline.org/category/articles/">Articles</a></li><li><a href="https://harrowonline.org/category/business/">Business</a></li><li><a href="https://harrowonline.org/category/community/">Community</a></li><li><a href="https://harrowonline.org/category/crime/">Crime</a></li><li><a href="https://harrowonline.org/category/education/">Education</a></li><li><a href="https://harrowonline.org/category/events/">Events</a></li><li><a href="https://harrowonline.org/category/food/">Food</a></li><li><a href="https://harrowonline.org/category/harrow-council/">Harrow Council</a></li><li><a href="https://harrowonline.org/category/harrow-police-updates/">Harrow Police Updates</a></li><li><a href="https://harrowonline.org/category/health/">Health</a></li><li><a href="https://harrowonline.org/category/history/">History</a></li><li><a href="https://harrowonline.org/category/london-news/">London News</a></li><li><a href="https://harrowonline.org/category/more-news/">More News</a></li><li><a href="https://harrowonline.org/category/news/">News</a></li><li><a href="https://harrowonline.org/category/reviews/">Reviews</a></li><li><a href="https://harrowonline.org/category/sports/">Sports</a></li><li><a href="https://harrowonline.org/category/travel/">Travel</a></li><li><a href="https://harrowonline.org/category/weather/">Weather</a></li></ul></nav>        </div>
+
+        <div class="ho-footer__bottom">
+            <div class="ho-container ho-footer__bottom-inner">
+
+                <ul class="ho-badges" aria-label="Accreditations">
+                                            <li>
+                            <a class="ho-badge" href="https://www.impressorg.com/" target="_blank" rel="noopener" title="Regulated by IMPRESS">
+                                <img src="https://harrowonline.org/wp-content/uploads/2023/03/IMPRESS-Regulated-Member-Trustmark_White_RGB-300x300.png" width="300" height="300" alt="Regulated by IMPRESS" loading="lazy" decoding="async">
+                            </a>
+                        </li>
+                                            <li>
+                            <a class="ho-badge" href="https://www.communityjournalism.co.uk/" target="_blank" rel="noopener" title="Proud member of the Independent Community News Network (ICNN)">
+                                <img src="https://harrowonline.org/wp-content/uploads/2020/08/Untitled-design-60-1-300x166.png" width="300" height="166" alt="Proud member of the Independent Community News Network (ICNN)" loading="lazy" decoding="async">
+                            </a>
+                        </li>
+                                    </ul>
+                <div class="ho-footer__legal">
+                    <p>&copy; 2026 Harrow Online Ltd. All rights reserved.</p>
+                    <p>Harrow Online Ltd is registered in England and Wales. Company number: 16370670. Registered office: 79 College Road, Harrow, HA1 1BD.</p>
+                    <p>Hub business listings include data from <a href="<?php echo esc_url( hub_url( 'data-sources/' ) ); ?>">Overture Maps Foundation</a>. <a href="<?php echo esc_url( hub_url( 'privacy/' ) ); ?>">Hub privacy</a> &middot; <a href="<?php echo esc_url( hub_url( 'terms/' ) ); ?>">Hub terms</a></p>
+                </div>
+            </div>
+        </div>
+    </footer>
+<?php wp_footer(); ?>
+</body>
+</html>
