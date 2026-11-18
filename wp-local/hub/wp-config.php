@@ -8,7 +8,7 @@
  * Servers (e.g. the Laravel Forge dev site): every setting below can come from the server environment instead, either
  * a real environment variable or the `.env` file in the repository root (Forge: Site > Environment). That file is
  * outside git and outside the web directory. Keys: WP_HOME, DB_ENGINE (sqlite or mysql), DB_PATH, DB_NAME, DB_USER,
- * DB_PASSWORD, DB_HOST, the eight keys and salts (AUTH_KEY ... NONCE_SALT), WP_ENVIRONMENT_TYPE, WP_DEBUG,
+ * DB_PASSWORD, DB_HOST, WP_SQLITE_UNSAFE_ENABLE_UNSUPPORTED_VERSIONS, the eight keys and salts (AUTH_KEY ... NONCE_SALT), WP_ENVIRONMENT_TYPE, WP_DEBUG,
  * WP_DEBUG_LOG, DISALLOW_FILE_MODS. Never commit server values. See wp-local/README.md.
  */
 $hub_env      = array();
@@ -47,6 +47,9 @@ define( 'DB_HOST', $hub_cfg( 'DB_HOST', '' ) );
 define( 'DB_CHARSET', 'utf8mb4' );
 define( 'DB_COLLATE', '' );
 define( 'DB_PATH', $hub_cfg( 'DB_PATH', __DIR__ . '/wp-content/database/hub.sqlite' ) );
+// Servers whose SQLite library is older than 3.37 (e.g. Ubuntu 20.04's 3.31): the SQLite plugin's own back-compat
+// mode, which opens the database's STRICT tables with SQLite 3.27+. Off locally.
+define( 'WP_SQLITE_UNSAFE_ENABLE_UNSUPPORTED_VERSIONS', $hub_bool( 'WP_SQLITE_UNSAFE_ENABLE_UNSUPPORTED_VERSIONS', false ) );
 
 // Keys and salts: the committed values are for local development only; servers set their own.
 define( 'AUTH_KEY', $hub_cfg( 'AUTH_KEY', '5?@kU78bB_|vIzd<FMW-=7=s35#K4&%y0b29Qow~p>;r%WB+]@2.*4I-__!r>Z}+' ) );

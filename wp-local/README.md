@@ -66,4 +66,6 @@ The same WordPress runs on Laravel Forge (server `appy-dev`), deployed from git 
   `DB_NAME`, `DB_USER`, `DB_PASSWORD`, `DB_HOST`). With no `.env` the local values above apply.
 - **Content comes from git.** Each deploy replaces the server's database with the committed `hub.sqlite`, so
   changes made in the server's wp-admin are lost on the next deploy. Change content locally and commit it.
+- **Old SQLite on the server:** `appy-dev` runs Ubuntu 20.04 (SQLite 3.31; the plugin wants 3.37+), so its `.env` sets
+  `WP_SQLITE_UNSAFE_ENABLE_UNSUPPORTED_VERSIONS=true`, the SQLite plugin's own back-compat mode for SQLite 3.27+.
 - **Logins:** the users and passwords are the ones in the committed database, i.e. the local ones.
