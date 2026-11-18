@@ -22,15 +22,14 @@ local only). In the Claude desktop app, start the **wp-local** preview instead.
 | --- | --- |
 | Theme (all Hub markup, styles and scripts) | `hub/wp-content/themes/harrow-hub/` |
 | **Data layer: controllers for pages and the API** (read `app/README.md` first) | `harrow-hub/app/` |
-| Display pieces that print controller data (business rows, profiles, directory; offer cards, offer page) | `harrow-hub/parts/` |
-| Hub API (same data as the pages, JSON) | `/hub/wp-json/hub/v1/` (e.g. `/businesses`, `/offers`, `/categories`, `/areas`) |
+| Display pieces that print controller data (business rows and profiles, events and classes, offers) | `harrow-hub/parts/` |
+| Hub API (same data as the pages, JSON) | `/hub/wp-json/hub/v1/` (e.g. `/businesses`, `/events/whats-on`, `/classes`, `/offers`, `/categories`, `/areas`) |
 | Page templates (one per prototype page) | `harrow-hub/page-templates/` |
 | Header, footer | `harrow-hub/header.php`, `footer.php` |
 | Page settings and helpers (`hub_url`, `hub_asset`, current menu item, title) | `harrow-hub/inc/page.php` |
 | Which template each WordPress Page uses | `harrow-hub/inc/page-map.php` |
 | Database | `hub/wp-content/database/hub.sqlite` |
 | Content types and URLs (businesses, offers, events, classes, categories, areas) | `harrow-hub/inc/content-types.php` |
-| Content page markup not yet moved to `app/` + `parts/` (event and class pages) | `harrow-hub/inc/render-*.php` |
 | Templates for each content type | `harrow-hub/single-hub_*.php`, `taxonomy-hub_*.php` |
 | ACF fields (business details, offer/class business, Hub settings > Newsletter), written in PHP | `harrow-hub/inc/acf-fields.php` |
 | How pages read those fields | `harrow-hub/app/modules/*/data.php` |

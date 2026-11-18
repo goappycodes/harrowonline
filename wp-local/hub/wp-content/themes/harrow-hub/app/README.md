@@ -34,11 +34,13 @@ app/
 │   └── rest-routes.php    namespace hub/v1, hub_route()
 └── modules/
     ├── businesses/        data.php  rules.php  shape.php  controller.php  routes.php
+    ├── events/            one-off events and weekly classes (What's On)
     ├── offers/
     ├── categories/
     └── areas/
 parts/                     display only: each part gets arrays in $args and prints them
 ├── businesses/            row, card, ticker, event-row, profile, profile-imported, directory
+├── events/                row (What's On list), card, class-card, single (event page), class-single
 └── offers/                card, tile, card-full, unlock-box, filters, single
 inc/view.php               small markup helpers for parts (hub_view_*): name with its status mark, photo, address,
                            "Open today"... They take a shape and print it; no queries.
@@ -106,6 +108,9 @@ Functions starting with `_hub_` are internal helpers of their module's controlle
 | `GET /wp-json/hub/v1/businesses?cat=&area=&limit=&offset=` | `hub_businesses_list()` |
 | `GET /wp-json/hub/v1/businesses/{id or slug}` | `hub_business_get()` |
 | `GET /wp-json/hub/v1/businesses/featured`, `/businesses/newest` | `hub_businesses_featured()`, `hub_businesses_newest()` |
+| `GET /wp-json/hub/v1/events/whats-on`, `/events/month?month=2026-11`, `/events/weekend` | `hub_events_whats_on()`, `hub_events_month()`, `hub_events_weekend()` |
+| `GET /wp-json/hub/v1/events?from=&to=&cat=&area=&featured=1`, `/events/{id or slug}` | `hub_events_list()`, `hub_event_get()` |
+| `GET /wp-json/hub/v1/classes?type=&area=&day=&age=`, `/classes/{id or slug}` | `hub_classes_list()`, `hub_class_get()` |
 | `GET /wp-json/hub/v1/offers?cat=&area=&sub=1&limit=&offset=` | `hub_offers_list()` |
 | `GET /wp-json/hub/v1/offers/{id or slug}` | `hub_offer_get()` |
 | `GET /wp-json/hub/v1/businesses/{id}/offers` | `hub_offers_for_business()` |
@@ -117,7 +122,11 @@ callback (the 4th argument of `hub_route()`).
 
 ## Modules still to move here
 
-Events and classes (`inc/render-events.php`), account pages, search and the newsletter band
-(`inc/business-acf.php`) are still old-style. The businesses module reads a business's events and classes through
-`hub_event()` / `hub_class()` (`hub_businesses_db_events()`) until the events module exists; then it should call the
-events controller instead.
+- **Classes listing page** (`page-templates/classes.php`) is still the prototype's markup. Its cards come from a
+  different list than the class posts (two Kodak FC entries with no class page, short card texts, "when" lines and
+  an order of their own), so that data has to be added to the classes in WordPress before the page can use
+  `hub_classes_list()`.
+- **Search** (`page-templates/search.php` and hub.js) reads the prototype's `assets/data/hub-index.json`; it should
+  move to the API.
+- **Homepage categories and areas**, the categories page, account pages and the newsletter band
+  (`inc/business-acf.php`) are still old-style.

@@ -1,9 +1,20 @@
 <?php
 /**
- * What's On in Harrow: events this week and weekend (converted from src/pages/events.html).
- * URL: /events/
+ * What's On in Harrow: featured events, then everything on each of the next 7 days.
+ * URL: /events/   Filters (hub.js 6b): ?when=today|weekend|7days|date&date=, ?area=, ?cat[]=, ?age[]=, ?free=1, ?classes=0
+ *
+ * Data: hub_events_whats_on() (app/modules/events), hub_areas_list(). Markup: parts/events/row.php.
+ * Edited by hand (tools/build_theme.py leaves it alone).
  */
 defined( 'ABSPATH' ) || exit;
+
+$hub_wo    = hub_events_whats_on();
+$hub_areas = hub_areas_list();
+$hub_w0    = date_create_immutable( $hub_wo['weekend']['from'] );
+$hub_w1    = date_create_immutable( $hub_wo['weekend']['to'] );
+$hub_from  = date_create_immutable( $hub_wo['range']['from'] );
+$hub_span  = hub_events_rule_long_date( $hub_from ) . ' to ' . hub_events_rule_long_date( date_create_immutable( $hub_wo['range']['to'] ) );
+
 hub_set_page( array(
 	'body' => 'page-events',
 	'description' => 'Events, things to do and classes across Harrow this week and weekend: family days out, live music, markets and community events.',
@@ -28,37 +39,37 @@ get_header();
       <form action="<?php echo esc_url( hub_url( 'events/' ) ); ?>" method="get">
         <div class="filters__head">
           <h2>Filter events</h2>
-          <button class="ho-btn ho-btn--ghost ho-btn--sm filters__close" type="button" data-filters-close aria-label="Close filters"><svg class="ho-icon"><use href="#i-close"/></svg></button>
+          <button class="ho-btn ho-btn--ghost ho-btn--sm filters__close" type="button" data-filters-close aria-label="Close filters"><?php echo hub_icon( 'close' ); ?></button>
         </div>
         <fieldset class="filters__group">
           <legend>Date</legend>
           <ul class="check-list">
             <li><label><input type="radio" name="when" value="" checked> Any date</label></li>
             <li><label><input type="radio" name="when" value="today"> Today</label></li>
-            <li><label><input type="radio" name="when" value="weekend"> This weekend <span class="count">13 to 15 Nov</span></label></li>
+            <li><label><input type="radio" name="when" value="weekend"> This weekend <span class="count"><?php echo esc_html( $hub_w0->format( 'j' ) . ' to ' . $hub_w1->format( 'j M' ) ); ?></span></label></li>
             <li><label><input type="radio" name="when" value="7days"> Next 7 days</label></li>
             <li><label><input type="radio" name="when" value="date" data-reveal="#pick-date"> Choose a date</label></li>
           </ul>
           <div class="field mt-4" id="pick-date" hidden>
             <label for="f-date">Date</label>
-            <input class="input input--sm" id="f-date" type="date" name="date" min="2026-11-11" max="2026-11-17" value="2026-11-13">
+            <input class="input input--sm" id="f-date" type="date" name="date" min="<?php echo esc_attr( $hub_wo['range']['from'] ); ?>" max="<?php echo esc_attr( $hub_wo['range']['to'] ); ?>" value="<?php echo esc_attr( $hub_wo['weekend']['from'] ); ?>">
           </div>
         </fieldset>
         <fieldset class="filters__group">
           <legend>Area</legend>
           <label class="ho-sr" for="f-area">Area</label>
-          <select class="select select--sm" id="f-area" name="area"><option value="">All of Harrow</option><option value="belmont">Belmont</option><option value="canons-park">Canons Park</option><option value="edgware">Edgware</option><option value="greenhill">Greenhill</option><option value="harrow-town-centre">Harrow Town Centre</option><option value="harrow-weald">Harrow Weald</option><option value="harrow-on-the-hill">Harrow on the Hill</option><option value="hatch-end">Hatch End</option><option value="headstone">Headstone</option><option value="kenton">Kenton</option><option value="north-harrow">North Harrow</option><option value="pinner">Pinner</option><option value="queensbury">Queensbury</option><option value="rayners-lane">Rayners Lane</option><option value="south-harrow">South Harrow</option><option value="stanmore">Stanmore</option><option value="sudbury-hill">Sudbury Hill and Roxeth</option><option value="wealdstone">Wealdstone</option><option value="west-harrow">West Harrow</option></select>
+          <select class="select select--sm" id="f-area" name="area"><option value="">All of Harrow</option><?php
+			foreach ( $hub_areas['items'] as $hub_a ) {
+				echo '<option value="' . esc_attr( $hub_a['slug'] ) . '">' . esc_html( $hub_a['name'] ) . '</option>';
+			}
+			?></select>
         </fieldset>
         <fieldset class="filters__group">
           <legend>Category</legend>
           <ul class="check-list">
-              <li><label><input type="checkbox" name="cat[]" value="classes"> Classes and activities <span class="count">11</span></label></li>
-              <li><label><input type="checkbox" name="cat[]" value="family"> Family <span class="count">9</span></label></li>
-              <li><label><input type="checkbox" name="cat[]" value="music"> Music <span class="count">8</span></label></li>
-              <li><label><input type="checkbox" name="cat[]" value="food-and-drink"> Food and drink <span class="count">4</span></label></li>
-              <li><label><input type="checkbox" name="cat[]" value="nightlife"> Nightlife <span class="count">2</span></label></li>
-              <li><label><input type="checkbox" name="cat[]" value="community"> Community <span class="count">14</span></label></li>
-              <li><label><input type="checkbox" name="cat[]" value="arts"> Arts <span class="count">3</span></label></li>
+<?php foreach ( $hub_wo['categories'] as $hub_c ) : ?>
+              <li><label><input type="checkbox" name="cat[]" value="<?php echo esc_attr( $hub_c['slug'] ); ?>"> <?php echo esc_html( $hub_c['name'] ); ?> <span class="count"><?php echo (int) $hub_c['count']; ?></span></label></li>
+<?php endforeach; ?>
           </ul>
         </fieldset>
         <fieldset class="filters__group">
@@ -85,14 +96,14 @@ get_header();
       </form>
     </aside>
 
-    <div data-events-list data-today="2026-11-11" data-weekend="2026-11-13,2026-11-15">
+    <div data-events-list data-today="<?php echo esc_attr( $hub_wo['today'] ); ?>" data-weekend="<?php echo esc_attr( $hub_wo['weekend']['from'] . ',' . $hub_wo['weekend']['to'] ); ?>">
       <div class="toolbar">
-        <p class="toolbar__count" data-events-count><strong>33</strong> events and classes, Wednesday 11 November to Tuesday 17 November</p>
+        <p class="toolbar__count" data-events-count><strong><?php echo (int) $hub_wo['total']; ?></strong> events and classes, <?php echo esc_html( $hub_span ); ?></p>
         <div class="toolbar__right">
-          <button class="ho-btn ho-btn--outline ho-btn--sm filters-toggle" type="button" data-filters-open aria-controls="filters" aria-expanded="false"><svg class="ho-icon"><use href="#i-filter"/></svg>Filters</button>
+          <button class="ho-btn ho-btn--outline ho-btn--sm filters-toggle" type="button" data-filters-open aria-controls="filters" aria-expanded="false"><?php echo hub_icon( 'filter' ); ?>Filters</button>
           <nav class="seg" aria-label="View">
-            <a href="<?php echo esc_url( hub_url( 'events/' ) ); ?>" aria-current="page"><svg class="ho-icon"><use href="#i-list"/></svg>List</a>
-            <a href="<?php echo esc_url( hub_url( 'events/month/' ) ); ?>"><svg class="ho-icon"><use href="#i-calendar"/></svg>Month</a>
+            <a href="<?php echo esc_url( hub_url( 'events/' ) ); ?>" aria-current="page"><?php echo hub_icon( 'list' ); ?>List</a>
+            <a href="<?php echo esc_url( hub_url( 'events/month/' ) ); ?>"><?php echo hub_icon( 'calendar' ); ?>Month</a>
           </nav>
         </div>
       </div>
@@ -101,457 +112,61 @@ get_header();
         <a class="chip" href="<?php echo esc_url( hub_url( 'events/?when=today' ) ); ?>" data-when="today">Today</a>
         <a class="chip" href="<?php echo esc_url( hub_url( 'events/?when=weekend' ) ); ?>" data-when="weekend">This weekend</a>
         <a class="chip" href="<?php echo esc_url( hub_url( 'events/?when=7days' ) ); ?>" data-when="7days">Next 7 days</a>
-        <a class="chip" href="<?php echo esc_url( hub_url( 'events/classes/' ) ); ?>"><svg class="ho-icon ho-icon--sm"><use href="#i-repeat"/></svg>Classes and activities</a>
+        <a class="chip" href="<?php echo esc_url( hub_url( 'events/classes/' ) ); ?>"><?php echo hub_icon( 'repeat', 'ho-icon ho-icon--sm' ); ?>Classes and activities</a>
         <a class="chip" href="<?php echo esc_url( hub_url( 'events/?cat=family' ) ); ?>">Family</a>
         <a class="chip" href="<?php echo esc_url( hub_url( 'events/?free=1' ) ); ?>">Free</a>
       </div>
 
-      <div class="notice mb-5" data-events-empty hidden><svg class="ho-icon"><use href="#i-calendar"/></svg><p>Nothing listed for that date yet. <a href="<?php echo esc_url( hub_url( 'events/month/' ) ); ?>">See the month calendar</a>.</p></div>
+      <div class="notice mb-5" data-events-empty hidden><?php echo hub_icon( 'calendar' ); ?><p>Nothing listed for that date yet. <a href="<?php echo esc_url( hub_url( 'events/month/' ) ); ?>">See the month calendar</a>.</p></div>
 
+<?php if ( $hub_wo['featured'] ) : ?>
   <section class="day-group day-group--featured" data-featured-group aria-labelledby="day-featured">
-    <h2 class="day-group__title" id="day-featured"><svg class="ho-icon"><use href="#i-star"/></svg>Featured events <small data-day-count>3 coming up</small></h2>
+    <h2 class="day-group__title" id="day-featured"><?php echo hub_icon( 'star' ); ?>Featured events <small data-day-count><?php echo count( $hub_wo['featured'] ); ?> coming up</small></h2>
     <div>
-    <article class="event-row event-row--featured" data-kind="event" data-date="2026-11-21" data-cat="arts" data-area="headstone" data-ages="under-5 5-11 12-17 adults 60-plus" data-free="1">
-      <time class="date-tile" datetime="2026-11-21"><span class="date-tile__m">Nov</span><span class="date-tile__d">21</span><span class="date-tile__w">Sat</span></time>
-      <div class="ph ph--red"><svg class="ho-icon"><use href="#i-gift"/></svg></div>
-      <div>
-        <div class="cluster mb-2"><span class="badge badge--featured"><svg class="ho-icon"><use href="#i-star"/></svg>Featured</span><span class="biz-card__cat">Arts</span></div>
-        <h3 class="event-row__title"><a href="<?php echo esc_url( hub_url( 'events/christmas-craft-fair/' ) ); ?>">Christmas Craft Fair</a></h3>
-        <p class="card__meta"><span><svg class="ho-icon"><use href="#i-clock"/></svg>10am</span><span><svg class="ho-icon"><use href="#i-pin"/></svg>Headstone Manor &amp; Museum, Headstone</span><span><svg class="ho-icon"><use href="#i-people"/></svg>All ages</span></p>
-      </div>
-      <div class="event-row__side"><strong>Free entry</strong></div>
-    </article>
-    <article class="event-row event-row--featured" data-kind="event" data-date="2026-11-28" data-cat="food-and-drink" data-area="stanmore" data-ages="under-5 5-11 12-17 adults 60-plus" data-free="1">
-      <time class="date-tile" datetime="2026-11-28"><span class="date-tile__m">Nov</span><span class="date-tile__d">28</span><span class="date-tile__w">Sat</span></time>
-      <div class="ph ph--red"><svg class="ho-icon"><use href="#i-cart"/></svg></div>
-      <div>
-        <div class="cluster mb-2"><span class="badge badge--featured"><svg class="ho-icon"><use href="#i-star"/></svg>Featured</span><span class="biz-card__cat">Food and drink</span></div>
-        <h3 class="event-row__title"><a href="<?php echo esc_url( hub_url( 'events/stanmore-christmas-market/' ) ); ?>">Stanmore Christmas Market</a></h3>
-        <p class="card__meta"><span><svg class="ho-icon"><use href="#i-clock"/></svg>10am</span><span><svg class="ho-icon"><use href="#i-pin"/></svg>Stanmore Broadway, Stanmore</span><span><svg class="ho-icon"><use href="#i-people"/></svg>All ages</span></p>
-      </div>
-      <div class="event-row__side"><strong>Free entry</strong></div>
-    </article>
-    <article class="event-row event-row--featured" data-kind="event" data-date="2026-11-28" data-cat="community" data-area="harrow-town-centre" data-ages="under-5 5-11 12-17 adults 60-plus" data-free="1">
-      <time class="date-tile" datetime="2026-11-28"><span class="date-tile__m">Nov</span><span class="date-tile__d">28</span><span class="date-tile__w">Sat</span></time>
-      <div class="ph ph--red"><svg class="ho-icon"><use href="#i-party"/></svg></div>
-      <div>
-        <div class="cluster mb-2"><span class="badge badge--featured"><svg class="ho-icon"><use href="#i-star"/></svg>Featured</span><span class="biz-card__cat">Community</span></div>
-        <h3 class="event-row__title"><a href="<?php echo esc_url( hub_url( 'events/harrow-christmas-lights-switch-on/' ) ); ?>">Harrow Christmas Lights Switch-On</a></h3>
-        <p class="card__meta"><span><svg class="ho-icon"><use href="#i-clock"/></svg>12pm to 7pm</span><span><svg class="ho-icon"><use href="#i-pin"/></svg>St Ann&rsquo;s Road, Harrow Town Centre</span><span><svg class="ho-icon"><use href="#i-people"/></svg>All ages</span></p>
-      <p class="card__text">Free family day on St Ann&rsquo;s Road with music, food stalls and the lights switch-on at 5pm.</p>
-      </div>
-      <div class="event-row__side"><strong>Free</strong></div>
-    </article>
+<?php
+	foreach ( $hub_wo['featured'] as $hub_x ) {
+		get_template_part( 'parts/events/row', null, array( 'item' => $hub_x ) );
+	}
+	?>
     </div>
   </section>
-  <section class="day-group" data-date="2026-11-11" aria-labelledby="day-2026-11-11">
-    <h2 class="day-group__title" id="day-2026-11-11">Today <small>Wednesday 11 November</small> <small data-day-count>3 things on</small></h2>
+<?php endif; ?>
+<?php
+foreach ( $hub_wo['days'] as $hub_day ) :
+	$hub_d     = date_create_immutable( $hub_day['date'] );
+	$hub_n     = count( $hub_day['items'] );
+	$hub_label = esc_html( hub_events_rule_long_date( $hub_d ) );
+	if ( $hub_day['date'] === $hub_wo['today'] ) {
+		$hub_label = 'Today <small>' . $hub_label . '</small>';
+	} elseif ( $hub_day['date'] === date_create_immutable( $hub_wo['today'] )->modify( '+1 day' )->format( 'Y-m-d' ) ) {
+		$hub_label = 'Tomorrow <small>' . $hub_label . '</small>';
+	}
+	?>
+  <section class="day-group" data-date="<?php echo esc_attr( $hub_day['date'] ); ?>" aria-labelledby="day-<?php echo esc_attr( $hub_day['date'] ); ?>">
+    <h2 class="day-group__title" id="day-<?php echo esc_attr( $hub_day['date'] ); ?>"><?php echo $hub_label; // phpcs:ignore WordPress.Security.EscapeOutput -- escaped above ?> <small data-day-count><?php echo $hub_n . ' ' . ( 1 === $hub_n ? 'thing' : 'things' ); ?> on</small></h2>
     <div>
-    <article class="event-row" data-kind="event" data-date="2026-11-11" data-cat="community" data-area="harrow-town-centre" data-ages="under-5 5-11 12-17 adults 60-plus" data-free="1">
-      <time class="date-tile" datetime="2026-11-11"><span class="date-tile__m">Nov</span><span class="date-tile__d">11</span><span class="date-tile__w">Wed</span></time>
-      <div class="ph"><svg class="ho-icon"><use href="#i-flag"/></svg></div>
-      <div>
-        <div class="cluster mb-2"><span class="biz-card__cat">Community</span></div>
-        <h3 class="event-row__title"><a href="<?php echo esc_url( hub_url( 'events/armistice-day-silence/' ) ); ?>">Armistice Day Silence</a></h3>
-        <p class="card__meta"><span><svg class="ho-icon"><use href="#i-clock"/></svg>10.45am</span><span><svg class="ho-icon"><use href="#i-pin"/></svg>Harrow Civic Centre, Station Road, Harrow Town Centre</span><span><svg class="ho-icon"><use href="#i-people"/></svg>All ages</span></p>
-      <p class="card__text">Join the two-minute silence at 11am, followed by a short wreath-laying.</p>
-      </div>
-      <div class="event-row__side"><strong>Free</strong></div>
-    </article>
-    <article class="event-row" data-kind="class" data-date="2026-11-11" data-cat="classes" data-area="wealdstone" data-ages="adults 60-plus" data-free="0">
-      <time class="date-tile" datetime="2026-11-11"><span class="date-tile__m">Nov</span><span class="date-tile__d">11</span><span class="date-tile__w">Wed</span></time>
-      <div class="ph"><svg class="ho-icon"><use href="#i-dumbbell"/></svg></div>
-      <div>
-        <div class="cluster mb-2"><span class="badge badge--outline"><svg class="ho-icon"><use href="#i-repeat"/></svg>Weekly class</span><span class="biz-card__cat">Classes and activities</span></div>
-        <h3 class="event-row__title"><a href="<?php echo esc_url( hub_url( 'events/lunchtime-spin/' ) ); ?>">Lunchtime Spin</a></h3>
-        <p class="card__meta"><span><svg class="ho-icon"><use href="#i-repeat"/></svg>Every Wednesday, 12.30pm</span><span><svg class="ho-icon"><use href="#i-pin"/></svg>Wealdstone Fitness Studio, Wealdstone</span><span><svg class="ho-icon"><use href="#i-people"/></svg>Adults</span></p>
-      <p class="card__text">45 minutes of high-energy spin. Bikes set up for you, towels provided.</p>
-      </div>
-      <div class="event-row__side"><strong>&pound;8</strong></div>
-    </article>
-    <article class="event-row" data-kind="event" data-date="2026-11-11" data-cat="community" data-area="headstone" data-ages="adults 60-plus" data-free="0">
-      <time class="date-tile" datetime="2026-11-11"><span class="date-tile__m">Nov</span><span class="date-tile__d">11</span><span class="date-tile__w">Wed</span></time>
-      <div class="ph"><svg class="ho-icon"><use href="#i-people"/></svg></div>
-      <div>
-        <div class="cluster mb-2"><span class="biz-card__cat">Community</span></div>
-        <h3 class="event-row__title"><a href="<?php echo esc_url( hub_url( 'events/charity-quiz-night/' ) ); ?>">Charity Quiz Night</a></h3>
-        <p class="card__meta"><span><svg class="ho-icon"><use href="#i-clock"/></svg>7.30pm</span><span><svg class="ho-icon"><use href="#i-pin"/></svg>St George&rsquo;s Hall, Headstone</span><span><svg class="ho-icon"><use href="#i-people"/></svg>Adults</span></p>
-      <p class="card__text">Teams of up to six, with a raffle. Money raised goes to the Headstone food bank.</p>
-      </div>
-      <div class="event-row__side"><strong>&pound;5 a head</strong></div>
-    </article>
+<?php
+	foreach ( $hub_day['items'] as $hub_x ) {
+		get_template_part( 'parts/events/row', null, array( 'item' => $hub_x ) );
+	}
+	?>
     </div>
   </section>
-  <section class="day-group" data-date="2026-11-12" aria-labelledby="day-2026-11-12">
-    <h2 class="day-group__title" id="day-2026-11-12">Tomorrow <small>Thursday 12 November</small> <small data-day-count>5 things on</small></h2>
-    <div>
-    <article class="event-row event-row--featured" data-kind="class" data-date="2026-11-12" data-cat="classes" data-area="hatch-end" data-ages="5-11 12-17 adults 60-plus" data-free="1">
-      <time class="date-tile" datetime="2026-11-12"><span class="date-tile__m">Nov</span><span class="date-tile__d">12</span><span class="date-tile__w">Thu</span></time>
-      <div class="ph ph--dark ph--photo"><img src="<?php echo esc_url( hub_asset( 'img/business/kidology-dance-co-dancers.jpg' ) ); ?>" alt="Young Kidology dancers in KDC T-shirts" width="1200" height="800" loading="lazy" decoding="async"></div>
-      <div>
-        <div class="cluster mb-2"><span class="badge badge--featured"><svg class="ho-icon"><use href="#i-star"/></svg>Featured</span><span class="badge badge--outline"><svg class="ho-icon"><use href="#i-repeat"/></svg>Weekly class</span><span class="biz-card__cat">Classes and activities</span></div>
-        <h3 class="event-row__title"><a href="<?php echo esc_url( hub_url( 'events/musical-theatre-for-kids/' ) ); ?>">Musical Theatre for Kids</a></h3>
-        <p class="card__meta"><span><svg class="ho-icon"><use href="#i-repeat"/></svg>Every Thursday, 5pm to 6pm</span><span><svg class="ho-icon"><use href="#i-pin"/></svg>Harrow Arts Centre, Hatch End</span><span><svg class="ho-icon"><use href="#i-people"/></svg>Ages 8+</span></p>
-      <p class="card__text">Singing, acting and dance routines from the musicals, for performers aged 8 and over. Taught by Kidology Dance Co&rsquo;s experienced teachers at Harrow Arts Centre. Classes run by half term and must be booked in advance. A free trial class is available: call 07792 054943 or email info@kidologydance.co.uk.</p>
-      </div>
-      <div class="event-row__side"><strong>Free trial, then ask for prices</strong></div>
-    </article>
-    <article class="event-row" data-kind="class" data-date="2026-11-12" data-cat="classes" data-area="stanmore" data-ages="under-5" data-free="1">
-      <time class="date-tile" datetime="2026-11-12"><span class="date-tile__m">Nov</span><span class="date-tile__d">12</span><span class="date-tile__w">Thu</span></time>
-      <div class="ph"><svg class="ho-icon"><use href="#i-family"/></svg></div>
-      <div>
-        <div class="cluster mb-2"><span class="badge badge--outline"><svg class="ho-icon"><use href="#i-repeat"/></svg>Weekly class</span><span class="biz-card__cat">Classes and activities</span></div>
-        <h3 class="event-row__title"><a href="<?php echo esc_url( hub_url( 'events/toddler-rhyme-time/' ) ); ?>">Toddler Rhyme Time</a></h3>
-        <p class="card__meta"><span><svg class="ho-icon"><use href="#i-repeat"/></svg>Every Thursday, 10.30am</span><span><svg class="ho-icon"><use href="#i-pin"/></svg>Stanmore Library, Stanmore</span><span><svg class="ho-icon"><use href="#i-people"/></svg>Under 4s</span></p>
-      <p class="card__text">Songs, rhymes and stories for little ones and their grown-ups. Just turn up.</p>
-      </div>
-      <div class="event-row__side"><strong>Free</strong></div>
-    </article>
-    <article class="event-row" data-kind="event" data-date="2026-11-12" data-cat="arts" data-area="headstone" data-ages="12-17 adults 60-plus" data-free="0">
-      <time class="date-tile" datetime="2026-11-12"><span class="date-tile__m">Nov</span><span class="date-tile__d">12</span><span class="date-tile__w">Thu</span></time>
-      <div class="ph"><svg class="ho-icon"><use href="#i-home"/></svg></div>
-      <div>
-        <div class="cluster mb-2"><span class="biz-card__cat">Arts</span></div>
-        <h3 class="event-row__title"><a href="<?php echo esc_url( hub_url( 'events/museum-lates-a-victorian-christmas/' ) ); ?>">Museum Lates: A Victorian Christmas</a></h3>
-        <p class="card__meta"><span><svg class="ho-icon"><use href="#i-clock"/></svg>6pm to 9pm</span><span><svg class="ho-icon"><use href="#i-pin"/></svg>Headstone Manor &amp; Museum, Headstone</span><span><svg class="ho-icon"><use href="#i-people"/></svg>Ages 16+</span></p>
-      <p class="card__text">Candlelit tours of the manor, short talks and festive crafts after hours.</p>
-      </div>
-      <div class="event-row__side"><strong>&pound;6</strong></div>
-    </article>
-    <article class="event-row" data-kind="class" data-date="2026-11-12" data-cat="classes" data-area="north-harrow" data-ages="adults 60-plus" data-free="0">
-      <time class="date-tile" datetime="2026-11-12"><span class="date-tile__m">Nov</span><span class="date-tile__d">12</span><span class="date-tile__w">Thu</span></time>
-      <div class="ph"><svg class="ho-icon"><use href="#i-people"/></svg></div>
-      <div>
-        <div class="cluster mb-2"><span class="badge badge--outline"><svg class="ho-icon"><use href="#i-repeat"/></svg>Weekly class</span><span class="biz-card__cat">Classes and activities</span></div>
-        <h3 class="event-row__title"><a href="<?php echo esc_url( hub_url( 'events/conversational-spanish/' ) ); ?>">Conversational Spanish</a></h3>
-        <p class="card__meta"><span><svg class="ho-icon"><use href="#i-repeat"/></svg>Every Thursday, 7pm</span><span><svg class="ho-icon"><use href="#i-pin"/></svg>North Harrow Community Library, North Harrow</span><span><svg class="ho-icon"><use href="#i-people"/></svg>Adults</span></p>
-      <p class="card__text">Relaxed evening course for improvers. Join at any point this term.</p>
-      </div>
-      <div class="event-row__side"><strong>&pound;90 for 10 weeks</strong></div>
-    </article>
-    <article class="event-row" data-kind="event" data-date="2026-11-12" data-cat="music" data-area="hatch-end" data-ages="12-17 adults 60-plus" data-free="0">
-      <time class="date-tile" datetime="2026-11-12"><span class="date-tile__m">Nov</span><span class="date-tile__d">12</span><span class="date-tile__w">Thu</span></time>
-      <div class="ph"><svg class="ho-icon"><use href="#i-music"/></svg></div>
-      <div>
-        <div class="cluster mb-2"><span class="biz-card__cat">Music</span></div>
-        <h3 class="event-row__title"><a href="<?php echo esc_url( hub_url( 'events/open-mic-night/' ) ); ?>">Open Mic Night</a></h3>
-        <p class="card__meta"><span><svg class="ho-icon"><use href="#i-clock"/></svg>7.30pm</span><span><svg class="ho-icon"><use href="#i-pin"/></svg>Harrow Arts Centre, Hatch End</span><span><svg class="ho-icon"><use href="#i-people"/></svg>Ages 14+</span></p>
-      <p class="card__text">Singers, poets and comics welcome. Sign up on the door from 7pm.</p>
-      </div>
-      <div class="event-row__side"><strong>&pound;4</strong></div>
-    </article>
-    </div>
-  </section>
-  <section class="day-group" data-date="2026-11-13" aria-labelledby="day-2026-11-13">
-    <h2 class="day-group__title" id="day-2026-11-13">Friday 13 November <small data-day-count>7 things on</small></h2>
-    <div>
-    <article class="event-row event-row--featured" data-kind="class" data-date="2026-11-13" data-cat="classes" data-area="hatch-end" data-ages="under-5" data-free="1">
-      <time class="date-tile" datetime="2026-11-13"><span class="date-tile__m">Nov</span><span class="date-tile__d">13</span><span class="date-tile__w">Fri</span></time>
-      <div class="ph ph--dark ph--photo"><img src="<?php echo esc_url( hub_asset( 'img/business/kidology-dance-co-dancers.jpg' ) ); ?>" alt="Young Kidology dancers in KDC T-shirts" width="1200" height="800" loading="lazy" decoding="async"></div>
-      <div>
-        <div class="cluster mb-2"><span class="badge badge--featured"><svg class="ho-icon"><use href="#i-star"/></svg>Featured</span><span class="badge badge--outline"><svg class="ho-icon"><use href="#i-repeat"/></svg>Weekly class</span><span class="biz-card__cat">Classes and activities</span></div>
-        <h3 class="event-row__title"><a href="<?php echo esc_url( hub_url( 'events/toddler-dance/' ) ); ?>">Toddler Dance</a></h3>
-        <p class="card__meta"><span><svg class="ho-icon"><use href="#i-repeat"/></svg>Every Friday, 5pm to 5.45pm</span><span><svg class="ho-icon"><use href="#i-pin"/></svg>Harrow Arts Centre, Hatch End</span><span><svg class="ho-icon"><use href="#i-people"/></svg>Ages 2 to 4</span></p>
-      <p class="card__text">A first dance class for 2 to 4 year olds: music, movement and lots of fun. Taught by Kidology Dance Co&rsquo;s experienced teachers at Harrow Arts Centre. Classes run by half term and must be booked in advance. A free trial class is available: call 07792 054943 or email info@kidologydance.co.uk.</p>
-      </div>
-      <div class="event-row__side"><strong>Free trial, then ask for prices</strong></div>
-    </article>
-    <article class="event-row event-row--featured" data-kind="class" data-date="2026-11-13" data-cat="classes" data-area="hatch-end" data-ages="5-11" data-free="1">
-      <time class="date-tile" datetime="2026-11-13"><span class="date-tile__m">Nov</span><span class="date-tile__d">13</span><span class="date-tile__w">Fri</span></time>
-      <div class="ph ph--dark ph--photo"><img src="<?php echo esc_url( hub_asset( 'img/business/kidology-dance-co-dancers.jpg' ) ); ?>" alt="Young Kidology dancers in KDC T-shirts" width="1200" height="800" loading="lazy" decoding="async"></div>
-      <div>
-        <div class="cluster mb-2"><span class="badge badge--featured"><svg class="ho-icon"><use href="#i-star"/></svg>Featured</span><span class="badge badge--outline"><svg class="ho-icon"><use href="#i-repeat"/></svg>Weekly class</span><span class="biz-card__cat">Classes and activities</span></div>
-        <h3 class="event-row__title"><a href="<?php echo esc_url( hub_url( 'events/mini-street-dance/' ) ); ?>">Mini Street Dance</a></h3>
-        <p class="card__meta"><span><svg class="ho-icon"><use href="#i-repeat"/></svg>Every Friday, 5pm to 6pm</span><span><svg class="ho-icon"><use href="#i-pin"/></svg>Harrow Arts Centre, Hatch End</span><span><svg class="ho-icon"><use href="#i-people"/></svg>Ages 5 to 7</span></p>
-      <p class="card__text">Street dance for 5 to 7 year olds, learning fun routines to the latest music. Taught by Kidology Dance Co&rsquo;s experienced teachers at Harrow Arts Centre. Classes run by half term and must be booked in advance. A free trial class is available: call 07792 054943 or email info@kidologydance.co.uk.</p>
-      </div>
-      <div class="event-row__side"><strong>Free trial, then ask for prices</strong></div>
-    </article>
-    <article class="event-row event-row--featured" data-kind="class" data-date="2026-11-13" data-cat="classes" data-area="hatch-end" data-ages="5-11" data-free="1">
-      <time class="date-tile" datetime="2026-11-13"><span class="date-tile__m">Nov</span><span class="date-tile__d">13</span><span class="date-tile__w">Fri</span></time>
-      <div class="ph ph--dark ph--photo"><img src="<?php echo esc_url( hub_asset( 'img/business/kidology-dance-co-dancers.jpg' ) ); ?>" alt="Young Kidology dancers in KDC T-shirts" width="1200" height="800" loading="lazy" decoding="async"></div>
-      <div>
-        <div class="cluster mb-2"><span class="badge badge--featured"><svg class="ho-icon"><use href="#i-star"/></svg>Featured</span><span class="badge badge--outline"><svg class="ho-icon"><use href="#i-repeat"/></svg>Weekly class</span><span class="biz-card__cat">Classes and activities</span></div>
-        <h3 class="event-row__title"><a href="<?php echo esc_url( hub_url( 'events/junior-street-dance/' ) ); ?>">Junior Street Dance</a></h3>
-        <p class="card__meta"><span><svg class="ho-icon"><use href="#i-repeat"/></svg>Every Friday, 5pm to 6pm</span><span><svg class="ho-icon"><use href="#i-pin"/></svg>Harrow Arts Centre, Hatch End</span><span><svg class="ho-icon"><use href="#i-people"/></svg>Ages 8 to 11</span></p>
-      <p class="card__text">Street dance and hip-hop routines for 8 to 11 year olds. Taught by Kidology Dance Co&rsquo;s experienced teachers at Harrow Arts Centre. Classes run by half term and must be booked in advance. A free trial class is available: call 07792 054943 or email info@kidologydance.co.uk.</p>
-      </div>
-      <div class="event-row__side"><strong>Free trial, then ask for prices</strong></div>
-    </article>
-    <article class="event-row event-row--featured" data-kind="class" data-date="2026-11-13" data-cat="classes" data-area="hatch-end" data-ages="12-17 adults 60-plus" data-free="1">
-      <time class="date-tile" datetime="2026-11-13"><span class="date-tile__m">Nov</span><span class="date-tile__d">13</span><span class="date-tile__w">Fri</span></time>
-      <div class="ph ph--dark ph--photo"><img src="<?php echo esc_url( hub_asset( 'img/business/kidology-dance-co-dancers.jpg' ) ); ?>" alt="Young Kidology dancers in KDC T-shirts" width="1200" height="800" loading="lazy" decoding="async"></div>
-      <div>
-        <div class="cluster mb-2"><span class="badge badge--featured"><svg class="ho-icon"><use href="#i-star"/></svg>Featured</span><span class="badge badge--outline"><svg class="ho-icon"><use href="#i-repeat"/></svg>Weekly class</span><span class="biz-card__cat">Classes and activities</span></div>
-        <h3 class="event-row__title"><a href="<?php echo esc_url( hub_url( 'events/senior-street-dance-and-hip-hop/' ) ); ?>">Senior Street Dance and Hip-Hop</a></h3>
-        <p class="card__meta"><span><svg class="ho-icon"><use href="#i-repeat"/></svg>Every Friday, 6pm to 7pm</span><span><svg class="ho-icon"><use href="#i-pin"/></svg>Harrow Arts Centre, Hatch End</span><span><svg class="ho-icon"><use href="#i-people"/></svg>Ages 12+</span></p>
-      <p class="card__text">Street dance and hip-hop for dancers aged 12 and over, working on routines for performances and the annual showcase. Taught by Kidology Dance Co&rsquo;s experienced teachers at Harrow Arts Centre. Classes run by half term and must be booked in advance. A free trial class is available: call 07792 054943 or email info@kidologydance.co.uk.</p>
-      </div>
-      <div class="event-row__side"><strong>Free trial, then ask for prices</strong></div>
-    </article>
-    <article class="event-row event-row--featured" data-kind="class" data-date="2026-11-13" data-cat="classes" data-area="wealdstone" data-ages="adults 60-plus" data-free="0">
-      <time class="date-tile" datetime="2026-11-13"><span class="date-tile__m">Nov</span><span class="date-tile__d">13</span><span class="date-tile__w">Fri</span></time>
-      <div class="ph ph--dark"><svg class="ho-icon"><use href="#i-dumbbell"/></svg></div>
-      <div>
-        <div class="cluster mb-2"><span class="badge badge--featured"><svg class="ho-icon"><use href="#i-star"/></svg>Featured</span><span class="badge badge--outline"><svg class="ho-icon"><use href="#i-repeat"/></svg>Weekly class</span><span class="biz-card__cat">Classes and activities</span></div>
-        <h3 class="event-row__title"><a href="<?php echo esc_url( hub_url( 'events/evening-yoga-flow/' ) ); ?>">Evening Yoga Flow</a></h3>
-        <p class="card__meta"><span><svg class="ho-icon"><use href="#i-repeat"/></svg>Every Friday, 6.30pm</span><span><svg class="ho-icon"><use href="#i-pin"/></svg>Wealdstone Fitness Studio, Wealdstone</span><span><svg class="ho-icon"><use href="#i-people"/></svg>Adults</span></p>
-      <p class="card__text">Unwind after work with an hour of vinyasa yoga. Mats provided.</p>
-      </div>
-      <div class="event-row__side"><strong>&pound;10</strong></div>
-    </article>
-    <article class="event-row" data-kind="class" data-date="2026-11-13" data-cat="classes" data-area="rayners-lane" data-ages="12-17" data-free="0">
-      <time class="date-tile" datetime="2026-11-13"><span class="date-tile__m">Nov</span><span class="date-tile__d">13</span><span class="date-tile__w">Fri</span></time>
-      <div class="ph"><svg class="ho-icon"><use href="#i-music"/></svg></div>
-      <div>
-        <div class="cluster mb-2"><span class="badge badge--outline"><svg class="ho-icon"><use href="#i-repeat"/></svg>Weekly class</span><span class="biz-card__cat">Classes and activities</span></div>
-        <h3 class="event-row__title"><a href="<?php echo esc_url( hub_url( 'events/street-dance-for-teens/' ) ); ?>">Street Dance for Teens</a></h3>
-        <p class="card__meta"><span><svg class="ho-icon"><use href="#i-repeat"/></svg>Every Friday, 6pm</span><span><svg class="ho-icon"><use href="#i-pin"/></svg>Rayners Lane Youth Hall, Rayners Lane</span><span><svg class="ho-icon"><use href="#i-people"/></svg>Ages 12 to 16</span></p>
-      <p class="card__text">Hip hop and commercial routines. No experience needed.</p>
-      </div>
-      <div class="event-row__side"><strong>&pound;7</strong></div>
-    </article>
-    <article class="event-row" data-kind="event" data-date="2026-11-13" data-cat="nightlife" data-area="hatch-end" data-ages="adults 60-plus" data-free="0">
-      <time class="date-tile" datetime="2026-11-13"><span class="date-tile__m">Nov</span><span class="date-tile__d">13</span><span class="date-tile__w">Fri</span></time>
-      <div class="ph"><svg class="ho-icon"><use href="#i-people"/></svg></div>
-      <div>
-        <div class="cluster mb-2"><span class="biz-card__cat">Nightlife</span></div>
-        <h3 class="event-row__title"><a href="<?php echo esc_url( hub_url( 'events/friday-night-comedy/' ) ); ?>">Friday Night Comedy</a></h3>
-        <p class="card__meta"><span><svg class="ho-icon"><use href="#i-clock"/></svg>8pm</span><span><svg class="ho-icon"><use href="#i-pin"/></svg>Harrow Arts Centre, Hatch End</span><span><svg class="ho-icon"><use href="#i-people"/></svg>Ages 18+</span></p>
-      <p class="card__text">Four stand-up acts from the London circuit, hosted by a local favourite.</p>
-      </div>
-      <div class="event-row__side"><strong>&pound;15</strong></div>
-    </article>
-    </div>
-  </section>
-  <section class="day-group" data-date="2026-11-14" aria-labelledby="day-2026-11-14">
-    <h2 class="day-group__title" id="day-2026-11-14">Saturday 14 November <small data-day-count>10 things on</small></h2>
-    <div>
-    <article class="event-row event-row--featured" data-kind="class" data-date="2026-11-14" data-cat="classes" data-area="hatch-end" data-ages="under-5 5-11 12-17 adults 60-plus" data-free="0">
-      <time class="date-tile" datetime="2026-11-14"><span class="date-tile__m">Nov</span><span class="date-tile__d">14</span><span class="date-tile__w">Sat</span></time>
-      <div class="ph ph--dark ph--photo"><img src="<?php echo esc_url( hub_asset( 'img/business/parkfield-youth-fc-team.jpg' ) ); ?>" alt="Parkfield Youth FC players in a team huddle" width="1200" height="800" loading="lazy" decoding="async"></div>
-      <div>
-        <div class="cluster mb-2"><span class="badge badge--featured"><svg class="ho-icon"><use href="#i-star"/></svg>Featured</span><span class="badge badge--outline"><svg class="ho-icon"><use href="#i-repeat"/></svg>Weekly class</span><span class="biz-card__cat">Classes and activities</span></div>
-        <h3 class="event-row__title"><a href="<?php echo esc_url( hub_url( 'events/girls-saturday-soccer-school/' ) ); ?>">Girls&rsquo; Saturday Soccer School</a></h3>
-        <p class="card__meta"><span><svg class="ho-icon"><use href="#i-repeat"/></svg>Every Saturday, time to be confirmed</span><span><svg class="ho-icon"><use href="#i-pin"/></svg>Bannister Outdoor Sports Centre, Hatch End</span><span><svg class="ho-icon"><use href="#i-people"/></svg>Girls (ages to be confirmed)</span></p>
-      <p class="card__text">A girls-only session of Parkfield Youth FC&rsquo;s Saturday Soccer School, with the same friendly coaching. The time, age groups and price are still to be confirmed: call or email the club before you go.</p>
-      </div>
-      <div class="event-row__side"><strong>Ask the club</strong></div>
-    </article>
-    <article class="event-row event-row--featured" data-kind="class" data-date="2026-11-14" data-cat="classes" data-area="wealdstone" data-ages="adults 60-plus" data-free="0">
-      <time class="date-tile" datetime="2026-11-14"><span class="date-tile__m">Nov</span><span class="date-tile__d">14</span><span class="date-tile__w">Sat</span></time>
-      <div class="ph ph--dark"><svg class="ho-icon"><use href="#i-dumbbell"/></svg></div>
-      <div>
-        <div class="cluster mb-2"><span class="badge badge--featured"><svg class="ho-icon"><use href="#i-star"/></svg>Featured</span><span class="badge badge--outline"><svg class="ho-icon"><use href="#i-repeat"/></svg>Weekly class</span><span class="biz-card__cat">Classes and activities</span></div>
-        <h3 class="event-row__title"><a href="<?php echo esc_url( hub_url( 'events/weekend-bootcamp/' ) ); ?>">Weekend Bootcamp</a></h3>
-        <p class="card__meta"><span><svg class="ho-icon"><use href="#i-repeat"/></svg>Every Saturday, 9am</span><span><svg class="ho-icon"><use href="#i-pin"/></svg>Wealdstone Fitness Studio, Wealdstone</span><span><svg class="ho-icon"><use href="#i-people"/></svg>Adults</span></p>
-      <p class="card__text">Outdoor-style circuits indoors, for every fitness level. First session free.</p>
-      </div>
-      <div class="event-row__side"><strong>&pound;10</strong></div>
-    </article>
-    <article class="event-row event-row--featured" data-kind="class" data-date="2026-11-14" data-cat="classes" data-area="hatch-end" data-ages="under-5 5-11" data-free="0">
-      <time class="date-tile" datetime="2026-11-14"><span class="date-tile__m">Nov</span><span class="date-tile__d">14</span><span class="date-tile__w">Sat</span></time>
-      <div class="ph ph--dark ph--photo"><img src="<?php echo esc_url( hub_asset( 'img/business/parkfield-youth-fc-team.jpg' ) ); ?>" alt="Parkfield Youth FC players in a team huddle" width="1200" height="800" loading="lazy" decoding="async"></div>
-      <div>
-        <div class="cluster mb-2"><span class="badge badge--featured"><svg class="ho-icon"><use href="#i-star"/></svg>Featured</span><span class="badge badge--outline"><svg class="ho-icon"><use href="#i-repeat"/></svg>Weekly class</span><span class="biz-card__cat">Classes and activities</span></div>
-        <h3 class="event-row__title"><a href="<?php echo esc_url( hub_url( 'events/saturday-soccer-school-reception-to-year-2/' ) ); ?>">Saturday Soccer School: Reception to Year 2</a></h3>
-        <p class="card__meta"><span><svg class="ho-icon"><use href="#i-repeat"/></svg>Every Saturday, 10am to 11am</span><span><svg class="ho-icon"><use href="#i-pin"/></svg>Bannister Outdoor Sports Centre, Hatch End</span><span><svg class="ho-icon"><use href="#i-people"/></svg>Ages 4 to 7 (Reception to Year 2)</span></p>
-      <p class="card__text">Fun football coaching for children, led by DBS-checked, FA-qualified coaches from Parkfield Youth FC. No booking needed: just turn up. Sessions are at Bannister Outdoor Sports Centre in winter and the club&rsquo;s home ground at John Rumney Playing Fields at other times, so check with the club before your first visit. &pound;6 per session, paid on the day.</p>
-      </div>
-      <div class="event-row__side"><strong>&pound;6</strong></div>
-    </article>
-    <article class="event-row event-row--featured" data-kind="class" data-date="2026-11-14" data-cat="classes" data-area="south-harrow" data-ages="5-11 12-17 adults" data-free="0">
-      <time class="date-tile" datetime="2026-11-14"><span class="date-tile__m">Nov</span><span class="date-tile__d">14</span><span class="date-tile__w">Sat</span></time>
-      <div class="ph ph--dark ph--logo"><img src="<?php echo esc_url( hub_asset( 'img/business/gradesmart-tuition-logo.jpg' ) ); ?>" alt="GradeSmart Tuition logo" width="480" height="480" loading="lazy" decoding="async"></div>
-      <div>
-        <div class="cluster mb-2"><span class="badge badge--featured"><svg class="ho-icon"><use href="#i-star"/></svg>Featured</span><span class="badge badge--outline"><svg class="ho-icon"><use href="#i-repeat"/></svg>Weekly class</span><span class="biz-card__cat">Classes and activities</span></div>
-        <h3 class="event-row__title"><a href="<?php echo esc_url( hub_url( 'events/saturday-small-group-tuition/' ) ); ?>">Saturday Small Group Tuition</a></h3>
-        <p class="card__meta"><span><svg class="ho-icon"><use href="#i-repeat"/></svg>Every Saturday, 10am to 2pm</span><span><svg class="ho-icon"><use href="#i-pin"/></svg>Christ Church Roxeth, South Harrow</span><span><svg class="ho-icon"><use href="#i-people"/></svg>Ages 7 to 18 (Years 3 to 13)</span></p>
-      <p class="card__text">Maths and English for Years 3 to 11, Science for Years 7 to 11, and A-level tuition, in groups of no more than six students. Families can split their hours between subjects, missed sessions roll forward, and every new student gets a free assessment. New students also get 75% off the first month. Call 07346 121877 to book.</p>
-      </div>
-      <div class="event-row__side"><strong>From &pound;8.50 an hour</strong></div>
-    </article>
-    <article class="event-row event-row--featured" data-kind="class" data-date="2026-11-14" data-cat="classes" data-area="hatch-end" data-ages="5-11 12-17" data-free="0">
-      <time class="date-tile" datetime="2026-11-14"><span class="date-tile__m">Nov</span><span class="date-tile__d">14</span><span class="date-tile__w">Sat</span></time>
-      <div class="ph ph--dark ph--photo"><img src="<?php echo esc_url( hub_asset( 'img/business/parkfield-youth-fc-team.jpg' ) ); ?>" alt="Parkfield Youth FC players in a team huddle" width="1200" height="800" loading="lazy" decoding="async"></div>
-      <div>
-        <div class="cluster mb-2"><span class="badge badge--featured"><svg class="ho-icon"><use href="#i-star"/></svg>Featured</span><span class="badge badge--outline"><svg class="ho-icon"><use href="#i-repeat"/></svg>Weekly class</span><span class="biz-card__cat">Classes and activities</span></div>
-        <h3 class="event-row__title"><a href="<?php echo esc_url( hub_url( 'events/saturday-soccer-school-years-3-to-9/' ) ); ?>">Saturday Soccer School: Years 3 to 9</a></h3>
-        <p class="card__meta"><span><svg class="ho-icon"><use href="#i-repeat"/></svg>Every Saturday, 11am to 12pm</span><span><svg class="ho-icon"><use href="#i-pin"/></svg>Bannister Outdoor Sports Centre, Hatch End</span><span><svg class="ho-icon"><use href="#i-people"/></svg>Ages 7 to 14 (Years 3 to 9)</span></p>
-      <p class="card__text">Fun football coaching for children, led by DBS-checked, FA-qualified coaches from Parkfield Youth FC. No booking needed: just turn up. Sessions are at Bannister Outdoor Sports Centre in winter and the club&rsquo;s home ground at John Rumney Playing Fields at other times, so check with the club before your first visit. &pound;6 per session, paid on the day.</p>
-      </div>
-      <div class="event-row__side"><strong>&pound;6</strong></div>
-    </article>
-    <article class="event-row" data-kind="class" data-date="2026-11-14" data-cat="classes" data-area="pinner" data-ages="under-5 5-11" data-free="0">
-      <time class="date-tile" datetime="2026-11-14"><span class="date-tile__m">Nov</span><span class="date-tile__d">14</span><span class="date-tile__w">Sat</span></time>
-      <div class="ph"><svg class="ho-icon"><use href="#i-music"/></svg></div>
-      <div>
-        <div class="cluster mb-2"><span class="badge badge--outline"><svg class="ho-icon"><use href="#i-repeat"/></svg>Weekly class</span><span class="biz-card__cat">Classes and activities</span></div>
-        <h3 class="event-row__title"><a href="<?php echo esc_url( hub_url( 'events/junior-ballet/' ) ); ?>">Junior Ballet</a></h3>
-        <p class="card__meta"><span><svg class="ho-icon"><use href="#i-repeat"/></svg>Every Saturday, 9.30am</span><span><svg class="ho-icon"><use href="#i-pin"/></svg>Pinner Village Hall, Pinner</span><span><svg class="ho-icon"><use href="#i-people"/></svg>Ages 4 to 7</span></p>
-      <p class="card__text">Playful ballet for little dancers, working towards a summer show.</p>
-      </div>
-      <div class="event-row__side"><strong>&pound;9</strong></div>
-    </article>
-    <article class="event-row" data-kind="event" data-date="2026-11-14" data-cat="community" data-area="canons-park" data-ages="5-11 12-17 adults 60-plus" data-free="1">
-      <time class="date-tile" datetime="2026-11-14"><span class="date-tile__m">Nov</span><span class="date-tile__d">14</span><span class="date-tile__w">Sat</span></time>
-      <div class="ph"><svg class="ho-icon"><use href="#i-leaf"/></svg></div>
-      <div>
-        <div class="cluster mb-2"><span class="biz-card__cat">Community</span></div>
-        <h3 class="event-row__title"><a href="<?php echo esc_url( hub_url( 'events/canons-park-tree-planting/' ) ); ?>">Canons Park Tree Planting</a></h3>
-        <p class="card__meta"><span><svg class="ho-icon"><use href="#i-clock"/></svg>10am to 1pm</span><span><svg class="ho-icon"><use href="#i-pin"/></svg>Canons Park, Canons Park</span><span><svg class="ho-icon"><use href="#i-people"/></svg>Ages 8+ with an adult</span></p>
-      <p class="card__text">Help plant 200 native trees. Tools and gloves provided, bring wellies.</p>
-      </div>
-      <div class="event-row__side"><strong>Free, book a place</strong></div>
-    </article>
-    <article class="event-row" data-kind="class" data-date="2026-11-14" data-cat="classes" data-area="kenton" data-ages="5-11 12-17" data-free="0">
-      <time class="date-tile" datetime="2026-11-14"><span class="date-tile__m">Nov</span><span class="date-tile__d">14</span><span class="date-tile__w">Sat</span></time>
-      <div class="ph"><svg class="ho-icon"><use href="#i-family"/></svg></div>
-      <div>
-        <div class="cluster mb-2"><span class="badge badge--outline"><svg class="ho-icon"><use href="#i-repeat"/></svg>Weekly class</span><span class="biz-card__cat">Classes and activities</span></div>
-        <h3 class="event-row__title"><a href="<?php echo esc_url( hub_url( 'events/saturday-kids-coding-club/' ) ); ?>">Saturday Kids&rsquo; Coding Club</a></h3>
-        <p class="card__meta"><span><svg class="ho-icon"><use href="#i-repeat"/></svg>Every Saturday, 10am</span><span><svg class="ho-icon"><use href="#i-pin"/></svg>Kenton Library, Kenton</span><span><svg class="ho-icon"><use href="#i-people"/></svg>Ages 8 to 12</span></p>
-      <p class="card__text">Build games and animations in Scratch and Python. Laptops provided.</p>
-      </div>
-      <div class="event-row__side"><strong>&pound;12</strong></div>
-    </article>
-    <article class="event-row" data-kind="class" data-date="2026-11-14" data-cat="classes" data-area="hatch-end" data-ages="under-5 5-11" data-free="1">
-      <time class="date-tile" datetime="2026-11-14"><span class="date-tile__m">Nov</span><span class="date-tile__d">14</span><span class="date-tile__w">Sat</span></time>
-      <div class="ph"><svg class="ho-icon"><use href="#i-cup"/></svg></div>
-      <div>
-        <div class="cluster mb-2"><span class="badge badge--outline"><svg class="ho-icon"><use href="#i-repeat"/></svg>Weekly class</span><span class="biz-card__cat">Classes and activities</span></div>
-        <h3 class="event-row__title"><a href="<?php echo esc_url( hub_url( 'events/story-time/' ) ); ?>">Story Time</a></h3>
-        <p class="card__meta"><span><svg class="ho-icon"><use href="#i-repeat"/></svg>Every Saturday, 10.30am</span><span><svg class="ho-icon"><use href="#i-pin"/></svg>Hatch End Bookshop &amp; Caf&eacute;, Hatch End</span><span><svg class="ho-icon"><use href="#i-people"/></svg>Ages 3 to 6</span></p>
-      <p class="card__text">Picture books, songs and a craft. Free, with a babyccino for the grown-ups.</p>
-      </div>
-      <div class="event-row__side"><strong>Free</strong></div>
-    </article>
-    <article class="event-row" data-kind="event" data-date="2026-11-14" data-cat="music" data-area="harrow-on-the-hill" data-ages="adults 60-plus" data-free="0">
-      <time class="date-tile" datetime="2026-11-14"><span class="date-tile__m">Nov</span><span class="date-tile__d">14</span><span class="date-tile__w">Sat</span></time>
-      <div class="ph"><svg class="ho-icon"><use href="#i-music"/></svg></div>
-      <div>
-        <div class="cluster mb-2"><span class="biz-card__cat">Music</span></div>
-        <h3 class="event-row__title"><a href="<?php echo esc_url( hub_url( 'events/live-jazz-supper-club/' ) ); ?>">Live Jazz Supper Club</a></h3>
-        <p class="card__meta"><span><svg class="ho-icon"><use href="#i-clock"/></svg>7.30pm</span><span><svg class="ho-icon"><use href="#i-pin"/></svg>Hill Street Kitchen, Harrow on the Hill</span><span><svg class="ho-icon"><use href="#i-people"/></svg>Adults</span></p>
-      <p class="card__text">A three-course supper with the Hill Street Trio. Booking essential.</p>
-      </div>
-      <div class="event-row__side"><strong>&pound;35 with dinner</strong></div>
-    </article>
-    </div>
-  </section>
-  <section class="day-group" data-date="2026-11-15" aria-labelledby="day-2026-11-15">
-    <h2 class="day-group__title" id="day-2026-11-15">Sunday 15 November <small data-day-count>2 things on</small></h2>
-    <div>
-    <article class="event-row" data-kind="event" data-date="2026-11-15" data-cat="community" data-area="harrow-weald" data-ages="under-5 5-11 12-17 adults 60-plus" data-free="1">
-      <time class="date-tile" datetime="2026-11-15"><span class="date-tile__m">Nov</span><span class="date-tile__d">15</span><span class="date-tile__w">Sun</span></time>
-      <div class="ph"><svg class="ho-icon"><use href="#i-leaf"/></svg></div>
-      <div>
-        <div class="cluster mb-2"><span class="biz-card__cat">Community</span></div>
-        <h3 class="event-row__title"><a href="<?php echo esc_url( hub_url( 'events/harrow-weald-common-guided-walk/' ) ); ?>">Harrow Weald Common Guided Walk</a></h3>
-        <p class="card__meta"><span><svg class="ho-icon"><use href="#i-clock"/></svg>10am to 12pm</span><span><svg class="ho-icon"><use href="#i-pin"/></svg>Harrow Weald Common, Harrow Weald</span><span><svg class="ho-icon"><use href="#i-people"/></svg>All ages</span></p>
-      <p class="card__text">A gentle two-hour walk with a local ranger. Meet at the car park.</p>
-      </div>
-      <div class="event-row__side"><strong>Free</strong></div>
-    </article>
-    <article class="event-row" data-kind="event" data-date="2026-11-15" data-cat="food-and-drink" data-area="pinner" data-ages="under-5 5-11 12-17 adults 60-plus" data-free="1">
-      <time class="date-tile" datetime="2026-11-15"><span class="date-tile__m">Nov</span><span class="date-tile__d">15</span><span class="date-tile__w">Sun</span></time>
-      <div class="ph"><svg class="ho-icon"><use href="#i-cart"/></svg></div>
-      <div>
-        <div class="cluster mb-2"><span class="biz-card__cat">Food and drink</span></div>
-        <h3 class="event-row__title"><a href="<?php echo esc_url( hub_url( 'events/pinner-farmers-market/' ) ); ?>">Pinner Farmers&rsquo; Market</a></h3>
-        <p class="card__meta"><span><svg class="ho-icon"><use href="#i-clock"/></svg>10am to 2pm</span><span><svg class="ho-icon"><use href="#i-pin"/></svg>Pinner High Street, Pinner</span><span><svg class="ho-icon"><use href="#i-people"/></svg>All ages</span></p>
-      <p class="card__text">Around 30 stalls of local produce, bread, cheese and hot food.</p>
-      </div>
-      <div class="event-row__side"><strong>Free entry</strong></div>
-    </article>
-    </div>
-  </section>
-  <section class="day-group" data-date="2026-11-16" aria-labelledby="day-2026-11-16">
-    <h2 class="day-group__title" id="day-2026-11-16">Monday 16 November <small data-day-count>3 things on</small></h2>
-    <div>
-    <article class="event-row event-row--featured" data-kind="class" data-date="2026-11-16" data-cat="classes" data-area="hatch-end" data-ages="5-11 12-17 adults 60-plus" data-free="1">
-      <time class="date-tile" datetime="2026-11-16"><span class="date-tile__m">Nov</span><span class="date-tile__d">16</span><span class="date-tile__w">Mon</span></time>
-      <div class="ph ph--dark ph--photo"><img src="<?php echo esc_url( hub_asset( 'img/business/kidology-dance-co-dancers.jpg' ) ); ?>" alt="Young Kidology dancers in KDC T-shirts" width="1200" height="800" loading="lazy" decoding="async"></div>
-      <div>
-        <div class="cluster mb-2"><span class="badge badge--featured"><svg class="ho-icon"><use href="#i-star"/></svg>Featured</span><span class="badge badge--outline"><svg class="ho-icon"><use href="#i-repeat"/></svg>Weekly class</span><span class="biz-card__cat">Classes and activities</span></div>
-        <h3 class="event-row__title"><a href="<?php echo esc_url( hub_url( 'events/kids-breakdance/' ) ); ?>">Kids&rsquo; Breakdance</a></h3>
-        <p class="card__meta"><span><svg class="ho-icon"><use href="#i-repeat"/></svg>Every Monday, 5pm to 6.30pm</span><span><svg class="ho-icon"><use href="#i-pin"/></svg>Harrow Arts Centre, Hatch End</span><span><svg class="ho-icon"><use href="#i-people"/></svg>Ages 8+</span></p>
-      <p class="card__text">Breakdance for dancers aged 8 and over: footwork, freezes and power moves, built up step by step. Taught by Kidology Dance Co&rsquo;s experienced teachers at Harrow Arts Centre. Classes run by half term and must be booked in advance. A free trial class is available: call 07792 054943 or email info@kidologydance.co.uk.</p>
-      </div>
-      <div class="event-row__side"><strong>Free trial, then ask for prices</strong></div>
-    </article>
-    <article class="event-row" data-kind="event" data-date="2026-11-16" data-cat="community" data-area="harrow-on-the-hill" data-ages="adults 60-plus" data-free="0">
-      <time class="date-tile" datetime="2026-11-16"><span class="date-tile__m">Nov</span><span class="date-tile__d">16</span><span class="date-tile__w">Mon</span></time>
-      <div class="ph"><svg class="ho-icon"><use href="#i-briefcase"/></svg></div>
-      <div>
-        <div class="cluster mb-2"><span class="biz-card__cat">Community</span></div>
-        <h3 class="event-row__title"><a href="<?php echo esc_url( hub_url( 'events/harrow-business-breakfast/' ) ); ?>">Harrow Business Breakfast</a></h3>
-        <p class="card__meta"><span><svg class="ho-icon"><use href="#i-clock"/></svg>7.30am</span><span><svg class="ho-icon"><use href="#i-pin"/></svg>Hill Street Kitchen, Harrow on the Hill</span><span><svg class="ho-icon"><use href="#i-people"/></svg>Adults</span></p>
-      </div>
-      <div class="event-row__side"><strong>&pound;12</strong></div>
-    </article>
-    <article class="event-row" data-kind="class" data-date="2026-11-16" data-cat="classes" data-area="headstone" data-ages="60-plus adults" data-free="0">
-      <time class="date-tile" datetime="2026-11-16"><span class="date-tile__m">Nov</span><span class="date-tile__d">16</span><span class="date-tile__w">Mon</span></time>
-      <div class="ph"><svg class="ho-icon"><use href="#i-heart"/></svg></div>
-      <div>
-        <div class="cluster mb-2"><span class="badge badge--outline"><svg class="ho-icon"><use href="#i-repeat"/></svg>Weekly class</span><span class="biz-card__cat">Classes and activities</span></div>
-        <h3 class="event-row__title"><a href="<?php echo esc_url( hub_url( 'events/chair-yoga-for-over-60s/' ) ); ?>">Chair Yoga for Over-60s</a></h3>
-        <p class="card__meta"><span><svg class="ho-icon"><use href="#i-repeat"/></svg>Every Monday, 11am</span><span><svg class="ho-icon"><use href="#i-pin"/></svg>St George&rsquo;s Hall, Headstone</span><span><svg class="ho-icon"><use href="#i-people"/></svg>Ages 60+</span></p>
-      </div>
-      <div class="event-row__side"><strong>&pound;3</strong></div>
-    </article>
-    </div>
-  </section>
-  <section class="day-group" data-date="2026-11-17" aria-labelledby="day-2026-11-17">
-    <h2 class="day-group__title" id="day-2026-11-17">Tuesday 17 November <small data-day-count>3 things on</small></h2>
-    <div>
-    <article class="event-row" data-kind="event" data-date="2026-11-17" data-cat="community" data-area="kenton" data-ages="adults 60-plus" data-free="1">
-      <time class="date-tile" datetime="2026-11-17"><span class="date-tile__m">Nov</span><span class="date-tile__d">17</span><span class="date-tile__w">Tue</span></time>
-      <div class="ph"><svg class="ho-icon"><use href="#i-medical"/></svg></div>
-      <div>
-        <div class="cluster mb-2"><span class="biz-card__cat">Community</span></div>
-        <h3 class="event-row__title"><a href="<?php echo esc_url( hub_url( 'events/flu-jab-drop-in/' ) ); ?>">Flu Jab Drop-in</a></h3>
-        <p class="card__meta"><span><svg class="ho-icon"><use href="#i-clock"/></svg>9am to 1pm</span><span><svg class="ho-icon"><use href="#i-pin"/></svg>Kenton Road Pharmacy, Kenton</span><span><svg class="ho-icon"><use href="#i-people"/></svg>Ages 18+</span></p>
-      <p class="card__text">No appointment needed. Bring your NHS number if you have it.</p>
-      </div>
-      <div class="event-row__side"><strong>Free for eligible adults</strong></div>
-    </article>
-    <article class="event-row" data-kind="event" data-date="2026-11-17" data-cat="community" data-area="pinner" data-ages="under-5 5-11 12-17 adults 60-plus" data-free="1">
-      <time class="date-tile" datetime="2026-11-17"><span class="date-tile__m">Nov</span><span class="date-tile__d">17</span><span class="date-tile__w">Tue</span></time>
-      <div class="ph"><svg class="ho-icon"><use href="#i-wrench"/></svg></div>
-      <div>
-        <div class="cluster mb-2"><span class="biz-card__cat">Community</span></div>
-        <h3 class="event-row__title"><a href="<?php echo esc_url( hub_url( 'events/pinner-repair-cafe/' ) ); ?>">Pinner Repair Caf&eacute;</a></h3>
-        <p class="card__meta"><span><svg class="ho-icon"><use href="#i-clock"/></svg>2pm</span><span><svg class="ho-icon"><use href="#i-pin"/></svg>Pinner Methodist Hall, Pinner</span><span><svg class="ho-icon"><use href="#i-people"/></svg>All ages</span></p>
-      </div>
-      <div class="event-row__side"><strong>Free</strong></div>
-    </article>
-    <article class="event-row" data-kind="class" data-date="2026-11-17" data-cat="classes" data-area="hatch-end" data-ages="adults 60-plus" data-free="0">
-      <time class="date-tile" datetime="2026-11-17"><span class="date-tile__m">Nov</span><span class="date-tile__d">17</span><span class="date-tile__w">Tue</span></time>
-      <div class="ph"><svg class="ho-icon"><use href="#i-edit"/></svg></div>
-      <div>
-        <div class="cluster mb-2"><span class="badge badge--outline"><svg class="ho-icon"><use href="#i-repeat"/></svg>Weekly class</span><span class="biz-card__cat">Classes and activities</span></div>
-        <h3 class="event-row__title"><a href="<?php echo esc_url( hub_url( 'events/beginners-pottery/' ) ); ?>">Beginners&rsquo; Pottery</a></h3>
-        <p class="card__meta"><span><svg class="ho-icon"><use href="#i-repeat"/></svg>Every Tuesday, 7pm</span><span><svg class="ho-icon"><use href="#i-pin"/></svg>Harrow Arts Centre, Hatch End</span><span><svg class="ho-icon"><use href="#i-people"/></svg>Adults</span></p>
-      </div>
-      <div class="event-row__side"><strong>&pound;150 for 6 weeks</strong></div>
-    </article>
-    </div>
-  </section>
+<?php endforeach; ?>
 
       <div class="split mt-6">
-        <p class="muted small mb-0" data-events-range>Showing Wednesday 11 November to Tuesday 17 November.</p>
-        <a class="ho-btn ho-btn--outline" href="<?php echo esc_url( hub_url( 'events/month/' ) ); ?>">See the whole month <svg class="ho-icon"><use href="#i-arrow"/></svg></a>
+        <p class="muted small mb-0" data-events-range>Showing <?php echo esc_html( $hub_span ); ?>.</p>
+        <a class="ho-btn ho-btn--outline" href="<?php echo esc_url( hub_url( 'events/month/' ) ); ?>">See the whole month <?php echo hub_icon( 'arrow' ); ?></a>
       </div>
 
       <div class="grid grid-2 mt-6">
         <div class="panel panel--soft">
-          <h2 class="panel__title"><svg class="ho-icon"><use href="#i-repeat"/></svg> Looking for a regular class?</h2>
+          <h2 class="panel__title"><?php echo hub_icon( 'repeat' ); ?> Looking for a regular class?</h2>
           <p class="small">Fitness, dance, kids&rsquo; clubs and workshops that run every week, all in one place.</p>
-          <a class="link-arrow" href="<?php echo esc_url( hub_url( 'events/classes/' ) ); ?>">Browse classes and activities <svg class="ho-icon"><use href="#i-arrow"/></svg></a>
+          <a class="link-arrow" href="<?php echo esc_url( hub_url( 'events/classes/' ) ); ?>">Browse classes and activities <?php echo hub_icon( 'arrow' ); ?></a>
         </div>
         <div class="panel panel--soft">
-          <h2 class="panel__title"><svg class="ho-icon"><use href="#i-mail"/></svg> The Weekend, every Thursday</h2>
+          <h2 class="panel__title"><?php echo hub_icon( 'mail' ); ?> The Weekend, every Thursday</h2>
           <p class="small">Our Thursday newsletter picks the best things to do in Harrow that weekend.</p>
           <form class="inline-signup" action="https://harrowonline.org/wp-json/ho/v1/subscribe" method="post" data-nl-form data-nl-done="Thanks! Check your inbox to confirm. The Weekend arrives every Thursday.">
             <input type="hidden" name="signup_source" value="events-weekend">
@@ -574,7 +189,7 @@ get_header();
       <p>Businesses add events and classes on the Featured or Local Partner plan, or list a single event for &pound;15 with no plan. Schools, clubs, charities and community groups add them free with an organiser account. We check every listing before it goes live, usually within one working day.</p>
     </div>
     <div class="cta-band__actions">
-      <a class="ho-btn ho-btn--primary" href="<?php echo esc_url( hub_url( 'register/' ) ); ?>"><svg class="ho-icon"><use href="#i-plus"/></svg>Add your event</a>
+      <a class="ho-btn ho-btn--primary" href="<?php echo esc_url( hub_url( 'register/' ) ); ?>"><?php echo hub_icon( 'plus' ); ?>Add your event</a>
       <a class="ho-btn ho-btn--outline" href="<?php echo esc_url( hub_url( 'pricing/' ) ); ?>">Business plans</a>
     </div>
   </div>

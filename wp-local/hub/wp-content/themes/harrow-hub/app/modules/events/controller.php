@@ -1,0 +1,327 @@
+<?php
+/**
+ * What's On (events and weekly classes): what pages and the API call. Nothing outside this module calls anything
+ * else in it.
+ *
+ *   hub_events_whats_on( $params )        the What's On list: featured events, then each day of the next 7
+ *   hub_events_month( $month )            the month calendar ('Y-m'), with the month's one-off events as an agenda
+ *   hub_events_weekend( $limit )          this weekend's events (homepage)
+ *   hub_events_list( $params )            one-off events, filtered
+ *   hub_event_get( $id_or_slug )          an event page: the event, its organiser, more coming up
+ *   hub_classes_list( $params )           weekly classes, filtered
+ *   hub_class_get( $id_or_slug )          a class page: the class, who runs it, more classes
+ *   hub_events_for_business( $id, $names) a business's upcoming events and its weekly classes (its profile)
+ *
+ * Each takes $mode last: HUB_WEB (arrays, the default) or HUB_API (WP_REST_Response). See app/bootstrap.php.
+ */
+defined( 'ABSPATH' ) || exit;
+
+/**
+ * The What's On list.
+ *
+ * @param array $params { from: 'Y-m-d' (default today) }
+ * @return array|WP_REST_Response {
+ *     today, weekend { from, to }, range { from, to }   dates as 'Y-m-d'
+ *     featured:   event[]   featured events from today on, soonest first (not repeated in the days)
+ *     days:       [ { date, items: (event | class with date)[] } ]   featured first, then by time
+ *     total:      int  items in the days
+ *     categories: [ { slug, name, count } ]  upcoming events per category, and the weekly classes
+ * }
+ */
+function hub_events_whats_on( array $params = array(), $mode = HUB_WEB ) {
+	$today = hub_events_db_today();
+	$from  = _hub_events_date_param( $params, 'from', $today );
+	list( $w0, $w1 ) = hub_events_rule_weekend( $today );
+
+	$featured = array_values( array_filter( _hub_events_all(), function ( $e ) use ( $from ) {
+		return $e['featured'] && $e['date'] >= $from->format( 'Y-m-d' );
+	} ) );
+	$days  = array();
+	$total = 0;
+	for ( $n = 0; $n < HUB_EVENTS_LIST_DAYS; $n++ ) {
+		$day   = $from->modify( '+' . $n . ' day' );
+		$items = array_values( array_filter( _hub_events_on( $day ), function ( $x ) {
+			return ! ( 'event' === $x['kind'] && $x['featured'] );
+		} ) );
+		$total  += count( $items );
+		$days[]  = array( 'date' => $day->format( 'Y-m-d' ), 'items' => $items );
+	}
+
+	return hub_respond( array(
+		'today'      => $today->format( 'Y-m-d' ),
+		'weekend'    => array( 'from' => $w0->format( 'Y-m-d' ), 'to' => $w1->format( 'Y-m-d' ) ),
+		'range'      => array( 'from' => $from->format( 'Y-m-d' ), 'to' => $from->modify( '+' . ( HUB_EVENTS_LIST_DAYS - 1 ) . ' day' )->format( 'Y-m-d' ) ),
+		'featured'   => $featured,
+		'days'       => $days,
+		'total'      => $total,
+		'categories' => _hub_events_category_counts( $today ),
+	), $mode );
+}
+
+/**
+ * The month calendar.
+ *
+ * @param string $month 'Y-m' (default: this month).
+ * @return array|WP_REST_Response {
+ *     month { value 'Y-m', name 'November', label 'November 2026', prev 'Y-m', next 'Y-m' }, today,
+ *     cells:      [ { date, in_month, is_today, items (first 3), more (how many not shown) } ]  6 weeks from Monday
+ *     agenda:     [ { date, is_today, past, items: event[] } ]  days of the month with one-off events
+ *     categories: as hub_events_whats_on()
+ * }
+ */
+function hub_events_month( $month = '', $mode = HUB_WEB ) {
+	$today = hub_events_db_today();
+	$first = preg_match( '/^\d{4}-(0[1-9]|1[0-2])$/', (string) $month ) ? new DateTimeImmutable( $month . '-01', $today->getTimezone() ) : $today->modify( 'first day of this month' )->setTime( 0, 0 );
+	$start = $first->modify( '-' . hub_events_rule_weekday( $first ) . ' day' );
+	$t     = $today->format( 'Y-m-d' );
+
+	$cells = array();
+	for ( $n = 0; $n < 42; $n++ ) {
+		$day     = $start->modify( '+' . $n . ' day' );
+		$items   = _hub_events_on( $day );
+		$cells[] = array(
+			'date'     => $day->format( 'Y-m-d' ),
+			'in_month' => $day->format( 'm' ) === $first->format( 'm' ),
+			'is_today' => $day->format( 'Y-m-d' ) === $t,
+			'items'    => array_slice( $items, 0, HUB_EVENTS_CELL_ITEMS ),
+			'more'     => max( 0, count( $items ) - HUB_EVENTS_CELL_ITEMS ),
+		);
+	}
+	$agenda = array();
+	for ( $day = $first; $day->format( 'm' ) === $first->format( 'm' ); $day = $day->modify( '+1 day' ) ) {
+		$events = array_values( array_filter( _hub_events_on( $day ), function ( $x ) { return 'event' === $x['kind']; } ) );
+		if ( $events ) {
+			$d        = $day->format( 'Y-m-d' );
+			$agenda[] = array( 'date' => $d, 'is_today' => $d === $t, 'past' => $d < $t, 'items' => $events );
+		}
+	}
+
+	return hub_respond( array(
+		'month'      => array(
+			'value' => $first->format( 'Y-m' ),
+			'name'  => $first->format( 'F' ),
+			'label' => $first->format( 'F Y' ),
+			'prev'  => $first->modify( '-1 month' )->format( 'Y-m' ),
+			'next'  => $first->modify( '+1 month' )->format( 'Y-m' ),
+		),
+		'today'      => $t,
+		'cells'      => $cells,
+		'agenda'     => $agenda,
+		'categories' => _hub_events_category_counts( $today ),
+	), $mode );
+}
+
+/**
+ * This weekend's one-off events (Friday to Sunday): featured first, then soonest.
+ *
+ * @return array|WP_REST_Response { from, to, items: event[] }
+ */
+function hub_events_weekend( $limit = 4, $mode = HUB_WEB ) {
+	list( $w0, $w1 ) = hub_events_rule_weekend( hub_events_db_today() );
+	$items = array_values( array_filter( _hub_events_all(), function ( $e ) use ( $w0, $w1 ) {
+		return $e['date'] >= $w0->format( 'Y-m-d' ) && $e['date'] <= $w1->format( 'Y-m-d' );
+	} ) );
+	usort( $items, function ( $a, $b ) {
+		return array( $a['featured'] ? 0 : 1, $a['start'] ) <=> array( $b['featured'] ? 0 : 1, $b['start'] );
+	} );
+	return hub_respond( array(
+		'from'  => $w0->format( 'Y-m-d' ),
+		'to'    => $w1->format( 'Y-m-d' ),
+		'items' => array_slice( $items, 0, max( 1, (int) $limit ) ),
+	), $mode );
+}
+
+/**
+ * One-off events, by start time.
+ *
+ * @param array $params { from, to ('Y-m-d'; default from today on), cat, area (slugs), featured (1), limit, offset }
+ * @return array|WP_REST_Response { items: event[], total }
+ */
+function hub_events_list( array $params = array(), $mode = HUB_WEB ) {
+	$today = hub_events_db_today();
+	$from  = _hub_events_date_param( $params, 'from', $today )->format( 'Y-m-d' );
+	$to    = isset( $params['to'] ) ? _hub_events_date_param( $params, 'to', $today )->format( 'Y-m-d' ) : '';
+	$cat   = hub_param_slug( $params, 'cat' );
+	$area  = hub_param_slug( $params, 'area' );
+	$feat  = hub_param_bool( $params, 'featured' );
+	$items = array_values( array_filter( _hub_events_all(), function ( $e ) use ( $from, $to, $cat, $area, $feat ) {
+		return $e['date'] >= $from && ( '' === $to || $e['date'] <= $to )
+			&& ( '' === $cat || $e['category']['slug'] === $cat ) && ( '' === $area || $e['area']['slug'] === $area )
+			&& ( ! $feat || $e['featured'] );
+	} ) );
+	$limit = hub_param_int( $params, 'limit', 0, 0, 100 );
+	return hub_respond( array(
+		'items' => array_slice( $items, hub_param_int( $params, 'offset', 0 ), $limit ? $limit : null ),
+		'total' => count( $items ),
+	), $mode );
+}
+
+/**
+ * An event page.
+ *
+ * @return array|WP_REST_Response|null|WP_Error { event, organiser: business | null, more: event[] } or null (web) / 404 (API)
+ */
+function hub_event_get( $id_or_slug, $mode = HUB_WEB ) {
+	$post = hub_events_db_get( 'hub_event', hub_param_id_or_slug( $id_or_slug ) );
+	if ( ! $post ) {
+		return hub_respond_error( 'hub_event_not_found', 'No event with that ID or slug.', $mode );
+	}
+	$event = _hub_event_build( $post );
+	return hub_respond( array(
+		'event'     => $event,
+		'organiser' => $event['organiser'] ? hub_business_find_by_name( $event['organiser'] ) : null,   // businesses module
+		'more'      => hub_events_rule_more_events( $event, _hub_events_all(), hub_events_db_today() ),
+	), $mode );
+}
+
+/**
+ * Weekly classes, in the classes order.
+ *
+ * @param array $params { type, area (slugs), day ('mon'...'sun'), age (age group slug) }
+ * @return array|WP_REST_Response { items: class[], total, types: [ { slug, name, count } ] }
+ */
+function hub_classes_list( array $params = array(), $mode = HUB_WEB ) {
+	$type  = hub_param_slug( $params, 'type' );
+	$area  = hub_param_slug( $params, 'area' );
+	$day   = hub_param_slug( $params, 'day' );
+	$age   = hub_param_slug( $params, 'age' );
+	$all   = _hub_classes_all();
+	$items = array_values( array_filter( $all, function ( $c ) use ( $type, $area, $day, $age ) {
+		return ( '' === $type || $c['type']['slug'] === $type ) && ( '' === $area || $c['area']['slug'] === $area )
+			&& ( '' === $day || strtolower( substr( $c['day_name'], 0, 3 ) ) === $day ) && ( '' === $age || in_array( $age, $c['age_groups'], true ) );
+	} ) );
+	$types = array();
+	foreach ( $all as $c ) {
+		$k = $c['type']['slug'];
+		if ( ! isset( $types[ $k ] ) ) {
+			$types[ $k ] = $c['type'] + array( 'count' => 0 );
+		}
+		$types[ $k ]['count']++;
+	}
+	return hub_respond( array( 'items' => $items, 'total' => count( $items ), 'types' => array_values( $types ) ), $mode );
+}
+
+/**
+ * A class page.
+ *
+ * @return array|WP_REST_Response|null|WP_Error { class, provider: business | null, more: class[] } or null (web) / 404 (API)
+ */
+function hub_class_get( $id_or_slug, $mode = HUB_WEB ) {
+	$post = hub_events_db_get( 'hub_class', hub_param_id_or_slug( $id_or_slug ) );
+	if ( ! $post ) {
+		return hub_respond_error( 'hub_class_not_found', 'No class with that ID or slug.', $mode );
+	}
+	$class = _hub_class_build( $post );
+	// Who runs it: the business picked in wp-admin, otherwise the business with the provider's (or venue's) name
+	if ( $class['business_id'] ) {
+		$found    = hub_businesses_summaries( array( $class['business_id'] ) )['items'];   // businesses module
+		$provider = isset( $found[ $class['business_id'] ] ) ? $found[ $class['business_id'] ] : null;
+	} else {
+		$provider = hub_business_find_by_name( '' !== $class['provider'] ? $class['provider'] : $class['venue'] );
+	}
+	return hub_respond( array(
+		'class'    => $class,
+		'provider' => $provider,
+		'more'     => hub_events_rule_more_classes( $class, _hub_classes_all() ),
+	), $mode );
+}
+
+/**
+ * What a business runs: its one-off events from today on (matched by organiser name) and its weekly classes.
+ *
+ * @param string[] $names The business's names (current and imported).
+ * @return array|WP_REST_Response { events: event[], classes: class[] }
+ */
+function hub_events_for_business( $business_id, array $names, $mode = HUB_WEB ) {
+	$names = array_map( 'hub_plain', $names );
+	$today = hub_events_db_today()->format( 'Y-m-d' );
+	return hub_respond( array(
+		'events'  => array_values( array_filter( _hub_events_all(), function ( $e ) use ( $names, $today ) {
+			return $e['organiser'] && in_array( $e['organiser'], $names, true ) && $e['date'] >= $today;
+		} ) ),
+		'classes' => array_values( array_filter( _hub_classes_all(), function ( $c ) use ( $business_id ) {
+			return (int) $c['business_id'] === (int) $business_id && $business_id;
+		} ) ),
+	), $mode );
+}
+
+/* ------------------------------------------------------------------ internal */
+
+/** Every event in the event shape, by start then title. Cached for the request. */
+function _hub_events_all() {
+	static $all = null;
+	if ( null === $all ) {
+		$all = array_map( '_hub_event_build', hub_events_db_events() );
+		usort( $all, function ( $a, $b ) {
+			return array( $a['start'], $a['title'] ) <=> array( $b['start'], $b['title'] );
+		} );
+	}
+	return $all;
+}
+
+/** Every weekly class in the class shape, in the classes order. Cached for the request. */
+function _hub_classes_all() {
+	static $all = null;
+	if ( null === $all ) {
+		$all = array_map( '_hub_class_build', hub_events_db_classes() );
+	}
+	return $all;
+}
+
+function _hub_event_build( WP_Post $post ) {
+	return hub_event_shape( $post, hub_events_db_record( $post ), _hub_events_areas(), hub_events_db_today() );
+}
+
+function _hub_class_build( WP_Post $post ) {
+	return hub_class_shape( $post, hub_events_db_record( $post ), _hub_events_areas(), hub_events_db_class_business( $post->ID ) );
+}
+
+/** Everything on one day: its events, then the classes that run on that weekday (with the date), featured first, by time. */
+function _hub_events_on( DateTimeImmutable $day ) {
+	$d     = $day->format( 'Y-m-d' );
+	$wd    = hub_events_rule_weekday( $day );
+	$items = array_values( array_filter( _hub_events_all(), function ( $e ) use ( $d ) { return $e['date'] === $d; } ) );
+	foreach ( _hub_classes_all() as $c ) {
+		if ( $c['weekday'] === $wd ) {
+			$items[] = $c + array( 'date' => $d );
+		}
+	}
+	return hub_events_rule_sort_day( $items );
+}
+
+/** Upcoming one-off events per category, plus the weekly classes, in the filter order. */
+function _hub_events_category_counts( DateTimeImmutable $today ) {
+	$cats = array( 'classes' => HUB_EVENTS_CLASSES_CATEGORY + array( 'count' => count( _hub_classes_all() ) ) );
+	foreach ( _hub_events_all() as $e ) {
+		if ( $e['date'] < $today->format( 'Y-m-d' ) || '' === $e['category']['slug'] ) {
+			continue;
+		}
+		$k = $e['category']['slug'];
+		if ( ! isset( $cats[ $k ] ) ) {
+			$cats[ $k ] = $e['category'] + array( 'count' => 0 );
+		}
+		$cats[ $k ]['count']++;
+	}
+	return hub_events_rule_sort_categories( array_values( $cats ) );
+}
+
+/** Area slugs by name and names by slug, from the areas module (once per request). */
+function _hub_events_areas() {
+	static $areas = null;
+	if ( null === $areas ) {
+		$items = hub_areas_list()['items'];
+		$areas = array( 'by_name' => wp_list_pluck( $items, 'slug', 'name' ), 'by_slug' => wp_list_pluck( $items, 'name', 'slug' ) );
+	}
+	return $areas;
+}
+
+/** A 'Y-m-d' date parameter, or $default. */
+function _hub_events_date_param( array $params, $key, DateTimeImmutable $default ) {
+	if ( isset( $params[ $key ] ) && is_string( $params[ $key ] ) && preg_match( '/^\d{4}-\d{2}-\d{2}$/', $params[ $key ] ) ) {
+		$d = DateTimeImmutable::createFromFormat( '!Y-m-d', $params[ $key ], $default->getTimezone() );
+		if ( $d ) {
+			return $d;
+		}
+	}
+	return $default;
+}

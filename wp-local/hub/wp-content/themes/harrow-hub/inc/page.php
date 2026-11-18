@@ -5,6 +5,9 @@
  */
 defined( 'ABSPATH' ) || exit;
 
+/** The Hub's public address. Shared links, canonical links and structured data always point here, whichever server renders the page. */
+const HUB_ORIGIN = 'https://harrowonline.org/hub';
+
 /** Hub URL from a path: hub_url( 'events/' ) => https://harrowonline.org/hub/events/ */
 function hub_url( $path = '' ) {
 	return home_url( '/' . ltrim( (string) $path, '/' ) );

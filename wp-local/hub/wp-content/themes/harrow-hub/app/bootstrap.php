@@ -30,7 +30,7 @@ require_once $hub_app . '/core/url.php';
 require_once $hub_app . '/setup/rest-routes.php';
 
 // Modules
-foreach ( array( 'categories', 'areas', 'businesses', 'offers' ) as $hub_module ) {
+foreach ( array( 'categories', 'areas', 'businesses', 'offers', 'events' ) as $hub_module ) {
 	foreach ( array( 'data', 'rules', 'shape', 'controller', 'routes' ) as $hub_file ) {
 		require_once $hub_app . '/modules/' . $hub_module . '/' . $hub_file . '.php';
 	}

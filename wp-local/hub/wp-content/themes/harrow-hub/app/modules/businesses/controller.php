@@ -102,8 +102,9 @@ function hub_businesses_summaries( array $ids, $mode = HUB_WEB ) {
  * @return array|WP_REST_Response|null|WP_Error business
  */
 function hub_business_find_by_name( $name, $mode = HUB_WEB ) {
-	$by = _hub_businesses_claimed_by_name();
-	if ( '' === (string) $name || ! isset( $by[ $name ] ) ) {
+	$by   = _hub_businesses_claimed_by_name();
+	$name = hub_plain( $name );
+	if ( '' === $name || ! isset( $by[ $name ] ) ) {
 		return hub_respond_error( 'hub_business_not_found', 'No claimed business with that name.', $mode );
 	}
 	return hub_respond( _hub_business_build( $by[ $name ] ), $mode );
@@ -149,18 +150,39 @@ function _hub_businesses_with_counts( WP_Post $post ) {
 	return $b + array( 'counts' => array( 'offers' => $offers, 'upcoming' => $b['claimed'] ? count( _hub_businesses_events( $post ) ) : 0 ) );
 }
 
-/** A claimed business's events and classes, in profile order. Cached per post. */
+/**
+ * A claimed business's upcoming events and weekly classes, in profile order (events module). Businesses never saved
+ * in wp-admin keep the classes of their imported record. Cached per post.
+ */
 function _hub_businesses_events( WP_Post $post ) {
 	static $cache = array();
 	if ( ! isset( $cache[ $post->ID ] ) ) {
-		$x                    = hub_businesses_db_record( $post );
-		$cache[ $post->ID ]   = empty( $x['claimed'] ) ? array()
-			: array_map( 'hub_business_shape_event', hub_businesses_rule_sort_events( hub_businesses_db_events( $post, $x ) ) );
+		$x    = hub_businesses_db_record( $post );
+		$rows = array();
+		if ( ! empty( $x['claimed'] ) ) {
+			$found = hub_events_for_business( $post->ID, array( $x['claimed']['name'] ) );   // events module
+			$rows  = array_map( 'hub_business_shape_event_row', $found['events'] );
+			if ( hub_businesses_db_uses_acf( $post->ID ) ) {
+				$today = hub_businesses_db_today();
+				foreach ( $found['classes'] as $c ) {
+					$rows[] = hub_business_shape_class_row( $c, $today );
+				}
+			} else {
+				foreach ( isset( $x['claimed']['class_events'] ) ? $x['claimed']['class_events'] : array() as $c ) {
+					$rows[] = hub_business_shape_imported_class_row( $c );
+				}
+			}
+			$rows = array_map( function ( $r ) {
+				unset( $r['order'] );
+				return $r;
+			}, hub_businesses_rule_sort_events( $rows ) );
+		}
+		$cache[ $post->ID ] = $rows;
 	}
 	return $cache[ $post->ID ];
 }
 
-/** Claimed businesses by current and imported name. */
+/** Claimed businesses by current and imported name (plain text). */
 function _hub_businesses_claimed_by_name() {
 	static $by = null;
 	if ( null === $by ) {
@@ -170,10 +192,10 @@ function _hub_businesses_claimed_by_name() {
 			if ( empty( $x['claimed'] ) ) {
 				continue;
 			}
-			$by[ $x['claimed']['name'] ] = $post;
-			$imported                    = hub_businesses_db_imported( $post );
+			$by[ hub_plain( $x['claimed']['name'] ) ] = $post;
+			$imported                                 = hub_businesses_db_imported( $post );
 			if ( ! empty( $imported['claimed']['name'] ) ) {
-				$by[ $imported['claimed']['name'] ] = $post;
+				$by[ hub_plain( $imported['claimed']['name'] ) ] = $post;
 			}
 		}
 	}

@@ -90,7 +90,7 @@ function hub_businesses_rule_news_shown( $url ) {
 
 /**
  * Events and classes on a profile: one-off events by date (as given), then weekly classes soonest day first, then
- * in the classes order.
+ * in the classes order. Rows: { date, order, weekly, ... }.
  */
 function hub_businesses_rule_sort_events( array $rows ) {
 	$events  = array_values( array_filter( $rows, function ( $r ) { return ! $r['weekly']; } ) );

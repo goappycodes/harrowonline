@@ -1,31 +1,10 @@
 <?php
 /**
- * ACF glue that has not moved into app/modules/ yet, and the newsletter band.
+ * The newsletter sign-up band above the footer (Hub settings > Newsletter). Moves into a newsletter module later.
  *
- * Business fields are read and saved by the businesses module (app/modules/businesses/data.php), offers by the
- * offers module. Offers and classes belong to a business through their "Business" field (offer_business /
- * class_business), kept in step with the business's "Offers" and "Weekly classes" fields by ACF.
+ * ACF fields are read and saved by the modules' data.php files (businesses, offers, events).
  */
 defined( 'ABSPATH' ) || exit;
-
-/* ------------------------------------------------------------ one business per offer / class
- * When an offer or class is added on a business, ACF adds that business to the offer's or class's "Business" field
- * as a list ([old, new]). An offer or class has one business, so keep the new one and take the offer or class off
- * the old business's list. (ACF is already inside its own two-way update here, so this does not loop.) */
-foreach ( array( 'offer' => 'biz_offers', 'class' => 'biz_classes' ) as $hub_k => $hub_list ) {
-	add_filter( "acf/update_value/key=field_hub_{$hub_k}_business", function ( $value, $post_id ) use ( $hub_list ) {
-		if ( ! is_array( $value ) ) {
-			return $value;
-		}
-		$ids = array_values( array_filter( array_map( 'intval', $value ) ) );
-		$new = $ids ? end( $ids ) : 0;
-		foreach ( array_diff( $ids, array( $new ) ) as $old ) {
-			$list = array_map( 'intval', acf_get_array( get_field( $hub_list, $old, false ) ) );
-			update_field( 'field_hub_' . $hub_list, array_values( array_diff( $list, array( (int) $post_id ) ) ), $old );
-		}
-		return $new ? (string) $new : '';
-	}, 20, 2 );
-}
 
 /* ------------------------------------------------------------ newsletter band (Hub settings > Newsletter) */
 function hub_newsletter_settings() {

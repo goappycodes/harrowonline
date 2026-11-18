@@ -18,7 +18,7 @@
  *   today_index (Monday = 0), other_locations [ { label, name, address } ],
  *   social [ { network, label, url (null for a sample's placeholder) } ], news [ { title, url, category, date } ]
  *
- * event row (a business's events and classes):
+ * event row (a business's events and classes, from the events module):
  *   title, url, date (Y-m-d), when, price, featured, weekly
  */
 defined( 'ABSPATH' ) || exit;
@@ -149,15 +149,33 @@ function hub_business_shape_profile( WP_Post $post, array $x, array $meta, array
 	);
 }
 
-/** One row of a business's events and classes. */
-function hub_business_shape_event( array $row ) {
+/** A profile row from one of its one-off events (events module shape). */
+function hub_business_shape_event_row( array $e ) {
+	$d = date_create_immutable( $e['date'] );
 	return array(
-		'title'    => hub_plain( $row['title'] ),
-		'url'      => $row['url'],
-		'date'     => $row['date'],
-		'when'     => hub_plain( $row['when'] ),
-		'price'    => hub_plain( $row['price'] ),
-		'featured' => (bool) $row['featured'],
-		'weekly'   => (bool) $row['weekly'],
+		'title' => $e['title'], 'url' => $e['url'], 'date' => $e['date'],
+		'when'  => $d->format( 'D j M' ) . ', ' . $e['time'],
+		'price' => $e['price'], 'featured' => $e['featured'], 'weekly' => false, 'order' => 0,
+	);
+}
+
+/** A profile row from one of its weekly classes (events module shape): dated the next time it runs. */
+function hub_business_shape_class_row( array $c, DateTimeImmutable $today ) {
+	$ahead = ( $c['weekday'] - hub_weekday( $today ) + 7 ) % 7;
+	return array(
+		'title' => $c['title'], 'url' => $c['url'], 'date' => $today->modify( '+' . $ahead . ' day' )->format( 'Y-m-d' ),
+		'when'  => 'Every ' . $c['day_name'] . ', ' . $c['time'],
+		'price' => $c['price'], 'featured' => $c['featured'], 'weekly' => true, 'order' => $c['order'],
+	);
+}
+
+/** A profile row from a class kept in the imported record (businesses never saved in wp-admin). */
+function hub_business_shape_imported_class_row( array $c ) {
+	$months = array( 'Oct' => 10, 'Nov' => 11, 'Dec' => 12 );
+	return array(
+		'title' => hub_plain( $c['title'] ), 'url' => hub_url( 'events/' . hub_slugify( hub_unescape( $c['title'] ) ) . '/' ),
+		'date'  => sprintf( '2026-%02d-%02d', isset( $months[ $c['m'] ] ) ? $months[ $c['m'] ] : 11, (int) $c['d'] ),
+		'when'  => hub_plain( $c['when'] ), 'price' => hub_plain( $c['price'] ),
+		'featured' => ! empty( $c['featured'] ), 'weekly' => ! empty( $c['class'] ), 'order' => 0,
 	);
 }

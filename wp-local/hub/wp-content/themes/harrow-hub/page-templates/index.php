@@ -3,18 +3,25 @@
  * Harrow Online Hub: local businesses, offers and what's on in Harrow (converted from src/pages/index.html).
  * URL: /
  *
- * Data from app/modules: offers (this weekend's offer, More Local Offers, "Offers live"), businesses ("Just joined",
- * "Featured local businesses", "Local businesses") and areas. The other sections are still the prototype's markup
- * until their modules are built.
+ * Data from app/modules: events ("This weekend in Harrow"), offers (this weekend's offer, More Local Offers, "Offers
+ * live"), businesses ("Just joined", "Featured local businesses", "Local businesses") and areas. The other sections
+ * are still the prototype's markup until their modules are built.
  * Edited by hand (tools/build_theme.py leaves it alone).
  */
 defined( 'ABSPATH' ) || exit;
 
+$hub_weekend  = hub_events_weekend( 2 );
+$hub_week     = hub_events_whats_on();                       // its range: today and the next 6 days
+$hub_classes  = hub_classes_list();
 $hub_offers   = hub_offers_list( array( 'limit' => 7 ) );   // [0] this weekend's offer, [1-6] More Local Offers
 $hub_featured = hub_businesses_featured( 4 );
 $hub_newest   = hub_businesses_newest( 10 );
 $hub_biz      = hub_businesses_list( array( 'limit' => 1 ) );  // for the total
 $hub_areas    = hub_areas_list();
+$hub_w0       = date_create_immutable( $hub_weekend['from'] );
+$hub_w1       = date_create_immutable( $hub_weekend['to'] );
+$hub_wknd_label = 'Friday ' . $hub_w0->format( $hub_w0->format( 'm' ) === $hub_w1->format( 'm' ) ? 'j' : 'j F' ) . ' to Sunday ' . $hub_w1->format( 'j F' );
+$hub_week_events = hub_events_list( array( 'to' => $hub_week['range']['to'] ) )['total'];   // one-off events, today to 6 days on
 
 hub_set_page( array(
 	'body' => 'page-home',
@@ -79,30 +86,15 @@ get_header();
 <section class="section" aria-labelledby="wknd-title">
   <div class="ho-container">
     <div class="sec-head">
-      <div><h2 class="sec-title" id="wknd-title">This weekend in Harrow</h2><p class="sec-sub">Friday 13 to Sunday 15 November</p></div>
+      <div><h2 class="sec-title" id="wknd-title">This weekend in Harrow</h2><p class="sec-sub"><?php echo esc_html( $hub_wknd_label ); ?></p></div>
       <a class="link-arrow" href="<?php echo esc_url( hub_url( 'events/?when=weekend' ) ); ?>">Everything this weekend <svg class="ho-icon"><use href="#i-arrow"/></svg></a>
     </div>
     <div class="home-now">
-      <article class="card event-card">
-        <time class="date-tile" datetime="2026-11-13"><span class="date-tile__m">Nov</span><span class="date-tile__d">13</span><span class="date-tile__w">Fri</span></time>
-        <div class="ph ph--photo"><img src="<?php echo esc_url( hub_asset( 'img/sample/event-friday-night-comedy.jpg' ) ); ?>" alt="" width="1200" height="800" loading="lazy" decoding="async"></div>
-        <div class="card__body">
-          <span class="biz-card__cat">Nightlife</span>
-          <h3 class="card__title"><a href="<?php echo esc_url( hub_url( 'events/friday-night-comedy/' ) ); ?>">Friday Night Comedy</a></h3>
-          <p class="card__meta"><span><svg class="ho-icon"><use href="#i-clock"/></svg>8pm</span><span><svg class="ho-icon"><use href="#i-pin"/></svg>Hatch End</span></p>
-          <p class="card__meta"><span><svg class="ho-icon"><use href="#i-ticket"/></svg>&pound;15</span></p>
-        </div>
-      </article>
-      <article class="card event-card">
-        <time class="date-tile" datetime="2026-11-14"><span class="date-tile__m">Nov</span><span class="date-tile__d">14</span><span class="date-tile__w">Sat</span></time>
-        <div class="ph ph--photo"><img src="<?php echo esc_url( hub_asset( 'img/sample/event-canons-park-tree-planting.jpg' ) ); ?>" alt="" width="1200" height="800" loading="lazy" decoding="async"></div>
-        <div class="card__body">
-          <span class="biz-card__cat">Community</span>
-          <h3 class="card__title"><a href="<?php echo esc_url( hub_url( 'events/canons-park-tree-planting/' ) ); ?>">Canons Park Tree Planting</a></h3>
-          <p class="card__meta"><span><svg class="ho-icon"><use href="#i-clock"/></svg>10am to 1pm</span><span><svg class="ho-icon"><use href="#i-pin"/></svg>Canons Park</span></p>
-          <p class="card__meta"><span><svg class="ho-icon"><use href="#i-ticket"/></svg>Free, book a place</span></p>
-        </div>
-      </article>
+      <?php
+		foreach ( $hub_weekend['items'] as $hub_e ) {
+			get_template_part( 'parts/events/card', null, array( 'event' => $hub_e ) );
+		}
+		?>
 
       <div class="home-now__offer">
         <?php
@@ -151,7 +143,7 @@ get_header();
 
 <section class="stats-band" aria-label="The Hub in numbers">
   <div class="ho-container">
-    <div class="stats-strip"><a class="stat" href="<?php echo esc_url( hub_url( 'offers/' ) ); ?>"><span class="stat__label">Offers live</span><strong class="stat__value" data-count="<?php echo (int) $hub_offers['live_total']; ?>"><?php echo (int) $hub_offers['live_total']; ?></strong><span class="stat__note">and counting</span></a><a class="stat" href="<?php echo esc_url( hub_url( 'events/' ) ); ?>"><span class="stat__label">This week</span><strong class="stat__value" data-count="12">12</strong><span class="stat__note">events across Harrow</span></a><a class="stat" href="<?php echo esc_url( hub_url( 'events/classes/' ) ); ?>"><span class="stat__label">Every week</span><strong class="stat__value" data-count="21">21</strong><span class="stat__note">regular classes</span></a><a class="stat" href="<?php echo esc_url( hub_url( 'search/' ) ); ?>"><span class="stat__label">Local businesses</span><strong class="stat__value" data-count="<?php echo (int) $hub_biz['total']; ?>"><?php echo esc_html( number_format( $hub_biz['total'] ) ); ?></strong><span class="stat__note">across <?php echo (int) $hub_areas['total']; ?> areas</span></a></div>
+    <div class="stats-strip"><a class="stat" href="<?php echo esc_url( hub_url( 'offers/' ) ); ?>"><span class="stat__label">Offers live</span><strong class="stat__value" data-count="<?php echo (int) $hub_offers['live_total']; ?>"><?php echo (int) $hub_offers['live_total']; ?></strong><span class="stat__note">and counting</span></a><a class="stat" href="<?php echo esc_url( hub_url( 'events/' ) ); ?>"><span class="stat__label">This week</span><strong class="stat__value" data-count="<?php echo (int) $hub_week_events; ?>"><?php echo (int) $hub_week_events; ?></strong><span class="stat__note">events across Harrow</span></a><a class="stat" href="<?php echo esc_url( hub_url( 'events/classes/' ) ); ?>"><span class="stat__label">Every week</span><strong class="stat__value" data-count="<?php echo (int) $hub_classes['total']; ?>"><?php echo (int) $hub_classes['total']; ?></strong><span class="stat__note">regular classes</span></a><a class="stat" href="<?php echo esc_url( hub_url( 'search/' ) ); ?>"><span class="stat__label">Local businesses</span><strong class="stat__value" data-count="<?php echo (int) $hub_biz['total']; ?>"><?php echo esc_html( number_format( $hub_biz['total'] ) ); ?></strong><span class="stat__note">across <?php echo (int) $hub_areas['total']; ?> areas</span></a></div>
   </div>
 </section>
 

@@ -91,68 +91,6 @@ function hub_businesses_db_meta( WP_Post $post ) {
 	);
 }
 
-/**
- * What a business runs on What's On: its one-off events (matched by organiser name, from today on) and its weekly
- * classes. Plain rows: { title, url, date (Y-m-d), when, price, featured, weekly }.
- * Reads the events and classes through the old inc/render-events.php readers until the events module is built.
- */
-function hub_businesses_db_events( WP_Post $post, array $x ) {
-	$today = hub_today();
-	$rows  = array();
-	$evs   = get_posts( array(
-		'post_type'      => 'hub_event',
-		'posts_per_page' => -1,
-		'meta_key'       => '_hub_start',
-		'orderby'        => 'meta_value',
-		'order'          => 'ASC',
-		'meta_query'     => array(
-			array( 'key' => '_hub_org', 'value' => $x['claimed']['name'] ),
-			array( 'key' => '_hub_day', 'value' => $today->format( 'Y-m-d' ), 'compare' => '>=' ),
-		),
-	) );
-	foreach ( $evs as $p ) {
-		$ev     = hub_event( $p );
-		$d      = $ev['day_date'];
-		$rows[] = array(
-			'title' => $ev['title'], 'url' => $ev['href'], 'date' => $d->format( 'Y-m-d' ),
-			'when'  => $d->format( 'D' ) . ' ' . $d->format( 'j' ) . ' ' . $d->format( 'M' ) . ', ' . $ev['time'],
-			'price' => $ev['price'], 'featured' => ! empty( $ev['featured'] ), 'weekly' => false, 'order' => 0,
-		);
-	}
-
-	if ( hub_businesses_db_uses_acf( $post->ID ) ) {
-		$classes = get_posts( array(
-			'post_type'      => 'hub_class',
-			'posts_per_page' => -1,
-			'meta_key'       => '_hub_order',
-			'orderby'        => 'meta_value_num',
-			'order'          => 'ASC',
-			'meta_query'     => array( array( 'key' => 'class_business', 'value' => (string) $post->ID ) ),
-		) );
-		foreach ( $classes as $p ) {
-			$c      = hub_class( $p );
-			$day    = (int) $c['day'];
-			$ahead  = ( $day - hub_weekday( $today ) + 7 ) % 7;
-			$rows[] = array(
-				'title' => $c['title'], 'url' => $c['href'], 'date' => $today->modify( '+' . $ahead . ' day' )->format( 'Y-m-d' ),
-				'when'  => 'Every ' . HUB_DAYS[ $day ] . ', ' . $c['time'],
-				'price' => $c['price'], 'featured' => ! empty( $c['featured'] ), 'weekly' => true, 'order' => (int) $c['order'],
-			);
-		}
-	} else {
-		$months = array( 'Oct' => 10, 'Nov' => 11, 'Dec' => 12 );
-		foreach ( isset( $x['claimed']['class_events'] ) ? $x['claimed']['class_events'] : array() as $c ) {
-			$mn     = isset( $months[ $c['m'] ] ) ? $months[ $c['m'] ] : 11;
-			$rows[] = array(
-				'title' => $c['title'], 'url' => hub_url( 'events/' . hub_slugify( hub_unescape( $c['title'] ) ) . '/' ),
-				'date'  => sprintf( '2026-%02d-%02d', $mn, (int) $c['d'] ), 'when' => $c['when'],
-				'price' => $c['price'], 'featured' => ! empty( $c['featured'] ), 'weekly' => ! empty( $c['class'] ), 'order' => 0,
-			);
-		}
-	}
-	return $rows;
-}
-
 /** Today's date (the option hub_today fixes it for the preview). */
 function hub_businesses_db_today() {
 	return hub_today();

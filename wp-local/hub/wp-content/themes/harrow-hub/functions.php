@@ -18,7 +18,6 @@ require_once get_template_directory() . '/inc/content-types.php';
 require_once get_template_directory() . '/inc/no-comments.php';
 require_once get_template_directory() . '/inc/render-common.php';
 require_once get_template_directory() . '/inc/view.php';         // markup helpers for parts/ (work on the controllers' shapes)
-require_once get_template_directory() . '/inc/render-events.php';
 require_once get_template_directory() . '/inc/acf-fields.php';     // ACF field groups and the Hub settings options page
-require_once get_template_directory() . '/inc/business-acf.php';   // offer/class business links; newsletter band
+require_once get_template_directory() . '/inc/business-acf.php';   // newsletter band (Hub settings > Newsletter)
 require_once get_template_directory() . '/inc/acf-migrate.php';    // copies the imported data into the fields (CLI)

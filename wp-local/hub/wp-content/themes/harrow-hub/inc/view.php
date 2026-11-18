@@ -91,3 +91,76 @@ function hub_view_excerpt( $text, $n = 155 ) {
 	$cut = mb_substr( $cut, 0, (int) mb_strrpos( $cut, ' ' ) );
 	return rtrim( $cut, ',;:' ) . '…';
 }
+
+/* ------------------------------------------------------------------ events and classes */
+
+/** Date tile: "Nov / 14 / Sat". */
+function hub_view_date_tile( $date ) {
+	$d = date_create_immutable( $date );
+	return '<time class="date-tile" datetime="' . esc_attr( $d->format( 'Y-m-d' ) ) . '"><span class="date-tile__m">' . $d->format( 'M' ) . '</span><span class="date-tile__d">' . $d->format( 'j' ) . '</span><span class="date-tile__w">' . $d->format( 'D' ) . '</span></time>';
+}
+
+/** An event's photo, or its icon, in a box ($extra_cls added to the box's class). */
+function hub_view_event_media( array $e, $extra_cls = '', $eager = false ) {
+	if ( $e['image'] ) {
+		$load = $eager ? 'fetchpriority="high"' : 'loading="lazy" decoding="async"';
+		return '<div class="ph ph--photo' . esc_attr( $extra_cls ) . '"><img src="' . esc_url( $e['image'] ) . '" alt="" width="1200" height="800" ' . $load . '></div>';
+	}
+	return '<div class="ph' . esc_attr( $extra_cls ) . '">' . hub_icon( $e['icon'] ) . '</div>';
+}
+
+/** A class's photo or logo (classes run by real businesses), or its icon, in a box of class $cls. */
+function hub_view_class_media( array $c, $cls = 'ph', $eager = false ) {
+	if ( ! $c['image'] ) {
+		return '<div class="' . esc_attr( $cls ) . '">' . hub_icon( $c['icon'] ) . '</div>';
+	}
+	$load = $eager ? 'fetchpriority="high"' : 'loading="lazy" decoding="async"';
+	$logo = 'logo' === $c['image']['fit'];
+	return '<div class="' . esc_attr( $cls ) . ( $logo ? ' ph--logo' : ' ph--photo' ) . '"><img src="' . esc_url( $c['image']['url'] ) . '" alt="' . esc_attr( $c['image']['alt'] ) . '" width="' . ( $logo ? 480 : 1200 ) . '" height="' . ( $logo ? 480 : 800 ) . '" ' . $load . '></div>';
+}
+
+/** data-* attributes the What's On filters read (hub.js 6b): category, area, age groups, free. */
+function hub_view_event_filter_attrs( array $x ) {
+	return ' data-cat="' . esc_attr( $x['category']['slug'] ) . '" data-area="' . esc_attr( $x['area']['slug'] ) . '" data-ages="' . esc_attr( implode( ' ', $x['age_groups'] ) ) . '" data-free="' . ( $x['free'] ? 1 : 0 ) . '"';
+}
+
+/** True when a UK local time ('Y-m-d\TH:i:s') is in British Summer Time (2026 dates, as the prototype). */
+function hub_view_is_bst( $local ) {
+	$naive = str_replace( 'T', ' ', $local );
+	return $naive >= '2026-03-29 00:00:00' && $naive < '2026-10-25 01:00:00';
+}
+
+/** UTC offset of a UK local time: "+01:00" in summer, "+00:00" otherwise. */
+function hub_view_uk_offset( $local ) {
+	return hub_view_is_bst( $local ) ? '+01:00' : '+00:00';
+}
+
+/** A UK local time in UTC, in the format given. */
+function hub_view_utc( $local, $format ) {
+	$t = new DateTimeImmutable( $local, new DateTimeZone( 'UTC' ) );
+	return ( hub_view_is_bst( $local ) ? $t->modify( '-1 hour' ) : $t )->format( $format );
+}
+
+/** "Add to calendar" links for an event: [ google, outlook, ics data URL ]. $url is the event's public address. */
+function hub_view_calendar_links( array $e, $url ) {
+	$place  = $e['venue'] . ', ' . $e['area']['name'] . ', Harrow';
+	$s      = hub_view_utc( $e['start'], 'Ymd\THis\Z' );
+	$f      = hub_view_utc( $e['end'], 'Ymd\THis\Z' );
+	$google = 'https://calendar.google.com/calendar/render?action=TEMPLATE&text=' . hub_quote_plus( $e['title'] ) . "&dates={$s}/{$f}"
+		. '&location=' . hub_quote_plus( $place ) . '&details=' . hub_quote_plus( $url );
+	$outlook = 'https://outlook.live.com/calendar/0/deeplink/compose?path=%2Fcalendar%2Faction%2Fcompose&rru=addevent&subject=' . hub_quote_plus( $e['title'] )
+		. '&startdt=' . hub_quote( hub_view_utc( $e['start'], 'Y-m-d\TH:i:s\Z' ), '' ) . '&enddt=' . hub_quote( hub_view_utc( $e['end'], 'Y-m-d\TH:i:s\Z' ), '' )
+		. '&location=' . hub_quote_plus( $place );
+	$ics = implode( "\r\n", array(
+		'BEGIN:VCALENDAR', 'VERSION:2.0', 'PRODID:-//Harrow Online Hub//EN', 'BEGIN:VEVENT',
+		'UID:' . $e['slug'] . '-' . substr( $e['date'], 0, 4 ) . '@harrowonline.org', 'DTSTAMP:20261111T090000Z', "DTSTART:{$s}", "DTEND:{$f}",
+		'SUMMARY:' . str_replace( ',', '\,', $e['title'] ), 'LOCATION:' . str_replace( ',', '\,', $place ), "URL:{$url}", 'END:VEVENT', 'END:VCALENDAR',
+	) );
+	return array( $google, $outlook, 'data:text/calendar;charset=utf-8,' . hub_quote( $ics, ':/@.-_ ' ) );
+}
+
+/** "Hatch End Bookshop" -> "HB" (organiser and provider boxes). */
+function hub_view_two_initials( $name ) {
+	$words = preg_split( '/\s+/', trim( (string) $name ) );
+	return strtoupper( implode( '', array_map( function ( $w ) { return mb_substr( $w, 0, 1 ); }, array_slice( $words, 0, 2 ) ) ) );
+}
