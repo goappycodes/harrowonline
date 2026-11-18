@@ -389,7 +389,7 @@ body: page-events
               <input class="input" id="wk-email" type="email" name="email" placeholder="Your email" autocomplete="email" required>
               <button class="ho-btn ho-btn--primary ho-btn--sm" type="submit">Get The Weekend</button>
             </div>
-            <p class="help mt-2 mb-0" role="status" aria-live="polite">Free. The Weekend only: it won&rsquo;t sign you up to The Daily Briefing or Harrow Business.</p>
+            <p class="help mt-2 mb-0" role="status" aria-live="polite">Free. The Weekend only: it won&rsquo;t sign you up to Daily News or Harrow Business.</p>
           </form>
         </div>
       </div>
@@ -399,7 +399,7 @@ body: page-events
   <div class="cta-band mt-7">
     <div>
       <h2>Running an event in Harrow?</h2>
-      <p>Businesses add events and classes on the Featured or Local Partner plan. Schools, clubs, charities and community groups add them free with an organiser account. We check every listing before it goes live, usually within one working day.</p>
+      <p>Businesses add events and classes on the Featured or Local Partner plan, or list a single event for &pound;15 with no plan. Schools, clubs, charities and community groups add them free with an organiser account. We check every listing before it goes live, usually within one working day.</p>
     </div>
     <div class="cta-band__actions">
       <a class="ho-btn ho-btn--primary" href="/register.html">{I('plus')}Add your event</a>
@@ -536,7 +536,7 @@ body: page-events
   <div class="cta-band mt-7">
     <div>
       <h2>Running an event in Harrow?</h2>
-      <p>Businesses add events and classes on the Featured or Local Partner plan. Schools, clubs, charities and community groups add them free with an organiser account. Every listing is checked before it goes live.</p>
+      <p>Businesses add events and classes on the Featured or Local Partner plan, or list a single event for &pound;15 with no plan. Schools, clubs, charities and community groups add them free with an organiser account. Every listing is checked before it goes live.</p>
     </div>
     <div class="cta-band__actions">
       <a class="ho-btn ho-btn--primary" href="/register.html">{I('plus')}Add your event</a>

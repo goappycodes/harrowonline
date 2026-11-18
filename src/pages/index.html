@@ -38,12 +38,19 @@ body: page-home
 
    </div>
 
-    <nav class="choose" aria-label="Browse the Hub">
-      <a class="choose__item" href="/search.html"><span class="choose__icon"><svg class="ho-icon"><use href="#i-store"/></svg></span><span class="choose__text"><strong>Find a business</strong><span>Shops, trades and services</span></span><svg class="ho-icon choose__go"><use href="#i-arrow"/></svg></a>
-      <a class="choose__item" href="/events.html"><span class="choose__icon"><svg class="ho-icon"><use href="#i-calendar"/></svg></span><span class="choose__text"><strong>What&rsquo;s On</strong><span>Events and days out</span></span><svg class="ho-icon choose__go"><use href="#i-arrow"/></svg></a>
-      <a class="choose__item" href="/classes.html"><span class="choose__icon"><svg class="ho-icon"><use href="#i-repeat"/></svg></span><span class="choose__text"><strong>Classes &amp; clubs</strong><span>Regular activities for all ages</span></span><svg class="ho-icon choose__go"><use href="#i-arrow"/></svg></a>
-      <a class="choose__item" href="/offers.html"><span class="choose__icon"><svg class="ho-icon"><use href="#i-tag"/></svg></span><span class="choose__text"><strong>Local offers</strong><span>Deals from Harrow businesses</span></span><svg class="ho-icon choose__go"><use href="#i-arrow"/></svg></a>
-    </nav>
+    <div class="hero__side">
+      <nav class="choose" aria-label="Browse the Hub">
+        <a class="choose__item" href="/search.html"><span class="choose__icon"><svg class="ho-icon"><use href="#i-store"/></svg></span><span class="choose__text"><strong>Find a business</strong><span>Shops, trades and services</span></span><svg class="ho-icon choose__go"><use href="#i-arrow"/></svg></a>
+        <a class="choose__item" href="/events.html"><span class="choose__icon"><svg class="ho-icon"><use href="#i-calendar"/></svg></span><span class="choose__text"><strong>What&rsquo;s On</strong><span>Events and days out</span></span><svg class="ho-icon choose__go"><use href="#i-arrow"/></svg></a>
+        <a class="choose__item" href="/classes.html"><span class="choose__icon"><svg class="ho-icon"><use href="#i-repeat"/></svg></span><span class="choose__text"><strong>Classes &amp; clubs</strong><span>Regular activities for all ages</span></span><svg class="ho-icon choose__go"><use href="#i-arrow"/></svg></a>
+        <a class="choose__item" href="/offers.html"><span class="choose__icon"><svg class="ho-icon"><use href="#i-tag"/></svg></span><span class="choose__text"><strong>Local offers</strong><span>Deals from Harrow businesses</span></span><svg class="ho-icon choose__go"><use href="#i-arrow"/></svg></a>
+      </nav>
+      <!-- Client request (18 Nov 2026): quick routes for organisers and businesses under the four choices -->
+      <div class="choose-add">
+        <a class="ho-btn ho-btn--on-dark" href="/register.html"><svg class="ho-icon"><use href="#i-plus"/></svg>Add your event</a>
+        <a class="ho-btn ho-btn--on-dark" href="/add-business.html"><svg class="ho-icon"><use href="#i-plus"/></svg>Add your business</a>
+      </div>
+    </div>
   </div>
 </section>
 
@@ -68,8 +75,8 @@ body: page-home
           <input type="hidden" name="signup_source" value="hub-home">
           <fieldset class="home-nl__editions">
             <legend class="ho-sr">Choose your newsletters</legend>
+            <label><input type="checkbox" name="editions[]" value="daily"> Daily News <small>(Mon&ndash;Fri)</small></label>
             <label><input type="checkbox" name="editions[]" value="weekend" checked> The Weekend <small>(Thu)</small></label>
-            <label><input type="checkbox" name="editions[]" value="daily"> Daily Briefing</label>
             <label><input type="checkbox" name="editions[]" value="business"> Harrow Business <small>(Mon)</small></label>
           </fieldset>
           <label class="ho-sr" for="home-nl-email">Email address</label>

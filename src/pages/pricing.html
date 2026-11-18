@@ -5,10 +5,9 @@ hubnav: pricing
 body: page-pricing
 -->
 <!-- PLAN COPY: every price, limit and benefit on this page is editable in WordPress admin (brief 01, 6.5).
-     Three plans (client feedback, Nov 2026): Basic (free), Featured (£29/month), Local Partner (£149/month).
+     Three plans (client feedback, Nov 2026): Basic (free), Featured (£29/month), Local Partner (£79/month, changed from £149 on 18 Nov 2026).
      The old £19 Enhanced / £49 Premium split is removed.
-     CLIENT TO CONFIRM: annual prices (shown as 10 x monthly, "2 months free") and how often the
-     Local Partner sponsored social media post or collaboration runs. -->
+     CLIENT TO CONFIRM: annual prices (shown as 10 x monthly, "2 months free"). -->
 <header class="page-head page-head--center ho-container">
   <p class="eyebrow">For Harrow businesses</p>
   <h1 class="page-head__title">Get found by Harrow</h1>
@@ -60,20 +59,33 @@ body: page-pricing
 
       <section class="plan plan--partner" aria-labelledby="plan-partner">
         <h2 class="plan__name" id="plan-partner">Local Partner</h2>
-        <p class="plan__for">Featured on the Hub, plus our team promoting you across Harrow Online.</p>
-        <p class="plan__price"><span class="price-monthly">&pound;149<small>/month</small></span><span class="price-annual">&pound;1,490<small>/year</small></span></p>
-        <p class="plan__note"><span class="price-monthly">Or &pound;1,490 a year</span><span class="price-annual">Works out at &pound;124.17 a month</span></p>
+        <p class="plan__for">Featured on the Hub, plus a monthly spot in the Daily News and the Facebook Group.</p>
+        <p class="plan__price"><span class="price-monthly">&pound;79<small>/month</small></span><span class="price-annual">&pound;790<small>/year</small></span></p>
+        <p class="plan__note"><span class="price-monthly">Or &pound;790 a year</span><span class="price-annual">Works out at &pound;65.83 a month</span></p>
         <a class="ho-btn ho-btn--outline ho-btn--block price-monthly" href="/sign-in.html?plan=partner&amp;billing=monthly">Become a Local Partner</a>
         <a class="ho-btn ho-btn--outline ho-btn--block price-annual" href="/sign-in.html?plan=partner&amp;billing=annual">Become a Local Partner</a>
         <ul class="ticks">
-          <li>Featured Hub presence</li>
-          <li>One newsletter feature each month</li>
-          <li>One Harrow Online Facebook Group post each month</li>
-          <li>One sponsored social media post or collaboration</li>
-          <li>One sponsored spotlight article each quarter</li>
+          <li class="ticks__lead">Everything in Featured, plus:</li>
+          <li>One sponsored slot each month in the Daily News newsletter</li>
+          <li>One sponsored post each month in the Harrow Online Facebook Group</li>
         </ul>
       </section>
     </div>
+
+    <!-- One-off event listing (client, 18 Nov 2026): £15 per event, no plan. Events only; classes stay on the plans.
+         WP: one-off Stripe Checkout Session "Event listing" when a business without Featured / Local Partner submits an event. -->
+    <section class="oneoff" aria-labelledby="oneoff-title">
+      <span class="oneoff__icon" aria-hidden="true"><svg class="ho-icon"><use href="#i-calendar"/></svg></span>
+      <div class="oneoff__main">
+        <p class="oneoff__eyebrow">No plan needed</p>
+        <h2 class="oneoff__title" id="oneoff-title">Just one event? List it for &pound;15</h2>
+        <p class="oneoff__text">Pay when you submit it, our team checks it, and it stays on What&rsquo;s On until the event date. Weekly classes need Featured or Local Partner.</p>
+      </div>
+      <div class="oneoff__side">
+        <p class="oneoff__price">&pound;15<small>/event</small></p>
+        <a class="ho-btn ho-btn--dark oneoff__btn" href="/register.html"><svg class="ho-icon"><use href="#i-plus"/></svg>Add a one-off event</a>
+      </div>
+    </section>
 
     <div class="price-note">
       <svg class="ho-icon ho-icon--sm"><use href="#i-info"/></svg>
@@ -117,7 +129,7 @@ body: page-pricing
               <td>Free</td>
               <td>Free</td>
               <td class="col-pop"><span class="price-monthly">&pound;29/month</span><span class="price-annual">&pound;290/year</span></td>
-              <td><span class="price-monthly">&pound;149/month</span><span class="price-annual">&pound;1,490/year</span></td>
+              <td><span class="price-monthly">&pound;79/month</span><span class="price-annual">&pound;790/year</span></td>
             </tr>
 
             <tr class="grp"><th scope="colgroup" colspan="5">Listing</th></tr>
@@ -137,11 +149,11 @@ body: page-pricing
             <tr><th scope="row">Publish Local Offers</th><td class="no">&ndash;<span class="ho-sr">Not included</span></td><td class="no">&ndash;<span class="ho-sr">Not included</span></td><td class="yes col-pop"><svg class="ho-icon"><use href="#i-check"/></svg><span class="ho-sr">Included</span></td><td class="yes"><svg class="ho-icon"><use href="#i-check"/></svg><span class="ho-sr">Included</span></td></tr>
             <tr><th scope="row">Add events and classes to What&rsquo;s On</th><td class="no">&ndash;<span class="ho-sr">Not included</span></td><td class="no">&ndash;<span class="ho-sr">Not included</span></td><td class="yes col-pop"><svg class="ho-icon"><use href="#i-check"/></svg><span class="ho-sr">Included</span></td><td class="yes"><svg class="ho-icon"><use href="#i-check"/></svg><span class="ho-sr">Included</span></td></tr>
 
+            <tr><th scope="row">Single event without a plan</th><td colspan="4">&pound;15 per event, listed until the event date</td></tr>
+
             <tr class="grp"><th scope="colgroup" colspan="5">Newsletter and marketing</th></tr>
-            <tr><th scope="row">Newsletter feature each month</th><td class="no">&ndash;<span class="ho-sr">Not included</span></td><td class="no">&ndash;<span class="ho-sr">Not included</span></td><td class="no col-pop">&ndash;<span class="ho-sr">Not included</span></td><td class="yes"><svg class="ho-icon"><use href="#i-check"/></svg><span class="ho-sr">Included</span></td></tr>
-            <tr><th scope="row">Harrow Online Facebook Group post each month</th><td class="no">&ndash;<span class="ho-sr">Not included</span></td><td class="no">&ndash;<span class="ho-sr">Not included</span></td><td class="no col-pop">&ndash;<span class="ho-sr">Not included</span></td><td class="yes"><svg class="ho-icon"><use href="#i-check"/></svg><span class="ho-sr">Included</span></td></tr>
-            <tr><th scope="row">Sponsored social media post or collaboration</th><td class="no">&ndash;<span class="ho-sr">Not included</span></td><td class="no">&ndash;<span class="ho-sr">Not included</span></td><td class="no col-pop">&ndash;<span class="ho-sr">Not included</span></td><td class="yes"><svg class="ho-icon"><use href="#i-check"/></svg><span class="ho-sr">Included</span></td></tr>
-            <tr><th scope="row">Sponsored spotlight article on harrowonline.org each quarter</th><td class="no">&ndash;<span class="ho-sr">Not included</span></td><td class="no">&ndash;<span class="ho-sr">Not included</span></td><td class="no col-pop">&ndash;<span class="ho-sr">Not included</span></td><td class="yes"><svg class="ho-icon"><use href="#i-check"/></svg><span class="ho-sr">Included</span></td></tr>
+            <tr><th scope="row">Sponsored slot in the Daily News each month</th><td class="no">&ndash;<span class="ho-sr">Not included</span></td><td class="no">&ndash;<span class="ho-sr">Not included</span></td><td class="no col-pop">&ndash;<span class="ho-sr">Not included</span></td><td class="yes"><svg class="ho-icon"><use href="#i-check"/></svg><span class="ho-sr">Included</span></td></tr>
+            <tr><th scope="row">Sponsored post in the Harrow Online Facebook Group each month</th><td class="no">&ndash;<span class="ho-sr">Not included</span></td><td class="no">&ndash;<span class="ho-sr">Not included</span></td><td class="no col-pop">&ndash;<span class="ho-sr">Not included</span></td><td class="yes"><svg class="ho-icon"><use href="#i-check"/></svg><span class="ho-sr">Included</span></td></tr>
             <tr><th scope="row">Newsletter sponsor slots</th><td colspan="4"><a href="/advertise-newsletter.html">Book separately</a>, on any plan</td></tr>
 
             <tr class="grp"><th scope="colgroup" colspan="5">Billing</th></tr>
@@ -228,11 +240,11 @@ body: page-pricing
       </details>
       <details>
         <summary>What does a Local Partner get?</summary>
-        <div><p>A featured presence on the Hub, plus one newsletter feature and one Harrow Online Facebook Group post each month, a sponsored social media post or collaboration, and a sponsored spotlight article on harrowonline.org each quarter. Our team writes and schedules them with you.</p></div>
+        <div><p>Everything in Featured, plus one sponsored slot each month in the Harrow Online Daily News newsletter and one sponsored post each month in the Harrow Online Facebook Group. Our team writes and schedules them with you.</p></div>
       </details>
       <details>
         <summary>Can I list an event without a paid plan?</summary>
-        <div><p>Businesses add events and classes on the Featured or Local Partner plan; the free Basic plan doesn&rsquo;t include them. Schools, clubs, charities and community groups can open a free organiser account and add events and classes without a plan. <a href="/register.html">Create a free account</a>.</p></div>
+        <div><p>Yes. Any business can list a single event for &pound;15, with no plan or subscription. You pay when you submit it, we check it, and it stays on What&rsquo;s On until the event date. Featured and Local Partner include unlimited events and classes, so they&rsquo;re better value if you run more than one event a month. Schools, clubs, charities and community groups can open a free organiser account and add events and classes without paying. <a href="/register.html">Create a free account</a>.</p></div>
       </details>
       <details><summary>What is the difference between an event and a class?</summary><div><p>An event happens on a set date, like a quiz night or a market, and leaves What&rsquo;s On once it&rsquo;s over. A class runs every week, like a dance class or a football session, and keeps the same page for as long as it runs.</p></div></details>
       <details><summary>Can I manage more than one business?</summary><div><p>For now, each account manages one business listing. If you run more than one business, <a href="https://harrowonline.org/contact-us/">contact us</a> and we&rsquo;ll help.</p></div></details>

@@ -1,6 +1,6 @@
 <!--
 title: Sponsor the Harrow Online newsletter: book a Presented by slot
-description: Book a "Presented by" sponsor slot in the Harrow Online Daily Briefing, The Weekend or Harrow Business newsletter. Pick dates, add your logo and pay online.
+description: Book a "Presented by" sponsor slot in the Harrow Online Daily News, The Weekend or Harrow Business newsletter. Pick dates, add your logo and pay online.
 nav: advertise
 body: is-logged-in page-sponsor
 -->
@@ -15,7 +15,7 @@ body: is-logged-in page-sponsor
   </div>
   <ul class="sp-facts" aria-label="At a glance">
     <li><svg class="ho-icon"><use href="#i-star"/></svg><span><strong>One sponsor per issue</strong>Your business is the only one at the top</span></li>
-    <li><svg class="ho-icon"><use href="#i-calendar"/></svg><span><strong>A day or a week</strong>Daily Briefing, The Weekend or Harrow Business</span></li>
+    <li><svg class="ho-icon"><use href="#i-calendar"/></svg><span><strong>A day or a week</strong>Daily News, The Weekend or Harrow Business</span></li>
     <li><svg class="ho-icon"><use href="#i-mail"/></svg><span><strong>Logo, message and link</strong>Checked by our team before it goes out</span></li>
   </ul>
 </header>
@@ -40,10 +40,10 @@ body: is-logged-in page-sponsor
   </ol>
 
   <form class="layout-aside sp-form" action="/wp-json/ho/v1/sponsor/checkout" method="post" enctype="multipart/form-data">
-    <div>
-      <section class="form-card" aria-labelledby="s1-title">
+    <div class="form-card claim-form sp-card">
+      <section class="form-step" aria-labelledby="s1-title">
         <h2 class="form-step__title sp-title" id="s1-title"><span>1</span>Choose an edition and dates</h2>
-        <p class="form-card__sub">Prices include placement in every copy of that issue. Book at least two working days ahead so we can check your message.</p>
+        <p class="help mt-0">Prices include placement in every copy of that issue. Book at least two working days ahead so we can check your message.</p>
 
         <fieldset class="fieldset">
           <legend>Edition</legend>
@@ -51,7 +51,7 @@ body: is-logged-in page-sponsor
             <label class="choice">
               <input type="radio" name="edition" value="daily" checked data-reveal="#ed-daily">
               <span>
-                <span class="choice__title">Daily Briefing</span>
+                <span class="choice__title">Daily News</span>
                 <span class="choice__text">Monday to Friday, every morning.</span><span class="choice__price"><strong>&pound;45</strong> a day &middot; <strong>&pound;180</strong> a week</span>
               </span>
             </label>
@@ -74,7 +74,7 @@ body: is-logged-in page-sponsor
 
 
         <!-- Panels are in this DOM order on purpose: hub.js updates the summary from each [data-slots] on load,
-             so the default panel (Daily Briefing, single days) comes last and its pre-selected dates show in the summary. -->
+             so the default panel (Daily News, single days) comes last and its pre-selected dates show in the summary. -->
         <div id="ed-weekend" class="mt-5" hidden>
           <div class="cal-legend sp-legend" aria-label="Key">
           <span><i class="a"></i>Available</span>
@@ -137,8 +137,8 @@ body: is-logged-in page-sponsor
           <span><i class="t"></i>Booked</span>
           <span><i class="h"></i>On hold (someone is paying)</span>
         </div>
-            <h3>Daily Briefing: full weeks</h3>
-            <div class="slots" data-slots data-price="180" role="group" aria-label="Daily Briefing weeks">
+            <h3>Daily News: full weeks</h3>
+            <div class="slots" data-slots data-price="180" role="group" aria-label="Daily News weeks">
             <button type="button" class="slot is-taken" aria-disabled="true" aria-label="Week commencing Monday 16 November, booked"><small>w/c Nov</small><b>16</b><small>Booked</small></button>
             <button type="button" class="slot is-taken" aria-disabled="true" aria-label="Week commencing Monday 23 November, booked"><small>w/c Nov</small><b>23</b><small>Booked</small></button>
             <button type="button" class="slot is-taken" aria-disabled="true" aria-label="Week commencing Monday 30 November, booked"><small>w/c Nov</small><b>30</b><small>Booked</small></button>
@@ -157,8 +157,8 @@ body: is-logged-in page-sponsor
           <span><i class="t"></i>Booked</span>
           <span><i class="h"></i>On hold (someone is paying)</span>
         </div>
-            <h3>Daily Briefing: 16 November to 18 December 2026</h3>
-            <div class="slots slots--weekdays" data-slots data-price="45" role="group" aria-label="Daily Briefing dates">
+            <h3>Daily News: 16 November to 18 December 2026</h3>
+            <div class="slots slots--weekdays" data-slots data-price="45" role="group" aria-label="Daily News dates">
             <span class="slots__dow" aria-hidden="true">Mon</span><span class="slots__dow" aria-hidden="true">Tue</span><span class="slots__dow" aria-hidden="true">Wed</span><span class="slots__dow" aria-hidden="true">Thu</span><span class="slots__dow" aria-hidden="true">Fri</span>
             <button type="button" class="slot is-taken" aria-disabled="true" aria-label="Monday 16 November, booked"><small>Nov</small><b>16</b><small>Booked</small></button>
             <button type="button" class="slot is-taken" aria-disabled="true" aria-label="Tuesday 17 November, booked"><small>Nov</small><b>17</b><small>Booked</small></button>
@@ -186,14 +186,14 @@ body: is-logged-in page-sponsor
             <button type="button" class="slot" aria-pressed="false" aria-label="Thursday 17 December, &pound;45"><small>Dec</small><b>17</b><small>&pound;45</small></button>
             <button type="button" class="slot" aria-pressed="false" aria-label="Friday 18 December, &pound;45"><small>Dec</small><b>18</b><small>&pound;45</small></button>
             </div>
-            <p class="help mt-2">The Daily Briefing goes out Monday to Friday. Later dates open as each month is published.</p>
+            <p class="help mt-2">Daily News goes out Monday to Friday. Later dates open as each month is published.</p>
           </div>
         </div>
       </section>
 
-      <section class="form-card" aria-labelledby="s2-title">
+      <section class="form-step" aria-labelledby="s2-title">
         <h2 class="form-step__title sp-title" id="s2-title"><span>2</span>Your sponsor message</h2>
-        <p class="form-card__sub">This is what readers see at the top of the newsletter. Keep it short and friendly.</p>
+        <p class="help mt-0">This is what readers see at the top of the newsletter. Keep it short and friendly.</p>
         <div class="form">
           <div class="field">
             <label for="sp-name">Business name</label>
@@ -210,7 +210,7 @@ body: is-logged-in page-sponsor
           </div>
           <div class="field">
             <label for="sp-msg">Message <span class="opt">(up to 140 characters)</span></label>
-            <textarea class="textarea" id="sp-msg" name="message" maxlength="140" rows="3" data-counter required style="min-height:96px">Sunday roasts are back. Book a table for four and the first bottle of wine is on us.</textarea>
+            <textarea class="textarea" id="sp-msg" name="message" maxlength="140" rows="3" data-counter required>Sunday roasts are back. Book a table for four and the first bottle of wine is on us.</textarea>
             <p class="help">Plain text only. No prices that might change, and no ALL CAPS.</p>
           </div>
           <div class="field">
@@ -240,17 +240,17 @@ body: is-logged-in page-sponsor
         <p class="help mt-2">The preview shows your saved message. Your logo appears once uploaded.</p>
       </div>
 
-      <div class="panel">
+      <div class="add-biz__panel sp-order">
         <h2 class="form-step__title sp-title"><span>3</span>Your order</h2>
         <ul class="summary">
-          <li><span>Edition</span><strong>Daily Briefing</strong></li>
+          <li><span>Edition</span><strong>Daily News</strong></li>
           <li><span>Dates selected</span><strong><span data-slot-count>2</span></strong></li>
           <li><span>Price each</span><span>&pound;45.00</span></li>
           <li class="total"><span>Total</span><span data-slot-total>&pound;90.00</span></li>
         </ul>
         <p class="help mt-2">VAT shown at checkout if it applies.</p>
-        <p class="sp-tip"><svg class="ho-icon ho-icon--sm"><use href="#i-star"/></svg><span><strong>Local Partner members get included slots:</strong> one newsletter feature a month at no charge. Pick your date and it&rsquo;s free at checkout, or ask our team to place it for you.</span></p>
-        <button class="ho-btn ho-btn--primary ho-btn--lg ho-btn--block mt-4" type="submit"><svg class="ho-icon"><use href="#i-lock"/></svg>Pay with Stripe</button>
+        <p class="sp-tip"><svg class="ho-icon ho-icon--sm"><use href="#i-star"/></svg><span><strong>Local Partner members get an included slot:</strong> one Daily News slot a month at no charge. Pick your date and it&rsquo;s free at checkout, or ask our team to place it for you.</span></p>
+        <button class="ho-btn ho-btn--primary ho-btn--block mt-4" type="submit"><svg class="ho-icon"><use href="#i-lock"/></svg>Pay with Stripe</button>
         <ul class="ticks small mt-5 mb-0">
           <li>We hold your dates for 30 minutes while you pay.</li>
           <li>Our team checks your logo and message before it goes out. If we can&rsquo;t run it, we refund you in full.</li>

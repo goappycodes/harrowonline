@@ -34,9 +34,9 @@
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Merriweather:wght@700;900&family=Open+Sans:ital,wght@0,400;0,600;0,700;1,400&display=swap">
 <link rel="stylesheet" href="/hub/assets/css/hub.css">
 <script src="/hub/assets/js/hub.js" defer></script>
-<script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"NewsMediaOrganization","@id":"https://harrowonline.org/#organization","name":"Harrow Online","url":"https://harrowonline.org/","logo":{"@type":"ImageObject","inLanguage":"en-GB","@id":"https://harrowonline.org/#/schema/logo/image/","url":"https://harrowonline.org/wp-content/uploads/2020/08/Website-Logo-Small-1.png","contentUrl":"https://harrowonline.org/wp-content/uploads/2020/08/Website-Logo-Small-1.png","width":233,"height":90,"caption":"Harrow Online"},"image":{"@id":"https://harrowonline.org/#/schema/logo/image/"},"sameAs":["https://www.facebook.com/harrowonline","https://x.com/harrowonline","https://www.instagram.com/harrowonline1/"],"areaServed":{"@type":"AdministrativeArea","name":"London Borough of Harrow"}},{"@type":"WebSite","@id":"https://harrowonline.org/hub/#website","url":"https://harrowonline.org/hub/","name":"Harrow Online Hub","alternateName":"Harrow Online business directory","description":"Local businesses, offers, events and classes in Harrow, powered by Harrow Online Newsletter.","publisher":{"@id":"https://harrowonline.org/#organization"},"isPartOf":{"@id":"https://harrowonline.org/#website"},"inLanguage":"en-GB","potentialAction":[{"@type":"SearchAction","target":{"@type":"EntryPoint","urlTemplate":"https://harrowonline.org/hub/search/?q={search_term_string}"},"query-input":"required name=search_term_string"}]},{"@type":"WebPage","@id":"https://harrowonline.org/hub/claim/submitted/#webpage","url":"https://harrowonline.org/hub/claim/submitted/","name":"Claim received | Harrow Online Hub","description":"Thanks for claiming your business on Harrow Online Hub. We're checking your claim and will email you either way.","isPartOf":{"@id":"https://harrowonline.org/hub/#website"},"publisher":{"@id":"https://harrowonline.org/#organization"},"inLanguage":"en-GB"}]}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"NewsMediaOrganization","@id":"https://harrowonline.org/#organization","name":"Harrow Online","url":"https://harrowonline.org/","logo":{"@type":"ImageObject","inLanguage":"en-GB","@id":"https://harrowonline.org/#/schema/logo/image/","url":"https://harrowonline.org/wp-content/uploads/2020/08/Website-Logo-Small-1.png","contentUrl":"https://harrowonline.org/wp-content/uploads/2020/08/Website-Logo-Small-1.png","width":233,"height":90,"caption":"Harrow Online"},"image":{"@id":"https://harrowonline.org/#/schema/logo/image/"},"sameAs":["https://www.facebook.com/harrowonline","https://x.com/harrowonline","https://www.instagram.com/harrowonline1/"],"areaServed":{"@type":"AdministrativeArea","name":"London Borough of Harrow"}},{"@type":"WebSite","@id":"https://harrowonline.org/hub/#website","url":"https://harrowonline.org/hub/","name":"Harrow Online Hub","alternateName":"Harrow Online business directory","description":"Local businesses, offers, events and classes in Harrow, powered by Harrow Online Newsletter.","publisher":{"@id":"https://harrowonline.org/#organization"},"isPartOf":{"@id":"https://harrowonline.org/#website"},"inLanguage":"en-GB","potentialAction":[{"@type":"SearchAction","target":{"@type":"EntryPoint","urlTemplate":"https://harrowonline.org/hub/search/?q={search_term_string}"},"query-input":"required name=search_term_string"}]},{"@type":"WebPage","@id":"https://harrowonline.org/hub/claim/submitted/#webpage","url":"https://harrowonline.org/hub/claim/submitted/","name":"Claim received | Harrow Online Hub","description":"Thanks for claiming your business on Harrow Online Hub. We're checking your claim and will email you either way.","isPartOf":{"@id":"https://harrowonline.org/hub/#website"},"publisher":{"@id":"https://harrowonline.org/#organization"},"inLanguage":"en-GB","breadcrumb":{"@id":"https://harrowonline.org/hub/claim/submitted/#breadcrumb"}},{"@type":"BreadcrumbList","@id":"https://harrowonline.org/hub/claim/submitted/#breadcrumb","itemListElement":[{"@type":"ListItem","position":1,"name":"Hub","item":"https://harrowonline.org/hub/"},{"@type":"ListItem","position":2,"name":"Businesses","item":"https://harrowonline.org/hub/search/"},{"@type":"ListItem","position":3,"name":"Claim received","item":"https://harrowonline.org/hub/claim/submitted/"}]}]}</script>
 </head>
-<body class="site-hub page-claim-submitted is-logged-in">
+<body class="site-hub page-claim-submitted">
 <a class="ho-skip" href="#main">Skip to content</a>
 
 <header class="ho-header" id="ho-header">
@@ -104,61 +104,76 @@
     </div>
 
 <main id="main">
-<div class="ho-container"><p class="sample-bar"><svg class="ho-icon ho-icon--sm"><use href="/hub/assets/img/icons.svg#i-alert"/></svg><span><strong>Sample account.</strong> Made-up business and figures to show how the account works.</span></p></div>
-<div class="ho-container ho-container--mid">
-  <header class="page-head page-head--center">
-    <span class="tile__icon mb-4" aria-hidden="true"><svg class="ho-icon"><use href="/hub/assets/img/icons.svg#i-check"/></svg></span>
-    <h1 class="page-head__title">Thanks, we&rsquo;re checking your claim</h1>
-    <p class="page-head__lead">We&rsquo;ve got your claim for <strong>Hill Street Kitchen</strong>. A member of the Harrow Online team will check it, usually within 2 working days.</p>
-  </header>
+<!-- Claim received (redesign, Nov 2026): same step bar, business card and side card as the Claim page.
+     Every note, step, plan and link from the previous version is kept. -->
+<nav class="crumbs ho-container" aria-label="Breadcrumb"><ol><li><a href="/hub/">Hub</a></li><li><a href="/hub/search/">Businesses</a></li><li><span aria-current="page">Claim received</span></li></ol></nav>
 
-  <ol class="progress" aria-label="Claim steps">
-    <li class="is-done"><span>Step 1</span>Sign in</li>
-    <li class="is-done"><span>Step 2</span>Prove ownership</li>
-    <li class="is-current" aria-current="step"><span>Step 3</span>Admin check</li>
-    <li><span>Step 4</span>Done</li>
+<header class="page-head ho-container">
+  <h1 class="page-head__title">Thanks, we&rsquo;re checking your claim</h1>
+  <p class="page-head__lead">A member of the Harrow Online team will check it, usually within 2 working days.</p>
+</header>
+
+<div class="ho-container">
+  <ol class="sp-steps sp-steps--4" aria-label="Claim steps">
+    <li class="is-done"><span class="sp-steps__n"><svg class="ho-icon ho-icon--sm"><use href="/hub/assets/img/icons.svg#i-check"/></svg><span class="ho-sr">Done:</span></span><span><small>Step 1</small>Sign in</span></li>
+    <li class="is-done"><span class="sp-steps__n"><svg class="ho-icon ho-icon--sm"><use href="/hub/assets/img/icons.svg#i-check"/></svg><span class="ho-sr">Done:</span></span><span><small>Step 2</small>Prove ownership</span></li>
+    <li class="is-current" aria-current="step"><span class="sp-steps__n">3</span><span><small>Step 3</small>Admin check</span></li>
+    <li><span class="sp-steps__n">4</span><span><small>Step 4</small>Done</span></li>
   </ol>
 
-  <section aria-labelledby="next-title">
-    <h2 class="sec-title mb-5" id="next-title">What happens next</h2>
-    <ol class="steps">
-      <li><h3>We check your proof</h3><p>We confirm your email link, call the business or look at your document, depending on the method you chose.</p></li>
-      <li><h3>We email you either way</h3><p>You&rsquo;ll hear from us at sam.taylor@example.com whether we approve the claim or need something else from you.</p></li>
-      <li><h3>You manage the listing</h3><p>Once approved, your account has a getting started checklist: your description, opening hours and photos, then your first event, class or offer. You get a verified badge straight away.</p></li>
-    </ol>
-  </section>
+  <div class="layout-aside claim-layout">
+    <div class="form-card claim-form">
+      <section class="claim-biz claim-biz--sent" aria-labelledby="sent-title">
+        <span class="claim-biz__icon" aria-hidden="true"><svg class="ho-icon"><use href="/hub/assets/img/icons.svg#i-check"/></svg></span>
+        <div class="claim-biz__main">
+          <h2 class="claim-biz__label" id="sent-title">Claim received for</h2>
+          <span class="biz-card__cat">Restaurants</span>
+          <h3 class="claim-biz__name"><a href="/hub/business/hill-street-kitchen-harrow-on-the-hill/">Hill Street Kitchen</a></h3>
+          <p class="card__meta"><span><svg class="ho-icon"><use href="/hub/assets/img/icons.svg#i-pin"/></svg>14 High Street, HA1 3LE</span><span>Harrow on the Hill</span></p>
+        </div>
+      </section>
 
-  <div class="notice notice--plain mt-6">
-    <svg class="ho-icon"><use href="/hub/assets/img/icons.svg#i-info"/></svg>
-    <p>Chose email? Check your inbox for a link from <strong>hub@harrowonline.org</strong> and click it to confirm. It can take a few minutes to arrive, so check your spam folder too.</p>
+      <section class="form-step" aria-labelledby="next-title">
+        <h2 class="form-step__title" id="next-title">What happens next</h2>
+        <ol class="next-steps">
+          <li><span class="next-steps__n">1</span><div><h3>We check your proof</h3><p>We confirm your email link, call the business or look at your document, depending on the method you chose.</p></div></li>
+          <li><span class="next-steps__n">2</span><div><h3>We email you either way</h3><p>You&rsquo;ll hear from us at <strong>sam.taylor@example.com</strong> whether we approve the claim or need something else from you.</p></div></li>
+          <li><span class="next-steps__n">3</span><div><h3>You manage the listing</h3><p>Once approved, your account has a getting started checklist: your description, opening hours and photos, then your first event, class or offer. You get a verified badge straight away.</p></div></li>
+        </ol>
+      </section>
+
+      <div class="notice notice--plain">
+        <svg class="ho-icon"><use href="/hub/assets/img/icons.svg#i-mail"/></svg>
+        <p>Chose email? Check your inbox for a link from <strong>hub@harrowonline.org</strong> and click it to confirm. It can take a few minutes to arrive, so check your spam folder too.</p>
+      </div>
+
+      <div class="add-biz__submit">
+        <div class="add-biz__actions">
+          <a class="ho-btn ho-btn--primary" href="/hub/account/?welcome=1">Go to my account</a>
+          <a class="ho-btn ho-btn--ghost" href="/hub/">Back to the Hub</a>
+        </div>
+      </div>
+    </div>
+
+    <aside class="sticky claim-side" aria-label="While you wait">
+      <div class="add-biz__panel">
+        <p class="claim-side__eyebrow">While you wait</p>
+        <h2 class="add-biz__panel-title">Get to the top of your category</h2>
+        <p class="small">Pick a paid plan now and it switches on as soon as your claim is approved and payment succeeds. Monthly or annual, cancel any time.</p>
+        <div class="claim-side__part">
+          <div class="side-plan"><h3 class="claim-side__h">Featured</h3><p class="side-plan__price"><strong>&pound;29</strong> a month, or &pound;290 a year</p></div>
+          <p class="small mb-0">Priority placement, more photos and social links, Local Offers, events and classes, and featured positions within the Hub.</p>
+        </div>
+        <div class="claim-side__part">
+          <div class="side-plan"><h3 class="claim-side__h">Local Partner</h3><p class="side-plan__price"><strong>&pound;79</strong> a month, or &pound;790 a year</p></div>
+          <p class="small mb-0">Everything in Featured, plus one sponsored slot each month in the Daily News newsletter and one sponsored post each month in the Harrow Online Facebook Group.</p>
+        </div>
+        <div class="claim-side__part">
+          <a class="ho-btn ho-btn--outline ho-btn--block" href="/hub/pricing/">See plans</a>
+        </div>
+      </div>
+    </aside>
   </div>
-
-  <div class="plan-card mt-6">
-    <div>
-      <p class="eyebrow">While you wait</p>
-      <h2>Get to the top of your category</h2>
-      <p class="mb-0">Pick a paid plan now and it switches on as soon as your claim is approved and payment succeeds. Monthly or annual, cancel any time.</p>
-    </div>
-    <div class="plan-card__actions">
-      <a class="ho-btn ho-btn--primary" href="/hub/pricing/">See plans</a>
-      <a class="ho-btn ho-btn--outline" href="/hub/account/?welcome=1">Go to my account</a>
-    </div>
-  </div>
-
-  <div class="grid grid-2 mt-6">
-    <div class="panel mt-0">
-      <h3 class="panel__title">Featured</h3>
-      <p class="small muted">Priority placement, more photos and social links, Local Offers, events and classes, and featured positions within the Hub.</p>
-      <p class="mb-0"><strong>&pound;29</strong> <span class="small muted">a month, or &pound;290 a year</span></p>
-    </div>
-    <div class="panel mt-0">
-      <h3 class="panel__title">Local Partner</h3>
-      <p class="small muted">Featured on the Hub, plus a monthly newsletter feature, a monthly Facebook Group post, a sponsored social post and a quarterly spotlight article.</p>
-      <p class="mb-0"><strong>&pound;149</strong> <span class="small muted">a month, or &pound;1,490 a year</span></p>
-    </div>
-  </div>
-
-  <p class="center mt-6"><a class="link-arrow" href="/hub/">Back to the Hub <svg class="ho-icon"><use href="/hub/assets/img/icons.svg#i-arrow"/></svg></a></p>
 </div>
 </main>
 <!-- Newsletter sign-up above the footer (Nov 2026): same design as the homepage band; the reader picks each edition
@@ -174,7 +189,7 @@
         <input type="hidden" name="signup_source" value="hub-strip">
         <fieldset class="nl-band__editions">
           <legend class="ho-sr">Choose your newsletters</legend>
-          <label class="nl-pick"><input type="checkbox" name="editions[]" value="daily" checked><span><strong>Daily Briefing</strong><small>Every morning: Harrow&rsquo;s news</small></span></label>
+          <label class="nl-pick"><input type="checkbox" name="editions[]" value="daily" checked><span><strong>Daily News</strong><small>Every morning: Harrow&rsquo;s news</small></span></label>
           <label class="nl-pick"><input type="checkbox" name="editions[]" value="weekend"><span><strong>The Weekend</strong><small>Thursdays: what&rsquo;s on and offers</small></span></label>
           <label class="nl-pick"><input type="checkbox" name="editions[]" value="business"><span><strong>Harrow Business</strong><small>Mondays: local business news</small></span></label>
         </fieldset>

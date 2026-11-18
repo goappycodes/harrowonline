@@ -104,17 +104,19 @@
     </div>
 
 <main id="main">
-<section class="section">
-  <div class="ho-container ho-container--narrow center">
-    <p class="big-404" aria-hidden="true">404</p>
-    <h1>Sorry, we can&rsquo;t find that page</h1>
-    <p class="page-head__lead" style="margin:0 auto">It may have moved, or the event or offer may have ended. Try a search, or pick a category below.</p>
+<!-- 404 (redesign, Nov 2026): a short message, the site search bar, quick routes to the main sections as cards,
+     then Popular categories as on the homepage -->
+<section class="nf" aria-labelledby="nf-title">
+  <div class="ho-container nf__inner">
+    <p class="nf__code">Error 404</p>
+    <h1 class="nf__title" id="nf-title">Sorry, we can&rsquo;t find that page</h1>
+    <p class="nf__lead">It may have moved, or the event or offer may have ended. Try a search, or pick where to go next.</p>
 
-    <form class="searchbar searchbar--inline searchbar--center" action="/hub/search/" method="get" role="search">
+    <form class="searchbar nf__search" action="/hub/search/" method="get" role="search">
       <div class="searchbar__field">
         <svg class="ho-icon"><use href="/hub/assets/img/icons.svg#i-search"/></svg>
         <label class="ho-sr" for="nf-q">What are you looking for?</label>
-        <input id="nf-q" type="search" name="q" placeholder="Plumber, Indian restaurant, dentist&hellip;" autocomplete="off">
+        <input id="nf-q" type="search" name="q" placeholder="Plumber, Indian restaurant&hellip;" autocomplete="off">
       </div>
       <div class="searchbar__field">
         <svg class="ho-icon"><use href="/hub/assets/img/icons.svg#i-pin"/></svg>
@@ -123,27 +125,24 @@
       </div>
       <button class="ho-btn ho-btn--primary" type="submit">Search</button>
     </form>
+
+    <nav class="nf-go" aria-label="Where to go next">
+      <a class="nf-go__item" href="/hub/"><span class="nf-go__icon"><svg class="ho-icon"><use href="/hub/assets/img/icons.svg#i-home"/></svg></span><span class="nf-go__text"><strong>Hub homepage</strong><span>Start again</span></span></a>
+      <a class="nf-go__item" href="/hub/events/"><span class="nf-go__icon"><svg class="ho-icon"><use href="/hub/assets/img/icons.svg#i-calendar"/></svg></span><span class="nf-go__text"><strong>What&rsquo;s On</strong><span>Events and days out</span></span></a>
+      <a class="nf-go__item" href="/hub/events/classes/"><span class="nf-go__icon"><svg class="ho-icon"><use href="/hub/assets/img/icons.svg#i-repeat"/></svg></span><span class="nf-go__text"><strong>Classes &amp; clubs</strong><span>Regular activities</span></span></a>
+      <a class="nf-go__item" href="/hub/offers/"><span class="nf-go__icon"><svg class="ho-icon"><use href="/hub/assets/img/icons.svg#i-tag"/></svg></span><span class="nf-go__text"><strong>Local offers</strong><span>Deals from Harrow businesses</span></span></a>
+      <a class="nf-go__item" href="https://harrowonline.org/"><span class="nf-go__icon"><svg class="ho-icon"><use href="/hub/assets/img/icons.svg#i-news"/></svg></span><span class="nf-go__text"><strong>Harrow news</strong><span>Latest stories</span></span></a>
+    </nav>
   </div>
+</section>
 
-  <div class="ho-container ho-container--mid mt-7">
-    <h2 class="sec-title mb-5">Popular categories</h2>
-    <div class="grid grid-4">
-      <a class="tile" href="/hub/category/restaurants/"><span class="tile__icon"><svg class="ho-icon"><use href="/hub/assets/img/icons.svg#i-food"/></svg></span><span class="tile__name">Restaurants</span></a>
-      <a class="tile" href="/hub/category/hair-and-beauty/"><span class="tile__icon"><svg class="ho-icon"><use href="/hub/assets/img/icons.svg#i-scissors"/></svg></span><span class="tile__name">Hair &amp; Beauty</span></a>
-      <a class="tile" href="/hub/category/home-and-garden/"><span class="tile__icon"><svg class="ho-icon"><use href="/hub/assets/img/icons.svg#i-home"/></svg></span><span class="tile__name">Home &amp; Garden</span></a>
-      <a class="tile" href="/hub/category/doctors-dentists-and-clinics/"><span class="tile__icon"><svg class="ho-icon"><use href="/hub/assets/img/icons.svg#i-medical"/></svg></span><span class="tile__name">Doctors, Dentists &amp; Clinics</span></a>
-      <a class="tile" href="/hub/category/food-and-drink/"><span class="tile__icon"><svg class="ho-icon"><use href="/hub/assets/img/icons.svg#i-cup"/></svg></span><span class="tile__name">Food &amp; Drink</span></a>
-      <a class="tile" href="/hub/category/motoring/"><span class="tile__icon"><svg class="ho-icon"><use href="/hub/assets/img/icons.svg#i-car"/></svg></span><span class="tile__name">Motoring</span></a>
-      <a class="tile" href="/hub/category/sport-and-fitness/"><span class="tile__icon"><svg class="ho-icon"><use href="/hub/assets/img/icons.svg#i-dumbbell"/></svg></span><span class="tile__name">Sports &amp; Fitness</span></a>
-      <a class="tile" href="/hub/category/food-shops-and-groceries/"><span class="tile__icon"><svg class="ho-icon"><use href="/hub/assets/img/icons.svg#i-cart"/></svg></span><span class="tile__name">Food Shops &amp; Groceries</span></a>
+<section class="section section--soft" aria-labelledby="nf-cats">
+  <div class="ho-container">
+    <div class="sec-head">
+      <div><h2 class="sec-title" id="nf-cats">Popular categories</h2><p class="sec-sub">The categories with the most Harrow businesses.</p></div>
+      <a class="link-arrow" href="/hub/categories/">View all categories <svg class="ho-icon"><use href="/hub/assets/img/icons.svg#i-arrow"/></svg></a>
     </div>
-
-    <div class="cluster cluster--lg mt-6" style="justify-content:center">
-      <a class="link-arrow" href="/hub/">Hub homepage <svg class="ho-icon"><use href="/hub/assets/img/icons.svg#i-arrow"/></svg></a>
-      <a class="link-arrow" href="/hub/events/">What&rsquo;s On <svg class="ho-icon"><use href="/hub/assets/img/icons.svg#i-arrow"/></svg></a>
-      <a class="link-arrow" href="/hub/offers/">Local Offers <svg class="ho-icon"><use href="/hub/assets/img/icons.svg#i-arrow"/></svg></a>
-      <a class="link-arrow" href="https://harrowonline.org/">Latest Harrow news <svg class="ho-icon"><use href="/hub/assets/img/icons.svg#i-arrow"/></svg></a>
-    </div>
+    <div class="cat-cards"><a class="cat-card" href="/hub/category/shops/"><span class="cat-card__icon"><svg class="ho-icon"><use href="/hub/assets/img/icons.svg#i-gift"/></svg></span><span class="cat-card__body"><span class="cat-card__name">Shops &amp; Specialists</span><span class="cat-card__count">372 businesses</span></span><span class="cat-card__go"><svg class="ho-icon"><use href="/hub/assets/img/icons.svg#i-arrow"/></svg></span><span class="cat-card__mark" aria-hidden="true"><svg class="ho-icon"><use href="/hub/assets/img/icons.svg#i-gift"/></svg></span></a><a class="cat-card" href="/hub/category/restaurants/"><span class="cat-card__icon"><svg class="ho-icon"><use href="/hub/assets/img/icons.svg#i-food"/></svg></span><span class="cat-card__body"><span class="cat-card__name">Restaurants</span><span class="cat-card__count">275 businesses</span></span><span class="cat-card__go"><svg class="ho-icon"><use href="/hub/assets/img/icons.svg#i-arrow"/></svg></span><span class="cat-card__mark" aria-hidden="true"><svg class="ho-icon"><use href="/hub/assets/img/icons.svg#i-food"/></svg></span></a><a class="cat-card" href="/hub/category/doctors-dentists-and-clinics/"><span class="cat-card__icon"><svg class="ho-icon"><use href="/hub/assets/img/icons.svg#i-medical"/></svg></span><span class="cat-card__body"><span class="cat-card__name">Doctors, Dentists &amp; Clinics</span><span class="cat-card__count">253 businesses</span></span><span class="cat-card__go"><svg class="ho-icon"><use href="/hub/assets/img/icons.svg#i-arrow"/></svg></span><span class="cat-card__mark" aria-hidden="true"><svg class="ho-icon"><use href="/hub/assets/img/icons.svg#i-medical"/></svg></span></a><a class="cat-card" href="/hub/category/hair-and-beauty/"><span class="cat-card__icon"><svg class="ho-icon"><use href="/hub/assets/img/icons.svg#i-scissors"/></svg></span><span class="cat-card__body"><span class="cat-card__name">Hair &amp; Beauty</span><span class="cat-card__count">232 businesses</span></span><span class="cat-card__go"><svg class="ho-icon"><use href="/hub/assets/img/icons.svg#i-arrow"/></svg></span><span class="cat-card__mark" aria-hidden="true"><svg class="ho-icon"><use href="/hub/assets/img/icons.svg#i-scissors"/></svg></span></a><a class="cat-card" href="/hub/category/motoring/"><span class="cat-card__icon"><svg class="ho-icon"><use href="/hub/assets/img/icons.svg#i-car"/></svg></span><span class="cat-card__body"><span class="cat-card__name">Motoring</span><span class="cat-card__count">149 businesses</span></span><span class="cat-card__go"><svg class="ho-icon"><use href="/hub/assets/img/icons.svg#i-arrow"/></svg></span><span class="cat-card__mark" aria-hidden="true"><svg class="ho-icon"><use href="/hub/assets/img/icons.svg#i-car"/></svg></span></a><a class="cat-card" href="/hub/category/finance-and-accountants/"><span class="cat-card__icon"><svg class="ho-icon"><use href="/hub/assets/img/icons.svg#i-pound"/></svg></span><span class="cat-card__body"><span class="cat-card__name">Finance &amp; Accountants</span><span class="cat-card__count">128 businesses</span></span><span class="cat-card__go"><svg class="ho-icon"><use href="/hub/assets/img/icons.svg#i-arrow"/></svg></span><span class="cat-card__mark" aria-hidden="true"><svg class="ho-icon"><use href="/hub/assets/img/icons.svg#i-pound"/></svg></span></a></div>
   </div>
 </section>
 </main>
@@ -160,7 +159,7 @@
         <input type="hidden" name="signup_source" value="hub-strip">
         <fieldset class="nl-band__editions">
           <legend class="ho-sr">Choose your newsletters</legend>
-          <label class="nl-pick"><input type="checkbox" name="editions[]" value="daily" checked><span><strong>Daily Briefing</strong><small>Every morning: Harrow&rsquo;s news</small></span></label>
+          <label class="nl-pick"><input type="checkbox" name="editions[]" value="daily" checked><span><strong>Daily News</strong><small>Every morning: Harrow&rsquo;s news</small></span></label>
           <label class="nl-pick"><input type="checkbox" name="editions[]" value="weekend"><span><strong>The Weekend</strong><small>Thursdays: what&rsquo;s on and offers</small></span></label>
           <label class="nl-pick"><input type="checkbox" name="editions[]" value="business"><span><strong>Harrow Business</strong><small>Mondays: local business news</small></span></label>
         </fieldset>

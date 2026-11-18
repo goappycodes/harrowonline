@@ -104,23 +104,26 @@
     </div>
 
 <main id="main">
-<nav class="crumbs ho-container ho-container--narrow" aria-label="Breadcrumb">
+<nav class="crumbs ho-container" aria-label="Breadcrumb">
   <ol><li><a href="/hub/">Hub</a></li><li><span aria-current="page">Privacy notice</span></li></ol>
 </nav>
 
-<header class="page-head ho-container ho-container--narrow">
+<header class="page-head ho-container">
   <h1 class="page-head__title">Privacy notice</h1>
   <p class="page-head__lead">How Harrow Online Hub uses your information, who we share it with and the choices you have.</p>
-  <p class="updated mt-4">Last updated: 11 November 2026</p>
 </header>
 
-<div class="ho-container ho-container--narrow">
-  <div class="notice notice--warn legal-draft">
-    <svg class="ho-icon"><use href="/hub/assets/img/icons.svg#i-alert"/></svg>
-    <div><p><strong>Draft for legal review.</strong> This notice has not yet been approved and may change before the Hub launches. Items marked [to confirm] need checking.</p></div>
-  </div>
-
-  <nav class="toc" aria-labelledby="toc-title">
+<!-- Info page (redesign, 18 Nov 2026): page width like every other page; a sticky "On this page" card with the
+     date (and the draft note) on the left, the text on the right. Same text as before. -->
+<div class="ho-container legal">
+  <aside class="legal__side" aria-label="About this page">
+    <div class="legal__card">
+      <button class="legal__toc-toggle" type="button" aria-expanded="false" aria-controls="legal-toc" data-toc-toggle>
+        <span class="legal__toc-label">On this page</span>
+        <span class="legal__toc-current" data-toc-current></span>
+        <svg class="ho-icon" aria-hidden="true"><use href="/hub/assets/img/icons.svg#i-chevron-down"/></svg>
+      </button>
+      <nav class="legal__toc legal__toc--first" id="legal-toc" aria-labelledby="toc-title">
     <h2 id="toc-title">On this page</h2>
     <ol>
       <li><a href="#who">Who we are</a></li>
@@ -135,9 +138,16 @@
       <li><a href="#rights">Your rights</a></li>
       <li><a href="#contact">Contact us</a></li>
     </ol>
-  </nav>
+      </nav>
+    </div>
+  </aside>
 
-  <div class="prose mt-6">
+  <div class="legal__main">
+    <div class="legal__meta">
+      <p class="legal__updated"><svg class="ho-icon ho-icon--sm" aria-hidden="true"><use href="/hub/assets/img/icons.svg#i-calendar"/></svg>Last updated: 11 November 2026</p>
+      <p class="legal__draft"><svg class="ho-icon ho-icon--sm" aria-hidden="true"><use href="/hub/assets/img/icons.svg#i-alert"/></svg><span><strong>Draft for legal review.</strong> This notice has not yet been approved and may change before the Hub launches. Items marked [to confirm] need checking.</span></p>
+    </div>
+    <div class="prose legal__prose">
     <h2 id="who">1. Who we are</h2>
     <p>Harrow Online Hub is run by <strong>Harrow Online Ltd</strong>, a company registered in England and Wales (company number 16370670), at 79 College Road, Harrow HA1 1BD. We also publish the Harrow Online news website and the Harrow Online Newsletter.</p>
     <p>Harrow Online Ltd is the data controller for the personal information described in this notice. ICO registration number: [to confirm].</p>
@@ -228,6 +238,7 @@
     <p>Harrow Online Ltd, 79 College Road, Harrow HA1 1BD<br>Email: [privacy contact to confirm]</p>
     <p>We may update this notice from time to time. We&rsquo;ll change the date at the top, and tell account holders by email about any important changes.</p>
   </div>
+  </div>
 </div>
 </main>
 <!-- Newsletter sign-up above the footer (Nov 2026): same design as the homepage band; the reader picks each edition
@@ -243,7 +254,7 @@
         <input type="hidden" name="signup_source" value="hub-strip">
         <fieldset class="nl-band__editions">
           <legend class="ho-sr">Choose your newsletters</legend>
-          <label class="nl-pick"><input type="checkbox" name="editions[]" value="daily" checked><span><strong>Daily Briefing</strong><small>Every morning: Harrow&rsquo;s news</small></span></label>
+          <label class="nl-pick"><input type="checkbox" name="editions[]" value="daily" checked><span><strong>Daily News</strong><small>Every morning: Harrow&rsquo;s news</small></span></label>
           <label class="nl-pick"><input type="checkbox" name="editions[]" value="weekend"><span><strong>The Weekend</strong><small>Thursdays: what&rsquo;s on and offers</small></span></label>
           <label class="nl-pick"><input type="checkbox" name="editions[]" value="business"><span><strong>Harrow Business</strong><small>Mondays: local business news</small></span></label>
         </fieldset>

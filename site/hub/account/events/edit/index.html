@@ -104,7 +104,6 @@
     </div>
 
 <main id="main">
-<div class="ho-container"><p class="sample-bar"><svg class="ho-icon ho-icon--sm"><use href="/hub/assets/img/icons.svg#i-alert"/></svg><span><strong>Sample account.</strong> Made-up business and figures to show how the account works.</span></p></div>
 <div class="ho-container dash">
   <aside class="dash-nav" aria-label="Account">
     <div class="dash-nav__who">
@@ -238,6 +237,8 @@
           </div>
         </section>
 
+        <!-- WP: shown only to businesses without Featured / Local Partner; "Send for approval" then opens a one-off Stripe Checkout (£15 event listing). -->
+        <p class="help oneoff-help"><svg class="ho-icon ho-icon--sm"><use href="/hub/assets/img/icons.svg#i-info"/></svg><span>On the free Basic plan? Listing this event costs <strong>&pound;15</strong>, paid at the next step. Featured and Local Partner include events.</span></p>
         <div class="form-actions form-actions--between">
           <button class="ho-btn ho-btn--outline" type="submit" name="action" value="draft">Save draft</button>
           <button class="ho-btn ho-btn--primary" type="submit" name="action" value="submit"><svg class="ho-icon"><use href="/hub/assets/img/icons.svg#i-check"/></svg>Send for approval</button>

@@ -104,23 +104,26 @@
     </div>
 
 <main id="main">
-<nav class="crumbs ho-container ho-container--narrow" aria-label="Breadcrumb">
+<nav class="crumbs ho-container" aria-label="Breadcrumb">
   <ol><li><a href="/hub/">Hub</a></li><li><span aria-current="page">Data sources</span></li></ol>
 </nav>
 
-<header class="page-head ho-container ho-container--narrow">
+<header class="page-head ho-container">
   <h1 class="page-head__title">Data sources</h1>
   <p class="page-head__lead">Where our business listings come from, the licences we use them under, and how to fix or remove a listing.</p>
-  <p class="updated mt-4">Last updated: 11 November 2026</p>
 </header>
 
-<div class="ho-container ho-container--narrow">
-  <div class="panel panel--soft">
-    <p class="eyebrow mb-2">Attribution</p>
-    <p class="mb-0"><strong>Business data &copy; Overture Maps Foundation and its sources</strong> (BrightQuery, Meta, Microsoft, Uberall, DAC, PinMeTo), used under the <a href="https://cdla.dev/permissive-2-0/" rel="noopener">Community Data License Agreement, Permissive, Version 2.0</a> and, where applicable, the <a href="https://opendatacommons.org/licenses/odbl/" rel="noopener">Open Database License (ODbL)</a>.</p>
-  </div>
-
-  <nav class="toc mt-5" aria-labelledby="toc-title">
+<!-- Info page (redesign, 18 Nov 2026): page width like every other page; a sticky "On this page" card with the
+     date (and the draft note) on the left, the text on the right. Same text as before. -->
+<div class="ho-container legal">
+  <aside class="legal__side" aria-label="About this page">
+    <div class="legal__card">
+      <button class="legal__toc-toggle" type="button" aria-expanded="false" aria-controls="legal-toc" data-toc-toggle>
+        <span class="legal__toc-label">On this page</span>
+        <span class="legal__toc-current" data-toc-current></span>
+        <svg class="ho-icon" aria-hidden="true"><use href="/hub/assets/img/icons.svg#i-chevron-down"/></svg>
+      </button>
+      <nav class="legal__toc legal__toc--first" id="legal-toc" aria-labelledby="toc-title">
     <h2 id="toc-title">On this page</h2>
     <ol>
       <li><a href="#overture">Overture Maps Places data</a></li>
@@ -130,9 +133,20 @@
       <li><a href="#indexing">Imported listings and search engines</a></li>
       <li><a href="#correct">Correcting or removing a listing</a></li>
     </ol>
-  </nav>
+      </nav>
+    </div>
+  </aside>
 
-  <div class="prose mt-6">
+  <div class="legal__main">
+    <div class="legal__meta">
+      <p class="legal__updated"><svg class="ho-icon ho-icon--sm" aria-hidden="true"><use href="/hub/assets/img/icons.svg#i-calendar"/></svg>Last updated: 11 November 2026</p>
+    </div>
+    <div class="legal__attrib">
+      <p class="legal__attrib-label">Attribution</p>
+      <p class="mb-0"><strong>Business data &copy; Overture Maps Foundation and its sources</strong> (BrightQuery, Meta, Microsoft, Uberall, DAC, PinMeTo), used under the <a href="https://cdla.dev/permissive-2-0/" rel="noopener">Community Data License Agreement, Permissive, Version 2.0</a> and, where applicable, the <a href="https://opendatacommons.org/licenses/odbl/" rel="noopener">Open Database License (ODbL)</a>.</p>
+    </div>
+
+    <div class="prose legal__prose">
     <h2 id="overture">1. Overture Maps Places data</h2>
     <p>Most listings on Harrow Online Hub started life as open data from the <a href="https://overturemaps.org" rel="noopener">Overture Maps Foundation</a>, a project that publishes free map data, including a worldwide dataset of places such as shops, restaurants and services.</p>
     <p>Overture combines place data from several contributors. The Harrow listings we imported come from these sources:</p>
@@ -180,6 +194,7 @@
     <p>If you own the business, the quickest way to fix it is to <a href="/hub/search/">find your listing</a> and claim it for free. You can then edit the details yourself.</p>
     <p>For more on how we handle personal information in listings, see our <a href="/hub/privacy/#listings">privacy notice</a>.</p>
   </div>
+  </div>
 </div>
 </main>
 <!-- Newsletter sign-up above the footer (Nov 2026): same design as the homepage band; the reader picks each edition
@@ -195,7 +210,7 @@
         <input type="hidden" name="signup_source" value="hub-strip">
         <fieldset class="nl-band__editions">
           <legend class="ho-sr">Choose your newsletters</legend>
-          <label class="nl-pick"><input type="checkbox" name="editions[]" value="daily" checked><span><strong>Daily Briefing</strong><small>Every morning: Harrow&rsquo;s news</small></span></label>
+          <label class="nl-pick"><input type="checkbox" name="editions[]" value="daily" checked><span><strong>Daily News</strong><small>Every morning: Harrow&rsquo;s news</small></span></label>
           <label class="nl-pick"><input type="checkbox" name="editions[]" value="weekend"><span><strong>The Weekend</strong><small>Thursdays: what&rsquo;s on and offers</small></span></label>
           <label class="nl-pick"><input type="checkbox" name="editions[]" value="business"><span><strong>Harrow Business</strong><small>Mondays: local business news</small></span></label>
         </fieldset>

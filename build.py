@@ -73,10 +73,7 @@ def render(meta, body):
     layout = meta.get("layout", "default")
 
     body = INC_RE.sub(lambda m: partial(m.group(1)), body)
-    if "is-logged-in" in meta.get("body", ""):   # signed-in dashboard pages only (not sign-in / register)
-        # Preview only: the signed-in account, its bookings, statuses, invoices and figures are made up.
-        body = ('<div class="ho-container"><p class="sample-bar"><svg class="ho-icon ho-icon--sm"><use href="#i-alert"/></svg>'
-                '<span><strong>Sample account.</strong> Made-up business and figures to show how the account works.</span></p></div>\n') + body
+    # (18 Nov 2026) No "Sample account" strip on signed-in pages: the user asked for no Sample labels anywhere.
 
     # Hub navigation lives in the header: a "Hub" dropdown on desktop, a Hub section in the phone drawer (no separate Hub bar).
     parts = [partial("head"), partial("header")]
