@@ -4,83 +4,103 @@ description: Index of every page in the Harrow Online Hub front-end design previ
 robots: noindex, nofollow
 nl: off
 -->
+<!-- All pages (redesign, 18 Nov 2026): grouped cards with the current URLs and example pages. -->
 <header class="page-head ho-container">
   <h1 class="page-head__title">All pages</h1>
-  <p class="page-head__lead">Every page in the Harrow Online Hub front end, grouped as in the dev brief. Each line shows the WordPress URL it becomes (under harrowonline.org/hub unless marked news site).</p>
+  <p class="page-head__lead">Every page in the Harrow Online Hub preview, grouped by what people use it for. Each line shows the address it will have on harrowonline.org/hub (news site pages are marked).</p>
 </header>
 
-<div class="ho-container page-index">
-  <section>
-    <h2>Directory</h2>
-    <ul>
-      <li><a href="/">Hub homepage</a><code>/hub/</code></li>
-      <li><a href="/search.html">Search results</a><code>/hub/search/</code></li>
-      <li><a href="/categories.html">All categories</a><code>/hub/categories/</code></li>
-      <li><a href="/category/restaurants.html">Category archive (24 generated)</a><code>/hub/category/{cat}/</code></li>
-      <li><a href="/area/pinner.html">Area archive (19 generated)</a><code>/hub/area/{area}/</code></li>
-      <li><a href="/business/1-stop-letting-solutions-west-harrow.html">Unclaimed profile (2,590 generated)</a><code>/hub/business/{name-area}/</code></li>
-      <li><a href="/business/pinner-village-florist-pinner.html">Claimed profile: Basic (sample)</a><code>/hub/business/{name-area}/</code></li>
-      <li><a href="/business/station-road-barbers-harrow-town-centre.html">Claimed profile: Featured (sample)</a><code>/hub/business/{name-area}/</code></li>
-      <li><a href="/business/hill-street-kitchen-harrow-on-the-hill.html">Claimed profile: Featured (sample)</a><code>/hub/business/{name-area}/</code></li>
-      <li><a href="/business/stanmore-family-dental-stanmore.html">Claimed profile: Local Partner (sample)</a><code>/hub/business/{name-area}/</code></li>
-          </ul>
-  </section>
-  <section>
-    <h2>Claims and listings</h2>
-    <ul>
-      <li><a href="/claim.html?listing=1-stop-letting-solutions-west-harrow">Claim this business</a><code>/hub/claim/</code></li>
-      <li><a href="/claim-submitted.html">Claim submitted</a><code>/hub/claim/submitted/</code></li>
-      <li><a href="/add-business.html">Add your business</a><code>/hub/add-business/</code></li>
-      <li><a href="/report.html?listing=1-stop-letting-solutions-west-harrow">Correction or removal request</a><code>/hub/report/</code></li>
-      <li><a href="/pricing.html">Pricing</a><code>/hub/pricing/</code></li>
+<div class="ho-container pidx">
+  <nav class="pidx-jump chips" aria-label="Jump to a group"><a class="chip" href="#find">Find local businesses</a><a class="chip" href="#biz">Business pages</a><a class="chip" href="#whatson">Offers, events and classes</a><a class="chip" href="#biz-owners">For businesses</a><a class="chip" href="#account">Account</a><a class="chip" href="#info">Information</a><a class="chip" href="#news">News site mock-ups</a></nav>
+
+  <div class="pidx-key" aria-label="Labels">
+    <span><span class="pidx-tag pidx-tag--verified">Verified</span>Verified by the business</span>
+    <span><span class="pidx-tag pidx-tag--checked">Checked</span>Checked by Harrow Online</span>
+    <span><span class="pidx-tag pidx-tag--imported">Imported</span>From public data</span>
+    <span><span class="pidx-tag pidx-tag--real">Real business</span>or <span class="pidx-tag pidx-tag--sample">Made-up sample</span></span>
+  </div>
+
+  <section class="pidx-sec" id="find" aria-labelledby="find-t">
+    <h2 class="pidx-sec__title" id="find-t"><svg class="ho-icon" aria-hidden="true"><use href="#i-search"/></svg>Find local businesses<span class="pidx-sec__n">6</span></h2>
+    <ul class="pidx-list">
+        <li class="pidx-row"><div class="pidx-row__main"><a class="pidx-row__name" href="/">Hub homepage</a><span class="pidx-row__desc">Search, choices, this weekend, featured businesses, offers</span></div><code class="pidx-row__url">/hub/</code></li>
+        <li class="pidx-row"><div class="pidx-row__main"><a class="pidx-row__name" href="/search.html">Search results</a><span class="pidx-row__desc">Businesses, events, classes and offers in one search</span></div><code class="pidx-row__url">/hub/search/</code></li>
+        <li class="pidx-row"><div class="pidx-row__main"><a class="pidx-row__name" href="/search.html?q=pizza">Search: an example search</a><span class="pidx-row__desc">Best match first, Verified before Checked before imported</span></div><code class="pidx-row__url">/hub/search/?q=pizza</code></li>
+        <li class="pidx-row"><div class="pidx-row__main"><a class="pidx-row__name" href="/categories.html">All categories</a><span class="pidx-row__desc">27 categories</span></div><code class="pidx-row__url">/hub/categories/</code></li>
+        <li class="pidx-row"><div class="pidx-row__main"><a class="pidx-row__name" href="/category/food-and-drink/">Category page (27)</a><span class="pidx-row__desc">Example: Food &amp; Drink</span></div><code class="pidx-row__url">/hub/category/{category}/</code></li>
+        <li class="pidx-row"><div class="pidx-row__main"><a class="pidx-row__name" href="/area/pinner/">Area page (19)</a><span class="pidx-row__desc">Example: Pinner</span></div><code class="pidx-row__url">/hub/area/{area}/</code></li>
     </ul>
   </section>
-  <section>
-    <h2>Offers, events and classes</h2>
-    <ul>
-      <li><a href="/offers.html">Local Offers</a><code>/hub/offers/</code></li>
-      <li><a href="/events.html">What&rsquo;s On (list)</a><code>/hub/events/</code></li>
-      <li><a href="/events-month.html">What&rsquo;s On (month)</a><code>/hub/events/?view=month</code></li>
-      <li><a href="/event.html">Event detail</a><code>/hub/events/{event}/</code></li>
-      <li><a href="/classes.html">Classes and activities</a><code>/hub/events/classes/</code></li>
-      <li><a href="/class.html">Class detail</a><code>/hub/events/{class}/</code></li>
-      <li><a href="/advertise-newsletter.html">Newsletter sponsor booking</a><code>/hub/advertise/newsletter/</code></li>
+  <section class="pidx-sec" id="biz" aria-labelledby="biz-t">
+    <h2 class="pidx-sec__title" id="biz-t"><svg class="ho-icon" aria-hidden="true"><use href="#i-store"/></svg>Business pages<span class="pidx-sec__n">6</span></h2>
+    <ul class="pidx-list">
+        <li class="pidx-row"><div class="pidx-row__main"><a class="pidx-row__name" href="/business/aj-pizzas-harrow-town-centre/">AJ Pizza&rsquo;s</a><span class="pidx-tag pidx-tag--verified">Verified</span><span class="pidx-tag pidx-tag--plan">Featured</span><span class="pidx-tag pidx-tag--real">Real business</span><span class="pidx-row__desc">One of the 9 real businesses from Harrow Online</span></div><code class="pidx-row__url">/hub/business/{name-area}/</code></li>
+        <li class="pidx-row"><div class="pidx-row__main"><a class="pidx-row__name" href="/business/kodak-fc-harrow-weald/">Kodak FC</a><span class="pidx-tag pidx-tag--verified">Verified</span><span class="pidx-tag pidx-tag--plan">Featured</span><span class="pidx-tag pidx-tag--real">Real business</span><span class="pidx-row__desc">Real business with a weekly schedule instead of opening hours</span></div><code class="pidx-row__url">/hub/business/{name-area}/</code></li>
+        <li class="pidx-row"><div class="pidx-row__main"><a class="pidx-row__name" href="/business/hill-street-kitchen-harrow-on-the-hill/">Hill Street Kitchen</a><span class="pidx-tag pidx-tag--checked">Checked</span><span class="pidx-tag pidx-tag--plan">Featured</span><span class="pidx-tag pidx-tag--sample">Made-up sample</span><span class="pidx-row__desc">Business of the Week, offers, events, gallery</span></div><code class="pidx-row__url">/hub/business/{name-area}/</code></li>
+        <li class="pidx-row"><div class="pidx-row__main"><a class="pidx-row__name" href="/business/stanmore-family-dental-stanmore/">Stanmore Family Dental</a><span class="pidx-tag pidx-tag--checked">Checked</span><span class="pidx-tag pidx-tag--plan">Local Partner</span><span class="pidx-tag pidx-tag--sample">Made-up sample</span><span class="pidx-row__desc">Top plan</span></div><code class="pidx-row__url">/hub/business/{name-area}/</code></li>
+        <li class="pidx-row"><div class="pidx-row__main"><a class="pidx-row__name" href="/business/pinner-village-florist-pinner/">Pinner Village Florist</a><span class="pidx-tag pidx-tag--checked">Checked</span><span class="pidx-tag pidx-tag--plan">Basic</span><span class="pidx-tag pidx-tag--sample">Made-up sample</span><span class="pidx-row__desc">Free plan</span></div><code class="pidx-row__url">/hub/business/{name-area}/</code></li>
+        <li class="pidx-row"><div class="pidx-row__main"><a class="pidx-row__name" href="/business/1-stop-letting-solutions-west-harrow/">1 Stop Letting Solutions</a><span class="pidx-tag pidx-tag--imported">Imported</span><span class="pidx-row__desc">Unclaimed listing from public data (2,588 of these)</span></div><code class="pidx-row__url">/hub/business/{name-area}/</code></li>
     </ul>
   </section>
-  <section>
-    <h2>Accounts</h2>
-    <ul>
-      <li><a href="/sign-in.html">Sign in</a><code>/hub/sign-in/</code></li>
-      <li><a href="/register.html">Create an account</a><code>/hub/register/</code></li>
-      <li><a href="/forgot-password.html">Forgot password</a><code>/hub/forgot-password/</code></li>
-      <li><a href="/account.html">Dashboard overview</a><code>/hub/account/</code></li>
-      <li><a href="/account-listing-edit.html">Edit listing</a><code>/hub/account/listings/{id}/</code></li>
-      <li><a href="/account-billing.html">Plan and billing</a><code>/hub/account/billing/</code></li>
-      <li><a href="/account-offers.html">My offers</a><code>/hub/account/offers/</code></li>
-      <li><a href="/account-offer-edit.html">Add / edit offer</a><code>/hub/account/offers/new/</code></li>
-      <li><a href="/account-events.html">My events</a><code>/hub/account/events/</code></li>
-      <li><a href="/account-event-edit.html">Add / edit event</a><code>/hub/account/events/new/</code></li>
-      <li><a href="/account-classes.html">My classes</a><code>/hub/account/classes/</code></li>
-      <li><a href="/account-class-edit.html">Add / edit class</a><code>/hub/account/classes/new/</code></li>
-      <li><a href="/account-bookings.html">Newsletter and promotions</a><code>/hub/account/promotions/</code></li>
-      <li><a href="/account-settings.html">Settings</a><code>/hub/account/settings/</code></li>
+  <section class="pidx-sec" id="whatson" aria-labelledby="whatson-t">
+    <h2 class="pidx-sec__title" id="whatson-t"><svg class="ho-icon" aria-hidden="true"><use href="#i-calendar"/></svg>Offers, events and classes<span class="pidx-sec__n">8</span></h2>
+    <ul class="pidx-list">
+        <li class="pidx-row"><div class="pidx-row__main"><a class="pidx-row__name" href="/offers.html">Local Offers</a><span class="pidx-row__desc">All current offers, with filters</span></div><code class="pidx-row__url">/hub/offers/</code></li>
+        <li class="pidx-row"><div class="pidx-row__main"><a class="pidx-row__name" href="/offers/two-pizza-collection-deal-from-7-99-each/">Offer page: subscribers only</a><span class="pidx-tag pidx-tag--real">Real business</span><span class="pidx-row__desc">AJ Pizza&rsquo;s. Code shows once the reader confirms their email</span></div><code class="pidx-row__url">/hub/offers/{offer}/</code></li>
+        <li class="pidx-row"><div class="pidx-row__main"><a class="pidx-row__name" href="/offers/2-for-1-mains-monday-to-thursday/">Offer page: open to everyone</a><span class="pidx-tag pidx-tag--sample">Made-up sample</span><span class="pidx-row__desc">Hill Street Kitchen. Code and Copy code</span></div><code class="pidx-row__url">/hub/offers/{offer}/</code></li>
+        <li class="pidx-row"><div class="pidx-row__main"><a class="pidx-row__name" href="/events.html">What&rsquo;s On: list</a><span class="pidx-row__desc">Filters, featured events, this week</span></div><code class="pidx-row__url">/hub/events/</code></li>
+        <li class="pidx-row"><div class="pidx-row__main"><a class="pidx-row__name" href="/events-month.html">What&rsquo;s On: month</a><span class="pidx-row__desc">Calendar view with the same filters</span></div><code class="pidx-row__url">/hub/events/month/</code></li>
+        <li class="pidx-row"><div class="pidx-row__main"><a class="pidx-row__name" href="/event.html">Event page</a><span class="pidx-row__desc">Example: Harrow Christmas Lights Switch-On</span></div><code class="pidx-row__url">/hub/events/{event}/</code></li>
+        <li class="pidx-row"><div class="pidx-row__main"><a class="pidx-row__name" href="/classes.html">Classes and activities</a><span class="pidx-row__desc">Weekly classes, filter by age, area and day</span></div><code class="pidx-row__url">/hub/events/classes/</code></li>
+        <li class="pidx-row"><div class="pidx-row__main"><a class="pidx-row__name" href="/class.html">Class page</a><span class="pidx-row__desc">Example: Saturday Kids Coding Club</span></div><code class="pidx-row__url">/hub/events/{class}/</code></li>
     </ul>
   </section>
-  <section>
-    <h2>Legal</h2>
-    <ul>
-      <li><a href="/privacy.html">Privacy</a><code>/hub/privacy/</code></li>
-      <li><a href="/terms.html">Terms</a><code>/hub/terms/</code></li>
-      <li><a href="/data-sources.html">Data sources</a><code>/hub/data-sources/</code></li>
-      <li><a href="/404.html">Not found</a><code>404</code></li>
+  <section class="pidx-sec" id="biz-owners" aria-labelledby="biz-owners-t">
+    <h2 class="pidx-sec__title" id="biz-owners-t"><svg class="ho-icon" aria-hidden="true"><use href="#i-briefcase"/></svg>For businesses<span class="pidx-sec__n">6</span></h2>
+    <ul class="pidx-list">
+        <li class="pidx-row"><div class="pidx-row__main"><a class="pidx-row__name" href="/pricing.html">Pricing</a><span class="pidx-row__desc">Plans, what the labels mean, compare plans, billing, FAQs (now includes the old For businesses page)</span></div><code class="pidx-row__url">/hub/pricing/</code></li>
+        <li class="pidx-row"><div class="pidx-row__main"><a class="pidx-row__name" href="/add-business.html">Add your business</a></div><code class="pidx-row__url">/hub/add-business/</code></li>
+        <li class="pidx-row"><div class="pidx-row__main"><a class="pidx-row__name" href="/claim.html?listing=1-stop-letting-solutions-west-harrow">Claim a business</a><span class="pidx-row__desc">Opened from an unclaimed listing</span></div><code class="pidx-row__url">/hub/claim/</code></li>
+        <li class="pidx-row"><div class="pidx-row__main"><a class="pidx-row__name" href="/claim-submitted.html">Claim submitted</a></div><code class="pidx-row__url">/hub/claim/submitted/</code></li>
+        <li class="pidx-row"><div class="pidx-row__main"><a class="pidx-row__name" href="/report.html?listing=1-stop-letting-solutions-west-harrow">Correction or removal request</a></div><code class="pidx-row__url">/hub/report/</code></li>
+        <li class="pidx-row"><div class="pidx-row__main"><a class="pidx-row__name" href="/advertise-newsletter.html">Sponsor the newsletter</a><span class="pidx-row__desc">Book a Presented by slot (Advertise in the main menu)</span></div><code class="pidx-row__url">/hub/advertise/newsletter/</code></li>
     </ul>
   </section>
-  <section>
-    <h2>News site (harrowonline.org)</h2>
-    <ul>
-      <li><a href="/news-article.html">Article: support box, related stories, businesses mentioned</a><code>/{article}/</code></li>
-      <li><a href="/news-support.html">Support us</a><code>/support/</code></li>
-      <li><a href="/news-advertise.html">Advertise and media kit</a><code>/advertise/</code></li>
+  <section class="pidx-sec" id="account" aria-labelledby="account-t">
+    <h2 class="pidx-sec__title" id="account-t"><svg class="ho-icon" aria-hidden="true"><use href="#i-user"/></svg>Account<span class="pidx-sec__n">14</span></h2>
+    <ul class="pidx-list">
+        <li class="pidx-row"><div class="pidx-row__main"><a class="pidx-row__name" href="/sign-in.html">Sign in</a></div><code class="pidx-row__url">/hub/sign-in/</code></li>
+        <li class="pidx-row"><div class="pidx-row__main"><a class="pidx-row__name" href="/register.html">Create an account</a></div><code class="pidx-row__url">/hub/register/</code></li>
+        <li class="pidx-row"><div class="pidx-row__main"><a class="pidx-row__name" href="/forgot-password.html">Forgot password</a></div><code class="pidx-row__url">/hub/forgot-password/</code></li>
+        <li class="pidx-row"><div class="pidx-row__main"><a class="pidx-row__name" href="/account.html">Dashboard</a><span class="pidx-row__desc">Sample account</span></div><code class="pidx-row__url">/hub/account/</code></li>
+        <li class="pidx-row"><div class="pidx-row__main"><a class="pidx-row__name" href="/account-listing-edit.html">Edit my listing</a><span class="pidx-row__desc">One listing per account</span></div><code class="pidx-row__url">/hub/account/listings/edit/</code></li>
+        <li class="pidx-row"><div class="pidx-row__main"><a class="pidx-row__name" href="/account-offers.html">My offers</a></div><code class="pidx-row__url">/hub/account/offers/</code></li>
+        <li class="pidx-row"><div class="pidx-row__main"><a class="pidx-row__name" href="/account-offer-edit.html">Add or edit an offer</a></div><code class="pidx-row__url">/hub/account/offers/edit/</code></li>
+        <li class="pidx-row"><div class="pidx-row__main"><a class="pidx-row__name" href="/account-events.html">My events</a></div><code class="pidx-row__url">/hub/account/events/</code></li>
+        <li class="pidx-row"><div class="pidx-row__main"><a class="pidx-row__name" href="/account-event-edit.html">Add or edit an event</a></div><code class="pidx-row__url">/hub/account/events/edit/</code></li>
+        <li class="pidx-row"><div class="pidx-row__main"><a class="pidx-row__name" href="/account-classes.html">My classes</a></div><code class="pidx-row__url">/hub/account/classes/</code></li>
+        <li class="pidx-row"><div class="pidx-row__main"><a class="pidx-row__name" href="/account-class-edit.html">Add or edit a class</a></div><code class="pidx-row__url">/hub/account/classes/edit/</code></li>
+        <li class="pidx-row"><div class="pidx-row__main"><a class="pidx-row__name" href="/account-bookings.html">Newsletter bookings</a><span class="pidx-row__desc">Booked newsletter sponsor slots</span></div><code class="pidx-row__url">/hub/account/newsletter/</code></li>
+        <li class="pidx-row"><div class="pidx-row__main"><a class="pidx-row__name" href="/account-billing.html">Plan and billing</a></div><code class="pidx-row__url">/hub/account/billing/</code></li>
+        <li class="pidx-row"><div class="pidx-row__main"><a class="pidx-row__name" href="/account-settings.html">Settings</a></div><code class="pidx-row__url">/hub/account/settings/</code></li>
     </ul>
   </section>
+  <section class="pidx-sec" id="info" aria-labelledby="info-t">
+    <h2 class="pidx-sec__title" id="info-t"><svg class="ho-icon" aria-hidden="true"><use href="#i-info"/></svg>Information<span class="pidx-sec__n">4</span></h2>
+    <ul class="pidx-list">
+        <li class="pidx-row"><div class="pidx-row__main"><a class="pidx-row__name" href="/privacy.html">Privacy</a></div><code class="pidx-row__url">/hub/privacy/</code></li>
+        <li class="pidx-row"><div class="pidx-row__main"><a class="pidx-row__name" href="/terms.html">Terms</a></div><code class="pidx-row__url">/hub/terms/</code></li>
+        <li class="pidx-row"><div class="pidx-row__main"><a class="pidx-row__name" href="/data-sources.html">Data sources</a></div><code class="pidx-row__url">/hub/data-sources/</code></li>
+        <li class="pidx-row"><div class="pidx-row__main"><a class="pidx-row__name" href="/404.html">Page not found</a></div><code class="pidx-row__url">404</code></li>
+    </ul>
+  </section>
+  <section class="pidx-sec" id="news" aria-labelledby="news-t">
+    <h2 class="pidx-sec__title" id="news-t"><svg class="ho-icon" aria-hidden="true"><use href="#i-news"/></svg>News site mock-ups (harrowonline.org)<span class="pidx-sec__n">3</span></h2>
+    <ul class="pidx-list">
+        <li class="pidx-row"><div class="pidx-row__main"><a class="pidx-row__name" href="/news-article.html">News article</a><span class="pidx-row__desc">Support box, businesses mentioned, related stories</span></div><code class="pidx-row__url">harrowonline.org/{article}/</code></li>
+        <li class="pidx-row"><div class="pidx-row__main"><a class="pidx-row__name" href="/news-support.html">Support Harrow Online</a></div><code class="pidx-row__url">harrowonline.org/support/</code></li>
+        <li class="pidx-row"><div class="pidx-row__main"><a class="pidx-row__name" href="/news-advertise.html">Advertise with Harrow Online</a><span class="pidx-row__desc">Includes newsletter sponsorship</span></div><code class="pidx-row__url">harrowonline.org/advertise/</code></li>
+    </ul>
+  </section>
+
 </div>

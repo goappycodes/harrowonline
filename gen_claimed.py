@@ -80,6 +80,14 @@ def name_with_tick(x, name=None, linked=True):
     return (e(head) + " " if head else "") + f'<span class="name-end">{e(last)}{tick}</span>'
 
 
+def sub_lock(focusable=True):
+    """Subscribers-only mark (18 Nov 2026): a small lock icon like the homepage offer tiles, not a text badge.
+    Hover, focus or tap shows "Subscribers only" (the same tooltip as the status icons; hub.js 6h)."""
+    tab = ' tabindex="0"' if focusable else ""
+    return (f'<span class="card__tick card__tick--sub"{tab} role="img" aria-label="Subscribers only" data-tip="Subscribers only">'
+            f'{icon("lock")}</span>')
+
+
 def checked_badge():
     return f'<span class="badge badge--checked">{icon("check")}Checked by Harrow Online</span>'
 
@@ -243,7 +251,7 @@ def offer_card(x, o, show_biz=True, heading="h3"):
     if featured and not badge_sample(x):
         badges += f'<span class="badge badge--featured">{icon("star")}Featured</span>'
     if o.get("sub"):
-        badges += f'<span class="badge badge--sub">{icon("lock")}Subscriber-only</span>'
+        badges += sub_lock()
     if soon:
         badges += f'<span class="badge badge--soon">{icon("clock")}Ends soon</span>'
     badges += f'<span class="biz-card__cat">{e(cat_name(x["cat"]))}</span>'
@@ -307,7 +315,7 @@ def offer_list_card(x, o):
     feat = bool(o.get("featured"))
     tags = sample_badge() if badge_sample(x) else (f'<span class="badge badge--featured">{icon("star")}Featured</span>' if feat else "")
     if o.get("sub"):
-        tags += f'<span class="badge badge--sub">{icon("lock")}Subscriber-only</span>'
+        tags += sub_lock(focusable=False)
     if soon:
         tags += f'<span class="badge badge--soon">{icon("clock")}Ends soon</span>'
     return f'''<a class="offer-card{" offer-card--featured" if feat else ""}" href="{o["href"]}" data-cat="{x["cat"]}" data-area="{x["area"]}" data-sub="{1 if o.get("sub") else 0}">
@@ -351,7 +359,7 @@ def offer_page(x, o, live):
     if ended:
         status = '<span class="badge badge--unclaimed">Ended</span>'
     elif o.get("sub"):
-        status = f'<span class="badge badge--sub">{icon("lock")}Subscriber-only</span>'
+        status = sub_lock()
     elif soon:
         status = f'<span class="badge badge--soon">{icon("clock")}Ends soon</span>'
 

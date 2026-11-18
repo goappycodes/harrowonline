@@ -157,7 +157,7 @@
     if (!email || !email.value.includes("@")) { if (msg) msg.textContent = "Please enter a valid email address."; return; }
     // Each edition is its own opt-in: the reader gets only the ones ticked (or the one a dedicated form names)
     const ticks = $$('input[type=checkbox][name="editions[]"]', form);
-    const NAMES = { daily: "The Daily Briefing (every morning)", weekend: "The Weekend (Thursdays)", business: "Harrow Business (Mondays)" };
+    const NAMES = { daily: "Daily News (every morning)", weekend: "The Weekend (Thursdays)", business: "Harrow Business (Mondays)" };
     if (ticks.length) {
       const chosen = ticks.filter((t) => t.checked).map((t) => NAMES[t.value] || t.value);
       if (!chosen.length) { if (msg) msg.textContent = "Tick at least one newsletter."; return; }
@@ -619,6 +619,44 @@
     if (kw) kw.addEventListener("search", go);   // the clear (x) button
   });
 
+  /* 6i. Privacy, Terms, Data sources: highlight the section you're reading in "On this page" */
+  const tocLinks = $$(".legal__toc a[href^='#']");
+  if (tocLinks.length) {
+    const items = tocLinks.map((a) => [a, document.getElementById(decodeURIComponent(a.hash.slice(1)))]).filter((it) => it[1]);
+    let ticking = false;
+    const mark = () => {
+      ticking = false;
+      if (!items.length) return;
+      const line = 140;   // just under the sticky header
+      let cur = items[0];
+      items.forEach((it) => { if (it[1].getBoundingClientRect().top <= line) cur = it; });
+      if (window.innerHeight + window.scrollY >= document.documentElement.scrollHeight - 4) cur = items[items.length - 1];   // last section at the very bottom
+      items.forEach((it) => {
+        const on = it === cur;
+        it[0].classList.toggle("is-active", on);
+        if (on) it[0].setAttribute("aria-current", "location"); else it[0].removeAttribute("aria-current");
+      });
+      if (tocCurrent) tocCurrent.textContent = cur[0].textContent.trim();   // phones: the sticky bar shows the current section
+      // Phones: the bar gets its white strip and divider only while it's stuck under the header
+      const side = tocCurrent && tocCurrent.closest(".legal__side");
+      if (side) {
+        const hdr = $(".ho-header"), top = hdr ? hdr.getBoundingClientRect().bottom : 0;
+        side.classList.toggle("is-stuck", window.scrollY > 0 && side.getBoundingClientRect().top <= top + 1);
+      }
+    };
+    // Phones and tablets: the sticky "On this page" bar opens and closes the list; picking a section closes it
+    const tocToggle = $("[data-toc-toggle]"), tocCurrent = $("[data-toc-current]"), tocCard = tocToggle && tocToggle.closest(".legal__card");
+    const setTocOpen = (open) => { if (!tocCard) return; tocCard.classList.toggle("is-open", open); tocToggle.setAttribute("aria-expanded", open ? "true" : "false"); };
+    if (tocToggle) {
+      tocToggle.addEventListener("click", () => setTocOpen(!tocCard.classList.contains("is-open")));
+      tocLinks.forEach((a) => a.addEventListener("click", () => setTocOpen(false)));
+      document.addEventListener("keydown", (e) => { if (e.key === "Escape" && tocCard.classList.contains("is-open")) { setTocOpen(false); tocToggle.focus(); } });
+    }
+    window.addEventListener("scroll", () => { if (!ticking) { ticking = true; setTimeout(mark, 60); } }, { passive: true });
+    window.addEventListener("resize", mark);
+    mark();
+  }
+
   /* 6h. Status icon hover names: shift the label sideways so it stays inside its card (or the screen) */
   const placeTip = (t) => {
     t.style.setProperty("--tip-x", "0px");
@@ -812,16 +850,17 @@
   $$("input[type=radio], input[type=checkbox]").forEach((i) => i.addEventListener("change", syncReveal));
   syncReveal();
 
-  /* 10b. Pages opened with ?listing={slug} (claim, report): fill [data-listing-field="n|ad|pc|area|cat|link"] */
+  /* 10b. Pages opened with ?listing={slug} (claim, report): fill [data-listing-field="n|ad|pc|area|cat|link|claim"] */
   const listingSlug = new URLSearchParams(location.search).get("listing");
   if (listingSlug && $("[data-listing-field]")) {
     fetch(BASE + "/data/hub-index.json").then((r) => r.json()).then((d) => {
       const x = d.items.find((i) => i.k === listingSlug);
       if (!x) return;
-      const vals = { n: x.n, ad: x.ad || "", pc: x.pc, area: d.areas[x.a], cat: (d.cats[x.c] || {}).n, link: BASE + "/business/" + x.k + "/" };
+      const vals = { n: x.n, ad: (x.ad || "").trim(), pc: x.pc, area: d.areas[x.a], cat: (d.cats[x.c] || {}).n, link: BASE + "/business/" + x.k + "/" };
       $$("[data-listing-field]").forEach((el) => {
         const f = el.dataset.listingField;
         if (f === "link") el.setAttribute("href", vals.link);
+        else if (f === "claim") el.setAttribute("href", BASE + "/claim/?listing=" + encodeURIComponent(x.k));   // report page: claim this one
         else if (el.tagName === "INPUT" || el.tagName === "TEXTAREA") el.value = vals[f] || "";
         else el.textContent = vals[f] || "";
       });
@@ -1004,7 +1043,7 @@
       </article>`;
     const offerCard = (x) => {
       const soon = /^Ends (in|today|tomorrow)/.test(x.e || "");
-      const tags = (x.f ? FEAT : "") + (x.sub ? `<span class="badge badge--sub">${ICON("lock")}Subscriber-only</span>` : "") +
+      const tags = (x.f ? FEAT : "") + (x.sub ? `<span class="card__tick card__tick--sub" role="img" aria-label="Subscribers only" data-tip="Subscribers only">${ICON("lock")}</span>` : "") +
         (soon ? `<span class="badge badge--soon">${ICON("clock")}Ends soon</span>` : "");
       return `<a class="offer-card${x.f ? " offer-card--featured" : ""}" href="${BASE}${x.h}">
         <span class="offer-card__top"><span class="biz-card__cat">${esc((INDEX.cats[x.c] || {}).n || "")}</span>${tags}</span>
