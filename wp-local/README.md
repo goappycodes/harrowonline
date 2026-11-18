@@ -55,16 +55,20 @@ local only). In the Claude desktop app, start the **wp-local** preview instead.
 
 ## Dev server (Laravel Forge)
 
-The same WordPress runs on Laravel Forge (server `appy-dev`, https://harrowonline-wp.on-forge.com/hub/), deployed
+The same WordPress runs on Laravel Forge (server `appy-dev`, https://harrowonline-hub.on-forge.com/hub/, until Forge sets
+that up also https://harrowonline-wp.on-forge.com/hub/), deployed
 from git with the committed SQLite database.
 
 - **Site:** repository `goappycodes/harrowonline`, web directory `/wp-local`, so WordPress is at `/hub/` as here.
   Nginx rules (send `/` to `/hub/`, block the database, logs and the local CLI scripts, `noindex` header):
   `forge/nginx-hub.conf`. Deploy script: `forge/deploy.sh`.
-- **Auto-deploy:** Forge never finished installing the repository on `appy-dev`, so the site was set up by hand and
-  deploys itself: a root cron job runs `forge/autodeploy.sh` (installed as `/usr/local/bin/harrow-hub-autodeploy`)
-  every minute, which runs `forge/deploy.sh` as the forge user when the tracked branch (`DEPLOY_BRANCH` in `.env`,
-  else `main`) has a new commit, then reloads PHP. Log: `/home/forge/.forge/harrow-hub-autodeploy.log`.
+- **Auto-deploy:** Forge stopped running its site jobs for `appy-dev` (18 Nov 2026: repository installs and site
+  removals never ran), so the Hub runs outside Forge's site folders, in `/home/forge/harrow-hub-app`, and looks after
+  itself: a root cron job runs `forge/autodeploy.sh` (installed as `/usr/local/bin/harrow-hub-autodeploy`) every
+  minute. It deploys when the tracked branch (`DEPLOY_BRANCH` in `.env`, else `main`) has a new commit or the
+  checkout is damaged, reloads PHP, and keeps the Forge vhosts listed in `/etc/harrow-hub/vhosts` pointed at the app
+  with the Hub nginx rules. Log: `/var/log/harrow-hub-autodeploy.log`.
+- **Addresses:** `WP_HOME` may list several comma-separated addresses; each request uses the one matching its host.
 - **Settings:** `wp-config.php` reads every server setting from the environment or the `.env` file in the
   repository root (Forge: Site > Environment, never committed): `WP_HOME` (with `/hub`), the eight keys and salts,
   `WP_ENVIRONMENT_TYPE`, `WP_DEBUG`, `DISALLOW_FILE_MODS`, and the database (`DB_PATH`, or `DB_ENGINE=mysql` with

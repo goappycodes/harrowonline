@@ -63,8 +63,20 @@ define( 'NONCE_SALT', $hub_cfg( 'NONCE_SALT', 'jDYY1NQi}RC/&:XvdgO^?BE:[^qyQ}qtF
 
 $table_prefix = 'wp_';
 
-// Site address, including the /hub path (the database's own home/siteurl stay the local ones).
-define( 'WP_HOME', rtrim( $hub_cfg( 'WP_HOME', 'http://localhost:8020/hub' ), '/' ) );
+// Site address, including the /hub path (the database's own home/siteurl stay the local ones). WP_HOME may list
+// several comma-separated addresses: the one whose host matches the request is used, else the first.
+$hub_homes = array_map( 'trim', explode( ',', $hub_cfg( 'WP_HOME', 'http://localhost:8020/hub' ) ) );
+$hub_home  = $hub_homes[0];
+if ( ! empty( $_SERVER['HTTP_HOST'] ) ) {
+	$hub_host = strtolower( preg_replace( '/:\d+$/', '', $_SERVER['HTTP_HOST'] ) );
+	foreach ( $hub_homes as $hub_h ) {
+		if ( strtolower( (string) parse_url( $hub_h, PHP_URL_HOST ) ) === $hub_host ) {
+			$hub_home = $hub_h;
+			break;
+		}
+	}
+}
+define( 'WP_HOME', rtrim( $hub_home, '/' ) );
 define( 'WP_SITEURL', WP_HOME );
 define( 'WP_ENVIRONMENT_TYPE', $hub_cfg( 'WP_ENVIRONMENT_TYPE', 'local' ) );
 define( 'WP_DEBUG', $hub_bool( 'WP_DEBUG', true ) );
@@ -73,7 +85,7 @@ define( 'WP_DEBUG_DISPLAY', false );
 define( 'DISALLOW_FILE_EDIT', true );
 define( 'DISALLOW_FILE_MODS', $hub_bool( 'DISALLOW_FILE_MODS', false ) );   // servers: plugins and themes come from git
 define( 'AUTOMATIC_UPDATER_DISABLED', true );
-unset( $hub_env, $hub_env_file, $hub_line, $hub_k, $hub_v, $hub_cfg, $hub_bool );
+unset( $hub_env, $hub_env_file, $hub_line, $hub_k, $hub_v, $hub_cfg, $hub_bool, $hub_homes, $hub_home, $hub_host, $hub_h );
 
 if ( ! defined( 'ABSPATH' ) ) {
 	define( 'ABSPATH', __DIR__ . '/' );
