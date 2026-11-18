@@ -28,6 +28,9 @@ import seo    # noqa: E402  (rewrite_links, PAGE_PATHS, TITLE_SUFFIX)
 THEME = ROOT / "wp-local" / "hub" / "wp-content" / "themes" / "harrow-hub"
 SITE_ASSETS = ROOT / "site" / "hub" / "assets"
 SKIP = {"news-advertise", "news-article", "news-support"}   # harrowonline.org mock-ups: not part of the Hub's WordPress
+# Templates that now load their data through the theme's controllers (app/modules/): edited by hand, never
+# regenerated from the prototype. Add a page here when its template is converted.
+HAND_EDITED = {"index", "offers"}
 
 ATTR_RE = re.compile(r'((?:href|src|action|poster|data-src|data-href)=")/(?!/)([^"]*)"')
 SRCSET_RE = re.compile(r'(srcset=")([^"]*)"')
@@ -96,8 +99,7 @@ def write_chrome():
     (THEME / "header.php").write_text("<?php\n/** Head, site header and main menu (converted from the prototype's head + header partials). */\ndefined( 'ABSPATH' ) || exit;\n?>" + out, encoding="utf-8", newline="\n")
 
     # The newsletter band comes from Hub settings > Newsletter (ACF options), same markup as the nl-strip partial
-    nl = "<?php hub_newsletter_strip(); // Hub settings > Newsletter (inc/business-acf.php) ?>
-"
+    nl = "<?php hub_newsletter_strip(); // Hub settings > Newsletter (inc/business-acf.php) ?>\n"
     tab = convert_links(nav_placeholders(hub_only(build.partial("tabbar"))))
     foot = convert_links(nav_placeholders(hub_only(build.partial("footer"))))
     foot = foot.replace("</body>", "<?php wp_footer(); ?>\n</body>")
@@ -124,7 +126,8 @@ def write_pages():
         meta_php = ",\n\t".join(f"{php_str(k)} => {php_str(v)}" for k, v in sorted(meta.items()))
         tpl = (f"<?php\n/**\n * {meta.get('title', stem)} (converted from src/pages/{stem}.html).\n * URL: {path}\n */\n"
                f"defined( 'ABSPATH' ) || exit;\nho_set_page( array(\n\t{meta_php},\n) );\nget_header();\n?>\n{body}\n<?php get_footer();\n")
-        (out_dir / f"{stem}.php").write_text(tpl, encoding="utf-8", newline="\n")
+        if stem not in HAND_EDITED:
+            (out_dir / f"{stem}.php").write_text(tpl, encoding="utf-8", newline="\n")
         page_map[stem] = {"path": path.strip("/"), "title": meta.get("title", stem)}
     # page map: WordPress Page path -> template (used by page.php and by setup-local.php to create the Pages)
     rows = ",\n\t".join(f"{php_str(v['path'])} => array( 'tpl' => {php_str(k)}, 'title' => {php_str(v['title'])} )"

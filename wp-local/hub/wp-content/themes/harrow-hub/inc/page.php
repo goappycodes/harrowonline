@@ -15,6 +15,17 @@ function hub_asset( $path ) {
 	return get_theme_file_uri( 'assets/' . ltrim( (string) $path, '/' ) );
 }
 
+/**
+ * A part's HTML as a string, for code that builds pages as strings:
+ *   hub_part( 'offers/card-full', array( 'offer' => $offer ) )  ->  parts/offers/card-full.php
+ * Templates call get_template_part( 'parts/...', null, $args ) directly.
+ */
+function hub_part( $slug, array $args = array() ) {
+	ob_start();
+	get_template_part( 'parts/' . $slug, null, $args );
+	return ob_get_clean();
+}
+
 /** Set by each page template before get_header(). */
 function hub_set_page( array $meta ) {
 	$GLOBALS['hub_page_meta'] = $meta;

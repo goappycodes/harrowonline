@@ -217,7 +217,7 @@ function hub_profile_body( array $x, $related_html, $crumbs_html ) {
 
 	$offers = $paid ? $c['offers'] : array();
 	if ( $offers ) {
-		$cards      = implode( '', array_map( function ( $o ) use ( $x ) { return hub_offer_card( $x, $o, false ); }, $offers ) );
+		$cards      = implode( '', array_map( function ( $o ) { return hub_part( 'offers/card-full', array( 'offer' => $o, 'show_business' => false ) ); }, $offers ) );
 		$sections[] = '<section class="profile-section"><div class="sec-head"><h2 class="mb-0">Local Offers</h2><a class="link-arrow" href="' . hub_url( 'offers/' ) . '">All offers ' . hub_icon( 'arrow' ) . '</a></div><div class="stack">' . $cards . '</div></section>';
 	}
 	if ( $c['events'] ) {

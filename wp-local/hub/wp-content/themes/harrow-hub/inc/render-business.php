@@ -5,7 +5,7 @@
  */
 defined( 'ABSPATH' ) || exit;
 
-/** Business record by post (cached), with its live offers and profile events attached. */
+/** Business record by post (cached), with its offers (offers shape, app/modules/offers) and profile events attached. */
 function hub_business( $post ) {
 	static $cache = array();
 	$post = get_post( $post );
@@ -21,9 +21,9 @@ function hub_business( $post ) {
 			// description from the post content (editable in wp-admin), one paragraph per <p>
 			preg_match_all( '#<p>(.*?)</p>#s', wpautop( $post->post_content ), $m );
 			$x['claimed']['description'] = $m[1];
-			list( $live, $ended )         = hub_business_offers( $post->ID );
-			$x['claimed']['offers']       = $live;
-			$x['claimed']['ended_offers'] = $ended;
+			$offers                       = hub_offers_for_business( $post->ID );   // app/modules/offers
+			$x['claimed']['offers']       = $offers['live'];
+			$x['claimed']['ended_offers'] = $offers['ended'];
 			$x['claimed']['events']       = hub_business_events( $x, $post->ID );
 		}
 		$x['_id']           = $post->ID;
@@ -35,64 +35,6 @@ function hub_business( $post ) {
 function hub_business_by_slug( $slug ) {
 	$p = get_page_by_path( $slug, OBJECT, 'hub_business' );
 	return $p ? hub_business( $p ) : null;
-}
-
-/** Live and ended offers of a business, in their original order. The offer's "Business" field (offer_business)
- *  says which business it belongs to; offers not yet saved with that field use the imported link (_hub_business). */
-function hub_business_offers( $business_id ) {
-	$posts = get_posts( array(
-		'post_type'      => 'hub_offer',
-		'posts_per_page' => -1,
-		'meta_key'       => '_hub_index',
-		'orderby'        => 'meta_value_num',
-		'order'          => 'ASC',
-		'meta_query'     => array(
-			'relation' => 'OR',
-			array( 'key' => 'offer_business', 'value' => (string) $business_id ),
-			array(
-				'relation' => 'AND',
-				array( 'key' => 'offer_business', 'compare' => 'NOT EXISTS' ),
-				array( 'key' => '_hub_business', 'value' => $business_id ),
-			),
-		),
-	) );
-	$live = $ended = array();
-	foreach ( $posts as $p ) {
-		$o = hub_offer( $p );
-		if ( $o['live'] ) {
-			$live[] = $o;
-		} else {
-			$ended[] = $o;
-		}
-	}
-	return array( $live, $ended );
-}
-
-/** Offer record with dates worked out from today (hub_data.offer_dates). */
-function hub_offer( $post ) {
-	$post        = get_post( $post );
-	$o           = hub_record( $post );
-	$o['title']  = $post->post_title;
-	$o['text']   = $post->post_content;
-	$o['slug']   = $post->post_name;
-	$o['href']   = hub_url( 'offers/' . $post->post_name . '/' );
-	$o['_id']    = $post->ID;
-	$o['_biz']   = metadata_exists( 'post', $post->ID, 'offer_business' ) ? (int) get_post_meta( $post->ID, 'offer_business', true )
-		: (int) get_post_meta( $post->ID, '_hub_business', true );
-	if ( empty( $o['end'] ) ) {
-		$o['end_date']   = null;
-		$o['days_left']  = 9999;
-		$o['live']       = true;
-		$o['ends_short'] = '';
-	} else {
-		$end             = new DateTimeImmutable( $o['end'], wp_timezone() );
-		$days            = (int) hub_today()->diff( $end )->format( '%r%a' );
-		$o['end_date']   = $end;
-		$o['days_left']  = $days;
-		$o['live']       = $days >= 0;
-		$o['ends_short'] = $end->format( 'j M' );
-	}
-	return $o;
 }
 
 /** One-off events by this business (from the events, by organiser name), then its weekly classes (linked in
@@ -194,138 +136,4 @@ function hub_claimed_row( array $x ) {
         </div>
         <div class="biz-row__side"><div class="cluster">' . $badges . '</div><a class="ho-btn ho-btn--sm ho-btn--outline" href="tel:' . $x['phone_raw'][0] . '">' . hub_icon( 'phone' ) . 'Call</a></div>
       </article>';
-}
-
-/** ---------------------------------------------------------------- offers (cards on profiles, tiles) */
-function hub_ends_label( array $o ) {
-	if ( null === $o['end_date'] ) {
-		return 'No end date';
-	}
-	$d = $o['days_left'];
-	if ( $d < 0 ) {
-		return 'Ended ' . $o['ends_short'];
-	}
-	if ( 0 === $d ) {
-		return 'Ends today';
-	}
-	if ( 1 === $d ) {
-		return 'Ends tomorrow';
-	}
-	return $d <= 7 ? "Ends in {$d} days" : 'Ends ' . $o['ends_short'];
-}
-
-function hub_unlock_box( array $x, array $o, $note = true ) {
-	static $uid = 0;
-	$uid++;
-	$id   = 'unlock-' . substr( $x['slug'], 0, 20 ) . '-' . $uid;
-	$note = $note ? '<span class="offer__lock-note">We&rsquo;ll email you a link to confirm. Already a subscriber? Use the email you signed up with.</span>' : '';
-	return '
-          <div class="offer__lock">
-            <p>' . hub_icon( 'lock', 'ho-icon ho-icon--sm' ) . 'Subscriber-only. Enter your email to unlock.</p>
-            <form data-unlock action="' . hub_url( 'wp-json/ho/v1/unlock' ) . '" method="post">
-              <input type="hidden" name="signup_source" value="subscriber-offer">
-              <input type="hidden" name="offer" value="' . $o['slug'] . '">
-              <label class="ho-sr" for="' . $id . '">Email address</label>
-              <input id="' . $id . '" type="email" name="email" placeholder="Your email" autocomplete="email" required>
-              <button class="ho-btn ho-btn--sm ho-btn--primary" type="submit">Unlock</button>
-            </form>' . $note . '
-          </div>';
-}
-
-function hub_offer_card( array $x, array $o, $show_biz = true, $heading = 'h3' ) {
-	$featured = ! empty( $o['featured'] );
-	$soon     = $o['days_left'] >= 0 && $o['days_left'] <= 7;
-	$cls      = 'offer' . ( $featured ? ' offer--featured' : '' ) . ( ! empty( $o['sub'] ) ? ' offer--locked' : '' );
-	$badges   = $featured ? '<span class="badge badge--featured">' . hub_icon( 'star' ) . 'Featured</span>' : '';
-	if ( ! empty( $o['sub'] ) ) {
-		$badges .= hub_sub_lock();
-	}
-	if ( $soon ) {
-		$badges .= '<span class="badge badge--soon">' . hub_icon( 'clock' ) . 'Ends soon</span>';
-	}
-	$badges .= '<span class="biz-card__cat">' . hub_e( hub_cat_name( $x['cat'] ) ) . '</span>';
-	if ( ! empty( $o['sub'] ) ) {
-		$code = ! empty( $o['code'] ) ? '<span class="offer__code offer__code--pending" data-sub-code data-offer="' . $o['slug'] . '">Code shown after you confirm your email</span>' : '<span>No code needed</span>';
-	} else {
-		$code = ! empty( $o['code'] ) ? '<span class="offer__code">' . $o['code'] . '</span>' : '<span>No code needed</span>';
-	}
-	$lock = ! empty( $o['sub'] ) ? hub_unlock_box( $x, $o ) : '';
-	$biz  = $show_biz ? '<a class="offer__biz" href="' . hub_url( 'business/' . $x['slug'] . '/' ) . '">' . hub_e( $x['name'] ) . ' &middot; ' . hub_e( hub_area_name( $x['area'] ) ) . '</a>' : '';
-	return '<article class="' . $cls . '" data-cat="' . $x['cat'] . '" data-area="' . $x['area'] . '" data-sub="' . ( ! empty( $o['sub'] ) ? 1 : 0 ) . '">
-        <div class="offer__body">
-          <div class="cluster">' . $badges . '</div>
-          <' . $heading . ' class="offer__title"><a href="' . $o['href'] . '">' . $o['title'] . '</a></' . $heading . '>
-          ' . $biz . '
-          <p class="offer__text">' . $o['text'] . '</p>
-          <div class="offer__foot"><span class="offer__ends' . ( $soon ? ' offer__ends--soon' : '' ) . '">' . hub_icon( 'calendar', 'ho-icon ho-icon--sm' ) . ' ' . hub_ends_label( $o ) . '</span>' . $code . '</div>
-          <a class="offer__more" href="' . $o['href'] . '">Terms and how to redeem ' . hub_icon( 'arrow', 'ho-icon ho-icon--sm' ) . '</a>' . $lock . '
-        </div>
-      </article>';
-}
-
-/** gen_claimed.offer_value(): short headline value ("20% OFF", "2-FOR-1", "FREE COFFEE"). */
-function hub_offer_value( array $o ) {
-	if ( ! empty( $o['value'] ) ) {
-		return $o['value'];
-	}
-	$t = str_replace( '&pound;', '£', $o['title'] );
-	foreach ( array(
-		array( '/(\d+)%\s*off/i', '%s% OFF' ), array( '/£(\d+)\s*off/i', '£%s OFF' ), array( '/(\d)-for-(\d)/i', null ),
-		array( '/£(\d+)\s*cuts/i', '£%s CUTS' ), array( '/for\s*£(\d+)/i', '£%s' ),
-	) as $rule ) {
-		if ( preg_match( $rule[0], $t, $m ) ) {
-			return null === $rule[1] ? $m[1] . '-FOR-' . $m[2] : str_replace( '%s', $m[1], $rule[1] );
-		}
-	}
-	if ( preg_match( '/no joining fee/i', $t ) ) {
-		return 'NO JOINING FEE';
-	}
-	if ( preg_match( '/^(?:a\s+)?free\s+(\w+)/i', $t, $m ) ) {
-		return 'FREE ' . strtoupper( $m[1] );
-	}
-	if ( preg_match( '/^(.{0,24}?\bfree)\b/i', $t, $m ) ) {
-		return strtoupper( $m[1] );
-	}
-	$first = explode( ',', $t );
-	return strtoupper( $first[0] );
-}
-
-function hub_offer_tile( array $x, array $o ) {
-	$lock = ! empty( $o['sub'] ) ? '<span class="offer-tile__lock" title="Subscribers only">' . hub_icon( 'lock', 'ho-icon ho-icon--sm' ) . '<span class="offer-tile__lock-text">Subscribers</span></span>' : '';
-	return '<a class="offer-tile" href="' . $o['href'] . '">
-        ' . $lock . '
-        <span class="offer-tile__biz">' . hub_e( $x['name'] ) . ', ' . hub_e( hub_area_name( $x['area'] ) ) . '</span>
-        <strong class="offer-tile__value">' . hub_offer_value( $o ) . '</strong>
-        <span class="offer-tile__title">' . $o['title'] . '</span>
-      </a>';
-}
-
-/** Every live offer from a business on a paid plan: featured first, then by plan (gen_claimed.all_offers). */
-function hub_all_offers() {
-	static $all = null;
-	if ( null !== $all ) {
-		return $all;
-	}
-	$rank = array( 'partner' => 0, 'premium' => 0, 'enhanced' => 1, 'basic' => 2, 'unclaimed' => 3 );
-	$all  = array();
-	foreach ( hub_business_query() as $p ) {
-		$tier = get_post_meta( $p->ID, '_hub_tier', true );
-		if ( ! in_array( $tier, HUB_PAID, true ) ) {
-			continue;
-		}
-		$x = hub_business( $p );
-		foreach ( $x['claimed']['offers'] as $o ) {
-			$all[] = array( $x, $o );
-		}
-	}
-	$i = 0;
-	foreach ( $all as $k => $pair ) {
-		$all[ $k ][2] = $i++;
-	}
-	usort( $all, function ( $a, $b ) use ( $rank ) {
-		$ka = array( empty( $a[1]['featured'] ) ? 1 : 0, $rank[ $a[0]['tier'] ], $a[2] );
-		$kb = array( empty( $b[1]['featured'] ) ? 1 : 0, $rank[ $b[0]['tier'] ], $b[2] );
-		return $ka <=> $kb;
-	} );
-	return $all;
 }

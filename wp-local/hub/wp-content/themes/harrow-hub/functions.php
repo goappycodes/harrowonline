@@ -7,6 +7,10 @@ defined( 'ABSPATH' ) || exit;
 
 define( 'HUB_THEME_VERSION', '0.1.0' );
 
+// Data layer: every page and API route gets its data from the modules' controllers (app/bootstrap.php explains)
+require_once get_template_directory() . '/app/bootstrap.php';
+
+// Theme setup and legacy page code (moving into app/modules/ and parts/ one module at a time)
 require_once get_template_directory() . '/inc/page.php';
 require_once get_template_directory() . '/inc/assets.php';
 require_once get_template_directory() . '/inc/editor.php';
@@ -16,7 +20,6 @@ require_once get_template_directory() . '/inc/render-common.php';
 require_once get_template_directory() . '/inc/render-business.php';
 require_once get_template_directory() . '/inc/render-profile.php';
 require_once get_template_directory() . '/inc/render-events.php';
-require_once get_template_directory() . '/inc/render-offers.php';
 require_once get_template_directory() . '/inc/acf-fields.php';     // ACF field groups and the Hub settings options page
 require_once get_template_directory() . '/inc/business-acf.php';   // pages read those fields; newsletter band
 require_once get_template_directory() . '/inc/acf-migrate.php';    // copies the imported data into the fields (CLI)

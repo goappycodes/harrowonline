@@ -2,8 +2,15 @@
 /**
  * Harrow Online Hub: local businesses, offers and what's on in Harrow (converted from src/pages/index.html).
  * URL: /
+ *
+ * Offers (this weekend's offer, More Local Offers, the "Offers live" number) come from hub_offers_list()
+ * (app/modules/offers); the other sections are still the prototype's markup until their modules are built.
+ * Edited by hand (tools/build_theme.py leaves it alone).
  */
 defined( 'ABSPATH' ) || exit;
+
+$hub_offers = hub_offers_list( array( 'limit' => 7 ) );   // [0] this weekend's offer, [1-6] More Local Offers
+
 hub_set_page( array(
 	'body' => 'page-home',
 	'description' => 'Discover what\'s happening in Harrow. Find local businesses, events, classes and exclusive offers from across the borough, from Harrow Online.',
@@ -93,13 +100,11 @@ get_header();
       </article>
 
       <div class="home-now__offer">
-        <a class="offer-card offer-card--featured" href="<?php echo esc_url( hub_url( 'offers/two-pizza-collection-deal-from-7-99-each/' ) ); ?>" data-cat="food-and-drink" data-area="harrow-town-centre" data-sub="1">
-        <span class="offer-card__top"><span class="biz-card__cat">Food &amp; Drink</span><span class="badge badge--featured"><svg class="ho-icon"><use href="#i-star"/></svg>Featured</span><span class="card__tick card__tick--sub" role="img" aria-label="Subscribers only" data-tip="Subscribers only"><svg class="ho-icon"><use href="#i-lock"/></svg></span></span>
-        <strong class="offer-card__value">FROM &pound;7.99</strong>
-        <span class="offer-card__title">Two-pizza collection deal from &pound;7.99 each</span>
-        <span class="offer-card__biz">AJ Pizza&#x27;s &middot; Harrow Town Centre</span>
-        <span class="offer-card__foot"><span><svg class="ho-icon ho-icon--sm"><use href="#i-calendar"/></svg>No end date</span><span class="offer-card__go">View offer <svg class="ho-icon ho-icon--sm"><use href="#i-arrow"/></svg></span></span>
-      </a>
+        <?php
+		if ( $hub_offers['items'] ) {
+			get_template_part( 'parts/offers/card', null, array( 'offer' => $hub_offers['items'][0] ) );
+		}
+		?>
       </div>
       <div class="home-nl">
         <span class="home-nl__icon"><svg class="ho-icon"><use href="#i-mail"/></svg></span>
@@ -130,49 +135,18 @@ get_header();
       <a class="link-arrow" href="<?php echo esc_url( hub_url( 'offers/' ) ); ?>">All offers <svg class="ho-icon"><use href="#i-arrow"/></svg></a>
     </div>
     <div class="offer-tiles">
-      <a class="offer-tile" href="<?php echo esc_url( hub_url( 'offers/75-off-your-first-month-of-tuition/' ) ); ?>">
-        
-        <span class="offer-tile__biz">GradeSmart Tuition, South Harrow</span>
-        <strong class="offer-tile__value">75% OFF</strong>
-        <span class="offer-tile__title">75% off your first month of tuition</span>
-      </a>
-<a class="offer-tile" href="<?php echo esc_url( hub_url( 'offers/10-off-your-meal-when-you-spend-over-20/' ) ); ?>">
-        <span class="offer-tile__lock" title="Subscribers only"><svg class="ho-icon ho-icon--sm"><use href="#i-lock"/></svg><span class="offer-tile__lock-text">Subscribers</span></span>
-        <span class="offer-tile__biz">Meeting Palace, Wealdstone</span>
-        <strong class="offer-tile__value">10% OFF</strong>
-        <span class="offer-tile__title">10% off your meal when you spend over &pound;20</span>
-      </a>
-<a class="offer-tile" href="<?php echo esc_url( hub_url( 'offers/2-for-1-mains-monday-to-thursday/' ) ); ?>">
-        
-        <span class="offer-tile__biz">Hill Street Kitchen, Harrow on the Hill</span>
-        <strong class="offer-tile__value">2-FOR-1</strong>
-        <span class="offer-tile__title">2-for-1 mains, Monday to Thursday</span>
-      </a>
-<a class="offer-tile" href="<?php echo esc_url( hub_url( 'offers/free-poppadoms-and-chutneys-with-any-takeaway-over-20/' ) ); ?>">
-        
-        <span class="offer-tile__biz">Rayners Lane Spice House, Rayners Lane</span>
-        <strong class="offer-tile__value">FREE POPPADOMS</strong>
-        <span class="offer-tile__title">Free poppadoms and chutneys with any takeaway over &pound;20</span>
-      </a>
-<a class="offer-tile" href="<?php echo esc_url( hub_url( 'offers/25-off-your-first-hygienist-visit/' ) ); ?>">
-        
-        <span class="offer-tile__biz">Stanmore Family Dental, Stanmore</span>
-        <strong class="offer-tile__value">£25 OFF</strong>
-        <span class="offer-tile__title">&pound;25 off your first hygienist visit</span>
-      </a>
-<a class="offer-tile" href="<?php echo esc_url( hub_url( 'offers/a-free-week-of-classes/' ) ); ?>">
-        <span class="offer-tile__lock" title="Subscribers only"><svg class="ho-icon ho-icon--sm"><use href="#i-lock"/></svg><span class="offer-tile__lock-text">Subscribers</span></span>
-        <span class="offer-tile__biz">Wealdstone Fitness Studio, Wealdstone</span>
-        <strong class="offer-tile__value">FREE WEEK</strong>
-        <span class="offer-tile__title">A free week of classes</span>
-      </a>
+      <?php
+		foreach ( array_slice( $hub_offers['items'], 1, 6 ) as $hub_offer ) {
+			get_template_part( 'parts/offers/tile', null, array( 'offer' => $hub_offer ) );
+		}
+		?>
     </div>
   </div>
 </section>
 
 <section class="stats-band" aria-label="The Hub in numbers">
   <div class="ho-container">
-    <div class="stats-strip"><a class="stat" href="<?php echo esc_url( hub_url( 'offers/' ) ); ?>"><span class="stat__label">Offers live</span><strong class="stat__value" data-count="18">18</strong><span class="stat__note">and counting</span></a><a class="stat" href="<?php echo esc_url( hub_url( 'events/' ) ); ?>"><span class="stat__label">This week</span><strong class="stat__value" data-count="12">12</strong><span class="stat__note">events across Harrow</span></a><a class="stat" href="<?php echo esc_url( hub_url( 'events/classes/' ) ); ?>"><span class="stat__label">Every week</span><strong class="stat__value" data-count="21">21</strong><span class="stat__note">regular classes</span></a><a class="stat" href="<?php echo esc_url( hub_url( 'search/' ) ); ?>"><span class="stat__label">Local businesses</span><strong class="stat__value" data-count="2609">2,609</strong><span class="stat__note">across 19 areas</span></a></div>
+    <div class="stats-strip"><a class="stat" href="<?php echo esc_url( hub_url( 'offers/' ) ); ?>"><span class="stat__label">Offers live</span><strong class="stat__value" data-count="<?php echo (int) $hub_offers['live_total']; ?>"><?php echo (int) $hub_offers['live_total']; ?></strong><span class="stat__note">and counting</span></a><a class="stat" href="<?php echo esc_url( hub_url( 'events/' ) ); ?>"><span class="stat__label">This week</span><strong class="stat__value" data-count="12">12</strong><span class="stat__note">events across Harrow</span></a><a class="stat" href="<?php echo esc_url( hub_url( 'events/classes/' ) ); ?>"><span class="stat__label">Every week</span><strong class="stat__value" data-count="21">21</strong><span class="stat__note">regular classes</span></a><a class="stat" href="<?php echo esc_url( hub_url( 'search/' ) ); ?>"><span class="stat__label">Local businesses</span><strong class="stat__value" data-count="2609">2,609</strong><span class="stat__note">across 19 areas</span></a></div>
   </div>
 </section>
 

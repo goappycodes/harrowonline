@@ -8,7 +8,8 @@
  *
  * Offers and classes are linked to their business both ways (ACF bidirectional fields): pick offers and classes on
  * the business, or pick the business on the offer or class, and the other side updates itself.
- * The pages read these fields through hub_business(), hub_offer() and hub_class() (inc/business-acf.php).
+ * The pages read these fields through hub_business() and hub_class() (inc/business-acf.php) and the offers module
+ * (app/modules/offers/data.php).
  */
 defined( 'ABSPATH' ) || exit;
 

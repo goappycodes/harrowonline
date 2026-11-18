@@ -1,0 +1,157 @@
+<?php
+/**
+ * Offers: what pages and the API call. Nothing outside this module calls anything else in it.
+ *
+ *   hub_offers_list( $params )          Local Offers: live offers, filtered, in Local Offers order, with category counts
+ *   hub_offer_get( $id_or_slug )        one offer (live or ended) and the offers to suggest beside it
+ *   hub_offers_for_business( $id )      a business's live and ended offers (its profile)
+ *
+ * Each takes $mode last: HUB_WEB (arrays, the default) or HUB_API (WP_REST_Response). See app/bootstrap.php.
+ */
+defined( 'ABSPATH' ) || exit;
+
+/**
+ * Live offers from businesses on a plan that shows offers.
+ *
+ * @param array $params {
+ *     cat    category slug
+ *     area   area slug
+ *     sub    1 = subscriber-only offers only
+ *     limit  how many to return (0 = all)
+ *     offset how many to skip
+ * }
+ * @return array|WP_REST_Response {
+ *     items:      offer[]  (see shape.php)
+ *     total:      int      offers matching the filters (before limit and offset)
+ *     live_total: int      all live offers (no filters)
+ *     filters:    { cat, area, sub }  the filters applied, cleaned
+ *     facets:     { categories: [ { slug, name, count } ] }  live offers per category (no filters), most first
+ * }
+ */
+function hub_offers_list( array $params = array(), $mode = HUB_WEB ) {
+	$filters = array(
+		'cat'  => hub_param_slug( $params, 'cat' ),
+		'area' => hub_param_slug( $params, 'area' ),
+		'sub'  => hub_param_bool( $params, 'sub' ),
+	);
+	$limit  = hub_param_int( $params, 'limit', 0, 0, 100 );
+	$offset = hub_param_int( $params, 'offset', 0 );
+
+	$live  = _hub_offers_ranked();
+	$items = array_values( array_filter( $live, function ( $o ) use ( $filters ) {
+		return ( '' === $filters['cat'] || $o['business']['category']['slug'] === $filters['cat'] )
+			&& ( '' === $filters['area'] || $o['business']['area']['slug'] === $filters['area'] )
+			&& ( ! $filters['sub'] || $o['subscriber_only'] );
+	} ) );
+	$total = count( $items );
+	$items = array_slice( $items, $offset, $limit ? $limit : null );
+
+	return hub_respond( array(
+		'items'      => array_map( '_hub_offers_public', $items ),
+		'total'      => $total,
+		'live_total' => count( $live ),
+		'filters'    => $filters,
+		'facets'     => array( 'categories' => _hub_offers_category_counts( $live ) ),
+	), $mode );
+}
+
+/**
+ * One offer, live or ended (ended offers keep their page), and the live offers to suggest beside it.
+ *
+ * @param int|string $id_or_slug Post ID or slug.
+ * @return array|WP_REST_Response|null|WP_Error { offer: offer, more: offer[] }, or null (web) / 404 (API)
+ */
+function hub_offer_get( $id_or_slug, $mode = HUB_WEB ) {
+	$post     = hub_offers_db_get( hub_param_id_or_slug( $id_or_slug ) );
+	$business = $post ? hub_offers_db_business( hub_offers_db_business_id( $post->ID ) ) : null;
+	if ( ! $post || ! $business ) {
+		return hub_respond_error( 'hub_offer_not_found', 'No offer with that ID or slug.', $mode );
+	}
+	$offer = _hub_offer_build( $post, $business );
+	return hub_respond( array(
+		'offer' => _hub_offers_public( $offer ),
+		'more'  => array_map( '_hub_offers_public', hub_offers_rule_more( $offer, _hub_offers_ranked() ) ),
+	), $mode );
+}
+
+/**
+ * A business's offers, in its own order. Its profile shows the live ones only when its plan shows offers
+ * ("shows_offers").
+ *
+ * @return array|WP_REST_Response { live: offer[], ended: offer[], shows_offers: bool }
+ */
+function hub_offers_for_business( $business_id, $mode = HUB_WEB ) {
+	$business = hub_offers_db_business( $business_id );
+	$out      = array( 'live' => array(), 'ended' => array(), 'shows_offers' => false );
+	if ( $business ) {
+		$out['shows_offers'] = hub_offers_rule_plan_shows_offers( $business['_tier'] );
+		foreach ( hub_offers_db_for_business( $business['_id'] ) as $post ) {
+			$o = _hub_offers_public( _hub_offer_build( $post, $business ) );
+			$out[ 'live' === $o['status'] ? 'live' : 'ended' ][] = $o;
+		}
+	}
+	return hub_respond( $out, $mode );
+}
+
+/* ------------------------------------------------------------------ internal */
+
+/** One offer in the shape.php shape (with "_sort"). */
+function _hub_offer_build( WP_Post $post, array $business ) {
+	return hub_offer_shape( $post, hub_offers_db_record( $post ), hub_offers_db_index( $post ), $business, hub_offers_db_today(), _hub_offers_names() );
+}
+
+/** Category and area names by slug, from the categories and areas modules (once per request). */
+function _hub_offers_names() {
+	static $names = null;
+	if ( null === $names ) {
+		$names = array(
+			'categories' => wp_list_pluck( hub_categories_list()['items'], 'name', 'slug' ),
+			'areas'      => wp_list_pluck( hub_areas_list()['items'], 'name', 'slug' ),
+		);
+	}
+	return $names;
+}
+
+/** Every live offer from a business whose plan shows offers, in Local Offers order. Cached for the request. */
+function _hub_offers_ranked() {
+	static $ranked = null;
+	if ( null === $ranked ) {
+		$ranked = array();
+		foreach ( hub_offers_db_all() as $post ) {
+			$business = hub_offers_db_business( hub_offers_db_business_id( $post->ID ) );
+			if ( ! $business || ! hub_offers_rule_plan_shows_offers( $business['_tier'] ) ) {
+				continue;
+			}
+			$o = _hub_offer_build( $post, $business );
+			if ( 'live' === $o['status'] ) {
+				$ranked[] = $o;
+			}
+		}
+		usort( $ranked, 'hub_offers_rule_compare' );
+	}
+	return $ranked;
+}
+
+/** Live offers per category, most first, then A to Z. */
+function _hub_offers_category_counts( array $offers ) {
+	$counts = array();
+	foreach ( $offers as $o ) {
+		$cat = $o['business']['category'];
+		if ( ! isset( $counts[ $cat['slug'] ] ) ) {
+			$counts[ $cat['slug'] ] = array( 'slug' => $cat['slug'], 'name' => $cat['name'], 'count' => 0 );
+		}
+		$counts[ $cat['slug'] ]['count']++;
+	}
+	$counts = array_values( $counts );
+	usort( $counts, function ( $a, $b ) {
+		return array( -$a['count'], strtolower( $a['name'] ) ) <=> array( -$b['count'], strtolower( $b['name'] ) );
+	} );
+	return $counts;
+}
+
+/** The offer without its internal keys (the ones starting with "_"). */
+function _hub_offers_public( array $offer ) {
+	return array_filter( $offer, function ( $key ) {
+		return '_' !== $key[0];
+	}, ARRAY_FILTER_USE_KEY );
+}
