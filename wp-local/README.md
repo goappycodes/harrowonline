@@ -29,6 +29,9 @@ local only). In the Claude desktop app, start the **wp-local** preview instead.
 | Content types and URLs (businesses, offers, events, classes, categories, areas) | `harrow-hub/inc/content-types.php` |
 | Content page markup (profiles, archives, offer, event and class pages) | `harrow-hub/inc/render-*.php` |
 | Templates for each content type | `harrow-hub/single-hub_*.php`, `taxonomy-hub_*.php` |
+| ACF fields (business details, offer/class business, Hub settings > Newsletter), written in PHP | `harrow-hub/inc/acf-fields.php` |
+| How pages read those fields; the newsletter band | `harrow-hub/inc/business-acf.php` |
+| Copy imported data into the fields (`php wp-local/hub/acf-migrate-local.php`; `import-local.php` runs it too) | `harrow-hub/inc/acf-migrate.php` |
 
 ## Working on it
 

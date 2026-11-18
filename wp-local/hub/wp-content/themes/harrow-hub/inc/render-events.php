@@ -38,6 +38,7 @@ function hub_class( $post ) {
 	$c['desc']   = $post->post_content;
 	$c['slug']   = $post->post_name;
 	$c['href']   = hub_url( 'events/' . $post->post_name . '/' );
+	$c['_biz']   = (int) get_post_meta( $post->ID, 'class_business', true );   // its "Business" field (wp-admin)
 	return $c;
 }
 
@@ -121,9 +122,13 @@ function hub_business_by_name( $name ) {
 	if ( null === $by ) {
 		$by = array();
 		foreach ( get_posts( array( 'post_type' => 'hub_business', 'posts_per_page' => -1, 'meta_query' => array( array( 'key' => '_hub_tier', 'value' => 'unclaimed', 'compare' => '!=' ) ) ) ) as $p ) {
-			$x = hub_record( $p );
+			$x = hub_business( $p );
 			if ( ! empty( $x['claimed'] ) ) {
 				$by[ $x['claimed']['name'] ] = $x;
+				$rec = hub_record( $p );   // the imported name too, so events keep finding a renamed business
+				if ( ! empty( $rec['claimed']['name'] ) ) {
+					$by[ $rec['claimed']['name'] ] = $x;
+				}
 			}
 		}
 	}
@@ -309,9 +314,10 @@ function hub_class_page( array $c ) {
 	$url   = HUB_ORIGIN . '/events/' . $c['slug'] . '/';
 	$desc  = $c['desc'];
 	$maps  = 'https://www.google.com/maps/search/?api=1&amp;query=' . hub_quote_plus( hub_plain( $c['venue'] . ' ' . $c['area'] . ' Harrow' ) );
-	$prov  = hub_business_by_name( '' !== $c['provider'] ? $c['provider'] : hub_plain( $c['venue'] ) );
+	// "Run by": the business picked in wp-admin, otherwise the business with the provider's name
+	$prov  = ! empty( $c['_biz'] ) ? hub_business( $c['_biz'] ) : hub_business_by_name( '' !== $c['provider'] ? $c['provider'] : hub_plain( $c['venue'] ) );
 	$org_row = '';
-	if ( $prov ) {
+	if ( $prov && ! empty( $prov['claimed'] ) ) {
 		$pc       = $prov['claimed'];
 		$words    = preg_split( '/\s+/', trim( hub_plain( $pc['name'] ) ) );
 		$initials = strtoupper( implode( '', array_map( function ( $w ) { return mb_substr( $w, 0, 1 ); }, array_slice( $words, 0, 2 ) ) ) );

@@ -17,3 +17,6 @@ require_once get_template_directory() . '/inc/render-business.php';
 require_once get_template_directory() . '/inc/render-profile.php';
 require_once get_template_directory() . '/inc/render-events.php';
 require_once get_template_directory() . '/inc/render-offers.php';
+require_once get_template_directory() . '/inc/acf-fields.php';     // ACF field groups and the Hub settings options page
+require_once get_template_directory() . '/inc/business-acf.php';   // pages read those fields; newsletter band
+require_once get_template_directory() . '/inc/acf-migrate.php';    // copies the imported data into the fields (CLI)

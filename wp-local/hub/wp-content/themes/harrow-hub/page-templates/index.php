@@ -109,7 +109,7 @@ get_header();
           <input type="hidden" name="signup_source" value="hub-home">
           <fieldset class="home-nl__editions">
             <legend class="ho-sr">Choose your newsletters</legend>
-            <label><input type="checkbox" name="editions[]" value="daily"> Daily News <small>(Mon&ndash;Fri)</small></label>
+            <label><input type="checkbox" name="editions[]" value="daily"> Daily News <small>(Daily)</small></label>
             <label><input type="checkbox" name="editions[]" value="weekend" checked> The Weekend <small>(Thu)</small></label>
             <label><input type="checkbox" name="editions[]" value="business"> Harrow Business <small>(Mon)</small></label>
           </fieldset>

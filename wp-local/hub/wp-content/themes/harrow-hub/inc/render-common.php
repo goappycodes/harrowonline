@@ -101,8 +101,11 @@ function hub_slugify( $text ) {
 	return '' === $text ? 'business' : $text;
 }
 
-/** Root-relative prototype asset path ("/assets/img/x.jpg") -> theme URL. */
+/** Root-relative prototype asset path ("/assets/img/x.jpg") -> theme URL; a full URL (media library) as it is. */
 function hub_img( $path ) {
+	if ( preg_match( '#^https?://#', (string) $path ) ) {
+		return esc_url( $path );
+	}
 	return esc_url( hub_asset( preg_replace( '#^/assets/#', '', (string) $path ) ) );
 }
 

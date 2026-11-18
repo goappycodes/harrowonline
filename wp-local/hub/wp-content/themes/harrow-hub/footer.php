@@ -4,33 +4,7 @@ defined( 'ABSPATH' ) || exit;
 ?>
 </main>
 <?php if ( hub_page( 'layout' ) !== 'bare' && hub_page( 'nl' ) !== 'off' ) : ?>
-<!-- Newsletter sign-up above the footer (Nov 2026): same design as the homepage band; the reader picks each edition
-     separately (hub.js 5i shows known subscribers a short "you're signed up" line instead). -->
-<section class="nl-band nl-band--strip" aria-label="Newsletter sign-up">
-  <div class="ho-container">
-    <div class="nl-band__box">
-      <div class="nl-band__text">
-        <p class="nl-band__title">Harrow in your inbox, every morning</p>
-        <p>The day&rsquo;s local news, what&rsquo;s on and the best Local Offers. Free, from Harrow Online Newsletter.</p>
-      </div>
-      <form class="nl-band__form" action="https://harrowonline.org/wp-json/ho/v1/subscribe" method="post" data-nl-form>
-        <input type="hidden" name="signup_source" value="hub-strip">
-        <fieldset class="nl-band__editions">
-          <legend class="ho-sr">Choose your newsletters</legend>
-          <label class="nl-pick"><input type="checkbox" name="editions[]" value="daily" checked><span><strong>Daily News</strong><small>Every morning: Harrow&rsquo;s news</small></span></label>
-          <label class="nl-pick"><input type="checkbox" name="editions[]" value="weekend"><span><strong>The Weekend</strong><small>Thursdays: what&rsquo;s on and offers</small></span></label>
-          <label class="nl-pick"><input type="checkbox" name="editions[]" value="business"><span><strong>Harrow Business</strong><small>Mondays: local business news</small></span></label>
-        </fieldset>
-        <div class="nl-band__row">
-          <label class="ho-sr" for="nl-email">Email address</label>
-          <input class="input" id="nl-email" type="email" name="email" placeholder="Your email address" autocomplete="email" required>
-          <button class="ho-btn ho-btn--primary" type="submit">Sign up free</button>
-        </div>
-        <p class="ho-nl__msg nl-band__msg" role="status" aria-live="polite"></p>
-      </form>
-    </div>
-  </div>
-</section>
+<?php hub_newsletter_strip(); // Hub settings > Newsletter (inc/business-acf.php) ?>
 
 <?php endif; ?>
 <?php if ( hub_page( 'layout' ) !== 'bare' ) : ?>

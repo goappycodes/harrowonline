@@ -14,14 +14,17 @@ function hub_business( $post ) {
 	}
 	if ( ! isset( $cache[ $post->ID ] ) ) {
 		$x = hub_record( $post );
+		if ( hub_uses_acf( $post->ID ) ) {
+			$x = hub_business_from_acf( $post, $x );   // details edited in wp-admin (inc/business-acf.php)
+		}
 		if ( ! empty( $x['claimed'] ) ) {
 			// description from the post content (editable in wp-admin), one paragraph per <p>
-			preg_match_all( '#<p>(.*?)</p>#s', $post->post_content, $m );
+			preg_match_all( '#<p>(.*?)</p>#s', wpautop( $post->post_content ), $m );
 			$x['claimed']['description'] = $m[1];
 			list( $live, $ended )         = hub_business_offers( $post->ID );
 			$x['claimed']['offers']       = $live;
 			$x['claimed']['ended_offers'] = $ended;
-			$x['claimed']['events']       = hub_business_events( $x );
+			$x['claimed']['events']       = hub_business_events( $x, $post->ID );
 		}
 		$x['_id']           = $post->ID;
 		$cache[ $post->ID ] = $x;
@@ -34,7 +37,8 @@ function hub_business_by_slug( $slug ) {
 	return $p ? hub_business( $p ) : null;
 }
 
-/** Live and ended offers of a business, in their original order. */
+/** Live and ended offers of a business, in their original order. The offer's "Business" field (offer_business)
+ *  says which business it belongs to; offers not yet saved with that field use the imported link (_hub_business). */
 function hub_business_offers( $business_id ) {
 	$posts = get_posts( array(
 		'post_type'      => 'hub_offer',
@@ -42,7 +46,15 @@ function hub_business_offers( $business_id ) {
 		'meta_key'       => '_hub_index',
 		'orderby'        => 'meta_value_num',
 		'order'          => 'ASC',
-		'meta_query'     => array( array( 'key' => '_hub_business', 'value' => $business_id ) ),
+		'meta_query'     => array(
+			'relation' => 'OR',
+			array( 'key' => 'offer_business', 'value' => (string) $business_id ),
+			array(
+				'relation' => 'AND',
+				array( 'key' => 'offer_business', 'compare' => 'NOT EXISTS' ),
+				array( 'key' => '_hub_business', 'value' => $business_id ),
+			),
+		),
 	) );
 	$live = $ended = array();
 	foreach ( $posts as $p ) {
@@ -65,7 +77,8 @@ function hub_offer( $post ) {
 	$o['slug']   = $post->post_name;
 	$o['href']   = hub_url( 'offers/' . $post->post_name . '/' );
 	$o['_id']    = $post->ID;
-	$o['_biz']   = (int) get_post_meta( $post->ID, '_hub_business', true );
+	$o['_biz']   = metadata_exists( 'post', $post->ID, 'offer_business' ) ? (int) get_post_meta( $post->ID, 'offer_business', true )
+		: (int) get_post_meta( $post->ID, '_hub_business', true );
 	if ( empty( $o['end'] ) ) {
 		$o['end_date']   = null;
 		$o['days_left']  = 9999;
@@ -82,8 +95,9 @@ function hub_offer( $post ) {
 	return $o;
 }
 
-/** One-off events by this business (from the events, by organiser name), then its weekly classes. */
-function hub_business_events( array $x ) {
+/** One-off events by this business (from the events, by organiser name), then its weekly classes (linked in
+ *  wp-admin; listings not yet saved with ACF use the imported list). */
+function hub_business_events( array $x, $business_id = 0 ) {
 	$out   = array();
 	$today = hub_today()->format( 'Y-m-d' );
 	$evs   = get_posts( array(
@@ -105,6 +119,9 @@ function hub_business_events( array $x ) {
 			'd' => $d->format( 'j' ), 'm' => $d->format( 'M' ), 'w' => $d->format( 'D' ), 'price' => $ev['price'],
 			'href' => $ev['href'], 'featured' => ! empty( $ev['featured'] ),
 		);
+	}
+	if ( $business_id && hub_uses_acf( $business_id ) ) {
+		return array_merge( $out, hub_class_profile_rows( hub_business_classes( $business_id ) ) );
 	}
 	foreach ( isset( $x['claimed']['class_events'] ) ? $x['claimed']['class_events'] : array() as $c ) {
 		$c['href'] = hub_url( 'events/' . hub_slugify( hub_unescape( $c['title'] ) ) . '/' );

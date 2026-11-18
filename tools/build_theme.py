@@ -95,7 +95,9 @@ def write_chrome():
     check("header", out)
     (THEME / "header.php").write_text("<?php\n/** Head, site header and main menu (converted from the prototype's head + header partials). */\ndefined( 'ABSPATH' ) || exit;\n?>" + out, encoding="utf-8", newline="\n")
 
-    nl = convert_links(nav_placeholders(hub_only(build.partial("nl-strip"))))
+    # The newsletter band comes from Hub settings > Newsletter (ACF options), same markup as the nl-strip partial
+    nl = "<?php hub_newsletter_strip(); // Hub settings > Newsletter (inc/business-acf.php) ?>
+"
     tab = convert_links(nav_placeholders(hub_only(build.partial("tabbar"))))
     foot = convert_links(nav_placeholders(hub_only(build.partial("footer"))))
     foot = foot.replace("</body>", "<?php wp_footer(); ?>\n</body>")
