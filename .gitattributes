@@ -1,0 +1,2 @@
+# The local Hub database is a binary SQLite file: never try to merge it line by line.
+*.sqlite binary

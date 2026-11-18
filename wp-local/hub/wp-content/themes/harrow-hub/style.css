@@ -1,0 +1,15 @@
+/*
+Theme Name: Harrow Online Hub
+Theme URI: https://harrowonline.org/hub/
+Description: The local guide to Harrow, from Harrow Online. A fast, mobile-first directory of 2,600+ local businesses across 19 areas and 27 categories, with Local Offers (including subscriber-only deals), What's On events and weekly classes, business profiles with Verified and Checked status icons, and business accounts with Basic, Featured and Local Partner plans. Clean, accessible design in Harrow Online red, matching harrowonline.org.
+Author: Harrow Online
+Author URI: https://harrowonline.org/
+Version: 0.1.0
+Requires at least: 6.5
+Tested up to: 7.1
+Requires PHP: 8.1
+License: Proprietary
+Text Domain: harrow-hub
+Tags: directory, local-business, events, one-column, custom-menu, accessibility-ready
+*/
+/* All site styles are in assets/css/hub.css (loaded by inc/assets.php). */

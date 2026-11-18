@@ -1,0 +1,81 @@
+<?php
+/** Head, site header and main menu (converted from the prototype's head + header partials). */
+defined( 'ABSPATH' ) || exit;
+?><!doctype html>
+<html <?php language_attributes(); ?><?php hub_html_attrs(); ?>>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Merriweather:wght@700;900&family=Open+Sans:ital,wght@0,400;0,600;0,700;1,400&display=swap">
+<?php wp_head(); ?>
+</head>
+<body <?php body_class(); ?>>
+<?php wp_body_open(); ?>
+<a class="ho-skip" href="#main">Skip to content</a>
+<header class="ho-header" id="ho-header">
+        <div class="ho-container ho-header__inner">
+            <button class="ho-header__icon-btn ho-header__burger" type="button" aria-controls="ho-drawer" aria-expanded="false" aria-label="Open menu" data-ho-drawer-open>
+                <svg class="ho-icon ho-icon--menu" viewBox="0 0 24 24" width="24" height="24" aria-hidden="true" focusable="false"><path d="M4 7h16M4 12h16M4 17h16" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></svg>            </button>
+
+                        <a class="ho-header__logo ho-header__logo--hub" href="<?php echo esc_url( hub_url( '' ) ); ?>" rel="home">
+                                <img src="<?php echo esc_url( hub_asset( 'img/hub-logo.svg' ) ); ?>" width="146" height="100" alt="Harrow Online Hub" fetchpriority="high">
+                            </a>
+
+            <nav class="ho-nav" aria-label="Main">
+                <ul id="ho-menu" class="ho-nav__list"><li class="menu-item<?php hub_nav_attr( 'hub', 'cls' ); ?>"><a href="<?php echo esc_url( hub_url( '' ) ); ?>"<?php hub_nav_attr( 'hub', 'aria' ); ?>>Hub</a></li>
+<li class="menu-item<?php hub_nav_attr( 'news', 'cls' ); ?>"><a href="https://harrowonline.org/category/news/"<?php hub_nav_attr( 'news', 'aria' ); ?>>News</a></li>
+<li class="menu-item<?php hub_nav_attr( 'events', 'cls' ); ?>"><a href="<?php echo esc_url( hub_url( 'events/' ) ); ?>"<?php hub_nav_attr( 'events', 'aria' ); ?>>What&rsquo;s On</a></li>
+<li class="menu-item<?php hub_nav_attr( 'classes', 'cls' ); ?>"><a href="<?php echo esc_url( hub_url( 'events/classes/' ) ); ?>"<?php hub_nav_attr( 'classes', 'aria' ); ?>>Classes</a></li>
+<li class="menu-item<?php hub_nav_attr( 'offers', 'cls' ); ?>"><a href="<?php echo esc_url( hub_url( 'offers/' ) ); ?>"<?php hub_nav_attr( 'offers', 'aria' ); ?>>Offers</a></li>
+<li class="menu-item menu-item-has-children<?php hub_nav_attr( 'businesses', 'cls' ); ?>"><a href="<?php echo esc_url( hub_url( 'search/' ) ); ?>"<?php hub_nav_attr( 'businesses', 'aria' ); ?>>Businesses</a><button class="ho-nav__toggle" type="button" aria-expanded="false" aria-controls="{menu_id}" aria-label="More business pages" data-ho-sub-toggle><svg class="ho-icon"><use href="#i-chevron-down"/></svg></button><ul class="sub-menu" id="ho-hub-menu"><li><a href="<?php echo esc_url( hub_url( 'categories/' ) ); ?>"<?php hub_hubnav_attr( 'categories' ); ?>>Categories</a></li><li><a href="<?php echo esc_url( hub_url( '#areas' ) ); ?>">Areas</a></li><li><a href="<?php echo esc_url( hub_url( 'pricing/' ) ); ?>"<?php hub_hubnav_attr( 'pricing' ); ?>>Pricing</a></li><li class="sub-menu__cta"><a href="<?php echo esc_url( hub_url( 'add-business/' ) ); ?>"><svg class="ho-icon"><use href="#i-plus"/></svg>List your business</a></li></ul></li>
+<li class="menu-item<?php hub_nav_attr( 'advertise', 'cls' ); ?>"><a href="<?php echo esc_url( hub_url( 'advertise/newsletter/' ) ); ?>"<?php hub_nav_attr( 'advertise', 'aria' ); ?>>Advertise</a></li></ul>            </nav>
+
+            <div class="ho-header__actions">
+                <a class="ho-btn ho-btn--primary ho-header__cta" href="https://harrowonline.org/newsletter/">
+                    <svg class="ho-icon ho-icon--mail" viewBox="0 0 24 24" width="24" height="24" aria-hidden="true" focusable="false"><rect x="3" y="5" width="18" height="14" rx="2.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="m4 7 8 6 8-6" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg><span>Newsletter</span>
+                </a>
+                <a class="ho-header__icon-btn ho-header__account hub-bar__out" href="<?php echo esc_url( hub_url( 'account/' ) ); ?>" aria-label="My account"><svg class="ho-icon ho-icon--user" viewBox="0 0 24 24" width="24" height="24" aria-hidden="true" focusable="false"><circle cx="12" cy="8" r="4" fill="none" stroke="currentColor" stroke-width="2"/><path d="M4 20.5c1.2-3.8 4.3-5.7 8-5.7s6.8 1.9 8 5.7" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></a><a class="ho-header__icon-btn ho-header__account hub-bar__in" href="<?php echo esc_url( hub_url( 'account/' ) ); ?>" aria-label="My account"><svg class="ho-icon ho-icon--user" viewBox="0 0 24 24" width="24" height="24" aria-hidden="true" focusable="false"><circle cx="12" cy="8" r="4" fill="none" stroke="currentColor" stroke-width="2"/><path d="M4 20.5c1.2-3.8 4.3-5.7 8-5.7s6.8 1.9 8 5.7" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></a>
+                <button class="ho-header__icon-btn ho-header__search-btn" type="button" aria-controls="ho-search" aria-expanded="false" aria-label="Search" data-ho-search-toggle>
+                    <svg class="ho-icon ho-icon--search" viewBox="0 0 24 24" width="24" height="24" aria-hidden="true" focusable="false"><circle cx="11" cy="11" r="7" fill="none" stroke="currentColor" stroke-width="2.2"/><path d="m20 20-4.2-4.2" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></svg>                </button>
+            </div>
+        </div>
+
+        <div class="ho-search" id="ho-search" hidden>
+            <div class="ho-container">
+                <form class="ho-search__form ho-search__form--hub" role="search" method="get" action="<?php echo esc_url( hub_url( 'search/' ) ); ?>">
+                    <label class="ho-sr" for="ho-search-input">Search the Hub</label>
+                    <input class="ho-search__input" id="ho-search-input" type="search" name="q" value="" placeholder="Search businesses, events, classes and offers&hellip;" autocomplete="off">
+                    <button class="ho-btn ho-btn--primary" type="submit">Search</button>
+                    <a class="ho-search__alt" href="https://harrowonline.org/?s=" data-news-search>Search news instead</a>
+                </form>
+            </div>
+        </div>
+    </header>
+
+    <div class="ho-drawer" id="ho-drawer" hidden>
+        <div class="ho-drawer__backdrop" data-ho-drawer-close></div>
+        <div class="ho-drawer__panel" role="dialog" aria-modal="true" aria-label="Menu">
+            <div class="ho-drawer__head">
+                <a class="ho-drawer__logo ho-drawer__logo--hub" href="<?php echo esc_url( hub_url( '' ) ); ?>">
+                    <img src="<?php echo esc_url( hub_asset( 'img/hub-logo.svg' ) ); ?>" width="146" height="100" alt="Harrow Online Hub" loading="lazy">
+                </a>
+                <button class="ho-header__icon-btn" type="button" aria-label="Close menu" data-ho-drawer-close>
+                    <svg class="ho-icon ho-icon--close" viewBox="0 0 24 24" width="24" height="24" aria-hidden="true" focusable="false"><path d="M6 6l12 12M18 6 6 18" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></svg>                </button>
+            </div>
+            
+            <nav class="ho-drawer__nav" aria-label="Mobile">
+                <ul id="ho-menu-mobile" class="ho-drawer__list"><li class="menu-item<?php hub_nav_attr( 'hub', 'cls' ); ?>"><a href="<?php echo esc_url( hub_url( '' ) ); ?>"<?php hub_nav_attr( 'hub', 'aria' ); ?>>Hub</a></li>
+<li class="menu-item<?php hub_nav_attr( 'news', 'cls' ); ?>"><a href="https://harrowonline.org/category/news/"<?php hub_nav_attr( 'news', 'aria' ); ?>>News</a></li>
+<li class="menu-item<?php hub_nav_attr( 'events', 'cls' ); ?>"><a href="<?php echo esc_url( hub_url( 'events/' ) ); ?>"<?php hub_nav_attr( 'events', 'aria' ); ?>>What&rsquo;s On</a></li>
+<li class="menu-item<?php hub_nav_attr( 'classes', 'cls' ); ?>"><a href="<?php echo esc_url( hub_url( 'events/classes/' ) ); ?>"<?php hub_nav_attr( 'classes', 'aria' ); ?>>Classes</a></li>
+<li class="menu-item<?php hub_nav_attr( 'offers', 'cls' ); ?>"><a href="<?php echo esc_url( hub_url( 'offers/' ) ); ?>"<?php hub_nav_attr( 'offers', 'aria' ); ?>>Offers</a></li>
+<li class="menu-item menu-item-has-children<?php hub_nav_attr( 'businesses', 'cls' ); ?>"><a href="<?php echo esc_url( hub_url( 'search/' ) ); ?>"<?php hub_nav_attr( 'businesses', 'aria' ); ?>>Businesses</a><button class="ho-nav__toggle" type="button" aria-expanded="false" aria-controls="{menu_id}" aria-label="More business pages" data-ho-sub-toggle><svg class="ho-icon"><use href="#i-chevron-down"/></svg></button><ul class="sub-menu" id="ho-hub-menu-m"><li><a href="<?php echo esc_url( hub_url( 'categories/' ) ); ?>"<?php hub_hubnav_attr( 'categories' ); ?>>Categories</a></li><li><a href="<?php echo esc_url( hub_url( '#areas' ) ); ?>">Areas</a></li><li><a href="<?php echo esc_url( hub_url( 'pricing/' ) ); ?>"<?php hub_hubnav_attr( 'pricing' ); ?>>Pricing</a></li><li class="sub-menu__cta"><a href="<?php echo esc_url( hub_url( 'add-business/' ) ); ?>"><svg class="ho-icon"><use href="#i-plus"/></svg>List your business</a></li></ul></li>
+<li class="menu-item<?php hub_nav_attr( 'advertise', 'cls' ); ?>"><a href="<?php echo esc_url( hub_url( 'advertise/newsletter/' ) ); ?>"<?php hub_nav_attr( 'advertise', 'aria' ); ?>>Advertise</a></li></ul>            </nav>
+            <a class="ho-btn ho-btn--primary ho-btn--block" href="https://harrowonline.org/newsletter/"><svg class="ho-icon ho-icon--mail" viewBox="0 0 24 24" width="24" height="24" aria-hidden="true" focusable="false"><rect x="3" y="5" width="18" height="14" rx="2.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="m4 7 8 6 8-6" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg><span>Get the newsletter</span></a>
+            <p class="ho-drawer__label">Follow Harrow Online</p>
+            <ul class="ho-social ho-social--dark"><li><a class="ho-social__link ho-social__link--facebook" href="https://www.facebook.com/harrowonline" target="_blank" rel="noopener" aria-label="Facebook"><svg class="ho-icon ho-icon--facebook" viewBox="0 0 24 24" width="24" height="24" aria-hidden="true" focusable="false"><path fill="currentColor" d="M13.5 21v-7.5h2.6l.4-3h-3V8.6c0-.9.3-1.5 1.5-1.5h1.6V4.4c-.3 0-1.2-.1-2.3-.1-2.3 0-3.9 1.4-3.9 4v2.2H8v3h2.6V21h2.9z"/></svg></a></li><li><a class="ho-social__link ho-social__link--x" href="https://twitter.com/harrowonline" target="_blank" rel="noopener" aria-label="X (Twitter)"><svg class="ho-icon ho-icon--x" viewBox="0 0 24 24" width="24" height="24" aria-hidden="true" focusable="false"><path fill="currentColor" d="M17.8 3h3.1l-6.8 7.8L22 21h-6.2l-4.9-6.4L5.3 21H2.2l7.3-8.3L2 3h6.4l4.4 5.8L17.8 3zm-1.1 16.2h1.7L7.4 4.7H5.6l11.1 14.5z"/></svg></a></li><li><a class="ho-social__link ho-social__link--instagram" href="https://www.instagram.com/harrowonline1/" target="_blank" rel="noopener" aria-label="Instagram"><svg class="ho-icon ho-icon--instagram" viewBox="0 0 24 24" width="24" height="24" aria-hidden="true" focusable="false"><rect x="3.5" y="3.5" width="17" height="17" rx="5" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="12" cy="12" r="4" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="17.3" cy="6.7" r="1.2" fill="currentColor"/></svg></a></li><li><a class="ho-social__link ho-social__link--tiktok" href="https://www.tiktok.com/@harrowonline" target="_blank" rel="noopener" aria-label="TikTok"><svg class="ho-icon ho-icon--tiktok" viewBox="0 0 24 24" width="24" height="24" aria-hidden="true" focusable="false"><path fill="currentColor" d="M16.6 3c.3 2.2 1.6 3.7 3.9 3.9v2.8c-1.4.1-2.7-.3-3.9-1.1v6c0 3.6-2.6 5.9-5.8 5.9-3.1 0-5.6-2.4-5.6-5.6 0-3.6 3.2-6.1 6.8-5.5v3c-1.6-.4-3.8.4-3.8 2.5 0 1.5 1.2 2.7 2.7 2.7 1.7 0 2.8-1 2.8-3V3h2.9z"/></svg></a></li><li><a class="ho-social__link ho-social__link--whatsapp" href="https://whatsapp.com/channel/0029Va9qE38HgZWZQVM1jc3S" target="_blank" rel="noopener" aria-label="WhatsApp Channel"><svg class="ho-icon ho-icon--whatsapp" viewBox="0 0 24 24" width="24" height="24" aria-hidden="true" focusable="false"><path fill="currentColor" d="M12 2.5a9.5 9.5 0 0 0-8.2 14.3L2.5 21.5l4.8-1.3A9.5 9.5 0 1 0 12 2.5zm0 17.2c-1.5 0-2.9-.4-4.1-1.1l-.3-.2-2.8.8.8-2.8-.2-.3A7.7 7.7 0 1 1 12 19.7zm4.3-5.8c-.2-.1-1.4-.7-1.6-.8-.2-.1-.4-.1-.5.1l-.7.9c-.1.2-.3.2-.5.1a6.3 6.3 0 0 1-3.1-2.7c-.2-.4.2-.4.7-1.3.1-.2 0-.3 0-.4l-.7-1.7c-.2-.4-.4-.4-.5-.4h-.5c-.2 0-.4.1-.6.3-.2.2-.8.8-.8 1.9s.8 2.2.9 2.4c.1.2 1.6 2.5 4 3.5 1.5.6 2.1.7 2.8.6.5-.1 1.4-.6 1.6-1.1.2-.5.2-1 .1-1.1l-.6-.3z"/></svg></a></li></ul>        </div>
+    </div>
+
+<main id="main">
