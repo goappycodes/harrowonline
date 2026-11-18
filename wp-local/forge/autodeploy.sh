@@ -20,6 +20,7 @@
 #      (Forge rewrites both when it creates a site), then test and reload nginx.
 {
 set -uo pipefail
+export PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin   # cron gives only /usr/bin:/bin
 APP=${1:?usage: harrow-hub-autodeploy /home/forge/harrow-hub-app}
 CONF=/etc/harrow-hub
 PHP_FPM=${PHP_FPM:-php8.2-fpm}
