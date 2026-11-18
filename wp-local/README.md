@@ -52,3 +52,18 @@ local only). In the Claude desktop app, start the **wp-local** preview instead.
   keep one version and redo the other change.
 - **Local only:** `wp-config.php`, its keys and the admin login are for local development. Staging and live have
   their own config and a MySQL database.
+
+## Dev server (Laravel Forge)
+
+The same WordPress runs on Laravel Forge (server `appy-dev`), deployed from git with the committed SQLite database.
+
+- **Site:** repository `goappycodes/harrowonline`, web directory `/wp-local`, so WordPress is at `/hub/` as here.
+  Nginx rules (send `/` to `/hub/`, block the database, logs and the local CLI scripts, `noindex` header):
+  `forge/nginx-hub.conf`. Deploy script: `forge/deploy.sh`.
+- **Settings:** `wp-config.php` reads every server setting from the environment or the `.env` file in the
+  repository root (Forge: Site > Environment, never committed): `WP_HOME` (with `/hub`), the eight keys and salts,
+  `WP_ENVIRONMENT_TYPE`, `WP_DEBUG`, `DISALLOW_FILE_MODS`, and the database (`DB_PATH`, or `DB_ENGINE=mysql` with
+  `DB_NAME`, `DB_USER`, `DB_PASSWORD`, `DB_HOST`). With no `.env` the local values above apply.
+- **Content comes from git.** Each deploy replaces the server's database with the committed `hub.sqlite`, so
+  changes made in the server's wp-admin are lost on the next deploy. Change content locally and commit it.
+- **Logins:** the users and passwords are the ones in the committed database, i.e. the local ones.

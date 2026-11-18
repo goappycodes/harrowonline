@@ -16,3 +16,6 @@ __pycache__/
 /wp-local/hub/wp-content/database/*.sqlite-wal
 /wp-local/hub/wp-content/database/*.sqlite-shm
 /wp-local/hub/wp-content/database/*.lock
+
+# Server settings (Forge: Site > Environment writes this file in the repository root). Never commit it.
+/.env
