@@ -27,42 +27,32 @@ body: page-search
 </header>
 
 <div class="ho-container">
-  <div class="layout-filters">
-    <form class="filters" id="filters" data-directory-form action="/search.html" method="get">
+  <!-- Clean layout (Nov 2026): no filter sidebar. Tabs, then one quiet filter line; filters apply on change (hub.js 6f). -->
+  <div data-directory data-all data-page-size="20">
+    <nav class="tabs search-tabs" data-tabs aria-label="Result types" hidden></nav>
+    <!-- Filters live on the count line; the (empty) form holds the search state, the controls join it with form="filters" -->
+    <form class="dline dline--bare" id="filters" data-directory-form action="/search.html" method="get" aria-label="Filter businesses">
       <input type="hidden" name="type">
-      <div class="filters__head"><h2>Filter results</h2><button class="ho-header__icon-btn filters__close" type="button" data-filters-close aria-label="Close filters"><svg class="ho-icon"><use href="#i-close"/></svg></button></div>
-      <div class="filters__group">
-        <div class="field"><label for="f-cat">Business category</label><select class="select" id="f-cat" name="cat"><option value="">All categories</option>{{> gen-cat-options}}</select></div>
-      </div>
-      <fieldset class="filters__group"><legend>Contact details</legend>
-        <ul class="check-list">
-          <li><label><input type="checkbox" name="web" value="1"> Has a website</label></li>
-          <li><label><input type="checkbox" name="phone" value="1"> Has a phone number</label></li>
-        </ul>
-      </fieldset>
-      <div class="filters__group">
-        <div class="field"><label for="f-sort">Sort by</label><select class="select" id="f-sort" name="sort"><option value="relevance">Best match</option><option value="name">Name (A to Z)</option></select></div>
-        <p class="help mt-2">Paid and claimed listings always show first, then unclaimed ones.</p>
-      </div>
-      <div class="filters__foot"><a class="ho-btn ho-btn--ghost" href="/search.html">Clear</a><button class="ho-btn ho-btn--primary" type="submit">Show results</button></div>
     </form>
-
-    <div data-directory data-all data-page-size="20">
-      <nav class="tabs search-tabs" data-tabs aria-label="Result types" hidden></nav>
-      <div class="toolbar">
-        <p class="toolbar__count" data-count><strong>{{> gen-count}}</strong> businesses</p>
-        <div class="toolbar__right"><button class="ho-btn ho-btn--sm ho-btn--outline filters-toggle" type="button" data-filters-open aria-controls="filters" aria-expanded="false"><svg class="ho-icon"><use href="#i-filter"/></svg>Filters</button></div>
+    <h2 class="ho-sr">Results</h2>
+    <div class="toolbar dtoolbar dtoolbar--filters">
+      <div class="dtoolbar__lead"><p class="toolbar__count" data-count><strong>{{> gen-count}}</strong> businesses</p><a class="dtoolbar__key" href="/pricing.html#fb-labels"><svg class="ho-icon" aria-hidden="true"><use href="#i-info"/></svg>What the icons mean</a></div>
+      <div class="dtoolbar__filters" data-biz-filters>
+        <label class="fmini"><span class="ho-sr">Business category</span><select id="f-cat" name="cat" form="filters"><option value="">All categories</option>{{> gen-cat-options}}</select></label>
+        <label class="fmini fmini--check"><input type="checkbox" name="web" value="1" form="filters"> Website</label>
+        <label class="fmini fmini--check"><input type="checkbox" name="phone" value="1" form="filters"> Phone</label>
+        <label class="fmini"><span class="ho-sr">Sort</span><select id="f-sort" name="sort" form="filters"><option value="relevance">Best match</option><option value="name">Name (A to Z)</option></select></label>
       </div>
-      <div class="active-filters" data-active hidden></div>
-      <div data-groups></div>
-      <div data-results>{{> gen-recent-rows}}</div>
-      <nav class="pager" data-pager aria-label="Pages"></nav>
-      <div data-after></div>
+    </div>
+    <div class="active-filters" data-active hidden></div>
+    <div data-groups></div>
+    <div data-results>{{> gen-recent-rows}}</div>
+    <nav class="pager" data-pager aria-label="Pages"></nav>
+    <div data-after></div>
 
-      <div class="limited-note mt-6" data-biz-note>
-        <svg class="ho-icon"><use href="#i-info"/></svg>
-        <p class="mb-0">Can&rsquo;t find a business? <a href="/add-business.html">Add it to the Hub</a>. If it&rsquo;s yours, you can claim it free once it&rsquo;s listed.</p>
-      </div>
+    <div class="limited-note mt-6" data-biz-note>
+      <svg class="ho-icon"><use href="#i-info"/></svg>
+      <p class="mb-0">Can&rsquo;t find a business? <a href="/add-business.html">Add it to the Hub</a>. If it&rsquo;s yours, you can claim it free once it&rsquo;s listed. Featured and claimed listings always show first.</p>
     </div>
   </div>
 

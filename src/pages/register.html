@@ -5,30 +5,18 @@ layout: bare
 robots: noindex
 hubnav: account
 -->
-<div class="auth">
-  <div class="auth__side">
-    <div class="auth__side-inner">
-      <p class="eyebrow">Harrow Online Hub</p>
-      <h2>Free to join. Free to claim.</h2>
-      <p>One account covers everything you do on the Hub.</p>
-      <ul class="ticks mt-5">
-        <li>Claim your business free, or add one that isn&rsquo;t listed yet</li>
-        <li>Post Local Offers, events and weekly classes on the Featured or Local Partner plan</li>
-        <li>Reach Harrow Online Newsletter readers with featured spots and sponsor slots</li>
-        <li>Schools, clubs and charities add events and classes free</li>
-      </ul>
-    </div>
-  </div>
+<!-- Account pages (redesign, Nov 2026): one card in the site style, with a short "why join" column beside it
+     (below it on phones). Same fields, links and copy as before. -->
+<div class="authx authx--wide">
+  <div class="authx__card">
 
-  <div class="auth__main">
-    <div class="auth__card">
-      <h1>Create an account</h1>
-      <p>Already have one? <a href="/sign-in.html">Sign in</a></p>
+      <h1 class="authx__title">Create an account</h1>
+      <p class="authx__lead">Already have one? <a href="/sign-in.html">Sign in</a></p>
 
       <!-- WP: creates a Hub user. Role = business_owner or organiser from account_type.
            If join_newsletter is ticked: POST to the Beehiiv subscribe endpoint (brief 02 N3) with editions as custom fields,
            signup_source=hub-registration, plus area + account type as tags. -->
-      <form class="form mt-5" action="/account.html" method="post">
+      <form class="form" action="/account.html" method="post">
         <fieldset class="fieldset">
           <legend class="field__label">I&rsquo;m signing up because&hellip;</legend>
           <div class="choice-grid">
@@ -108,8 +96,19 @@ hubnav: account
         </div>
 
         <label class="hp" aria-hidden="true">Leave this field empty <input type="text" name="website_url" tabindex="-1" autocomplete="off"></label>
-        <button class="ho-btn ho-btn--primary ho-btn--lg ho-btn--block" type="submit">Create my account</button>
+        <button class="ho-btn ho-btn--primary ho-btn--block" type="submit">Create my account</button>
       </form>
-    </div>
   </div>
+
+  <aside class="authx__perks" aria-label="About your Hub account">
+      <p class="authx__eyebrow">Harrow Online Hub</p>
+      <h2 class="authx__perks-title">Free to join. Free to claim.</h2>
+      <p>One account covers everything you do on the Hub.</p>
+      <ul class="ticks authx__ticks">
+        <li>Claim your business free, or add one that isn&rsquo;t listed yet</li>
+        <li>Post Local Offers, events and weekly classes on the Featured or Local Partner plan</li>
+        <li>Reach Harrow Online Newsletter readers with featured spots and sponsor slots</li>
+        <li>Schools, clubs and charities add events and classes free</li>
+      </ul>
+  </aside>
 </div>

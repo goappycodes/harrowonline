@@ -2692,3 +2692,587 @@ input[type="search"]::-ms-clear, input[type="search"]::-ms-reveal { display: non
 .sp-who p { display: flex; align-items: center; gap: 6px; margin: 0; }
 .sp-tip { display: flex; align-items: flex-start; gap: 8px; margin: 12px 0 0; padding: 10px 12px; border-radius: var(--ho-radius); background: var(--ho-soft); font-size: 13px; line-height: 1.45; color: #444; }
 .sp-tip .ho-icon { flex: none; margin-top: 2px; color: var(--ho-red); }
+
+/* Homepage weekend row: the Thursday newsletter box with a choice of editions */
+.home-nl__title { font-size: 18px; line-height: 1.3; }
+.home-nl__editions { display: grid; gap: 6px; margin: 0 0 4px; padding: 0; border: 0; min-width: 0; }
+.home-nl__editions label { display: flex; align-items: center; gap: 8px; font: 600 13px/1.3 var(--ho-font-ui); color: #fff; cursor: pointer; }
+.home-nl__editions small { font-weight: 500; color: rgba(255, 255, 255, .65); }
+.home-nl__editions input { accent-color: var(--ho-red); }
+/* Homepage featured cards: area and status as one quiet line, description kept to two lines */
+.card--featured .card__meta { display: flex; flex-wrap: wrap; gap: 4px 14px; }
+.card__status { display: inline-flex; align-items: center; gap: 4px; font-size: 13px; font-weight: 600; color: var(--ho-ok); }
+.card__status .ho-icon { color: var(--ho-ok); }
+.card--featured .card__text { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+
+/* ==========================================================================
+   Filter panel (Offers, Classes; redesign Nov 2026): chips on top, compact pill filters below
+   ========================================================================== */
+.fpanel { padding: 14px 16px; border: 1px solid var(--ho-line); border-radius: 18px; background: #fff; box-shadow: 0 12px 28px -24px rgba(20, 20, 20, .45); }
+.fpanel__chips { margin: 0; padding-bottom: 12px; border-bottom: 1px solid var(--ho-line); }
+.fpanel__bar { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; padding-top: 12px; }
+.fpanel__label { display: inline-flex; align-items: center; gap: 6px; margin-right: 4px; font: 700 13px/1 var(--ho-font-ui); letter-spacing: .04em; text-transform: uppercase; color: var(--ho-muted); }
+.fpill { position: relative; display: inline-flex; align-items: center; gap: 6px; height: 40px; padding: 0 12px; border: 1px solid var(--ho-line-2); border-radius: 999px; background: #fff; font: 600 14px var(--ho-font-ui); color: var(--ho-ink); cursor: pointer; transition: border-color .15s ease, background-color .15s ease; }
+.fpill:hover { border-color: var(--ho-ink); }
+.fpill > .ho-icon { flex: none; color: var(--ho-red); }
+.fpill select { -webkit-appearance: none; appearance: none; height: 100%; padding: 0 22px 0 0; border: 0; background: transparent url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='m6 9 6 6 6-6' fill='none' stroke='%23141414' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") right center / 14px no-repeat; font: inherit; color: inherit; cursor: pointer; max-width: 220px; text-overflow: ellipsis; }
+.fpill select:focus { outline: none; }
+.fpill:focus-within { border-color: var(--ho-ink); box-shadow: 0 0 0 2px rgba(20, 20, 20, .12); }
+.fpill--check input { margin: 0; accent-color: var(--ho-red); }
+.fpill--check:has(input:checked), .fpill:has(select option:checked:not([value=""])) { border-color: var(--ho-red); background: var(--ho-red-tint); }
+.fpanel__go { margin-left: auto; }
+.fpanel__go[hidden] { display: none; }
+.fpanel__clear { margin-left: auto; font: 600 14px var(--ho-font-ui); color: var(--ho-muted); }
+.fpanel__clear:hover { color: var(--ho-red); }
+.fpanel__clear[hidden] { display: none; }
+.fpanel + .toolbar { margin-top: var(--ho-s5); }
+@media (max-width: 767px) {
+  .fpanel { padding: 12px; border-radius: 14px; }
+  .fpanel__bar { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .fpanel__label { grid-column: 1 / -1; }
+  .fpill { min-width: 0; }
+  .fpill select { max-width: none; width: 100%; min-width: 0; }
+  .fpill--check { grid-column: 1 / -1; }
+  .fpanel__clear, .fpanel__go { grid-column: 1 / -1; margin-left: 0; }
+}
+
+/* Offers and Classes filters (clean, Nov 2026): chips, then one quiet line: count left, small filters right */
+.fline { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 10px 16px; margin: var(--ho-s4) 0 var(--ho-s5); }
+.fline__count { margin: 0; display: flex; flex-direction: column; gap: 2px; }
+.fline__count .toolbar__count, .fline .toolbar__count { margin: 0; }
+.fline__form { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
+.fsel { position: relative; display: inline-flex; }
+.fsel select { -webkit-appearance: none; appearance: none; height: 36px; padding: 0 30px 0 14px; border: 0; border-radius: 999px; background: var(--ho-soft) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='m6 9 6 6 6-6' fill='none' stroke='%23141414' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") right 12px center / 12px no-repeat; font: 600 14px var(--ho-font-ui); color: var(--ho-ink); cursor: pointer; }
+.fsel select:hover { background-color: #EAE9E5; }
+.fsel select:focus-visible { outline: 2px solid var(--ho-ink); outline-offset: 2px; }
+.fcheck { display: inline-flex; align-items: center; gap: 8px; height: 36px; padding: 0 14px; border-radius: 999px; background: var(--ho-soft); font: 600 14px var(--ho-font-ui); color: var(--ho-ink); cursor: pointer; }
+.fcheck input { margin: 0; accent-color: var(--ho-red); }
+.fcheck:has(input:checked) { background: var(--ho-red-tint); color: var(--ho-red); }
+.fline .fpanel__go { margin-left: 0; }
+.fline .fpanel__clear { margin-left: 4px; font-size: 14px; }
+@media (max-width: 767px) {
+  .fline { flex-direction: column; align-items: stretch; }
+  .fline__form { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .fsel, .fsel select { width: 100%; min-width: 0; }
+  .fcheck { justify-content: center; }
+}
+
+/* ==========================================================================
+   Search, category and area pages (clean, Nov 2026): no sidebar; one filter line, chip row, slim toolbar
+   ========================================================================== */
+.dline { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin: 0 0 var(--ho-s4); }
+.fsearch { display: inline-flex; align-items: center; gap: 8px; flex: 1 1 280px; max-width: 420px; height: 40px; padding: 0 14px; border: 1px solid var(--ho-line-2); border-radius: 999px; background: #fff; }
+.fsearch:focus-within { border-color: var(--ho-ink); box-shadow: 0 0 0 2px rgba(20, 20, 20, .1); }
+.fsearch .ho-icon { flex: none; width: 18px; height: 18px; color: var(--ho-muted); }
+.fsearch input { flex: 1; min-width: 0; height: 100%; border: 0; background: none; font: 500 15px var(--ho-font-ui); color: var(--ho-ink); }
+.fsearch input:focus { outline: none; }
+.dline .fsel select, .dline .fcheck { height: 40px; }
+.dchips { display: flex; align-items: center; gap: 12px; margin: 0 0 var(--ho-s5); min-width: 0; }
+.dchips__label { flex: none; font: 700 12px/1 var(--ho-font-ui); letter-spacing: .06em; text-transform: uppercase; color: var(--ho-muted); }
+.dchips .chips { flex: 1; min-width: 0; margin: 0; }
+.dtoolbar { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin: 0 0 var(--ho-s3); padding-bottom: 12px; border-bottom: 1px solid var(--ho-line); }
+.dtoolbar .toolbar__count { margin: 0; }
+.fsel--sort { align-items: center; gap: 8px; }
+.dtoolbar__label { font: 600 13px var(--ho-font-ui); color: var(--ho-muted); }
+.fsel--sort select { height: 34px; }
+.page-search .search-tabs { margin-bottom: var(--ho-s4); }
+@media (max-width: 767px) {
+  .dline { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .fsearch { grid-column: 1 / -1; max-width: none; }
+  .dline .fsel { grid-column: 1 / -1; }
+  .dline .fsel, .dline .fsel select { width: 100%; }
+  .dline .fcheck { justify-content: center; }
+  .dchips { flex-direction: column; align-items: stretch; gap: 8px; }
+}
+.dchips > .chips-rail { flex: 1 1 auto; min-width: 0; max-width: 100%; }
+.dchips .chips-rail .chips { width: 100%; }
+
+.dline[hidden], .fsel--sort[hidden] { display: none; }
+/* Categories page: the grid starts right under the intro, like the other list pages */
+.page-categories .page-head + .section { padding-top: 0; }
+
+/* Search page search bar (redesign, Nov 2026): one rounded bar, area as a soft pill inside, round red button */
+.page-search .searchbar--inline { grid-template-columns: minmax(0, 1fr) auto auto; align-items: center; gap: 6px; max-width: 920px; padding: 6px 6px 6px 8px; border: 1px solid var(--ho-line-2); border-radius: 999px; box-shadow: 0 14px 30px -22px rgba(20, 20, 20, .45); }
+.page-search .searchbar--inline:focus-within { border-color: var(--ho-ink); }
+.page-search .searchbar__field + .searchbar__field { border-left: 0; }
+.page-search .searchbar__field:first-child input { height: 48px; border-radius: 999px; font-size: 16px; }
+.page-search .searchbar__field:nth-child(2) { border-radius: 999px; background: var(--ho-soft); }
+.page-search .searchbar__field:nth-child(2) select { height: 44px; min-width: 200px; border-radius: 999px; background-color: transparent; font-weight: 600; }
+.page-search .searchbar--inline .ho-btn { height: 48px; padding: 0 26px; border-radius: 999px; }
+@media (max-width: 767px) {
+  .page-search .searchbar--inline { grid-template-columns: minmax(0, 1fr) auto; border-radius: 20px; padding: 8px; }
+  .page-search .searchbar__field:first-child { grid-column: 1 / -1; }
+  .page-search .searchbar__field:nth-child(2) select { min-width: 0; width: 100%; }
+  .page-search .searchbar--inline .ho-btn { height: 44px; padding: 0 20px; }
+}
+
+/* Filter line on phones (search, category, area): full-width search and dropdown, tick pills side by side, compact sort */
+@media (max-width: 767px) {
+  .dline { display: flex; flex-wrap: wrap; gap: 8px; }
+  .fsearch { flex: 1 1 100%; height: 44px; }
+  .dline .fsel { flex: 1 1 100%; }
+  .dline .fsel select { height: 44px; width: 100%; }
+  .dline .fcheck { flex: 1 1 0; justify-content: center; height: 40px; padding: 0 10px; font-size: 13px; white-space: nowrap; }
+  .dtoolbar { gap: 8px; }
+  .dtoolbar__label { display: none; }
+  .fsel--sort, .fsel--sort select { width: auto; }
+  .fsel--sort select { height: 36px; font-size: 13px; }
+}
+
+/* One search bar everywhere (homepage, Search, 404; Nov 2026): rounded bar, area as a soft pill inside, round red button */
+.searchbar { grid-template-columns: minmax(0, 1fr) auto auto; align-items: center; gap: 6px; padding: 6px 6px 6px 8px; border: 1px solid var(--ho-line-2); border-radius: 999px; background: #fff; box-shadow: 0 14px 30px -22px rgba(20, 20, 20, .45); }
+.searchbar:focus-within { border-color: var(--ho-ink); }
+.searchbar .searchbar__field + .searchbar__field { border-left: 0; }
+.searchbar .searchbar__field:first-child input { height: 48px; border-radius: 999px; font-size: 16px; }
+.searchbar .searchbar__field:first-child input:focus { outline: none; }
+.searchbar .searchbar__field:nth-child(2) { border-radius: 999px; background: var(--ho-soft); }
+.searchbar .searchbar__field:nth-child(2) select { height: 44px; min-width: 200px; border-radius: 999px; background-color: transparent; font-weight: 600; }
+.searchbar .searchbar__field:nth-child(2) select:focus { outline: 2px solid var(--ho-ink); outline-offset: -2px; }
+.searchbar .ho-btn { height: 48px; padding: 0 26px; border-radius: 999px; }
+.searchbar--inline { border: 1px solid var(--ho-line-2); }
+.hero .searchbar { border-color: transparent; box-shadow: 0 18px 40px -20px rgba(0, 0, 0, .6); }
+@media (max-width: 767px) {
+  .searchbar { grid-template-columns: minmax(0, 1fr) auto; border-radius: 20px; padding: 8px; }
+  .searchbar .searchbar__field:first-child { grid-column: 1 / -1; }
+  .searchbar .searchbar__field:nth-child(2) select { min-width: 0; width: 100%; }
+  .searchbar .ho-btn { height: 44px; padding: 0 20px; }
+}
+/* Smaller search boxes in the same style: header search panel, Add a business "already on the Hub?" */
+.ho-search__form--hub .ho-search__input, .add-biz__check-row .input { border-radius: 999px; padding-left: 20px; }
+.ho-search__form--hub .ho-btn, .add-biz__check-row .ho-btn { border-radius: 999px; padding-left: 24px; padding-right: 24px; }
+.add-biz__check-row .ho-btn { background: var(--ho-red); border-color: var(--ho-red); color: #fff; }
+.add-biz__check-row .ho-btn:hover { background: #C41A21; border-color: #C41A21; }
+
+/* Search page: filters on the count line, small and quiet */
+.dline--bare { display: none; }
+.dtoolbar--filters { flex-wrap: wrap; }
+.dtoolbar__filters { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; }
+.dtoolbar__filters[hidden] { display: none; }
+.fmini { display: inline-flex; align-items: center; gap: 6px; height: 34px; padding: 0 12px; border: 1px solid var(--ho-line); border-radius: 999px; background: #fff; font: 600 13px var(--ho-font-ui); color: var(--ho-ink); cursor: pointer; }
+.fmini:hover { border-color: var(--ho-ink); }
+.fmini select { -webkit-appearance: none; appearance: none; height: 100%; padding: 0 18px 0 0; border: 0; background: transparent url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='m6 9 6 6 6-6' fill='none' stroke='%23141414' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") right center / 11px no-repeat; font: inherit; color: inherit; cursor: pointer; max-width: 190px; }
+.fmini select:focus { outline: none; }
+.fmini:focus-within { border-color: var(--ho-ink); }
+.fmini--check input { margin: 0; accent-color: var(--ho-red); }
+.fmini--check:has(input:checked), .fmini:has(select option:checked:not([value=""]):not([value="relevance"])) { border-color: var(--ho-red); background: var(--ho-red-tint); color: var(--ho-red); }
+@media (max-width: 767px) {
+  .dtoolbar--filters { flex-direction: column; align-items: flex-start; }
+  .dtoolbar__filters { width: 100%; }
+  .fmini select { max-width: 150px; }
+}
+/* Homepage hero: a narrower area dropdown, more room for the search words */
+.hero .searchbar .searchbar__field:nth-child(2) select { min-width: 0; width: 170px; }
+@media (max-width: 767px) { .hero .searchbar .searchbar__field:nth-child(2) select { width: 100%; } }
+
+/* Category and area pages: the same small outlined filter style as the Search page */
+.dline .fsel select { height: 38px; padding: 0 30px 0 14px; border: 1px solid var(--ho-line); background-color: #fff; font-size: 13px; }
+.dline .fsel select:hover { border-color: var(--ho-ink); background-color: #fff; }
+.dline .fcheck { height: 38px; padding: 0 14px; border: 1px solid var(--ho-line); background: #fff; font-size: 13px; }
+.dline .fcheck:hover { border-color: var(--ho-ink); }
+.dline .fcheck:has(input:checked) { border-color: var(--ho-red); background: var(--ho-red-tint); }
+.dline .fsel:has(option:checked:not([value=""])) select { border-color: var(--ho-red); background-color: var(--ho-red-tint); color: var(--ho-red); }
+.fsearch { height: 40px; }
+@media (max-width: 767px) { .dline .fsel select { height: 42px; } .dline .fcheck { height: 40px; } }
+/* Daily Briefing calendar: Monday to Friday only (no empty weekend columns) */
+.slots--weekdays { grid-template-columns: repeat(5, minmax(0, 1fr)); }
+@media (max-width: 520px) { .slots--weekdays { grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 4px; } .slots--weekdays .slot small { font-size: 10px; } }
+
+/* Claim page (redesign, Nov 2026) */
+.sp-steps--4 { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+.sp-steps li.is-done .sp-steps__n { background: var(--ho-ok); color: #fff; }
+.sp-steps li.is-done { color: var(--ho-muted); }
+.claim-form { padding-top: 20px; }
+.claim-biz { display: grid; grid-template-columns: 52px minmax(0, 1fr) auto; gap: 14px; align-items: center; margin-bottom: 8px; padding: 16px; border-radius: var(--ho-radius-lg); background: var(--ho-soft); }
+.claim-biz__icon { display: flex; align-items: center; justify-content: center; width: 52px; height: 52px; border-radius: 14px; background: #fff; color: var(--ho-red); }
+.claim-biz__label { margin: 0 0 2px; font: 700 11px/1.2 var(--ho-font-ui); letter-spacing: .08em; text-transform: uppercase; color: var(--ho-muted); }
+.claim-biz__name { margin: 2px 0 4px; font: 700 20px/1.25 var(--ho-font-head); }
+.claim-biz__name a { color: var(--ho-ink); text-decoration: none; }
+.claim-biz .card__meta { margin: 0; }
+.claim-biz__again { margin: 0; font-size: 13px; color: var(--ho-muted); text-align: right; }
+.claim-methods { margin: 0; padding: 0; border: 0; min-width: 0; }
+.claim-methods__grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; }
+.claim-method { height: 100%; }
+.claim-method > span { display: flex; flex-direction: column; gap: 6px; }
+.claim-method__icon { display: inline-flex; align-items: center; justify-content: center; width: 38px; height: 38px; margin-bottom: 4px; border-radius: 11px; background: var(--ho-red-tint); color: var(--ho-red); }
+.claim-method .choice__title { font-size: 15px; }
+.claim-method .choice__text { font-size: 13px; line-height: 1.45; }
+.claim-method__panel { margin-top: 12px; padding: 16px; border-radius: var(--ho-radius-lg); background: var(--ho-soft); }
+.claim-method__panel[hidden] { display: none; }
+.claim-side__part { margin-top: 16px; padding-top: 16px; border-top: 1px solid var(--ho-line); }
+.claim-side__h { margin: 0 0 6px; font: 700 16px/1.3 var(--ho-font-head); }
+.claim-side .ticks { margin-bottom: 0; }
+@media (max-width: 1018px) { .claim-methods__grid { grid-template-columns: minmax(0, 1fr); } .claim-side { position: static; } }
+@media (max-width: 767px) {
+  .sp-steps--4 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .claim-biz { grid-template-columns: 44px minmax(0, 1fr); }
+  .claim-biz__icon { width: 44px; height: 44px; }
+  .claim-biz__again { grid-column: 1 / -1; text-align: left; }
+}
+
+/* Pricing page (redesign, Nov 2026) */
+.price-note { display: flex; align-items: flex-start; gap: 8px; max-width: 900px; margin: var(--ho-s5) auto 0; font-size: 14px; line-height: 1.5; color: var(--ho-muted); text-align: left; }
+.price-note .ho-icon { flex: none; margin-top: 3px; }
+.price-note p { margin: 0; }
+.compare-fold { border: 1px solid var(--ho-line); border-radius: 18px; background: #fff; }
+.compare-fold > summary { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px 20px; padding: 20px 24px; cursor: pointer; list-style: none; }
+.compare-fold > summary::-webkit-details-marker { display: none; }
+.compare-fold__title { display: block; font: 900 24px/1.2 var(--ho-font-head); color: var(--ho-ink); }
+.compare-fold__sub { display: block; margin-top: 4px; font-size: 14px; color: var(--ho-muted); }
+.compare-fold__btn { display: inline-flex; align-items: center; gap: 8px; height: 40px; padding: 0 18px; border: 1px solid var(--ho-ink); border-radius: 999px; font: 700 14px var(--ho-font-ui); color: var(--ho-ink); }
+.compare-fold__btn::after { content: ""; width: 9px; height: 9px; border-right: 2px solid currentColor; border-bottom: 2px solid currentColor; transform: rotate(45deg) translate(-2px, -2px); transition: transform .2s ease; }
+.compare-fold[open] .compare-fold__btn::after { transform: rotate(-135deg) translate(-2px, -2px); }
+.compare-fold[open] .compare-fold__btn { font-size: 0; gap: 0; padding: 0 16px; }
+.compare-fold[open] .compare-fold__btn::before { content: "Hide the comparison"; font-size: 14px; margin-right: 8px; }
+.compare-fold .compare-wrap { margin: 0 24px 24px; }
+.bill-points { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 24px 32px; margin: 0; padding: 0; list-style: none; }
+.bill-points li { display: grid; grid-template-columns: 44px minmax(0, 1fr); gap: 14px; align-items: start; }
+.bill-points__icon { display: flex; align-items: center; justify-content: center; width: 44px; height: 44px; border-radius: 12px; background: #fff; color: var(--ho-red); box-shadow: 0 6px 16px -12px rgba(20, 20, 20, .4); }
+.bill-points h3 { margin: 2px 0 4px; font: 700 16px/1.3 var(--ho-font-head); color: var(--ho-ink); }
+.bill-points p { margin: 0; font-size: 14px; line-height: 1.5; color: #555; }
+.faq--2col { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0 32px; align-items: start; }
+@media (max-width: 1018px) { .bill-points { grid-template-columns: repeat(2, minmax(0, 1fr)); } .faq--2col { grid-template-columns: minmax(0, 1fr); } }
+@media (max-width: 767px) {
+  .bill-points { grid-template-columns: minmax(0, 1fr); gap: 18px; }
+  .compare-fold > summary { padding: 16px; }
+  .compare-fold__title { font-size: 20px; }
+  .compare-fold .compare-wrap { margin: 0 12px 16px; }
+}
+
+/* Claim options as slim rows (radio, icon, title and one line); the chosen one opens its details right below */
+.claim-methods__list { display: grid; gap: 8px; }
+.claim-methods__list .claim-method { display: flex; align-items: center; gap: 14px; padding: 14px 16px; }
+.claim-methods__list .claim-method input { margin: 0; }
+.claim-methods__list .claim-method > span { display: grid; grid-template-columns: 36px minmax(0, 1fr); column-gap: 12px; row-gap: 2px; align-items: center; }
+.claim-methods__list .claim-method__icon { grid-row: 1 / span 2; width: 36px; height: 36px; margin: 0; border-radius: 10px; }
+.claim-methods__list .claim-method .choice__title { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; font-size: 15px; }
+.claim-methods__list .claim-method .choice__title .badge { font-size: 10px; padding: 2px 7px; background: #E7F3EC; color: var(--ho-ok); }
+.claim-methods__list .claim-method .choice__text { font-size: 13px; line-height: 1.45; color: var(--ho-muted); }
+.claim-methods__list .claim-method__panel { margin: 0 0 4px; border-radius: 0 0 var(--ho-radius-lg) var(--ho-radius-lg); }
+@media (max-width: 767px) { .claim-methods__list .claim-method { align-items: flex-start; } .claim-methods__list .claim-method > span { grid-template-columns: minmax(0, 1fr); } .claim-methods__list .claim-method__icon { display: none; } }
+
+/* Claim option panels: even spacing, small labels, compact tick list */
+.claim-method__panel .stack { display: flex; flex-direction: column; gap: 14px; }
+.claim-method__panel .field { margin: 0; }
+.claim-method__panel .field > label, .claim-method__panel .field__label, .claim-method__panel legend { display: block; margin: 0 0 6px; padding: 0; font: 700 14px/1.3 var(--ho-font-ui); color: var(--ho-ink); }
+.claim-method__panel legend .opt { font-weight: 500; color: var(--ho-muted); }
+.claim-method__panel fieldset { margin: 0; padding: 0; border: 0; min-width: 0; }
+.claim-method__panel .check-list { gap: 6px; }
+.claim-method__panel .check-list label { font-size: 14px; gap: 8px; }
+.claim-method__panel .check-list input { width: 18px; height: 18px; accent-color: var(--ho-red); }
+.claim-method__panel .input, .claim-method__panel .select { background: #fff; }
+.claim-method__panel .help { margin: 6px 0 0; font-size: 13px; }
+.claim-method__panel > .stack > p.small { margin: 0; }
+
+/* Account menu (Nov 2026): lighter. The current page is a soft red row with a red edge (not a black block),
+   "+ Add" is an outlined button with room below it, and long labels line up with their icon */
+.dash-nav { padding: 18px 14px; }
+.dash-nav__who { padding-bottom: 14px; margin-bottom: 14px; }
+.dash-nav .dash-add { margin: 0 0 14px; }
+.dash-nav .add-menu > summary { background: #fff; color: var(--ho-red); border: 1.5px solid var(--ho-red); box-shadow: none; }
+.dash-nav .add-menu > summary:hover, .dash-nav .add-menu[open] > summary { background: var(--ho-red); color: #fff; }
+.dash-nav ul { display: flex; flex-direction: column; gap: 2px; }
+.dash-nav a { position: relative; align-items: flex-start; padding: 9px 12px; border-radius: 10px; font: 600 14.5px/1.35 var(--ho-font-ui); color: #3A3A3A; }
+.dash-nav a .ho-icon { flex: none; margin-top: 1px; color: var(--ho-muted); }
+.dash-nav a:hover .ho-icon { color: var(--ho-ink); }
+.dash-nav a[aria-current] { background: var(--ho-red-tint); color: var(--ho-red); }
+.dash-nav a[aria-current] .ho-icon { color: var(--ho-red); }
+.dash-nav a[aria-current]::before { content: ""; position: absolute; left: -14px; top: 8px; bottom: 8px; width: 3px; border-radius: 0 3px 3px 0; background: var(--ho-red); }
+.dash-nav a .num { margin-top: 0; }
+.dash-nav hr { margin: 12px 0; }
+@media (max-width: 1018px) { .dash-nav a[aria-current]::before { display: none; } .dash-nav a { align-items: center; } }
+.dash-nav a[aria-current]::before { display: none; }
+/* One divider above the declaration and buttons (the last step already draws its line) */
+.form-step + .add-biz__submit { border-top: 0; padding-top: 18px; }
+.add-biz__form .form-step + .add-biz__submit { border-top: 1px solid var(--ho-line); }
+/* Pricing: labels, comparison and billing sit closer together */
+.page-pricing section[aria-labelledby="fb-labels"] { padding-bottom: 0; }
+.page-pricing section[aria-labelledby="compare-title"] { padding-top: 32px; padding-bottom: 0; }
+.page-pricing section[aria-labelledby="compare-title"] + section { padding-top: 48px; }
+
+/* ==========================================================================
+   One shape system for every Hub page (Nov 2026 audit). Header and footer keep the harrowonline.org look.
+   Buttons, chips and filters: pill. Form fields: 10px. Cards and panels: 14px. Button heights: 36 / 44 / 52.
+   ========================================================================== */
+:root { --hub-r-field: 10px; --hub-r-card: 14px; }
+main .ho-btn, .add-menu .ho-btn, .dash .ho-btn { border-radius: 999px; }
+main .ho-btn--sm, .dash .ho-btn--sm { height: 36px; min-height: 36px; padding-top: 0; padding-bottom: 0; }
+main .ho-btn:not(.ho-btn--sm):not(.ho-btn--lg) { min-height: 44px; }
+main .ho-btn--lg { min-height: 52px; }
+main .input, main .select, main .textarea { border-radius: var(--hub-r-field); }
+main .input-group .input { border-radius: 0 var(--hub-r-field) var(--hub-r-field) 0; }
+main .input-group__addon { border-radius: var(--hub-r-field) 0 0 var(--hub-r-field); }
+main .input-group--end .input { border-radius: var(--hub-r-field) 0 0 var(--hub-r-field); }
+main .input-group--end .input-group__addon { border-radius: 0 var(--hub-r-field) var(--hub-r-field) 0; }
+main .dropzone { border-radius: var(--hub-r-field); }
+main .panel, main .form-card, main .plan, main .faq details, main .notice, main .limited-note { border-radius: var(--hub-r-card); }
+/* Detail page titles: one size (business, event, class and offer pages) */
+.offer-simple__title { font-size: 34px; line-height: 1.2; }
+@media (max-width: 767px) { .offer-simple__title { font-size: 26px; } }
+/* Area dropdown wide enough for the longest area name ("Sudbury Hill and Roxeth") in full */
+.searchbar .searchbar__field:nth-child(2) select, .hero .searchbar .searchbar__field:nth-child(2) select { width: 272px; min-width: 0; }
+@media (max-width: 767px) { .searchbar .searchbar__field:nth-child(2) select, .hero .searchbar .searchbar__field:nth-child(2) select { width: 100%; } }
+/* Narrow hero column (1019-1300px): search words on their own row, then area and the button */
+@media (min-width: 1019px) and (max-width: 1300px) {
+  .hero .searchbar { grid-template-columns: minmax(0, 1fr) auto; border-radius: 24px; padding: 8px; }
+  .hero .searchbar .searchbar__field:first-child { grid-column: 1 / -1; }
+  .hero .searchbar .searchbar__field:nth-child(2) select { width: 100%; }
+}
+/* Phones: search words, then the area on a full row, then the button */
+@media (max-width: 520px) {
+  .searchbar { grid-template-columns: minmax(0, 1fr); }
+  .searchbar .ho-btn { width: 100%; justify-content: center; }
+}
+/* Phones: offer tiles all the same height; the business name wraps instead of being cut off; the subscriber lock
+   is a small round icon in the corner */
+@media (max-width: 767px) {
+  .offer-tiles .offer-tile { justify-content: flex-start; padding: 14px 12px; }
+  .offer-tile__biz { white-space: normal; overflow: visible; text-overflow: clip; font-size: 12.5px; line-height: 1.35; }
+  .offer-tile__lock { position: absolute; top: 10px; right: 10px; width: 24px; height: 24px; margin: 0; padding: 0; justify-content: center; border-radius: 50%; }
+  .offer-tile__lock-text { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+  .offer-tile:has(.offer-tile__lock) .offer-tile__value { padding-right: 26px; }
+  .page-search .searchbar--inline { grid-template-columns: minmax(0, 1fr); }
+}
+@media (max-width: 520px) { .page-search .searchbar--inline .ho-btn { width: 100%; justify-content: center; } .page-search .searchbar__field:nth-child(2) select { width: 100%; } }
+.offer-tiles { align-items: stretch; }
+.offer-tiles > .offer-tile { height: 100%; }
+
+/* ==========================================================================
+   What's On month view (redesign, Nov 2026): list-view top line, calendar as a soft rounded card, events as dot lines
+   ========================================================================== */
+.month-line { margin-top: 0; }
+.month-line .seg { margin-left: auto; }
+.cal { border: 1px solid var(--ho-line); border-radius: 18px; box-shadow: 0 16px 36px -30px rgba(20, 20, 20, .45); }
+.cal__head { padding: 18px 20px; border-bottom: 1px solid var(--ho-line); background: #fff; }
+.cal__head h2 { font: 700 24px/1.2 var(--ho-font-head); }
+.cal__nav a { width: 38px; height: 38px; border-color: var(--ho-line-2); }
+.cal__dow { padding: 12px 10px 8px; background: #fff; border-bottom: 1px solid var(--ho-line); font: 700 11px/1 var(--ho-font-ui); letter-spacing: .08em; color: var(--ho-muted); text-align: left; }
+.cal__day { min-height: 128px; padding: 8px; background: #fff; }
+.cal__day.is-out { background: var(--ho-soft-2); }
+.cal__day.is-out .cal__ev { opacity: .55; }
+.cal__num { width: 26px; height: 26px; margin-bottom: 4px; font: 700 13px/1 var(--ho-font-ui); color: var(--ho-ink); }
+.cal__day.is-today { background: #FFFAFA; }
+.cal__day.is-today .cal__num { background: var(--ho-red); color: #fff; }
+.cal__ev { position: relative; display: block; margin-top: 2px; padding: 4px 6px 4px 16px; border: 0; border-left: 0; border-radius: 6px; background: none; font: 600 12px/1.3 var(--ho-font-ui); color: var(--ho-ink); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.cal__ev::before { content: ""; position: absolute; left: 6px; top: 50%; width: 6px; height: 6px; margin-top: -3px; border-radius: 50%; background: var(--ho-ink); }
+.cal__ev--featured::before { background: var(--ho-red); }
+.cal__ev--class::before { background: #9A9A9A; }
+.cal__ev--featured { background: var(--ho-red-tint); }
+.cal__ev:hover { background: var(--ho-soft); color: var(--ho-ink); }
+.cal__ev--featured:hover { background: #FBDCDE; }
+.cal__ev-time { color: var(--ho-muted); font-weight: 600; }
+.cal__ev[hidden], .cal__more[hidden], .cal__agenda .day-group[hidden] { display: none; }
+.cal__more { margin: 4px 0 0 6px; font-size: 12px; }
+.cal-legend i { width: 8px; height: 8px; border-radius: 50%; }
+@media (max-width: 767px) {
+  .month-line { flex-direction: row; flex-wrap: wrap; align-items: center; }
+  .month-line .fline__form { flex: 1 1 100%; }
+  .month-line .seg { margin-left: 0; }
+  .cal { border-radius: 14px; }
+  .cal__head { padding: 14px; }
+  .cal__head h2 { font-size: 20px; }
+  .cal__agenda .cal__ev { padding-left: 18px; white-space: normal; }
+}
+@media (max-width: 767px) { .offer-tiles .offer-tile__lock { left: auto; right: 10px; top: 10px; } }
+/* Header on smaller screens: room above and below the Hub logo */
+@media (max-width: 1018px) { .ho-header__inner { min-height: 68px; } .ho-header__logo.ho-header__logo--hub img { height: 48px; } }
+@media (max-width: 767px) { .ho-header__inner { min-height: 64px; } .ho-header__logo.ho-header__logo--hub img { height: 44px; } }
+@media (max-width: 420px) { .ho-header__inner { min-height: 64px; } .ho-header__logo.ho-header__logo--hub img { height: 44px; } }
+/* Search page filters on phones: a tidy 2 x 2 grid (category and sort, then website and phone) */
+@media (max-width: 767px) {
+  .dtoolbar__filters { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; width: 100%; }
+  .dtoolbar__filters .fmini { width: 100%; min-width: 0; justify-content: center; height: 38px; }
+  .dtoolbar__filters .fmini select { width: 100%; max-width: none; }
+  .dtoolbar__filters > :nth-child(1) { grid-column: 1; grid-row: 1; justify-content: flex-start; }
+  .dtoolbar__filters > :nth-child(4) { grid-column: 2; grid-row: 1; justify-content: flex-start; }
+  .dtoolbar__filters > :nth-child(2) { grid-column: 1; grid-row: 2; }
+  .dtoolbar__filters > :nth-child(3) { grid-column: 2; grid-row: 2; }
+}
+
+/* Phone menu: Businesses expands in place (arrow on the same line; smaller, indented sub-links, no bullets) */
+#ho-menu-mobile .menu-item-has-children { display: flex; flex-wrap: wrap; align-items: center; }
+#ho-menu-mobile .menu-item-has-children > a { flex: 1 1 auto; }
+#ho-menu-mobile .ho-nav__toggle { display: inline-flex; align-items: center; justify-content: center; width: 40px; height: 40px; margin: 0; padding: 0; border: 0; border-radius: 50%; background: var(--ho-soft); color: var(--ho-ink); cursor: pointer; }
+#ho-menu-mobile .ho-nav__toggle .ho-icon { width: 18px; height: 18px; transition: transform .2s ease; }
+#ho-menu-mobile .is-open > .ho-nav__toggle .ho-icon { transform: rotate(180deg); }
+#ho-menu-mobile .sub-menu { position: static; display: none; flex: 1 1 100%; width: 100%; margin: 0 0 10px; padding: 0 0 0 14px; list-style: none; border: 0; border-left: 2px solid var(--ho-red-tint); border-radius: 0; background: none; box-shadow: none; opacity: 1; visibility: visible; transform: none; }
+#ho-menu-mobile .menu-item-has-children.is-open > .sub-menu { display: block; }
+#ho-menu-mobile .sub-menu li { margin: 0; border: 0; list-style: none; }
+#ho-menu-mobile .sub-menu li::marker { content: ""; }
+#ho-menu-mobile .sub-menu a { display: flex; align-items: center; gap: 6px; padding: 9px 4px; font: 600 15px/1.3 var(--ho-font-ui); color: #3A3A3A; }
+#ho-menu-mobile .sub-menu a:hover { color: var(--ho-red); }
+#ho-menu-mobile .sub-menu__cta a { color: var(--ho-red); }
+#ho-menu-mobile .sub-menu__cta .ho-icon { width: 16px; height: 16px; }
+/* Classes filters on phones: area on its own row, then age and day side by side */
+@media (max-width: 767px) {
+  .fline__form:has(#c-area) { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; width: 100%; }
+  .fline__form:has(#c-area) .fsel, .fline__form:has(#c-area) .fsel select { width: 100%; min-width: 0; }
+  .fline__form:has(#c-area) .fsel:has(#c-area) { grid-column: 1 / -1; grid-row: 1; }
+  .fline__form:has(#c-area) .fpanel__clear { grid-column: 1 / -1; }
+  .fline__form:has(#o-area) { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; width: 100%; }
+  .fline__form:has(#o-area) .fsel, .fline__form:has(#o-area) .fsel select { width: 100%; min-width: 0; }
+}
+
+/* Phone menu: no line under the last item */
+#ho-menu-mobile > li:last-child { border-bottom: 0; }
+/* Selected chip: the count stays readable on the dark pill */
+.chip[aria-current] .count, .chip.is-active .count { color: rgba(255, 255, 255, .78); }
+/* Account page heads with badges: name and badges on one centred line */
+.dash-head p:has(.badge) { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 8px; }
+.dash-head p:has(.badge) .badge { margin: 0; }
+
+/* Buttons match the harrowonline.org header and footer (Nov 2026): 6px corners, bold 16px, 44px tall (small 36, large 52) */
+main .ho-btn, .add-menu .ho-btn, .dash .ho-btn, .nl-band .ho-btn, .ho-drawer .ho-btn { border-radius: var(--ho-radius-sm, 6px); }
+.searchbar .ho-btn, .page-search .searchbar--inline .ho-btn { height: 44px; padding: 0 20px; border-radius: var(--ho-radius-sm, 6px); }
+.searchbar, .page-search .searchbar--inline { border-radius: 12px; }
+.searchbar .searchbar__field:nth-child(2), .page-search .searchbar__field:nth-child(2), .searchbar .searchbar__field:nth-child(2) select, .page-search .searchbar__field:nth-child(2) select { border-radius: 8px; }
+.searchbar .searchbar__field:first-child input, .page-search .searchbar__field:first-child input { border-radius: 8px; height: 44px; }
+.compare-fold__btn { border-radius: var(--ho-radius-sm, 6px); height: 44px; padding: 0 20px; font-size: 16px; }
+.ho-search__form--hub .ho-btn, .add-biz__check-row .ho-btn { border-radius: var(--ho-radius-sm, 6px); }
+.ho-search__form--hub .ho-search__input, .add-biz__check-row .input { border-radius: var(--hub-r-field, 10px); }
+@media (max-width: 767px) { .searchbar, .page-search .searchbar--inline { border-radius: 12px; } }
+
+/* Newsletter sign-up buttons: the standard 44px height, with the email box to match */
+.nl-band__row .ho-btn, .nl-band__row .input { height: 44px; min-height: 44px; }
+
+/* Business page buttons on phones: Call on its own row, the rest share the next row in equal widths */
+@media (max-width: 767px) {
+  .profile-head--card .profile-head__actions { display: grid; grid-auto-flow: column; grid-auto-columns: minmax(0, 1fr); grid-template-columns: none; gap: 8px; }
+  .profile-head--card .profile-head__actions > .ho-btn--primary { grid-column: 1 / -1; grid-row: 1; }
+  .profile-head--card .profile-head__actions > .ho-btn:not(.ho-btn--primary) { grid-row: 2; min-width: 0; padding: 0 8px; font-size: 14px; gap: 6px; white-space: nowrap; }
+  .profile-head--card .profile-head__actions .ho-btn .ho-icon { width: 16px; height: 16px; flex: none; }
+}
+@media (max-width: 767px) {
+  .profile-head--card .profile-head__actions { grid-auto-flow: row; grid-template-columns: repeat(2, minmax(0, 1fr)); grid-auto-columns: auto; }
+  .profile-head--card .profile-head__actions > .ho-btn, .profile-head--card .profile-head__actions > .ho-btn--primary { grid-column: auto; grid-row: auto; padding: 0 10px; font-size: 14px; }
+  .profile-head--card .profile-head__actions:has(> :nth-child(3)):not(:has(> :nth-child(4))) > :first-child { grid-column: 1 / -1; }
+}
+@media (max-width: 767px) { .profile-head--card .profile-head__actions > .ho-btn:not(.ho-btn--primary) { grid-row: auto; padding: 0 10px; } }
+
+/* Business page actions on phones: round icons with a small label underneath (Call in red); desktop keeps buttons */
+@media (max-width: 767px) {
+  .profile-head .profile-head__actions, .profile-head--card .profile-head__actions { display: flex; flex-wrap: nowrap; justify-content: flex-start; gap: 18px; margin-top: 8px; }
+  .profile-head .profile-head__actions > .ho-btn, .profile-head--card .profile-head__actions > .ho-btn, .profile-head--card .profile-head__actions > .ho-btn:not(.ho-btn--primary), .profile-head--card .profile-head__actions > .ho-btn--primary { display: inline-flex; flex-direction: column; align-items: center; gap: 6px; width: auto; min-width: 0; height: auto; min-height: 0; padding: 0; border: 0; border-radius: 0; background: none; box-shadow: none; color: var(--ho-ink); font: 600 12px/1.2 var(--ho-font-ui); grid-column: auto; grid-row: auto; white-space: nowrap; }
+  .profile-head__actions > .ho-btn .ho-icon { box-sizing: content-box; width: 20px; height: 20px; padding: 13px; border-radius: 50%; background: var(--ho-soft); color: var(--ho-ink); border: 1px solid var(--ho-line); transition: background-color .15s ease; }
+  .profile-head__actions > .ho-btn--primary .ho-icon { background: var(--ho-red); border-color: var(--ho-red); color: #fff; }
+  .profile-head__actions > .ho-btn:hover, .profile-head__actions > .ho-btn:focus-visible { background: none; color: var(--ho-ink); }
+  .profile-head__actions > .ho-btn:hover .ho-icon { background: #EAE9E5; }
+  .profile-head__actions > .ho-btn--primary:hover .ho-icon { background: #C41A21; }
+}
+/* Breadcrumbs never scroll sideways: they wrap onto a second line on narrow screens */
+@media (max-width: 767px) { .crumbs ol { flex-wrap: wrap; overflow: visible; white-space: normal; row-gap: 2px; } .crumbs li { white-space: nowrap; } .crumbs li:last-child { white-space: normal; } }
+/* Homepage featured cards: status as a small tick after the name (hover or screen reader: "Checked by Harrow Online") */
+.card__tick { display: inline-flex; align-items: center; justify-content: center; width: 18px; height: 18px; margin-left: 6px; border-radius: 50%; background: var(--ho-ok); color: #fff; vertical-align: 2px; cursor: help; }
+.card__tick .ho-icon { width: 11px; height: 11px; stroke-width: 3; }
+
+/* Status tick tooltip: a small dark label above the tick on hover or keyboard focus */
+.card__tick { position: relative; outline: none; }
+.card__tick::after { content: attr(data-tip); position: absolute; left: 50%; bottom: calc(100% + 8px); z-index: 20; transform: translate(-50%, 4px); padding: 6px 10px; border-radius: 6px; background: var(--ho-ink); color: #fff; font: 600 12px/1.2 var(--ho-font-ui); letter-spacing: 0; text-transform: none; white-space: nowrap; pointer-events: none; opacity: 0; visibility: hidden; transition: opacity .15s ease, transform .15s ease; }
+.card__tick::before { content: ""; position: absolute; left: 50%; bottom: calc(100% + 3px); z-index: 20; transform: translate(-50%, 4px); border: 5px solid transparent; border-top-color: var(--ho-ink); border-bottom: 0; pointer-events: none; opacity: 0; visibility: hidden; transition: opacity .15s ease, transform .15s ease; }
+.card__tick:hover::after, .card__tick:focus-visible::after, .card__tick:hover::before, .card__tick:focus-visible::before { opacity: 1; visibility: visible; transform: translate(-50%, 0); }
+.card__tick:focus-visible { box-shadow: 0 0 0 2px #fff, 0 0 0 4px var(--ho-ok); }
+
+/* Three status icons (Nov 2026): verified (green), checked by Harrow Online (blue), imported from public data (grey) */
+.card__tick--verified { background: var(--ho-ok); }
+.card__tick--checked { background: #1F6FD1; }
+.card__tick--imported { background: #E4E3DF; color: #6B6B6B; }
+.card__tick--verified .ho-icon { width: 12px; height: 12px; }
+.card__tick--imported .ho-icon { width: 12px; height: 12px; }
+.card__tick--checked:focus-visible { box-shadow: 0 0 0 2px #fff, 0 0 0 4px #1F6FD1; }
+.card__tick--imported:focus-visible { box-shadow: 0 0 0 2px #fff, 0 0 0 4px #9A9A9A; }
+/* Tooltip only takes space while shown (no sideways scroll); on phones it opens to the left of the icon */
+.card__tick::after, .card__tick::before { display: none; }
+.card__tick:hover::after, .card__tick:focus-visible::after, .card__tick:hover::before, .card__tick:focus-visible::before { display: block; }
+@media (max-width: 767px) { .card__tick::after { left: auto; right: -8px; transform: none; } .card__tick:hover::after, .card__tick:focus-visible::after { transform: none; } }
+.status-key__name { display: inline-flex; align-items: center; gap: 10px; font: 700 15px/1.3 var(--ho-font-ui); color: var(--ho-ink); }
+.status-key__name .card__tick { margin-left: 0; width: 24px; height: 24px; flex: none; }
+.status-key__name .card__tick .ho-icon { width: 13px; height: 13px; }
+
+/* Status icons, final look: verified = the green verified badge itself; checked = Harrow Online red with a white tick; imported = grey globe */
+.card__tick--verified { width: 20px; height: 20px; background: none; color: var(--ho-ok); }
+.card__tick--verified .ho-icon { width: 20px; height: 20px; }
+.card__tick--checked { background: var(--ho-red); color: #fff; }
+.card__tick--checked:focus-visible { box-shadow: 0 0 0 2px #fff, 0 0 0 4px var(--ho-red); }
+.card__tick--verified:focus-visible { box-shadow: 0 0 0 2px var(--ho-ok); }
+/* Business page: the icon after the name is a little bigger */
+.profile-head__title .card__tick { width: 26px; height: 26px; margin-left: 10px; vertical-align: 4px; }
+.profile-head__title .card__tick .ho-icon { width: 15px; height: 15px; }
+.profile-head__title .card__tick--verified { width: 28px; height: 28px; }
+.profile-head__title .card__tick--verified .ho-icon { width: 28px; height: 28px; }
+.profile-head__title .card__tick::after { font-family: var(--ho-font-ui); }
+.profile-head__main > .cluster:empty { display: none; }
+@media (max-width: 767px) { .profile-head__title .card__tick { width: 22px; height: 22px; vertical-align: 3px; } .profile-head__title .card__tick--verified, .profile-head__title .card__tick--verified .ho-icon { width: 24px; height: 24px; } }
+.status-key__name .card__tick--verified, .status-key__name .card__tick--verified .ho-icon { width: 24px; height: 24px; }
+
+/* Status icons (18 Nov 2026): sit on the name's middle line; above the whole-card link so the hover name shows on cards and rows */
+.card__tick { z-index: 2; vertical-align: middle; top: -.08em; }
+.card__tick:hover, .card__tick:focus-visible { z-index: 5; }
+.profile-head__title .card__tick { vertical-align: middle; top: -.06em; }
+/* Labels: one shape for every label pill (Featured, Business of the Week, plan flags, offer lock) */
+.botw { padding: 3px 8px; gap: 4px; border-radius: 4px; font: 700 11px/1.3 var(--ho-font-ui); text-transform: uppercase; letter-spacing: .06em; }
+.botw .ho-icon { width: 13px; height: 13px; }
+.plan__flag { border-radius: 4px; }
+@media (min-width: 768px) { .offer-tile__lock { border-radius: 4px; } }
+
+/* Status icon hover name: hub.js (6h) sets --tip-x so the label stays inside its card; the arrow stays on the icon */
+.card__tick::after { left: 50%; right: auto; transform: translate(calc(-50% + var(--tip-x, 0px)), 4px); }
+.card__tick:hover::after, .card__tick:focus-visible::after { transform: translate(calc(-50% + var(--tip-x, 0px)), 0); }
+@media (max-width: 767px) {
+  .card__tick::after { left: 50%; right: auto; transform: translate(calc(-50% + var(--tip-x, 0px)), 4px); }
+  .card__tick:hover::after, .card__tick:focus-visible::after { transform: translate(calc(-50% + var(--tip-x, 0px)), 0); }
+}
+
+/* Name + status icon: the last word and the icon never split across lines; in a link the link's focus shows the name */
+.name-end { white-space: nowrap; }
+a:focus-visible .card__tick::after, a:focus-visible .card__tick::before { display: block; opacity: 1; visibility: visible; }
+a:focus-visible .card__tick::after { transform: translate(calc(-50% + var(--tip-x, 0px)), 0); }
+a:focus-visible .card__tick::before { transform: translate(-50%, 0); }
+
+/* Status icons on phones (18 Nov 2026): a tap shows the name (hub.js 6h); a key link beside the count */
+.card__tick.is-tip::after, .card__tick.is-tip::before { display: block; opacity: 1; visibility: visible; }
+.card__tick.is-tip::after { transform: translate(calc(-50% + var(--tip-x, 0px)), 0); }
+.card__tick.is-tip::before { transform: translate(-50%, 0); }
+.dtoolbar__lead { display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 14px; min-width: 0; }
+.dtoolbar__key { display: inline-flex; align-items: center; gap: 5px; font: 600 13px/1.3 var(--ho-font-ui); color: var(--ho-muted); text-decoration: underline; text-underline-offset: 3px; text-decoration-color: var(--ho-line-2); }
+.dtoolbar__key:hover { color: var(--ho-red); text-decoration-color: currentColor; }
+.dtoolbar__key .ho-icon { width: 15px; height: 15px; align-self: center; }
+
+/* ==========================================================================
+   Account pages: sign in, register, forgot password (redesign, Nov 2026)
+   One white card (14px, line border, soft shadow) on the soft page colour, a short "why join" column beside it
+   ========================================================================== */
+.authx { display: grid; grid-template-columns: minmax(0, 460px) minmax(0, 340px); justify-content: center; align-items: start; gap: 48px; padding: 56px var(--ho-gutter) 80px; background: var(--ho-soft-2); border-top: 1px solid var(--ho-line); }
+.authx--wide { grid-template-columns: minmax(0, 560px) minmax(0, 340px); }
+.authx__card { padding: 32px; border: 1px solid var(--ho-line); border-radius: 14px; background: #fff; box-shadow: 0 16px 36px -30px rgba(20, 20, 20, .45); }
+.authx__title { position: relative; margin: 0 0 8px; padding-top: 16px; font-size: 30px; line-height: 1.15; letter-spacing: -0.02em; }
+.authx__title::before { content: ""; position: absolute; left: 0; top: 0; width: 44px; height: 5px; border-radius: 3px; background: var(--ho-red); }
+.authx__lead { margin: 0 0 24px; color: var(--ho-muted); }
+.authx__card .form > .ho-btn--block { margin-top: 4px; }
+.authx__foot { display: grid; gap: 6px; margin-top: 24px; padding-top: 20px; border-top: 1px solid var(--ho-line); text-align: center; font: 600 15px/1.5 var(--ho-font-ui); }
+.authx__foot .help { font-weight: 400; }
+.authx__perks { padding-top: 8px; color: #3A3A3A; }
+.authx__eyebrow { margin: 0 0 10px; font: 700 12px/1.3 var(--ho-font-ui); letter-spacing: .08em; text-transform: uppercase; color: var(--ho-red); }
+.authx__perks-title { margin: 0 0 10px; font-size: 24px; line-height: 1.25; }
+.authx__perks > p { margin: 0; line-height: 1.6; }
+.authx__ticks { margin-top: 20px; }
+.authx__ticks li { margin-bottom: 12px; }
+@media (max-width: 900px) {
+  .authx, .authx--wide { grid-template-columns: minmax(0, 1fr); gap: 28px; padding: 24px 16px 48px; }
+  .authx__card { max-width: 560px; width: 100%; margin: 0 auto; padding: 24px 20px; }
+  .authx__perks { max-width: 560px; width: 100%; margin: 0 auto; padding: 0 4px; }
+  .authx__title { font-size: 26px; }
+  .authx__perks-title { font-size: 20px; }
+}
+
+/* Phones (18 Nov 2026): featured event cards stay inside the 16px page gutter like every other card (no pull-out) */
+@media (max-width: 767px) {
+  .event-row--featured { margin-left: 0; margin-right: 0; padding-left: 14px; padding-right: 14px; }
+}
+
+/* Header on phones and tablets (18 Nov 2026): the menu and search icons line up with the page's 16px edge
+   (their 40px tap areas reach into the gutter instead), and the logo sits in the true centre */
+@media (max-width: 1018px) {
+  .ho-header__inner { display: grid; grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr); }
+  .ho-header__burger { justify-self: start; margin-left: -9px; }
+  .ho-header__logo { grid-column: 2; justify-self: center; }
+  .ho-header__actions { grid-column: 3; justify-self: end; margin-right: -9px; }
+}

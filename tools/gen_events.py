@@ -42,15 +42,15 @@ def plain(s):
     return html.unescape(re.sub(r"<[^>]+>", "", s or ""))
 
 
-SAMPLE = f'<span class="badge badge--sample" title="Made-up content for the preview. Removed before launch.">{I("alert")}Sample</span>'
+SAMPLE = ""   # 18 Nov 2026: no "Sample" tag anywhere (was a yellow Sample badge)
 
 
 def event_badges(x, extra=""):
     b = []
-    if x.get("featured"):
+    if x.get("sample") and SAMPLE:
+        b.append(SAMPLE)   # a sample shows only Sample, never Featured (18 Nov 2026)
+    elif x.get("featured"):
         b.append(f'<span class="badge badge--featured">{I("star")}Featured</span>')
-    elif x.get("sample"):
-        b.append(SAMPLE)   # Sample only where no Featured badge shows
     return "".join(b) + extra
 
 
@@ -419,8 +419,8 @@ def cal_ev(x):
         cls += " cal__ev--featured"
     elif x["kind"] == "class":
         cls += " cal__ev--class"
-    label = f'{x["time"].split(" to ")[0]} {x["title"]}'
-    return f'<a class="{cls}" href="{x["href"]}" title="{x["time"]}: {x["title"]}">{label}</a>'
+    label = f'<span class="cal__ev-time">{x["time"].split(" to ")[0]}</span> {x["title"]}'
+    return f'<a class="{cls}" href="{x["href"]}" title="{x["time"]}: {x["title"]}"{_filters_attrs(x)}>{label}</a>'
 
 
 def build_month():
@@ -483,12 +483,10 @@ body: page-events
 </header>
 
 <div class="ho-container">
-  <div class="toolbar">
-    <form class="cluster" action="/events-month.html" method="get">
-      <label class="ho-sr" for="m-area">Area</label>
-      <select class="select select--sm" id="m-area" name="area" style="width:auto"><option value="">All of Harrow</option>{{{{> gen-area-options}}}}</select>
-      <label class="ho-sr" for="m-cat">Category</label>
-      <select class="select select--sm" id="m-cat" name="cat" style="width:auto">
+  <div class="fline month-line">
+    <form class="fline__form" action="/events-month.html" method="get" aria-label="Filter the calendar" data-autofilter data-month-filters>
+      <label class="fsel"><span class="ho-sr">Area</span><select id="m-area" name="area"><option value="">All of Harrow</option>{{{{> gen-area-options}}}}</select></label>
+      <label class="fsel"><span class="ho-sr">Category</span><select id="m-cat" name="cat">
         <option value="">All categories</option>
         <option value="classes">Classes and activities</option>
         <option value="family">Family</option>
@@ -497,8 +495,9 @@ body: page-events
         <option value="nightlife">Nightlife</option>
         <option value="community">Community</option>
         <option value="arts">Arts</option>
-      </select>
-      <button class="ho-btn ho-btn--dark ho-btn--sm" type="submit">Apply</button>
+      </select></label>
+      <button class="ho-btn ho-btn--dark ho-btn--sm fpanel__go" type="submit">Apply</button>
+      <a class="fpanel__clear" href="/events-month.html" data-filter-clear hidden>Clear</a>
     </form>
     <nav class="seg" aria-label="View">
       <a href="/events.html">{I('list')}List</a>
@@ -506,7 +505,7 @@ body: page-events
     </nav>
   </div>
 
-  <div class="cal">
+  <div class="cal" data-month-cal>
     <div class="cal__head">
       <h2>November 2026</h2>
       <div class="cal__nav">
@@ -786,7 +785,7 @@ def class_href(title):
 def class_card(c):
     """Card for "More classes" (same look as the event cards)."""
     day, tm, _s, title, venue, area, price, age, ic, feat, ctype = c
-    badges = ("" if title in CLASS_REAL else SAMPLE) + (f'<span class="badge badge--featured">{I("star")}Featured</span>' if feat else "")
+    badges = SAMPLE if (title not in CLASS_REAL and SAMPLE) else (f'<span class="badge badge--featured">{I("star")}Featured</span>' if feat else "")
     return f'''<article class="card event-card">
         <div class="card__badges">{badges}</div>
         {class_media(title, ic)}
@@ -824,7 +823,7 @@ def class_page(c, claimed):
     more = "".join(class_card(x) for x in others[:3])
     share_text = quote(f"{plain(title)}, every {DAYNAMES[day]} {url}", safe="")
     real = CLASS_REAL.get(title)
-    tags = ("" if real else SAMPLE) + (f'<span class="badge badge--featured">{I("star")}Featured</span>' if feat else "") + \
+    tags = (SAMPLE if (not real and SAMPLE) else (f'<span class="badge badge--featured">{I("star")}Featured</span>' if feat else "")) + \
         f'<span class="badge badge--outline">{I("repeat")}Weekly class</span><a class="biz-card__cat" href="/classes.html">{ctype}</a>'
     body = f'''<nav class="crumbs ho-container" aria-label="Breadcrumb">
   <ol>

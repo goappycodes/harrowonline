@@ -62,11 +62,16 @@ body: page-home
       </div>
       <div class="home-nl">
         <span class="home-nl__icon"><svg class="ho-icon"><use href="#i-mail"/></svg></span>
-        <h3 class="home-nl__title">Harrow in your inbox</h3>
-        <p class="home-nl__text">Local news, what&rsquo;s on and the best offers, every morning. Free.</p>
+        <h3 class="home-nl__title">Get Harrow&rsquo;s best events and local offers every Thursday</h3>
+        <p class="home-nl__text">Free. Pick the newsletters you want; each one is separate.</p>
         <form class="home-nl__form" action="https://harrowonline.org/wp-json/ho/v1/subscribe" method="post" data-nl-form>
           <input type="hidden" name="signup_source" value="hub-home">
-          <input type="hidden" name="editions[]" value="daily">
+          <fieldset class="home-nl__editions">
+            <legend class="ho-sr">Choose your newsletters</legend>
+            <label><input type="checkbox" name="editions[]" value="weekend" checked> The Weekend <small>(Thu)</small></label>
+            <label><input type="checkbox" name="editions[]" value="daily"> Daily Briefing</label>
+            <label><input type="checkbox" name="editions[]" value="business"> Harrow Business <small>(Mon)</small></label>
+          </fieldset>
           <label class="ho-sr" for="home-nl-email">Email address</label>
           <input class="input" id="home-nl-email" type="email" name="email" placeholder="Your email address" autocomplete="email" required>
           <button class="ho-btn ho-btn--primary ho-btn--block" type="submit">Sign up free</button>
@@ -102,7 +107,7 @@ body: page-home
       <a class="link-arrow hide-mobile" href="/pricing.html">Get featured <svg class="ho-icon"><use href="#i-arrow"/></svg></a>
     </div>
     <div class="grid grid-4">
-      {{> sample-featured-cards}}
+      {{> gen-featured-home}}
     </div>
   </div>
 </section>
@@ -136,13 +141,13 @@ body: page-home
     <div class="biz-panel">
       <div class="biz-panel__intro">
         <p class="eyebrow">For businesses</p>
-        <h2 class="biz-panel__title" id="biz-title">Get found by Harrow</h2>
-        <p class="biz-panel__lead">Harrow Online reaches thousands of local readers every day. Put your business in front of them.</p>
+        <h2 class="biz-panel__title" id="biz-title">Run a business in Harrow?</h2>
+        <p class="biz-panel__lead">Claim your free listing, publish Local Offers and reach Harrow Online readers.</p>
         <div class="biz-panel__actions">
-          <a class="ho-btn ho-btn--primary" href="/search.html">Find your business</a>
-          <a class="ho-btn ho-btn--outline" href="/for-businesses.html">How it works</a>
+          <a class="ho-btn ho-btn--primary" href="/search.html?type=businesses">Find my business</a>
+          <a class="ho-btn ho-btn--outline" href="/pricing.html">See business plans</a>
         </div>
-        <p class="biz-panel__note"><svg class="ho-icon ho-icon--sm"><use href="#i-check"/></svg>Plans from free to Local Partner. <a href="/pricing.html">See plans and prices</a></p>
+        <p class="biz-panel__note"><svg class="ho-icon ho-icon--sm"><use href="#i-check"/></svg>Plans from free to Local Partner. <a href="/pricing.html">See what&rsquo;s included</a></p>
       </div>
       <ol class="biz-steps">
         <li><span class="biz-steps__num" aria-hidden="true">1</span><div><h3>Claim or add your listing</h3><p>Most Harrow businesses are already listed. Find yours and claim it free, or add it in two minutes.</p></div></li>

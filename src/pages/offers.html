@@ -15,27 +15,20 @@ body: page-offers
 </header>
 
 <div class="ho-container">
-  <form class="filter-bar" action="/offers.html" method="get" aria-label="Filter offers">
-    <div class="field">
-      <label for="o-cat">Category</label>
-      <select class="select select--sm" id="o-cat" name="cat"><option value="">All categories</option>{{> gen-cat-options}}</select>
-    </div>
-    <div class="field">
-      <label for="o-area">Area</label>
-      <select class="select select--sm" id="o-area" name="area"><option value="">All of Harrow</option>{{> gen-area-options}}</select>
-    </div>
-    <label class="check" for="o-sub"><input id="o-sub" type="checkbox" name="sub" value="1"> <span><svg class="ho-icon ho-icon--sm"><use href="#i-lock"/></svg> Subscriber-only offers</span></label>
-    <button class="ho-btn ho-btn--dark ho-btn--sm" type="submit">Show offers</button>
-  </form>
-
-  <div class="chips chips--scroll mt-4" aria-label="Popular categories">
+  <!-- Filters (clean, Nov 2026): category chips, then one line with the count and two small filters that apply on change.
+       The category select stays (hidden) so the chosen chip is kept when the area or subscriber filter changes. -->
+  <div class="chips chips--scroll" aria-label="Popular categories">
     {{> gen-offer-chips}}
   </div>
-
-
-  <div class="toolbar mt-6">
+  <div class="fline">
     <p class="toolbar__count" data-offers-count><strong>{{> gen-offer-count}}</strong> offers across Harrow</p>
-    <p class="small muted mb-0">Featured offers first, then newest</p>
+    <form class="fline__form" action="/offers.html" method="get" aria-label="Filter offers" data-autofilter>
+      <select id="o-cat" name="cat" hidden aria-label="Category" tabindex="-1"><option value="">All categories</option>{{> gen-cat-options}}</select>
+      <label class="fsel"><span class="ho-sr">Area</span><select id="o-area" name="area"><option value="">All of Harrow</option>{{> gen-area-options}}</select></label>
+      <label class="fcheck" for="o-sub"><input id="o-sub" type="checkbox" name="sub" value="1"> Subscriber-only</label>
+      <button class="ho-btn ho-btn--dark ho-btn--sm fpanel__go" type="submit">Show offers</button>
+      <a class="fpanel__clear" href="/offers.html" data-filter-clear hidden>Clear</a>
+    </form>
   </div>
 
   <div class="notice mb-5" data-offers-empty hidden><svg class="ho-icon"><use href="#i-tag"/></svg><p>No offers match that yet. <a href="/offers.html">See all offers</a>.</p></div>

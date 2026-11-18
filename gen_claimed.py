@@ -52,6 +52,34 @@ def verified():
     return f'<span class="badge badge--verified">{icon("verified")}Verified by the business</span>'
 
 
+def name_tick(x, focusable=True):
+    """Status icon after a business name (cards, rows, profile h1); hover or focus shows the status name.
+    Verified by the business (green badge: the real businesses Harrow Online supplied), Checked by Harrow Online
+    (red tick: claimed.json "listing_status": "checked"), imported from public data (grey globe)."""
+    if badge_sample(x):
+        return ""
+    if x.get("checked"):
+        kind, s, ic = "checked", "Checked by Harrow Online", "check"
+    elif x.get("claimed"):
+        kind, s, ic = "verified", "Verified by the business", "verified"
+    else:
+        kind, s, ic = "imported", "Information imported from public data", "globe"
+    tab = ' tabindex="0"' if focusable else ""   # inside a link the link takes focus (and shows the name)
+    return f'<span class="card__tick card__tick--{kind}"{tab} role="img" aria-label="{s}" data-tip="{s}"><svg class="ho-icon" aria-hidden="true"><use href="#i-{ic}"/></svg></span>'
+
+
+def name_with_tick(x, name=None, linked=True):
+    """Business name with its status icon. The last word and the icon sit in one no-wrap span, so the icon never
+    lands on a line of its own (18 Nov 2026). linked=True: the result goes inside the name link."""
+    name = name or x["name"]
+    # cards and rows (linked): no icon for imported listings, so Verified and Checked stand out (18 Nov 2026)
+    tick = "" if linked and not (x.get("checked") or x.get("claimed")) else name_tick(x, focusable=not linked)
+    if not tick:
+        return e(name)
+    head, _, last = name.rpartition(" ")
+    return (e(head) + " " if head else "") + f'<span class="name-end">{e(last)}{tick}</span>'
+
+
 def checked_badge():
     return f'<span class="badge badge--checked">{icon("check")}Checked by Harrow Online</span>'
 
@@ -84,14 +112,27 @@ def address_line(x, with_area=False):
     return ", ".join(parts)
 
 
+SHOW_SAMPLE_TAG = False   # 18 Nov 2026: no "Sample" tag anywhere; samples show the same badges as a real listing
+
+
+def badge_sample(x):
+    """True when a listing should carry the Sample tag instead of Verified/Featured (off: never)."""
+    return SHOW_SAMPLE_TAG and is_sample(x)
+
+
 def sample_badge():
+    if not SHOW_SAMPLE_TAG:
+        return ""
     return f'<span class="badge badge--sample" title="Made-up business for the preview. Removed before launch.">{icon("alert")}Sample</span>'
 
 
 def status_badges(x):
-    """Samples show the Sample badge first, then the same Verified badge a real claimed listing gets
-    (Featured/Verified kept on samples to demo the plans, decided 12 Nov 2026)."""
-    return verified()   # samples show Verified/Featured without a Sample badge (12 Nov 2026); profiles keep a sample notice
+    """A made-up sample shows only its Sample badge; a real listing shows Checked by Harrow Online (team-entered,
+    claimed.json "listing_status": "checked") or Verified by the business (18 Nov 2026: a sample is never shown as
+    Verified, Featured or Business of the Week)."""
+    if badge_sample(x):
+        return sample_badge()
+    return checked_badge() if x.get("checked") else verified()
 
 
 def photo_inner(x, i=0, fallback_icon="store", alt="", eager=False):
@@ -131,10 +172,10 @@ def today_status(c):
     if h.lower() == "closed":
         return '<span class="open-now open-now--closed">Closed today</span>'
     if h.lower().startswith("open"):          # "Open 24 hours"
-        return f'<span class="open-now">{h}</span>'
+        return '<span class="open-now">Open today</span>'
     if not any(ch.isdigit() for ch in h):     # "Not listed"
         return f'<span class="open-now open-now--info">Hours {h.lower()} today</span>'
-    return f'<span class="open-now">Open today, {h}</span>'
+    return '<span class="open-now">Open today</span>'   # just open or closed; the times are in the hours table
 
 
 # ------------------------------------------------------------------ rows and cards
@@ -145,12 +186,12 @@ def row(x):
     # biz-row--media: has a photo or logo, so on phones the row becomes a card with the picture on top
     media = bool(c.get("logo") or c.get("images"))
     cls = "biz-row" + (" biz-row--featured" if promoted else "") + (" biz-row--media" if media else "")
-    badges = (f'<span class="badge badge--featured">{icon("star")}Featured</span>' if promoted else "") + status_badges(x)
+    badges = (f'<span class="badge badge--featured">{icon("star")}Featured</span>' if promoted and not badge_sample(x) else "") + (sample_badge() if badge_sample(x) else "")
     return f'''<article class="{cls}">
         {logo_slot(c) if c.get("logo") else f'<div class="{ph_cls(x)}">{photo_inner(x, 0, c.get("icon", "store"))}</div>'}
         <div class="biz-row__main">
           <span class="biz-card__cat">{e(cat_name(x["cat"]))} · <span class="muted">{e(x["sub"])}</span></span>
-          <h3 class="biz-row__title"><a href="/business/{x["slug"]}.html">{e(x["name"])}</a></h3>
+          <h3 class="biz-row__title"><a href="/business/{x["slug"]}.html">{name_with_tick(x)}</a></h3>
           <p class="card__meta"><span>{icon("pin")}{address_line(x)}</span><span>{e(area_name(x["area"]))}</span></p>
           <p class="card__text">{c["tagline"]}</p>
           <p class="card__meta">{today_status(c)}{f'<span>{icon("tag")}{len(c["offers"])} offer{"s" if len(c["offers"]) != 1 else ""}</span>' if c["offers"] and tier in PAID else ""}{f'<span>{icon("calendar")}{len(c["events"])} upcoming</span>' if c["events"] else ""}</p>
@@ -198,8 +239,8 @@ def offer_card(x, o, show_biz=True, heading="h3"):
     featured = o.get("featured")
     soon = 0 <= o["days_left"] <= SOON_DAYS
     cls = "offer" + (" offer--featured" if featured else "") + (" offer--locked" if o.get("sub") else "")
-    badges = sample_badge() if is_sample(x) and not featured else ""
-    if featured:
+    badges = sample_badge() if badge_sample(x) else ""
+    if featured and not badge_sample(x):
         badges += f'<span class="badge badge--featured">{icon("star")}Featured</span>'
     if o.get("sub"):
         badges += f'<span class="badge badge--sub">{icon("lock")}Subscriber-only</span>'
@@ -264,7 +305,7 @@ def offer_list_card(x, o):
     are on the offer's own page (simplified, Nov 2026). Data attributes drive the hub.js filters."""
     soon = 0 <= o["days_left"] <= SOON_DAYS
     feat = bool(o.get("featured"))
-    tags = f'<span class="badge badge--featured">{icon("star")}Featured</span>' if feat else ""
+    tags = sample_badge() if badge_sample(x) else (f'<span class="badge badge--featured">{icon("star")}Featured</span>' if feat else "")
     if o.get("sub"):
         tags += f'<span class="badge badge--sub">{icon("lock")}Subscriber-only</span>'
     if soon:
@@ -460,7 +501,7 @@ def offer_pages(listings):
 
 def event_row(ev, sample=False):
     rep = f'<span class="badge">{icon("repeat")}Weekly class</span>' if ev.get("class") else ""
-    feat = f'<span class="badge badge--featured">Featured</span>' if ev.get("featured") else (sample_badge() if sample else "")
+    feat = sample_badge() if (sample and SHOW_SAMPLE_TAG) else (f'<span class="badge badge--featured">Featured</span>' if ev.get("featured") else "")
     return f'''<article class="event-row{" event-row--featured" if ev.get("featured") else ""}">
           <time class="date-tile" datetime="2026-{ {"Oct": 10, "Nov": 11, "Dec": 12}.get(ev["m"], 11):02d}-{int(ev["d"]):02d}"><span class="date-tile__m">{ev["m"]}</span><span class="date-tile__d">{ev["d"]}</span><span class="date-tile__w">{ev["w"]}</span></time>
           <div class="ph">{icon("repeat" if ev.get("class") else "calendar")}</div>
@@ -480,11 +521,11 @@ def profile_body(x, related_html, crumbs_html):
     top = tier in TOP
     maps = f'https://www.google.com/maps/search/?api=1&query={quote(H._unescape(name) + " " + x["postcode"])}' if has_address(c) else ""
     sample = is_sample(x)
-    if sample:
-        # One clear label, plus which plan layout this sample demonstrates (no Verified / plan / BotW claims).
-        badges = verified() + f'<span class="badge badge--outline">{H.TIER_LABEL[tier]} plan layout</span>'
+    if sample and SHOW_SAMPLE_TAG:
+        # One clear label only: no Verified, Featured or Business of the Week on a sample.
+        badges = sample_badge()
     else:
-        badges = verified() + tier_badge(tier)
+        badges = tier_badge(tier)   # status shows as the icon after the name
         if c.get("botw"):
             badges = f'<span class="botw">{icon("star")}Business of the Week</span>' + badges
 
@@ -574,7 +615,7 @@ def profile_body(x, related_html, crumbs_html):
         social = f'<div class="profile-card__follow"><h3 class="profile-card__h">Follow</h3><div class="social-row">{links}</div></div>'
 
     trust = (f"""<p class="profile-card__trust">{icon("alert", "ho-icon ho-icon--sm")}<span><strong>Sample listing.</strong> Made up for the preview; removed before launch.</span></p>""" if sample
-             else f"""<p class="profile-card__trust">{icon("verified", "ho-icon ho-icon--sm")}<span>{c.get("verified_note") or f"Verified by the business since {c['claimed']}."}</span></p>""")
+             else f"""<p class="profile-card__trust">{icon("check" if x.get("checked") else "verified", "ho-icon ho-icon--sm")}<span>{c.get("verified_note") or f"Verified by the business since {c['claimed']}."}</span></p>""")
     aside = f'''<aside class="sticky profile-aside">
     <div class="panel profile-card">
       <h2 class="panel__title">{hours_title}</h2>
@@ -593,7 +634,7 @@ def profile_body(x, related_html, crumbs_html):
     {f'<span class="mono mono--lg mono--logo"><img src="{c["logo"]}" alt="{e(name)} badge" width="480" height="480"></span>' if c.get("logo") else f'<span class="mono mono--lg{" mono--red" if top else ""}" aria-hidden="true">{e(initials(name))}</span>'}
     <div class="profile-head__main">
       <div class="cluster">{badges}</div>
-      <h1 class="profile-head__title">{e(name)}</h1>
+      <h1 class="profile-head__title">{name_with_tick(x, name, linked=False)}</h1>
       {f'<p class="profile-head__summary">{c["tagline"]}</p>' if c.get("tagline") else ""}
       <p class="profile-head__meta">
         <a href="/category/{cat}.html">{icon("tag")}{e(cat_name(cat))}</a>
