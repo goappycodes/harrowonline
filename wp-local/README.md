@@ -77,4 +77,6 @@ from git with the committed SQLite database.
   changes made in the server's wp-admin are lost on the next deploy. Change content locally and commit it.
 - **Old SQLite on the server:** `appy-dev` runs Ubuntu 20.04 (SQLite 3.31; the plugin wants 3.37+), so its `.env` sets
   `WP_SQLITE_UNSAFE_ENABLE_UNSUPPORTED_VERSIONS=true`, the SQLite plugin's own back-compat mode for SQLite 3.27+.
-- **Logins:** the users and passwords are the ones in the committed database, i.e. the local ones.
+- **Logins:** wp-admin and the login page first ask for an extra HTTP username and password (kept out of git:
+  `/home/forge/harrow-hub-app/.htpasswd-hub` on the server, the plain values with the project's private credentials).
+  Behind it, the WordPress users and passwords are the ones in the committed database, i.e. the local ones.
