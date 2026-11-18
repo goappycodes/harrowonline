@@ -122,7 +122,7 @@ function hub_acf_migrate_business( $id, array $x ) {
 		}
 		if ( ! empty( $c['hours'] ) ) {
 			$hours = array();
-			foreach ( HUB_HOUR_KEYS as $i => $k ) {
+			foreach ( HUB_BUSINESSES_HOUR_KEYS as $i => $k ) {
 				$hours[ 'field_hub_biz_hours_' . $k ] = isset( $c['hours'][ $i ] ) ? $c['hours'][ $i ] : '';
 			}
 			update_field( 'field_hub_biz_hours', $hours, $id );
@@ -132,7 +132,7 @@ function hub_acf_migrate_business( $id, array $x ) {
 			return array( 'field_hub_biz_loc_label' => $l['label'], 'field_hub_biz_loc_name' => $l['name'], 'field_hub_biz_loc_address' => $l['address'] );
 		}, isset( $c['other_locations'] ) ? $c['other_locations'] : array() ) );
 		foreach ( isset( $c['social_urls'] ) ? $c['social_urls'] : array() as $s => $url ) {
-			if ( in_array( $s, HUB_SOCIAL, true ) ) {
+			if ( in_array( $s, HUB_BUSINESSES_SOCIAL, true ) ) {
 				hub_acf_set( $id, 'biz_' . $s, $url );
 			}
 		}

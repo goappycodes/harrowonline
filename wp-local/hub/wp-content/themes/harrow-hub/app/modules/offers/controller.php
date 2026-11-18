@@ -63,7 +63,7 @@ function hub_offers_list( array $params = array(), $mode = HUB_WEB ) {
  */
 function hub_offer_get( $id_or_slug, $mode = HUB_WEB ) {
 	$post     = hub_offers_db_get( hub_param_id_or_slug( $id_or_slug ) );
-	$business = $post ? hub_offers_db_business( hub_offers_db_business_id( $post->ID ) ) : null;
+	$business = $post ? _hub_offers_business( hub_offers_db_business_id( $post->ID ) ) : null;
 	if ( ! $post || ! $business ) {
 		return hub_respond_error( 'hub_offer_not_found', 'No offer with that ID or slug.', $mode );
 	}
@@ -81,11 +81,11 @@ function hub_offer_get( $id_or_slug, $mode = HUB_WEB ) {
  * @return array|WP_REST_Response { live: offer[], ended: offer[], shows_offers: bool }
  */
 function hub_offers_for_business( $business_id, $mode = HUB_WEB ) {
-	$business = hub_offers_db_business( $business_id );
+	$business = _hub_offers_business( $business_id );
 	$out      = array( 'live' => array(), 'ended' => array(), 'shows_offers' => false );
 	if ( $business ) {
-		$out['shows_offers'] = hub_offers_rule_plan_shows_offers( $business['_tier'] );
-		foreach ( hub_offers_db_for_business( $business['_id'] ) as $post ) {
+		$out['shows_offers'] = hub_offers_rule_plan_shows_offers( $business['plan'] );
+		foreach ( hub_offers_db_for_business( $business['id'] ) as $post ) {
 			$o = _hub_offers_public( _hub_offer_build( $post, $business ) );
 			$out[ 'live' === $o['status'] ? 'live' : 'ended' ][] = $o;
 		}
@@ -97,19 +97,31 @@ function hub_offers_for_business( $business_id, $mode = HUB_WEB ) {
 
 /** One offer in the shape.php shape (with "_sort"). */
 function _hub_offer_build( WP_Post $post, array $business ) {
-	return hub_offer_shape( $post, hub_offers_db_record( $post ), hub_offers_db_index( $post ), $business, hub_offers_db_today(), _hub_offers_names() );
+	return hub_offer_shape( $post, hub_offers_db_record( $post ), hub_offers_db_index( $post ), $business, hub_offers_db_today() );
 }
 
-/** Category and area names by slug, from the categories and areas modules (once per request). */
-function _hub_offers_names() {
-	static $names = null;
-	if ( null === $names ) {
-		$names = array(
-			'categories' => wp_list_pluck( hub_categories_list()['items'], 'name', 'slug' ),
-			'areas'      => wp_list_pluck( hub_areas_list()['items'], 'name', 'slug' ),
-		);
+/**
+ * Businesses of offers, from the businesses module (one call for many). Cached for the request.
+ *
+ * @param int[] $ids Business post IDs to load if not loaded yet.
+ */
+function _hub_offers_businesses( array $ids = array() ) {
+	static $loaded = array();
+	$missing = array_diff( array_map( 'intval', $ids ), array_keys( $loaded ) );
+	if ( $missing ) {
+		$found = hub_businesses_summaries( $missing )['items'];
+		foreach ( $missing as $id ) {
+			$loaded[ $id ] = isset( $found[ $id ] ) ? $found[ $id ] : null;
+		}
 	}
-	return $names;
+	return $loaded;
+}
+
+/** One offer's business (businesses module shape), or null. */
+function _hub_offers_business( $business_id ) {
+	$business_id = (int) $business_id;
+	$all         = _hub_offers_businesses( array( $business_id ) );
+	return isset( $all[ $business_id ] ) ? $all[ $business_id ] : null;
 }
 
 /** Every live offer from a business whose plan shows offers, in Local Offers order. Cached for the request. */
@@ -117,9 +129,11 @@ function _hub_offers_ranked() {
 	static $ranked = null;
 	if ( null === $ranked ) {
 		$ranked = array();
-		foreach ( hub_offers_db_all() as $post ) {
-			$business = hub_offers_db_business( hub_offers_db_business_id( $post->ID ) );
-			if ( ! $business || ! hub_offers_rule_plan_shows_offers( $business['_tier'] ) ) {
+		$posts  = hub_offers_db_all();
+		_hub_offers_businesses( array_map( function ( $p ) { return hub_offers_db_business_id( $p->ID ); }, $posts ) );
+		foreach ( $posts as $post ) {
+			$business = _hub_offers_business( hub_offers_db_business_id( $post->ID ) );
+			if ( ! $business || ! hub_offers_rule_plan_shows_offers( $business['plan'] ) ) {
 				continue;
 			}
 			$o = _hub_offer_build( $post, $business );

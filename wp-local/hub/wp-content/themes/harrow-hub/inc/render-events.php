@@ -116,32 +116,13 @@ function hub_calendar_links( array $ev, $url ) {
 	return array( $google, $outlook, 'data:text/calendar;charset=utf-8,' . hub_quote( $ics, ':/@.-_ ' ) );
 }
 
-/** The Hub business with this name (an event's organiser or a class's provider), or null. */
-function hub_business_by_name( $name ) {
-	static $by = null;
-	if ( null === $by ) {
-		$by = array();
-		foreach ( get_posts( array( 'post_type' => 'hub_business', 'posts_per_page' => -1, 'meta_query' => array( array( 'key' => '_hub_tier', 'value' => 'unclaimed', 'compare' => '!=' ) ) ) ) as $p ) {
-			$x = hub_business( $p );
-			if ( ! empty( $x['claimed'] ) ) {
-				$by[ $x['claimed']['name'] ] = $x;
-				$rec = hub_record( $p );   // the imported name too, so events keep finding a renamed business
-				if ( ! empty( $rec['claimed']['name'] ) ) {
-					$by[ $rec['claimed']['name'] ] = $x;
-				}
-			}
-		}
-	}
-	return isset( $by[ $name ] ) ? $by[ $name ] : null;
-}
-
 /** [ page settings, main HTML ] for /events/{slug}/ (gen_events.event_page). */
 function hub_event_page( array $ev ) {
 	$url     = HUB_ORIGIN . '/events/' . $ev['slug'] . '/';
 	$title   = $ev['title'];
 	$d       = $ev['day_date'];
 	$past    = $d < hub_today();
-	$orgx    = ! empty( $ev['org'] ) ? hub_business_by_name( $ev['org'] ) : null;
+	$orgx    = ! empty( $ev['org'] ) ? hub_business_find_by_name( $ev['org'] ) : null;   // businesses module
 	list( $google, $outlook, $ics ) = hub_calendar_links( $ev, $url );
 	$maps     = 'https://www.google.com/maps/search/?api=1&amp;query=' . hub_quote_plus( hub_plain( $ev['venue'] . ' ' . $ev['area'] . ' Harrow' ) );
 	$when_sub = $ev['time'] . ( ! empty( $ev['note'] ) ? '. ' . $ev['note'] . '.' : '' );
@@ -184,7 +165,7 @@ function hub_event_page( array $ev ) {
 	$org_row = '';
 	$org     = null;
 	if ( $orgx ) {
-		$org      = array( 'name' => $orgx['claimed']['name'], 'slug' => $orgx['slug'], 'area' => hub_area_name( $orgx['area'] ) );
+		$org      = array( 'name' => esc_html( $orgx['name'] ), 'slug' => $orgx['slug'], 'area' => esc_html( $orgx['area']['name'] ) );
 		$words    = preg_split( '/\s+/', trim( hub_plain( $org['name'] ) ) );
 		$initials = strtoupper( implode( '', array_map( function ( $w ) { return mb_substr( $w, 0, 1 ); }, array_slice( $words, 0, 2 ) ) ) );
 		$org_row  = '
@@ -315,17 +296,17 @@ function hub_class_page( array $c ) {
 	$desc  = $c['desc'];
 	$maps  = 'https://www.google.com/maps/search/?api=1&amp;query=' . hub_quote_plus( hub_plain( $c['venue'] . ' ' . $c['area'] . ' Harrow' ) );
 	// "Run by": the business picked in wp-admin, otherwise the business with the provider's name
-	$prov  = ! empty( $c['_biz'] ) ? hub_business( $c['_biz'] ) : hub_business_by_name( '' !== $c['provider'] ? $c['provider'] : hub_plain( $c['venue'] ) );
+	$prov  = ! empty( $c['_biz'] ) ? ( hub_businesses_summaries( array( $c['_biz'] ) )['items'][ $c['_biz'] ] ?? null )
+		: hub_business_find_by_name( '' !== $c['provider'] ? $c['provider'] : hub_plain( $c['venue'] ) );   // businesses module
 	$org_row = '';
-	if ( $prov && ! empty( $prov['claimed'] ) ) {
-		$pc       = $prov['claimed'];
-		$words    = preg_split( '/\s+/', trim( hub_plain( $pc['name'] ) ) );
+	if ( $prov && $prov['claimed'] ) {
+		$words    = preg_split( '/\s+/', trim( $prov['name'] ) );
 		$initials = strtoupper( implode( '', array_map( function ( $w ) { return mb_substr( $w, 0, 1 ); }, array_slice( $words, 0, 2 ) ) ) );
-		$mono     = ! empty( $pc['logo'] ) ? '<span class="mono mono--logo" aria-hidden="true"><img src="' . hub_img( $pc['logo'] ) . '" alt="" width="480" height="480" loading="lazy"></span>' : '<span class="mono" aria-hidden="true">' . $initials . '</span>';
+		$mono     = $prov['logo'] ? '<span class="mono mono--logo" aria-hidden="true"><img src="' . esc_url( $prov['logo'] ) . '" alt="" width="480" height="480" loading="lazy"></span>' : '<span class="mono" aria-hidden="true">' . $initials . '</span>';
 		$org_row  = '
     <a class="offer-biz" href="' . hub_url( 'business/' . $prov['slug'] . '/' ) . '">
       ' . $mono . '
-      <span class="offer-biz__main"><span class="eyebrow mb-0">Run by</span><strong>' . $pc['name'] . '</strong><span>' . hub_area_name( $pc['area'] ) . '</span></span>
+      <span class="offer-biz__main"><span class="eyebrow mb-0">Run by</span><strong>' . esc_html( $prov['name'] ) . '</strong><span>' . esc_html( $prov['area']['name'] ) . '</span></span>
       <span class="offer-biz__go">View profile ' . hub_icon( 'arrow', 'ho-icon ho-icon--sm' ) . '</span>
     </a>';
 	}

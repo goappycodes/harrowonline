@@ -9,7 +9,7 @@
  *   featured, status ('live' | 'ended'),
  *   ends { date ('Y-m-d' | null), days_left (int | null), label, days_left_label, ending_soon },
  *   business { id, slug, name, url, plan, category { slug, name }, area { slug, name }, address,
- *              image { url, alt } | null, icon, sample }
+ *              image { url, alt } | null, icon, sample }   (from the businesses module's business shape)
  */
 defined( 'ABSPATH' ) || exit;
 
@@ -20,12 +20,11 @@ const HUB_OFFERS_DEFAULT_REDEEM = 'Show this page when you pay.';
  * @param WP_Post            $post     The offer.
  * @param array              $r        Its details record (hub_offers_db_record()).
  * @param int                $index    Its order within its business (hub_offers_db_index()).
- * @param array              $business Its business (hub_offers_db_business()).
+ * @param array              $business Its business (businesses module, hub_businesses_summaries()).
  * @param DateTimeImmutable  $today
- * @param array              $names    Category and area names by slug: { categories: { slug: name }, areas: { slug: name } }.
  * @return array The offer, plus "_sort" (used for ordering; the controller removes it).
  */
-function hub_offer_shape( WP_Post $post, array $r, $index, array $business, DateTimeImmutable $today, array $names ) {
+function hub_offer_shape( WP_Post $post, array $r, $index, array $business, DateTimeImmutable $today ) {
 	$title = hub_plain( $post->post_title );
 	$sub   = ! empty( $r['sub'] );
 	$code  = isset( $r['code'] ) ? trim( (string) $r['code'] ) : '';
@@ -53,38 +52,26 @@ function hub_offer_shape( WP_Post $post, array $r, $index, array $business, Date
 			'days_left_label' => hub_offers_rule_days_left_label( $dates['date'], $dates['days_left'] ),
 			'ending_soon'     => $dates['live'] && hub_offers_rule_ending_soon( $dates['days_left'] ),
 		),
-		'business'        => hub_offer_shape_business( $business, $names ),
-		'_sort'           => array( $business['_order'], (int) $index ),
+		'business'        => hub_offer_shape_business( $business ),
+		'_sort'           => array( $business['directory_order'], (int) $index ),
 	);
 }
 
-/** The business, as much as an offer shows of it. $names as for hub_offer_shape(). */
-function hub_offer_shape_business( array $x, array $names ) {
-	$c      = isset( $x['claimed'] ) && is_array( $x['claimed'] ) ? $x['claimed'] : array();
-	$images = isset( $c['images'] ) ? (array) $c['images'] : array();
-	$alts   = isset( $c['image_alts'] ) ? (array) $c['image_alts'] : array();
-	$cat    = isset( $x['cat'] ) ? $x['cat'] : '';
-	$area   = isset( $x['area'] ) ? $x['area'] : '';
-	$cat_n  = isset( $names['categories'][ $cat ] ) ? $names['categories'][ $cat ] : $cat;
-	$area_n = isset( $names['areas'][ $area ] ) ? $names['areas'][ $area ] : $area;
-
-	if ( ! empty( $c['address'] ) && empty( $c['service_area'] ) ) {
-		$address = implode( ', ', array_filter( array( hub_plain( $c['address'] ), $area_n, isset( $x['postcode'] ) ? $x['postcode'] : '' ) ) );
-	} else {
-		$address = 'Covers ' . ( ! empty( $c['service_area'] ) ? hub_plain( $c['service_area'] ) : 'Harrow' );
-	}
-
+/** The business, as much as an offer shows of it (from the businesses module's business shape). */
+function hub_offer_shape_business( array $b ) {
+	$a = $b['address'];
 	return array(
-		'id'       => (int) $x['_id'],
-		'slug'     => $x['slug'],
-		'name'     => hub_plain( $x['name'] ),
-		'url'      => hub_url( 'business/' . $x['slug'] . '/' ),
-		'plan'     => $x['_tier'],
-		'category' => array( 'slug' => $cat, 'name' => $cat_n ),
-		'area'     => array( 'slug' => $area, 'name' => $area_n ),
-		'address'  => $address,
-		'image'    => $images ? array( 'url' => hub_media_url( $images[0] ), 'alt' => isset( $alts[0] ) ? (string) $alts[0] : '' ) : null,
-		'icon'     => ! empty( $c['icon'] ) ? $c['icon'] : 'store',
-		'sample'   => hub_is_sample( $x ),
+		'id'       => $b['id'],
+		'slug'     => $b['slug'],
+		'name'     => $b['name'],
+		'url'      => $b['url'],
+		'plan'     => $b['plan'],
+		'category' => $b['category'],
+		'area'     => $b['area'],
+		'address'  => $a['has_premises'] ? implode( ', ', array_filter( array( $a['street'], $b['area']['name'], $a['postcode'] ) ) )
+			: 'Covers ' . ( $a['service_area'] ? $a['service_area'] : 'Harrow' ),
+		'image'    => $b['images'] ? $b['images'][0] : null,
+		'icon'     => $b['icon'],
+		'sample'   => $b['sample'],
 	);
 }

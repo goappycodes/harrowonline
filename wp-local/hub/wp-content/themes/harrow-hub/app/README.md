@@ -33,11 +33,15 @@ app/
 ├── setup/
 │   └── rest-routes.php    namespace hub/v1, hub_route()
 └── modules/
-    ├── offers/            data.php  rules.php  shape.php  controller.php  routes.php
+    ├── businesses/        data.php  rules.php  shape.php  controller.php  routes.php
+    ├── offers/
     ├── categories/
     └── areas/
 parts/                     display only: each part gets arrays in $args and prints them
+├── businesses/            row, card, ticker, event-row, profile, profile-imported, directory
 └── offers/                card, tile, card-full, unlock-box, filters, single
+inc/view.php               small markup helpers for parts (hub_view_*): name with its status mark, photo, address,
+                           "Open today"... They take a shape and print it; no queries.
 ```
 
 ## The five files of a module
@@ -55,8 +59,11 @@ Functions starting with `_hub_` are internal helpers of their module's controlle
 ## Rules that keep it easy to change
 
 1. **Templates and parts never query WordPress.** A template calls a controller, then hands the arrays to parts.
-2. **Outside a module, call only its `controller.php` functions.** Offers needs category names, so it calls
-   `hub_categories_list()`, not `hub_categories_db_all()`.
+2. **Outside a module, call only its `controller.php` functions.** Offers needs its businesses, so it calls
+   `hub_businesses_summaries( $ids )`, never `hub_businesses_db_record()`. Controllers may call each other; shapes
+   must not (pass what they need in, as offers does with each offer's business).
+   Two modules that need each other must not loop: a business's offer count is added by the businesses controller
+   (`counts`), never by its shape, because an offer's shape includes its business.
 3. **One shape per module, used everywhere.** The listing card, the profile card, the offer page and the app all
    read the same `offer` array. Add a field once in `shape.php` and it's available everywhere (and in the API).
 4. **Shapes hold plain data:** text without HTML or entities, full unescaped URLs, booleans, `null` for "none".
@@ -96,6 +103,9 @@ Functions starting with `_hub_` are internal helpers of their module's controlle
 
 | Route | Controller |
 | --- | --- |
+| `GET /wp-json/hub/v1/businesses?cat=&area=&limit=&offset=` | `hub_businesses_list()` |
+| `GET /wp-json/hub/v1/businesses/{id or slug}` | `hub_business_get()` |
+| `GET /wp-json/hub/v1/businesses/featured`, `/businesses/newest` | `hub_businesses_featured()`, `hub_businesses_newest()` |
 | `GET /wp-json/hub/v1/offers?cat=&area=&sub=1&limit=&offset=` | `hub_offers_list()` |
 | `GET /wp-json/hub/v1/offers/{id or slug}` | `hub_offer_get()` |
 | `GET /wp-json/hub/v1/businesses/{id}/offers` | `hub_offers_for_business()` |
@@ -107,6 +117,7 @@ callback (the 4th argument of `hub_route()`).
 
 ## Modules still to move here
 
-Businesses, events, classes, account and newsletter still live in `inc/render-*.php` and `inc/business-acf.php`.
-`hub_offers_db_business()` reads businesses directly until the businesses module exists. When that module is
-built, offers should call its controller instead.
+Events and classes (`inc/render-events.php`), account pages, search and the newsletter band
+(`inc/business-acf.php`) are still old-style. The businesses module reads a business's events and classes through
+`hub_event()` / `hub_class()` (`hub_businesses_db_events()`) until the events module exists; then it should call the
+events controller instead.

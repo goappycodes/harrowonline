@@ -3,13 +3,18 @@
  * Harrow Online Hub: local businesses, offers and what's on in Harrow (converted from src/pages/index.html).
  * URL: /
  *
- * Offers (this weekend's offer, More Local Offers, the "Offers live" number) come from hub_offers_list()
- * (app/modules/offers); the other sections are still the prototype's markup until their modules are built.
+ * Data from app/modules: offers (this weekend's offer, More Local Offers, "Offers live"), businesses ("Just joined",
+ * "Featured local businesses", "Local businesses") and areas. The other sections are still the prototype's markup
+ * until their modules are built.
  * Edited by hand (tools/build_theme.py leaves it alone).
  */
 defined( 'ABSPATH' ) || exit;
 
-$hub_offers = hub_offers_list( array( 'limit' => 7 ) );   // [0] this weekend's offer, [1-6] More Local Offers
+$hub_offers   = hub_offers_list( array( 'limit' => 7 ) );   // [0] this weekend's offer, [1-6] More Local Offers
+$hub_featured = hub_businesses_featured( 4 );
+$hub_newest   = hub_businesses_newest( 10 );
+$hub_biz      = hub_businesses_list( array( 'limit' => 1 ) );  // for the total
+$hub_areas    = hub_areas_list();
 
 hub_set_page( array(
 	'body' => 'page-home',
@@ -69,7 +74,7 @@ get_header();
   </div>
 </section>
 
-<div class="ticker" aria-label="Businesses that recently joined the Hub"><span class="ticker__label"><i aria-hidden="true"></i>Just joined</span><div class="ticker__track"><div class="ticker__run"><a class="ticker__item" href="<?php echo esc_url( hub_url( 'business/aj-pizzas-harrow-town-centre/' ) ); ?>">AJ Pizza&#x27;s, Harrow Town Centre</a><a class="ticker__item" href="<?php echo esc_url( hub_url( 'business/empire-chase-estate-agents-harrow-town-centre/' ) ); ?>">Empire Chase Estate Agents, Harrow Town Centre</a><a class="ticker__item" href="<?php echo esc_url( hub_url( 'business/gradesmart-tuition-south-harrow/' ) ); ?>">GradeSmart Tuition, South Harrow</a><a class="ticker__item" href="<?php echo esc_url( hub_url( 'business/greensleaves-harrow/' ) ); ?>">Greensleaves Construction, Landscaping and Garden Maintenance, Harrow Town Centre</a><a class="ticker__item" href="<?php echo esc_url( hub_url( 'business/kay-construction-uk-ltd-south-harrow/' ) ); ?>">Kay Construction (UK) Ltd, South Harrow</a><a class="ticker__item" href="<?php echo esc_url( hub_url( 'business/kidology-dance-co-hatch-end/' ) ); ?>">Kidology Dance Co, Hatch End</a><a class="ticker__item" href="<?php echo esc_url( hub_url( 'business/kodak-fc-harrow-weald/' ) ); ?>">Kodak FC, Harrow Weald</a><a class="ticker__item" href="<?php echo esc_url( hub_url( 'business/meeting-palace-wealdstone/' ) ); ?>">Meeting Palace, Wealdstone</a><a class="ticker__item" href="<?php echo esc_url( hub_url( 'business/parkfield-youth-fc-hatch-end/' ) ); ?>">Parkfield Youth FC, Hatch End</a><a class="ticker__item" href="<?php echo esc_url( hub_url( 'business/edgware-heating-plumbing-edgware/' ) ); ?>">Edgware Heating &amp; Plumbing, Edgware</a></div><div class="ticker__run" aria-hidden="true"><a class="ticker__item" href="<?php echo esc_url( hub_url( 'business/aj-pizzas-harrow-town-centre/' ) ); ?>">AJ Pizza&#x27;s, Harrow Town Centre</a><a class="ticker__item" href="<?php echo esc_url( hub_url( 'business/empire-chase-estate-agents-harrow-town-centre/' ) ); ?>">Empire Chase Estate Agents, Harrow Town Centre</a><a class="ticker__item" href="<?php echo esc_url( hub_url( 'business/gradesmart-tuition-south-harrow/' ) ); ?>">GradeSmart Tuition, South Harrow</a><a class="ticker__item" href="<?php echo esc_url( hub_url( 'business/greensleaves-harrow/' ) ); ?>">Greensleaves Construction, Landscaping and Garden Maintenance, Harrow Town Centre</a><a class="ticker__item" href="<?php echo esc_url( hub_url( 'business/kay-construction-uk-ltd-south-harrow/' ) ); ?>">Kay Construction (UK) Ltd, South Harrow</a><a class="ticker__item" href="<?php echo esc_url( hub_url( 'business/kidology-dance-co-hatch-end/' ) ); ?>">Kidology Dance Co, Hatch End</a><a class="ticker__item" href="<?php echo esc_url( hub_url( 'business/kodak-fc-harrow-weald/' ) ); ?>">Kodak FC, Harrow Weald</a><a class="ticker__item" href="<?php echo esc_url( hub_url( 'business/meeting-palace-wealdstone/' ) ); ?>">Meeting Palace, Wealdstone</a><a class="ticker__item" href="<?php echo esc_url( hub_url( 'business/parkfield-youth-fc-hatch-end/' ) ); ?>">Parkfield Youth FC, Hatch End</a><a class="ticker__item" href="<?php echo esc_url( hub_url( 'business/edgware-heating-plumbing-edgware/' ) ); ?>">Edgware Heating &amp; Plumbing, Edgware</a></div></div></div>
+<?php get_template_part( 'parts/businesses/ticker', null, array( 'businesses' => $hub_newest['items'] ) ); ?>
 
 <section class="section" aria-labelledby="wknd-title">
   <div class="ho-container">
@@ -146,7 +151,7 @@ get_header();
 
 <section class="stats-band" aria-label="The Hub in numbers">
   <div class="ho-container">
-    <div class="stats-strip"><a class="stat" href="<?php echo esc_url( hub_url( 'offers/' ) ); ?>"><span class="stat__label">Offers live</span><strong class="stat__value" data-count="<?php echo (int) $hub_offers['live_total']; ?>"><?php echo (int) $hub_offers['live_total']; ?></strong><span class="stat__note">and counting</span></a><a class="stat" href="<?php echo esc_url( hub_url( 'events/' ) ); ?>"><span class="stat__label">This week</span><strong class="stat__value" data-count="12">12</strong><span class="stat__note">events across Harrow</span></a><a class="stat" href="<?php echo esc_url( hub_url( 'events/classes/' ) ); ?>"><span class="stat__label">Every week</span><strong class="stat__value" data-count="21">21</strong><span class="stat__note">regular classes</span></a><a class="stat" href="<?php echo esc_url( hub_url( 'search/' ) ); ?>"><span class="stat__label">Local businesses</span><strong class="stat__value" data-count="2609">2,609</strong><span class="stat__note">across 19 areas</span></a></div>
+    <div class="stats-strip"><a class="stat" href="<?php echo esc_url( hub_url( 'offers/' ) ); ?>"><span class="stat__label">Offers live</span><strong class="stat__value" data-count="<?php echo (int) $hub_offers['live_total']; ?>"><?php echo (int) $hub_offers['live_total']; ?></strong><span class="stat__note">and counting</span></a><a class="stat" href="<?php echo esc_url( hub_url( 'events/' ) ); ?>"><span class="stat__label">This week</span><strong class="stat__value" data-count="12">12</strong><span class="stat__note">events across Harrow</span></a><a class="stat" href="<?php echo esc_url( hub_url( 'events/classes/' ) ); ?>"><span class="stat__label">Every week</span><strong class="stat__value" data-count="21">21</strong><span class="stat__note">regular classes</span></a><a class="stat" href="<?php echo esc_url( hub_url( 'search/' ) ); ?>"><span class="stat__label">Local businesses</span><strong class="stat__value" data-count="<?php echo (int) $hub_biz['total']; ?>"><?php echo esc_html( number_format( $hub_biz['total'] ) ); ?></strong><span class="stat__note">across <?php echo (int) $hub_areas['total']; ?> areas</span></a></div>
   </div>
 </section>
 
@@ -157,47 +162,11 @@ get_header();
       <a class="link-arrow hide-mobile" href="<?php echo esc_url( hub_url( 'pricing/' ) ); ?>">Get featured <svg class="ho-icon"><use href="#i-arrow"/></svg></a>
     </div>
     <div class="grid grid-4">
-      <article class="card card--featured">
-        <div class="card__badges"><span class="badge badge--featured"><svg class="ho-icon"><use href="#i-star"/></svg>Featured</span></div>
-        <div class="ph ph--photo"><img src="<?php echo esc_url( hub_asset( 'img/business/aj-pizzas-pizzas.jpg' ) ); ?>" alt="AJ Pizza&amp;#x27;s" width="1200" height="800" loading="lazy" decoding="async"></div>
-        <div class="card__body">
-          <span class="biz-card__cat">Food &amp; Drink</span>
-          <h3 class="card__title"><a href="<?php echo esc_url( hub_url( 'business/aj-pizzas-harrow-town-centre/' ) ); ?>">AJ <span class="name-end">Pizza&#x27;s<span class="card__tick card__tick--verified" role="img" aria-label="Verified by the business" data-tip="Verified by the business"><svg class="ho-icon" aria-hidden="true"><use href="#i-verified"/></svg></span></span></a></h3>
-          <p class="card__meta"><span><svg class="ho-icon"><use href="#i-pin"/></svg>Harrow Town Centre</span></p>
-          <p class="card__text">Local pizza takeaway on Headstone Road in Harrow, serving freshly prepared pizzas, sides and drinks for collection and delivery.</p>
-        </div>
-      </article>
-      <article class="card card--featured">
-        <div class="card__badges"><span class="badge badge--featured"><svg class="ho-icon"><use href="#i-star"/></svg>Featured</span></div>
-        <div class="ph ph--photo"><img src="<?php echo esc_url( hub_asset( 'img/business/empire-chase-house.jpg' ) ); ?>" alt="Empire Chase Estate Agents" width="1200" height="800" loading="lazy" decoding="async"></div>
-        <div class="card__body">
-          <span class="biz-card__cat">Property &amp; Estate Agents</span>
-          <h3 class="card__title"><a href="<?php echo esc_url( hub_url( 'business/empire-chase-estate-agents-harrow-town-centre/' ) ); ?>">Empire Chase Estate <span class="name-end">Agents<span class="card__tick card__tick--verified" role="img" aria-label="Verified by the business" data-tip="Verified by the business"><svg class="ho-icon" aria-hidden="true"><use href="#i-verified"/></svg></span></span></a></h3>
-          <p class="card__meta"><span><svg class="ho-icon"><use href="#i-pin"/></svg>Harrow Town Centre</span></p>
-          <p class="card__text">Independent estate and letting agents in Harrow Town Centre, helping people sell, buy, let and manage property across north-west London since 2012.</p>
-        </div>
-      </article>
-      <article class="card card--featured">
-        <div class="card__badges"><span class="badge badge--featured"><svg class="ho-icon"><use href="#i-star"/></svg>Featured</span></div>
-        <div class="ph ph--logo"><img src="<?php echo esc_url( hub_asset( 'img/business/gradesmart-tuition-logo.jpg' ) ); ?>" alt="GradeSmart Tuition" width="480" height="480" loading="lazy" decoding="async"></div>
-        <div class="card__body">
-          <span class="biz-card__cat">Education &amp; Tuition</span>
-          <h3 class="card__title"><a href="<?php echo esc_url( hub_url( 'business/gradesmart-tuition-south-harrow/' ) ); ?>">GradeSmart <span class="name-end">Tuition<span class="card__tick card__tick--verified" role="img" aria-label="Verified by the business" data-tip="Verified by the business"><svg class="ho-icon" aria-hidden="true"><use href="#i-verified"/></svg></span></span></a></h3>
-          <p class="card__meta"><span><svg class="ho-icon"><use href="#i-pin"/></svg>South Harrow</span></p>
-          <p class="card__text">Affordable Maths, English and Science tuition in South Harrow, in small groups of no more than six, from &pound;8.50 an hour.</p>
-        </div>
-      </article>
-      <article class="card card--featured">
-        <div class="card__badges"><span class="badge badge--featured"><svg class="ho-icon"><use href="#i-star"/></svg>Featured</span></div>
-        <div class="ph ph--photo"><img src="<?php echo esc_url( hub_asset( 'img/business/greensleaves-patio.jpg' ) ); ?>" alt="Greensleaves Construction, Landscaping and Garden Maintenance" width="1200" height="800" loading="lazy" decoding="async"></div>
-        <div class="card__body">
-          <span class="biz-card__cat">Home &amp; Garden</span>
-          <h3 class="card__title"><a href="<?php echo esc_url( hub_url( 'business/greensleaves-harrow/' ) ); ?>">Greensleaves Construction, Landscaping and Garden <span class="name-end">Maintenance<span class="card__tick card__tick--verified" role="img" aria-label="Verified by the business" data-tip="Verified by the business"><svg class="ho-icon" aria-hidden="true"><use href="#i-verified"/></svg></span></span></a></h3>
-          <p class="card__meta"><span><svg class="ho-icon"><use href="#i-pin"/></svg>Harrow Town Centre</span></p>
-          <p class="card__text">Family-run landscaping, garden maintenance and building firm with more than 20 years&rsquo; experience, working for homes and businesses across Harrow.</p>
-        </div>
-      </article>
-
+      <?php
+		foreach ( $hub_featured['items'] as $hub_b ) {
+			get_template_part( 'parts/businesses/card', null, array( 'business' => $hub_b ) );
+		}
+		?>
     </div>
   </div>
 </section>

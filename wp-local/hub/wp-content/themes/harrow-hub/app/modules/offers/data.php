@@ -56,37 +56,19 @@ function hub_offers_db_business_id( $offer_id ) {
 		: (int) get_post_meta( $offer_id, '_hub_business', true );
 }
 
-/**
- * What an offer needs to know about its business: the business record (imported, or from its ACF fields once it
- * has been saved in wp-admin), plus its plan and its place in the directory order. Cached per business.
- *
- * Reads the business directly and never asks for its offers, so building a business page (which lists its
- * offers) cannot loop. Moves to the businesses module's controller when that module is built.
- *
- * @return array|null
- */
-function hub_offers_db_business( $business_id ) {
-	static $cache = array();
-	$business_id = (int) $business_id;
-	if ( ! array_key_exists( $business_id, $cache ) ) {
-		$post = $business_id ? get_post( $business_id ) : null;
-		if ( ! $post || 'hub_business' !== $post->post_type ) {
-			$cache[ $business_id ] = null;
-		} else {
-			$x = hub_record( $post );
-			if ( hub_uses_acf( $post->ID ) ) {
-				$x = hub_business_from_acf( $post, $x );
-			}
-			$x['_id']    = $post->ID;
-			$x['_tier']  = (string) get_post_meta( $post->ID, '_hub_tier', true );
-			$x['_order'] = (int) get_post_meta( $post->ID, '_hub_order', true );
-			$cache[ $business_id ] = $x;
-		}
-	}
-	return $cache[ $business_id ];
-}
-
 /** Today's date for working out which offers are live (the option hub_today fixes it for the preview). */
 function hub_offers_db_today() {
 	return hub_today();
 }
+
+/* ------------------------------------------------------------------ writing: keep the sort keys in step */
+
+add_action( 'acf/save_post', function ( $post_id ) {
+	if ( ! is_numeric( $post_id ) || 'hub_offer' !== get_post_type( $post_id ) ) {
+		return;
+	}
+	update_post_meta( $post_id, '_hub_business', (int) get_post_meta( $post_id, 'offer_business', true ) );
+	if ( '' === get_post_meta( $post_id, '_hub_index', true ) ) {
+		update_post_meta( $post_id, '_hub_index', 99 );   // new offers go after the business's imported ones
+	}
+}, 20 );
