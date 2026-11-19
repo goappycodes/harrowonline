@@ -1,6 +1,6 @@
 <?php
 /**
- * Page text rules: which pages have editable text, and the default wording of each (used for any field left empty).
+ * Page text rules: which pages have editable text (What's On, Classes and activities), and the default wording of each (used for any field left empty).
  *
  * To give another page a "Page text" box: add it to HUB_PAGES, write hub_pages_rule_defaults_{page}() here and
  * hub_admin_page_text_{page}() in inc/admin/page-text-box.php, then read hub_pages_text( '{page}' ) in its template.
@@ -9,7 +9,8 @@ defined( 'ABSPATH' ) || exit;
 
 /** Pages with editable text: key => the WordPress Page's path. */
 const HUB_PAGES = array(
-	'events' => 'events',   // What's On (page-templates/events.php)
+	'events'  => 'events',           // What's On (page-templates/events.php)
+	'classes' => 'events/classes',   // Classes and activities (page-templates/classes.php)
 );
 
 /** Every field of a page with its default: text, '' for the "…_hide" switches, rows for lists. */
@@ -67,6 +68,31 @@ function hub_pages_rule_defaults_events() {
 		'events_cta_text'           => 'Businesses add events and classes on the Featured or Local Partner plan, or list a single event for £15 with no plan. Schools, clubs, charities and community groups add them free with an organiser account. We check every listing before it goes live, usually within one working day.',
 		'events_cta_buttons'        => array(
 			array( 'label' => 'Add your event', 'link' => 'register/' ),
+			array( 'label' => 'Business plans', 'link' => 'pricing/' ),
+		),
+	);
+}
+
+/** Classes and activities (/events/classes/): today's wording. */
+function hub_pages_rule_defaults_classes() {
+	return array(
+		// Search engines
+		'classes_seo_title'        => 'Classes and activities in Harrow',
+		'classes_seo_description'  => 'Weekly classes and activities across Harrow: children\'s clubs, fitness classes, dance schools, workshops and evening courses. Filter by age, area and day.',
+		// Top of the page
+		'classes_crumb'            => 'Classes and activities',
+		'classes_title'            => 'Classes and activities',
+		'classes_lead'             => 'Regular classes that run every week across Harrow: kids’ clubs, fitness, dance schools, workshops and evening courses. Each class has one page that the provider keeps up to date.',
+		// The list
+		'classes_all_label'        => 'All classes',
+		'classes_empty_text'       => 'No classes match that yet.',
+		'classes_empty_link_label' => 'See all classes',
+		// The box at the bottom
+		'classes_cta_hide'         => '',
+		'classes_cta_title'        => 'Run a class in Harrow?',
+		'classes_cta_text'         => 'Businesses add classes on the Featured or Local Partner plan. Schools, clubs, charities and community groups add them free with an organiser account. You keep one page up to date all year, and we check it before it goes live.',
+		'classes_cta_buttons'      => array(
+			array( 'label' => 'List your class', 'link' => 'register/' ),
 			array( 'label' => 'Business plans', 'link' => 'pricing/' ),
 		),
 	);

@@ -3,7 +3,8 @@
  * Classes and activities in Harrow: every weekly class, in the page's own order.
  * URL: /events/classes/   Filters: ?type=, ?age=, ?area=, ?day= (pages are filtered server-side; hub.js 6c does the same in the browser)
  *
- * Data: hub_classes_list() (app/modules/events), hub_areas_list(). Markup: parts/events/listing-card.php.
+ * Data: hub_classes_list() (app/modules/events), hub_areas_list(). The page's text: hub_pages_text( 'classes' )
+ * (app/modules/pages; wp-admin: the "Page text" box on Pages > Classes and activities). Markup: parts/events/listing-card.php.
  * Edited by hand (tools/build_theme.py leaves it alone).
  */
 defined( 'ABSPATH' ) || exit;
@@ -13,31 +14,34 @@ $hub_f     = $hub_list['filters'];
 $hub_areas = hub_areas_list();
 $hub_any   = '' !== $hub_f['type'] . $hub_f['age'] . $hub_f['area'] . $hub_f['day'];
 $hub_base  = hub_url( 'events/classes/' );
+$hub_t     = hub_pages_text( 'classes' );
+$hub_up    = hub_pages_text( 'events' )['events_crumb'];   // the breadcrumb's "What's On", as on that page
+$hub_e     = function ( $k ) use ( $hub_t ) { return esc_html( $hub_t[ $k ] ); };   // a text field, escaped
 
 hub_set_page( array(
 	'body' => 'page-classes',
-	'description' => 'Weekly classes and activities across Harrow: children\'s clubs, fitness classes, dance schools, workshops and evening courses. Filter by age, area and day.',
+	'description' => $hub_t['classes_seo_description'],
 	'hubnav' => 'events',
 	'nav' => 'classes',
-	'title' => 'Classes and activities in Harrow',
+	'title' => $hub_t['classes_seo_title'],
 ) );
 get_header();
 ?>
 <nav class="crumbs ho-container" aria-label="Breadcrumb">
-  <ol><li><a href="<?php echo esc_url( hub_url( '' ) ); ?>">Hub</a></li><li><a href="<?php echo esc_url( hub_url( 'events/' ) ); ?>">What&rsquo;s On</a></li><li><span aria-current="page">Classes and activities</span></li></ol>
+  <ol><li><a href="<?php echo esc_url( hub_url( '' ) ); ?>">Hub</a></li><li><a href="<?php echo esc_url( hub_url( 'events/' ) ); ?>"><?php echo esc_html( $hub_up ); ?></a></li><li><span aria-current="page"><?php echo $hub_e( 'classes_crumb' ); ?></span></li></ol>
 </nav>
 
 <header class="page-head ho-container">
-  <h1 class="page-head__title">Classes and activities</h1>
-  <p class="page-head__lead">Regular classes that run every week across Harrow: kids&rsquo; clubs, fitness, dance schools, workshops and evening courses. Each class has one page that the provider keeps up to date.</p>
+  <h1 class="page-head__title"><?php echo $hub_e( 'classes_title' ); ?></h1>
+  <p class="page-head__lead"><?php echo $hub_e( 'classes_lead' ); ?></p>
 </header>
 
 <div class="ho-container">
   <!-- Filters: class type chips, then one line with the count and three small filters that apply on change -->
   <div class="chips chips--scroll" aria-label="Class type">
-    <a class="chip" data-type="" href="<?php echo esc_url( $hub_base ); ?>"<?php echo '' === $hub_f['type'] ? ' aria-current="page"' : ''; ?>>All classes <span class="count"><?php echo (int) $hub_list['all_total']; ?></span></a>
-<?php foreach ( $hub_list['types'] as $hub_t ) : ?>
-    <a class="chip" data-type="<?php echo esc_attr( $hub_t['slug'] ); ?>" href="<?php echo esc_url( add_query_arg( 'type', $hub_t['slug'], $hub_base ) ); ?>"<?php echo $hub_t['slug'] === $hub_f['type'] ? ' aria-current="page"' : ''; ?>><?php echo esc_html( $hub_t['name'] ); ?> <span class="count"><?php echo (int) $hub_t['count']; ?></span></a>
+    <a class="chip" data-type="" href="<?php echo esc_url( $hub_base ); ?>"<?php echo '' === $hub_f['type'] ? ' aria-current="page"' : ''; ?>><?php echo $hub_e( 'classes_all_label' ); ?> <span class="count"><?php echo (int) $hub_list['all_total']; ?></span></a>
+<?php foreach ( $hub_list['types'] as $hub_type ) : ?>
+    <a class="chip" data-type="<?php echo esc_attr( $hub_type['slug'] ); ?>" href="<?php echo esc_url( add_query_arg( 'type', $hub_type['slug'], $hub_base ) ); ?>"<?php echo $hub_type['slug'] === $hub_f['type'] ? ' aria-current="page"' : ''; ?>><?php echo esc_html( $hub_type['name'] ); ?> <span class="count"><?php echo (int) $hub_type['count']; ?></span></a>
 <?php endforeach; ?>
   </div>
   <div class="fline">
@@ -68,7 +72,7 @@ get_header();
   </div>
 
   <h2 class="ho-sr" id="classes-list">All classes and activities</h2>
-  <div class="notice mb-5" data-classes-empty<?php echo $hub_list['total'] ? ' hidden' : ''; ?>><?php echo hub_icon( 'calendar' ); ?><p>No classes match that yet. <a href="<?php echo esc_url( $hub_base ); ?>">See all classes</a>.</p></div>
+  <div class="notice mb-5" data-classes-empty<?php echo $hub_list['total'] ? ' hidden' : ''; ?>><?php echo hub_icon( 'calendar' ); ?><p><?php echo $hub_e( 'classes_empty_text' ); ?> <a href="<?php echo esc_url( $hub_base ); ?>"><?php echo $hub_e( 'classes_empty_link_label' ); ?></a>.</p></div>
   <div class="grid grid-3" data-classes-list>
 <?php
 foreach ( $hub_list['items'] as $hub_c ) {
@@ -77,15 +81,16 @@ foreach ( $hub_list['items'] as $hub_c ) {
 ?>
   </div>
 
+<?php if ( ! $hub_t['classes_cta_hide'] ) : ?>
   <div class="cta-band mt-7">
     <div>
-      <h2>Run a class in Harrow?</h2>
-      <p>Businesses add classes on the Featured or Local Partner plan. Schools, clubs, charities and community groups add them free with an organiser account. You keep one page up to date all year, and we check it before it goes live.</p>
+      <h2><?php echo $hub_e( 'classes_cta_title' ); ?></h2>
+      <p><?php echo $hub_e( 'classes_cta_text' ); ?></p>
     </div>
     <div class="cta-band__actions">
-      <a class="ho-btn ho-btn--primary" href="<?php echo esc_url( hub_url( 'register/' ) ); ?>"><?php echo hub_icon( 'plus' ); ?>List your class</a>
-      <a class="ho-btn ho-btn--outline" href="<?php echo esc_url( hub_url( 'pricing/' ) ); ?>">Business plans</a>
+<?php echo hub_view_cta_buttons( $hub_t['classes_cta_buttons'] ); // phpcs:ignore WordPress.Security.EscapeOutput -- escaped in the helper ?>
     </div>
   </div>
+<?php endif; ?>
 </div>
 <?php get_footer();

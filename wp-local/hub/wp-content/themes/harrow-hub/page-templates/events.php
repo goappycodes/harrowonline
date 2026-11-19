@@ -203,12 +203,7 @@ foreach ( $hub_wo['days'] as $hub_day ) :
       <p><?php echo $hub_e( 'events_cta_text' ); ?></p>
     </div>
     <div class="cta-band__actions">
-<?php
-	foreach ( $hub_t['events_cta_buttons'] as $hub_i => $hub_b ) {   // the first button is the red one
-		echo '      <a class="ho-btn ' . ( 0 === $hub_i ? 'ho-btn--primary' : 'ho-btn--outline' ) . '" href="' . esc_url( $hub_b['link'] ) . '">'
-			. ( 0 === $hub_i ? hub_icon( 'plus' ) : '' ) . esc_html( $hub_b['label'] ) . "</a>\n";
-	}
-	?>
+<?php echo hub_view_cta_buttons( $hub_t['events_cta_buttons'] ); // phpcs:ignore WordPress.Security.EscapeOutput -- escaped in the helper ?>
     </div>
   </div>
 <?php endif; ?>

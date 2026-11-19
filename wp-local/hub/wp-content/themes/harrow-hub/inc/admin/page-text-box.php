@@ -1,7 +1,7 @@
 <?php
 /**
- * wp-admin: the "Page text" box on the Hub's listing pages (the What's On page for now: Pages > What's On), a native
- * meta box with tabs. Read and saved through the pages module (hub_pages_fields / hub_pages_save_fields); an emptied
+ * wp-admin: the "Page text" box on the Hub's listing pages (Pages > What's On, Pages > Classes and activities), a
+ * native meta box with tabs. Read and saved through the pages module (hub_pages_fields / hub_pages_save_fields); an emptied
  * field goes back to the default wording. The fields of each page: hub_admin_page_text_{page}().
  */
 defined( 'ABSPATH' ) || exit;
@@ -73,6 +73,37 @@ function hub_admin_page_text_events() {
 		'seo'    => array( 'Search engines', array(
 			array( 'key' => 'events_seo_title', 'label' => 'Page title', 'type' => 'text', 'help' => 'Shown in the browser tab and in Google results.' ),
 			array( 'key' => 'events_seo_description', 'label' => 'Description', 'type' => 'textarea', 'help' => 'The short text under the title in Google results (about 155 characters).' ),
+		) ),
+	);
+}
+
+/** Classes and activities (/events/classes/). */
+function hub_admin_page_text_classes() {
+	$link = 'A Hub page such as events/classes/ or a full web address.';
+	return array(
+		'top'  => array( 'Top of the page', array(
+			array( 'key' => 'classes_title', 'label' => 'Heading', 'type' => 'text', 'width' => 60 ),
+			array( 'key' => 'classes_crumb', 'label' => 'Breadcrumb (above the heading)', 'type' => 'text', 'width' => 40,
+				'help' => 'After “Hub › What’s On”. “What’s On” is set in the What’s On page’s Page text box.' ),
+			array( 'key' => 'classes_lead', 'label' => 'Text under the heading', 'type' => 'textarea' ),
+		) ),
+		'list' => array( 'The list', array(
+			array( 'key' => 'note', 'type' => 'note', 'label' => 'The class types, counts, filters and classes come from the listings (Classes).' ),
+			array( 'key' => 'classes_all_label', 'label' => 'First type link (shows every class)', 'type' => 'text', 'width' => 100 ),
+			array( 'key' => 'note', 'type' => 'note', 'label' => '<strong>When nothing matches the filters</strong>' ),
+			array( 'key' => 'classes_empty_text', 'label' => 'Message', 'type' => 'text', 'width' => 60 ),
+			array( 'key' => 'classes_empty_link_label', 'label' => 'Link text', 'type' => 'text', 'width' => 40, 'help' => 'The link clears the filters.' ),
+		) ),
+		'cta'  => array( 'Box at the bottom', array(
+			array( 'key' => 'classes_cta_hide', 'label' => 'Hide this box', 'type' => 'toggle', 'width' => 100 ),
+			array( 'key' => 'classes_cta_title', 'label' => 'Heading', 'type' => 'text' ),
+			array( 'key' => 'classes_cta_text', 'label' => 'Text', 'type' => 'textarea' ),
+			array( 'key' => 'classes_cta_buttons', 'label' => 'Buttons (the first is red)', 'type' => 'list', 'add' => 'Add a button', 'help' => 'Links: ' . $link,
+				'cols' => array( 'label' => array( 'Text' ), 'link' => array( 'Goes to' ) ) ),
+		) ),
+		'seo'  => array( 'Search engines', array(
+			array( 'key' => 'classes_seo_title', 'label' => 'Page title', 'type' => 'text', 'help' => 'Shown in the browser tab and in Google results.' ),
+			array( 'key' => 'classes_seo_description', 'label' => 'Description', 'type' => 'textarea', 'help' => 'The short text under the title in Google results (about 155 characters).' ),
 		) ),
 	);
 }

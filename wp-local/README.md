@@ -23,7 +23,7 @@ local only). In the Claude desktop app, start the **wp-local** preview instead.
 | Theme (all Hub markup, styles and scripts) | `hub/wp-content/themes/harrow-hub/` |
 | **Data layer: controllers for pages and the API** (read `app/README.md` first) | `harrow-hub/app/` |
 | Display pieces that print controller data (business rows and profiles, events and classes, offers) | `harrow-hub/parts/` |
-| Hub API (same data as the pages, JSON) | `/hub/wp-json/hub/v1/` (e.g. `/home`, `/pages/events`, `/businesses`, `/events/whats-on`, `/classes`, `/offers`, `/categories`, `/areas`) |
+| Hub API (same data as the pages, JSON) | `/hub/wp-json/hub/v1/` (e.g. `/home`, `/pages/events`, `/pages/classes`, `/businesses`, `/events/whats-on`, `/classes`, `/offers`, `/categories`, `/areas`) |
 | Page templates (one per prototype page) | `harrow-hub/page-templates/` |
 | Header, footer | `harrow-hub/header.php`, `footer.php` |
 | Page settings and helpers (`hub_url`, `hub_asset`, current menu item, title) | `harrow-hub/inc/page.php` |
@@ -33,7 +33,7 @@ local only). In the Claude desktop app, start the **wp-local** preview instead.
 | Templates for each content type | `harrow-hub/single-hub_*.php`, `taxonomy-hub_*.php` |
 | wp-admin boxes (native meta boxes, no plugin): Business, Offer, Event and Class details, an offer's or class's Business, Hub settings > Newsletter | `harrow-hub/inc/admin/` (script and styles in `harrow-hub/admin/`) |
 | Homepage text, links, tiles and section switches (the Homepage box on the Home page, Pages > Home; empty fields use today's wording) | `harrow-hub/inc/admin/home-box.php`, `harrow-hub/app/modules/home/` |
-| Page text of the listing pages: the What's On page's text, links and panels (the Page text box on Pages > What's On; empty fields use today's wording). To add a page, see `app/modules/pages/rules.php` | `harrow-hub/inc/admin/page-text-box.php`, `harrow-hub/app/modules/pages/` |
+| Page text of the listing pages: What's On and Classes and activities, their text, links and panels (the Page text box on Pages > What's On and Pages > Classes and activities; empty fields use today's wording). To add a page, see `app/modules/pages/rules.php` | `harrow-hub/inc/admin/page-text-box.php`, `harrow-hub/app/modules/pages/` |
 | How pages read those fields | `harrow-hub/app/modules/*/data.php` |
 | Fill the business, offer, event and class fields from the imported data (`php wp-local/hub/fields-migrate-local.php`; `import-local.php` runs it too) | `harrow-hub/inc/fields-migrate.php` |
 | Newsletter band (option `hub_newsletter`) | `harrow-hub/inc/newsletter.php` |
