@@ -112,6 +112,20 @@
   });
   $(document).on("click", "[data-hub-pick-results] button", function () {
     var pick = $(this).closest("[data-hub-pick]");
+    if (pick.is("[data-hub-multi]")) {   // several businesses: add to the list (once, up to data-max)
+      var list = pick.find("[data-hub-picked]");
+      var id = String($(this).data("id"));
+      var max = parseInt(pick.data("max"), 10) || 0;
+      if (!list.find('input[value="' + id + '"]').length && (!max || list.children().length < max)) {
+        $('<li><input type="hidden"><span></span> <button type="button" class="button-link hub-picked__remove" aria-label="Remove">&times;</button></li>')
+          .find("input").attr("name", pick.data("hub-multi")).val(id).end()
+          .find("span").text($(this).data("name")).end()
+          .appendTo(list);
+      }
+      pick.find("[data-hub-pick-results]").attr("hidden", true).empty();
+      pick.find("[data-hub-pick-search]").val("");
+      return;
+    }
     pick.find("[data-hub-pick-id]").val($(this).data("id"));
     pick.find("[data-hub-pick-name]").text($(this).data("name"));
     pick.find("[data-hub-pick-edit]").attr("href", "post.php?post=" + $(this).data("id") + "&action=edit");
@@ -125,8 +139,13 @@
     pick.find("[data-hub-pick-current]").attr("hidden", true);
   });
 
+  $(document).on("click", ".hub-picked__remove", function () {
+    $(this).closest("li").remove();
+  });
+
   $(function () {
     $("[data-hub-box]").each(function () { syncClaimed($(this)); });
     $(".hub-gallery__list").sortable({ items: "li", tolerance: "pointer" });
+    $("[data-hub-picked]").sortable({ items: "li", axis: "y" });
   });
 })(jQuery);

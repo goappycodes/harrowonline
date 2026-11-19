@@ -46,7 +46,9 @@ app/
     ├── account/           sign-in, register, reset, the signed-in account and its business
     ├── billing/           Stripe: checkout, customer portal, webhook (sets the business's plan)
     ├── claims/            claiming a business: proof (email, phone, document), staff approve or reject
-    └── submissions/       offers, events and classes from the account pages: who may, drafts, Pending Review
+    ├── submissions/       offers, events and classes from the account pages: who may, drafts, Pending Review
+    └── home/              the front page: its fields (Homepage box) with the weekend, offers, numbers, featured
+                           businesses, categories and areas from the other modules
 parts/                     display only: each part gets arrays in $args and prints them
 ├── account/               settings (the settings page's forms)
 ├── businesses/            row, card, ticker, event-row, profile, profile-imported, directory

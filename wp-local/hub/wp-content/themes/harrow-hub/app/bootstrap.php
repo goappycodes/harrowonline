@@ -36,7 +36,7 @@ require_once $hub_app . '/setup/add-business.php'; // adding a business: sign-in
 require_once $hub_app . '/setup/submissions.php';  // offers, events and classes from the account pages: review
 
 // Modules
-foreach ( array( 'categories', 'areas', 'businesses', 'offers', 'events', 'account', 'billing', 'claims', 'submissions' ) as $hub_module ) {
+foreach ( array( 'categories', 'areas', 'businesses', 'offers', 'events', 'account', 'billing', 'claims', 'submissions', 'home' ) as $hub_module ) {
 	foreach ( array( 'data', 'rules', 'shape', 'controller', 'routes' ) as $hub_file ) {
 		require_once $hub_app . '/modules/' . $hub_module . '/' . $hub_file . '.php';
 	}
