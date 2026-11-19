@@ -30,7 +30,7 @@ SITE_ASSETS = ROOT / "site" / "hub" / "assets"
 SKIP = {"news-advertise", "news-article", "news-support"}   # harrowonline.org mock-ups: not part of the Hub's WordPress
 # Templates that now load their data through the theme's controllers (app/modules/): edited by hand, never
 # regenerated from the prototype. Add a page here when its template is converted.
-HAND_EDITED = {"index", "offers", "events", "events-month", "classes"}
+HAND_EDITED = {"index", "offers", "events", "events-month", "classes", "sign-in", "register", "forgot-password"}
 
 ATTR_RE = re.compile(r'((?:href|src|action|poster|data-src|data-href)=")/(?!/)([^"]*)"')
 SRCSET_RE = re.compile(r'(srcset=")([^"]*)"')
@@ -111,6 +111,34 @@ def write_chrome():
 
 
 # ---------------------------------------------------------------- page templates
+# Account pages: the prototype's sample account (Station Road Barbers, "Sam") becomes the signed-in user's (inc/view.php)
+ACCOUNT_SWAPS = [
+    ("""      <span class="mono mono--sm" aria-hidden="true">SR</span>
+      <div><strong>Station Road Barbers</strong><span>Featured plan</span></div>""",
+     """      <?php hub_view_account_who(); ?>"""),
+    ("""        <h1 data-welcome-text="Welcome to the Hub, Sam">Good morning, Sam</h1>
+        <p>Station Road Barbers &middot; <a href="/business/station-road-barbers-harrow-town-centre.html">View my listing</a></p>""",
+     """        <?php hub_view_account_hello(); ?>"""),
+    ("""        <p>Station Road Barbers. Payments are handled securely by Stripe.</p>""",
+     """        <p><?php echo esc_html( hub_account_current()['business'] ? hub_account_current()['business']['name'] . '. ' : '' ); ?>Payments are handled securely by Stripe.</p>"""),
+]
+
+
+# Billing: the sample plan card becomes the business's own; Stripe links go to the billing pages (app/setup/billing.php)
+BILLING_FAILED = re.compile(r'    <!-- Example state: shown only after invoice.payment_failed.*?\n    </div>\n', re.S)
+BILLING_PLAN_CARD = re.compile(r'    <section class="plan-card" aria-labelledby="cur-plan">.*?</section>', re.S)
+
+
+def account_swaps(body):
+    for old, new in ACCOUNT_SWAPS:
+        body = body.replace(old, new)
+    body = BILLING_FAILED.sub("    <?php hub_view_billing_failed_notice(); ?>\n", body)
+    body = BILLING_PLAN_CARD.sub("    <?php hub_view_billing_plan_card(); ?>", body)
+    body = body.replace('href="#stripe-portal"', 'href="/billing/portal/"')
+    body = re.sub(r'href="/sign-in\.html\?plan=(\w+)&amp;billing=(\w+)"', r'href="/billing/checkout/?plan=\1&amp;billing=\2"', body)
+    return body
+
+
 def write_pages():
     out_dir = THEME / "page-templates"
     out_dir.mkdir(exist_ok=True)
@@ -121,11 +149,11 @@ def write_pages():
             continue
         meta, body = build.parse(page.read_text(encoding="utf-8"))
         path = seo.clean_path(stem)                       # "/claim/submitted/", "/", "/404.html"
-        body = convert_links(nav_placeholders(hub_only(expand(body))))
+        body = convert_links(nav_placeholders(hub_only(expand(account_swaps(body)))))
         check(stem, body)
         meta_php = ",\n\t".join(f"{php_str(k)} => {php_str(v)}" for k, v in sorted(meta.items()))
         tpl = (f"<?php\n/**\n * {meta.get('title', stem)} (converted from src/pages/{stem}.html).\n * URL: {path}\n */\n"
-               f"defined( 'ABSPATH' ) || exit;\nho_set_page( array(\n\t{meta_php},\n) );\nget_header();\n?>\n{body}\n<?php get_footer();\n")
+               f"defined( 'ABSPATH' ) || exit;\nhub_set_page( array(\n\t{meta_php},\n) );\nget_header();\n?>\n{body}\n<?php get_footer();\n")
         if stem not in HAND_EDITED:
             (out_dir / f"{stem}.php").write_text(tpl, encoding="utf-8", newline="\n")
         page_map[stem] = {"path": path.strip("/"), "title": meta.get("title", stem)}
@@ -142,9 +170,15 @@ def write_pages():
 # ---------------------------------------------------------------- assets
 def copy_assets():
     dest = THEME / "assets"
+    # Theme-only assets the prototype doesn't have (the harrowonline.org favicon) are kept
+    keep = {"img/favicon"}
     if dest.exists():
-        shutil.rmtree(dest)
-    shutil.copytree(SITE_ASSETS, dest)
+        for item in sorted(dest.rglob("*"), reverse=True):
+            rel = item.relative_to(dest).as_posix()
+            if any(rel == k or rel.startswith(k + "/") or k.startswith(rel + "/") for k in keep):
+                continue
+            item.unlink() if item.is_file() else item.rmdir()
+    shutil.copytree(SITE_ASSETS, dest, dirs_exist_ok=True)
     (dest / "data").mkdir(exist_ok=True)
     shutil.copy2(ROOT / "site" / "hub" / "data" / "hub-index.json", dest / "data" / "hub-index.json")
     # hub.js: pages come from data-base (the Hub's home URL path); images, icons and data from the theme

@@ -275,3 +275,24 @@ add_action( 'acf/save_post', function ( $post_id ) {
 		hub_businesses_db_sync_sort( $post_id );
 	}
 }, 20 );
+
+/**
+ * Set a business's plan (billing: a subscription started, changed or ended). Works for businesses whose details are
+ * in ACF fields and for ones still on their imported record, then keeps the sort keys in step.
+ */
+function hub_businesses_db_set_plan( $post_id, $plan ) {
+	$post_id = (int) $post_id;
+	if ( hub_businesses_db_uses_acf( $post_id ) && function_exists( 'update_field' ) ) {
+		update_field( 'biz_plan', $plan, $post_id );
+		hub_businesses_db_sync_sort( $post_id );
+		return;
+	}
+	$x = get_post_meta( $post_id, '_hub', true );
+	if ( is_array( $x ) && ! empty( $x['claimed'] ) ) {
+		$x['tier'] = $plan;
+		update_post_meta( $post_id, '_hub', $x );
+	}
+	$status = (int) get_post_meta( $post_id, '_hub_status', true );
+	update_post_meta( $post_id, '_hub_tier', $plan );
+	update_post_meta( $post_id, '_hub_rank', $status * 10 + HUB_BUSINESSES_PLAN_RANK[ $plan ] );
+}

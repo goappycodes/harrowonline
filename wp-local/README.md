@@ -59,6 +59,36 @@ local only). In the Claude desktop app, start the **wp-local** preview instead.
 - **Local only:** `wp-config.php`, its keys and the admin login are for local development. Staging and live have
   their own config and a MySQL database.
 
+## Accounts and payments (Stripe)
+
+- **Accounts** (`app/modules/account/`, `app/setup/accounts.php`): sign-in, register, forgot password and
+  sign-out (`/hub/sign-out/`) are real WordPress logins. Every `/hub/account/...` page needs a signed-in user. Two
+  roles: *Business owner* (`hub_business`) and *Organiser* (`hub_organiser`). Neither can open wp-admin. Each
+  account is linked to at most one business. Link one in wp-admin under Users > the user > **Business** (post ID or
+  slug). A local test owner linked to AJ Pizza's is in `hub/LOCAL-ADMIN.txt`.
+- **Payments** (`app/modules/billing/`, `app/setup/billing.php`) use Stripe Checkout and the Stripe customer
+  portal through the official `stripe/stripe-php` library (installed in the theme's `vendor/` by Composer; commit
+  it). Plans: Featured £29/£290 and Local Partner £79/£790 a month/year, with prices including VAT. One-off items
+  (event listing, 7-day feature, sponsor slots) are listed in `app/modules/billing/rules.php`.
+- **Keys** go in the `.env` file in the repository root (never committed): `STRIPE_SECRET_KEY`,
+  `STRIPE_PUBLISHABLE_KEY`, `STRIPE_WEBHOOK_SECRET`. Use **test** keys (`sk_test_`, `pk_test_`) everywhere except
+  live. Without real keys, the payment buttons go to the account billing page with "Online payments aren't
+  switched on yet", and nothing calls Stripe.
+- **First time with a Stripe account:** `php wp-local/hub/stripe-setup-local.php` creates the products and prices
+  in Stripe (looked up by `hub_{plan}_{monthly|annual}` and `hub_{item}_once`). Running it again is safe. In the
+  Stripe dashboard, turn on the customer portal (Settings > Billing > Customer portal): card updates, invoices,
+  cancel, and switching between the Featured and Partner prices.
+- **Webhook:** Stripe tells the Hub about payments at `/hub/wp-json/hub/v1/billing/webhook`. The Hub uses these
+  events to set the business's plan, and it never sets a plan from the browser. Locally:
+  `stripe listen --forward-to localhost:8020/hub/wp-json/hub/v1/billing/webhook`, then put the `whsec_` value it
+  prints in `.env`. On a server, add the endpoint in the Stripe dashboard with these events:
+  `checkout.session.completed`, `customer.subscription.created`, `customer.subscription.updated`,
+  `customer.subscription.deleted`, `invoice.paid` and `invoice.payment_failed`.
+- **Payments log:** wp-admin > Payments lists every payment and invoice the webhook has received (read only).
+- **Dev server caveat:** each deploy replaces the server's database with the committed one, so accounts, plans and
+  payments made on the dev server are lost on the next push. Do payment testing locally until staging has its
+  own database.
+
 ## Dev server (Laravel Forge)
 
 The same WordPress runs on Laravel Forge (server `appy-dev`, site `harrowwp.on-forge.com`):
@@ -66,7 +96,7 @@ https://harrowwp.on-forge.com/hub/. It deploys from `main` with the committed SQ
 
 - **Site:** repository `goappycodes/harrowonline`, branch `main`, root directory `/`, web directory `/wp-local`, so
   WordPress is at `/hub/` as here. Nginx rules (send `/` to `/hub/`, block the database, logs and the local CLI
-  scripts, `noindex` header, extra HTTP password on wp-admin): `forge/nginx-hub.conf`, applied to the site's nginx
+  scripts (any new `*-local.php` script must be added there too), `noindex` header, extra HTTP password on wp-admin): `forge/nginx-hub.conf`, applied to the site's nginx
   config on the server.
 - **Deploys:** push-to-deploy is on, so every push to `main` deploys. Forge's deploy script fetches the branch and runs
   `forge/deploy.sh` from git (reset to the commit, clear SQLite's write-ahead log, reload PHP).

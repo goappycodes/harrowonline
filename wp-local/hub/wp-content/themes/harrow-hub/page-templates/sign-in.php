@@ -1,9 +1,18 @@
 <?php
 /**
- * Sign in (converted from src/pages/sign-in.html).
- * URL: /sign-in/
+ * Sign in (from src/pages/sign-in.html; hand-edited: the form signs in through the account module).
+ * URL: /sign-in/   ?redirect_to= the Hub page to go back to afterwards
  */
 defined( 'ABSPATH' ) || exit;
+$hub_result = null;
+if ( 'POST' === $_SERVER['REQUEST_METHOD'] ) { // phpcs:ignore WordPress.Security.ValidatedSanitizedInput
+	$hub_result = hub_account_sign_in( $_POST ); // phpcs:ignore WordPress.Security.NonceVerification -- the controller checks it
+	if ( $hub_result['ok'] ) {
+		wp_safe_redirect( $hub_result['redirect'] );
+		exit;
+	}
+}
+$hub_return = isset( $_REQUEST['redirect_to'] ) ? esc_url_raw( wp_unslash( $_REQUEST['redirect_to'] ) ) : ''; // phpcs:ignore WordPress.Security.NonceVerification
 hub_set_page( array(
 	'description' => 'Sign in to your Harrow Online Hub account to manage your listing, offers, events and classes.',
 	'hubnav' => 'account',
@@ -21,18 +30,22 @@ get_header();
       <h1 class="authx__title">Sign in</h1>
       <p class="authx__lead">Welcome back. Sign in to manage your listing, offers and events.</p>
 
-      <!-- WP: posts to wp-login.php (or a custom login handler); show .field__error / .notice--error on failure -->
-      <form class="form" action="<?php echo esc_url( hub_url( 'account/' ) ); ?>" method="post">
-        <div class="field">
+      <?php hub_view_form_notice( $hub_result ); ?>
+      <form class="form" action="<?php echo esc_url( hub_url( 'sign-in/' ) ); ?>" method="post">
+        <?php wp_nonce_field( 'hub_account', '_hub_nonce' ); ?>
+        <input type="hidden" name="redirect_to" value="<?php echo esc_attr( $hub_return ); ?>">
+        <div class="field<?php echo esc_attr( hub_view_field_class( $hub_result, 'log' ) ); ?>">
           <label for="si-email">Email address</label>
-          <input class="input" id="si-email" type="email" name="log" autocomplete="email" required>
+          <input class="input" id="si-email" type="email" name="log" autocomplete="email" required value="<?php echo esc_attr( hub_view_posted( 'log' ) ); ?>">
+          <?php hub_view_field_error( $hub_result, 'log' ); ?>
         </div>
-        <div class="field">
+        <div class="field<?php echo esc_attr( hub_view_field_class( $hub_result, 'pwd' ) ); ?>">
           <div class="split">
             <label class="field__label" for="si-pass">Password</label>
             <a class="link-quiet" href="<?php echo esc_url( hub_url( 'forgot-password/' ) ); ?>">Forgotten your password?</a>
           </div>
           <input class="input" id="si-pass" type="password" name="pwd" autocomplete="current-password" required>
+          <?php hub_view_field_error( $hub_result, 'pwd' ); ?>
         </div>
         <label class="check"><input type="checkbox" name="rememberme" value="forever"> Keep me signed in on this device</label>
         <button class="ho-btn ho-btn--primary ho-btn--block" type="submit">Sign in</button>

@@ -213,3 +213,22 @@ function _hub_businesses_names() {
 	}
 	return $names;
 }
+
+/**
+ * Change a claimed business's plan (called by billing when a subscription starts, changes or ends).
+ *
+ * @param int    $id
+ * @param string $plan 'basic' | 'enhanced' | 'premium' | 'partner'
+ * @return array|WP_REST_Response|null|WP_Error business
+ */
+function hub_business_set_plan( $id, $plan, $mode = HUB_WEB ) {
+	if ( ! in_array( $plan, array( 'basic', 'enhanced', 'premium', 'partner' ), true ) ) {
+		return hub_respond_error( 'bad_plan', 'Unknown plan: ' . $plan, $mode, 400 );
+	}
+	$post = hub_businesses_db_get( (int) $id );
+	if ( ! $post ) {
+		return hub_respond_error( 'not_found', 'No business ' . (int) $id, $mode );
+	}
+	hub_businesses_db_set_plan( $post->ID, $plan );
+	return hub_respond( _hub_business_build( hub_businesses_db_get( $post->ID ) ), $mode );
+}

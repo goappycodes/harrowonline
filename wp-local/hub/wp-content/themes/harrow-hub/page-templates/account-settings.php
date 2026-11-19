@@ -17,8 +17,7 @@ get_header();
 <div class="ho-container dash">
   <aside class="dash-nav" aria-label="Account">
     <div class="dash-nav__who">
-      <span class="mono mono--sm" aria-hidden="true">SR</span>
-      <div><strong>Station Road Barbers</strong><span>Featured plan</span></div>
+      <?php hub_view_account_who(); ?>
     </div>
     <div class="dash-add">
       <!-- "+ Add" on every account page (client plan, Nov 2026): an event, a class or an offer, one tap from anywhere. -->
@@ -130,7 +129,7 @@ get_header();
       <p class="form-card__sub">This can&rsquo;t be undone.</p>
       <ul class="ticks ticks--dark small">
         <li>Your listings go back to unclaimed. The business details stay on the Hub, but your photos, offers and events are removed.</li>
-        <li>Cancel your Featured plan in <a href="#stripe-portal">Manage billing</a> first. We can&rsquo;t close an account with an active plan.</li>
+        <li>Cancel your Featured plan in <a href="<?php echo esc_url( hub_url( 'billing/portal/' ) ); ?>">Manage billing</a> first. We can&rsquo;t close an account with an active plan.</li>
         <li>Your newsletter subscription isn&rsquo;t affected. Change it above.</li>
       </ul>
       <div class="notice notice--warn mt-4">

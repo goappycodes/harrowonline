@@ -8,3 +8,7 @@ Password: tH2V07vDcRN80y12S1WM
 
 User: shubhankar
 Password: KVSlmrWkVf5wHLoOemEs
+
+Test business owner (front-end account at /hub/sign-in/, linked to AJ Pizza's)
+User: owner@harrowonline.test
+Password: qjDW7gFfmKFAfoKv2hsW
