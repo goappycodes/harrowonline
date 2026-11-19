@@ -54,3 +54,31 @@ local only). In the Claude desktop app, start the **wp-local** preview instead.
   keep one version and redo the other change.
 - **Local only:** `wp-config.php`, its keys and the admin login are for local development. Staging and live have
   their own config and a MySQL database.
+
+## Dev server (Laravel Forge)
+
+The same WordPress runs on Laravel Forge (server `appy-dev`, https://harrowonline-hub.on-forge.com/hub/, until Forge sets
+that up also https://harrowonline-wp.on-forge.com/hub/), deployed
+from git with the committed SQLite database.
+
+- **Site:** repository `goappycodes/harrowonline`, web directory `/wp-local`, so WordPress is at `/hub/` as here.
+  Nginx rules (send `/` to `/hub/`, block the database, logs and the local CLI scripts, `noindex` header):
+  `forge/nginx-hub.conf`. Deploy script: `forge/deploy.sh`.
+- **Auto-deploy:** Forge stopped running its site jobs for `appy-dev` (18 Nov 2026: repository installs and site
+  removals never ran), so the Hub runs outside Forge's site folders, in `/home/forge/harrow-hub-app`, and looks after
+  itself: a root cron job runs `forge/autodeploy.sh` (installed as `/usr/local/bin/harrow-hub-autodeploy`) every
+  minute. It deploys when the tracked branch (`DEPLOY_BRANCH` in `.env`, else `main`) has a new commit or the
+  checkout is damaged, reloads PHP, and keeps the Forge vhosts listed in `/etc/harrow-hub/vhosts` pointed at the app
+  with the Hub nginx rules. Log: `/var/log/harrow-hub-autodeploy.log`.
+- **Addresses:** `WP_HOME` may list several comma-separated addresses; each request uses the one matching its host.
+- **Settings:** `wp-config.php` reads every server setting from the environment or the `.env` file in the
+  repository root (Forge: Site > Environment, never committed): `WP_HOME` (with `/hub`), the eight keys and salts,
+  `WP_ENVIRONMENT_TYPE`, `WP_DEBUG`, `DISALLOW_FILE_MODS`, and the database (`DB_PATH`, or `DB_ENGINE=mysql` with
+  `DB_NAME`, `DB_USER`, `DB_PASSWORD`, `DB_HOST`). With no `.env` the local values above apply.
+- **Content comes from git.** Each deploy replaces the server's database with the committed `hub.sqlite`, so
+  changes made in the server's wp-admin are lost on the next deploy. Change content locally and commit it.
+- **Old SQLite on the server:** `appy-dev` runs Ubuntu 20.04 (SQLite 3.31; the plugin wants 3.37+), so its `.env` sets
+  `WP_SQLITE_UNSAFE_ENABLE_UNSUPPORTED_VERSIONS=true`, the SQLite plugin's own back-compat mode for SQLite 3.27+.
+- **Logins:** wp-admin and the login page first ask for an extra HTTP username and password (kept out of git:
+  `/home/forge/harrow-hub-app/.htpasswd-hub` on the server, the plain values with the project's private credentials).
+  Behind it, the WordPress users and passwords are the ones in the committed database, i.e. the local ones.
