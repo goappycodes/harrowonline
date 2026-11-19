@@ -102,6 +102,23 @@ local only). In the Claude desktop app, start the **wp-local** preview instead.
     - **Move to Trash:** declines it.
 
     Both email the person who added it.
+- **Offers, events and classes from accounts** (`app/modules/submissions/`, `app/setup/submissions.php`): every
+  "Add an offer / event / class" button opens `/hub/account/{offers,events,classes}/edit/`. **Send for approval**
+  saves it as **Pending Review**; **Save draft** saves a Draft. Who can add what follows the Pricing page:
+  - **Offers:** Featured and Local Partner businesses.
+  - **Classes:** Featured and Local Partner businesses, and organisers (free).
+  - **Events:** the same, plus a Basic business can add one for £15. It's saved as Pending Review and marked unpaid
+    until the Stripe payment's webhook marks it paid; staff see "not paid yet" on it.
+
+  Owners can change their drafts and pending items (`?id=`). Live ones are locked: they email us. New items get the
+  same records as the imported ones (`_hub`), their business link, and a photo for events and classes. Staff review
+  them in wp-admin > Offers / Events / Classes > Pending, with a "Sent from the website" box.
+  - **Publish:** puts it live.
+  - **Move to Trash:** declines it.
+
+  Both email the person, unless they turned those emails off in Settings.
+
+  The account list pages (`account/offers/` and so on) still show the prototype's sample items.
 - **Settings** (`/hub/account/settings/`, `parts/account/settings.php`): name; email, which changes only when a
   link sent to the new address is clicked (the login changes with it); password, which needs the current one,
   keeps this device signed in and gets WordPress's "Password changed" email; email choices; newsletter editions,

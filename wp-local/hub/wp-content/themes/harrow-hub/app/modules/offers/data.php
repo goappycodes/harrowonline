@@ -88,3 +88,54 @@ add_filter( 'acf/update_value/key=field_hub_offer_business', function ( $value, 
 	}
 	return $new ? (string) $new : '';
 }, 20, 2 );
+
+/* ------------------------------------------------------------------ offers sent from the website (submissions module) */
+
+/** An offer in any status (drafts and ones waiting for review), or null. */
+function hub_offers_db_get_any( $id ) {
+	$post = get_post( (int) $id );
+	return ( $post && 'hub_offer' === $post->post_type ) ? $post : null;
+}
+
+/**
+ * Create or update an offer sent from the website. Its business gets it in its Offers list too.
+ *
+ * @param int    $id          0 for a new offer
+ * @param string $status      'draft' | 'pending'
+ * @param array  $record      the "_hub" record
+ * @param array  $form        the form's values, for editing it again ("_hub_form")
+ * @return int|WP_Error
+ */
+function hub_offers_db_save( $id, $status, $title, $content, array $record, $business_id, array $form ) {
+	$args = array( 'post_type' => 'hub_offer', 'post_status' => $status, 'post_title' => $title, 'post_content' => $content );
+	if ( $id ) {
+		$args['ID'] = (int) $id;
+	}
+	$id = $id ? wp_update_post( $args, true ) : wp_insert_post( $args, true );
+	if ( is_wp_error( $id ) ) {
+		return $id;
+	}
+	// WordPress leaves the slug empty on drafts, and clears it on "pending" posts saved by accounts that can't publish
+	// (every Hub account): set it here, so the record and the page link work at every status
+	if ( '' === (string) get_post_field( 'post_name', $id ) ) {
+		global $wpdb;
+		$wpdb->update( $wpdb->posts, array( 'post_name' => wp_unique_post_slug( sanitize_title( $title ), $id, 'publish', 'hub_offer', 0 ) ), array( 'ID' => $id ) ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery
+		clean_post_cache( $id );
+	}
+	$record['slug'] = get_post_field( 'post_name', $id );
+	update_post_meta( $id, '_hub', $record );
+	update_post_meta( $id, '_hub_end', $record['end'] );
+	update_post_meta( $id, '_hub_featured', 0 );
+	update_post_meta( $id, '_hub_form', $form );
+	update_post_meta( $id, 'offer_business', (int) $business_id );
+	update_post_meta( $id, '_offer_business', 'field_hub_offer_business' );
+	update_post_meta( $id, '_hub_business', (int) $business_id );
+	if ( '' === get_post_meta( $id, '_hub_index', true ) ) {
+		update_post_meta( $id, '_hub_index', 99 );   // after the business's existing offers
+	}
+	$list = array_map( 'intval', (array) get_field( 'biz_offers', $business_id, false ) );
+	if ( ! in_array( (int) $id, $list, true ) ) {
+		update_post_meta( $business_id, 'biz_offers', array_map( 'strval', array_merge( $list, array( (int) $id ) ) ) );
+	}
+	return (int) $id;
+}

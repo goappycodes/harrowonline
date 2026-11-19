@@ -15,6 +15,7 @@ their "gen-*" partials are included here as they are for now.
     python tools/build_theme.py
 """
 import json
+import html
 import re
 import shutil
 import sys
@@ -153,6 +154,72 @@ def account_swaps(body):
     return body
 
 
+
+# Account offer / event / class pages: the sample form becomes a real one (app/modules/submissions; posts are saved by
+# app/setup/submissions.php before the page is drawn). Fields keep their names, so hub.js's live preview still works.
+SUBMISSION_KINDS = {"account-offer-edit": "offer", "account-event-edit": "event", "account-class-edit": "class"}
+
+
+def submission_form(stem, body):
+    kind = SUBMISSION_KINDS.get(stem)
+    if not kind:
+        return body
+    val = lambda name: f"hub_view_submission_value( $hub_page, '{name}' )"
+    # The page's data, then the heading, crumb and notices
+    body = f"<?php $hub_page = hub_submission_page( '{kind}', $_GET ); $hub_result = hub_submission_result(); // phpcs:ignore WordPress.Security.NonceVerification ?>\n" + body
+    body = re.sub(r'<div class="dash-head">.*?\n    </div>\n', "<?php hub_view_submission_head( $hub_page ); ?>\n", body, count=1, flags=re.S)
+    body = re.sub(r'(<li><span aria-current="page">)[^<]*(</span></li></ol>\s*</nav>)', r"\1<?php hub_view_submission_crumb( $hub_page ); ?>\2", body, count=1)
+    body = re.sub(r'\n    <!-- Shown when the owner opens an offer our team sent back.*?\n    </div>\n', "\n", body, count=1, flags=re.S)
+    # The class page's "edits may need approval again" note: live items are locked for now (email us to change them)
+    body = re.sub(r'\n    <div class="notice notice--warn mb-5">\s*<svg[^>]*><use href="#i-info"/></svg>\s*<div>\s*<p><strong>Edits to an approved class.*?-->\n', "\n", body, count=1, flags=re.S)
+    body = body.replace('    <div class="layout-aside', "    <?php hub_view_submission_notices( $hub_page, $hub_result ); ?>\n    <div class=\"layout-aside", 1)
+    # The form: posts to itself, with the token and the item being edited; hidden when it can't be used
+    body, n = re.subn(r'<form class="form-card form" action="#" method="post"([^>]*)>',
+                      lambda m: ("<?php if ( 'ready' === $hub_page['state'] ) : ?>\n"
+                                 f'      <form class="form-card form" action="<?php echo esc_url( hub_view_submission_action( $hub_page ) ); ?>" method="post" enctype="multipart/form-data"{m.group(1)}>\n'
+                                 "        <?php wp_nonce_field( 'hub_submission', '_hub_nonce' ); ?>\n"
+                                 "        <?php if ( $hub_page['item'] ) : ?><input type=\"hidden\" name=\"id\" value=\"<?php echo (int) $hub_page['item']['id']; ?>\"><?php endif; ?>"),
+                      body, count=1)
+    assert n == 1, stem
+    body = body.replace("</form>", "</form>\n      <?php endif; ?>", 1)
+    body = re.sub(r'\s*<input type="hidden" name="(listing|organiser_listing)"[^>]*>', "", body)
+    if kind == "class":
+        body = body.replace('name="term"', 'name="term_type"')   # WordPress reads a posted "term" as a taxonomy query
+    # Inputs: values from the controller (what was sent, what's saved, or the defaults); radios and boxes ticked to match
+    def field(m):
+        tag = m.group(0)
+        name = re.search(r'name="([^"]+)"', tag)
+        typ = re.search(r'type="([^"]+)"', tag)
+        if not name or not typ or typ.group(1) in ("hidden", "file"):
+            return tag
+        name, typ = name.group(1), typ.group(1)
+        if typ in ("radio", "checkbox"):
+            value = re.search(r'value="([^"]*)"', tag).group(1)
+            tag = re.sub(r"\s+checked(?=[\s>])", "", tag)
+            extra = f" <?php checked( {val(name)}, '{value}' ); ?>"
+            if name == "venue_is_listing" and value == "1":
+                extra += " <?php disabled( ! $hub_page['business'] ); ?>"
+            return tag[:-1] + extra + ">"
+        tag = re.sub(r'\s+value="[^"]*"', "", tag)
+        return tag[:-1] + f' value="<?php echo esc_attr( {val(name)} ); ?>">'
+    body = re.sub(r"<input [^>]*>", field, body)
+    body = re.sub(r'(<textarea [^>]*name="([^"]+)"[^>]*>).*?(</textarea>)',
+                  lambda m: m.group(1) + f"<?php echo esc_textarea( {val(m.group(2))} ); ?>" + m.group(3), body, flags=re.S)
+    def select(m):
+        name = m.group(2)
+        def opt(o):
+            v = re.search(r'value="([^"]*)"', o.group(1))
+            v = v.group(1) if v else html.unescape(re.sub(r"<[^>]+>", "", o.group(2))).strip()
+            attrs = re.sub(r"\s+selected", "", o.group(1))
+            return f"<option{attrs} <?php selected( {val(name)}, '{v.replace(chr(39), chr(92) + chr(39))}' ); ?>>{o.group(2)}</option>"
+        return m.group(1) + re.sub(r"<option([^>]*)>(.*?)</option>", opt, m.group(3)) + m.group(4)
+    body = re.sub(r'(<select [^>]*name="([^"]+)"[^>]*>)(.*?)(</select>)', select, body, flags=re.S)
+    # The business: "At my business" address, and the preview's business line
+    body = re.sub(r"(<p class=\"help mb-0\" data-venue-home>)[^<]*(</p>)", r"\1<?php echo esc_html( $hub_page['venue_home'] ); ?>\2", body)
+    body = body.replace("Station Road Barbers &middot; Harrow Town Centre", "<?php echo esc_html( $hub_page['by'] ); ?>")
+    return body
+
+
 def write_pages():
     out_dir = THEME / "page-templates"
     out_dir.mkdir(exist_ok=True)
@@ -163,7 +230,7 @@ def write_pages():
             continue
         meta, body = build.parse(page.read_text(encoding="utf-8"))
         path = seo.clean_path(stem)                       # "/claim/submitted/", "/", "/404.html"
-        body = convert_links(nav_placeholders(hub_only(expand(account_swaps(body)))))
+        body = convert_links(nav_placeholders(hub_only(expand(account_swaps(submission_form(stem, body))))))
         check(stem, body)
         meta_php = ",\n\t".join(f"{php_str(k)} => {php_str(v)}" for k, v in sorted(meta.items()))
         tpl = (f"<?php\n/**\n * {meta.get('title', stem)} (converted from src/pages/{stem}.html).\n * URL: {path}\n */\n"

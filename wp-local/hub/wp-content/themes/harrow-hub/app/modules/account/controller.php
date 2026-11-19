@@ -31,6 +31,20 @@ function hub_account_for_user( $user_id, $mode = HUB_WEB ) {
 	return hub_respond( $u ? _hub_account_for_user( $u ) : hub_account_shape_guest(), $mode );
 }
 
+/** What an account said about itself when registering: { organisation, area (slug) }. */
+function hub_account_profile( $user_id ) {
+	return array(
+		'organisation' => (string) get_user_meta( (int) $user_id, 'hub_organisation', true ),
+		'area'         => (string) get_user_meta( (int) $user_id, 'hub_area', true ),
+	);
+}
+
+/** Does this account want this kind of email? ('approved' | 'rejected' | 'ended', from the settings page) */
+function hub_account_wants_email( $user_id, $kind ) {
+	$n = hub_account_db_notify( (int) $user_id );
+	return ! isset( $n[ $kind ] ) || $n[ $kind ];
+}
+
 /** The user who manages a business, or 0. */
 function hub_account_owner_id( $business_id ) {
 	return hub_account_db_owner_id( $business_id );

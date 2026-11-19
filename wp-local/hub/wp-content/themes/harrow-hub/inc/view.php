@@ -324,3 +324,102 @@ function hub_view_billing_plan_card() {
 	echo '<section class="plan-card" aria-labelledby="cur-plan"><div><span class="eyebrow">Current plan</span><h2 id="cur-plan">' . esc_html( $title ) . '</h2>'
 		. '<p class="mb-0">' . $line . '</p>' . $extra . '</div><div class="plan-card__actions">' . $btn . '</div></section>'; // phpcs:ignore WordPress.Security.EscapeOutput -- built from escaped parts above
 }
+
+/* ------------------------------------------------------------------ add/edit offer, event, class forms */
+
+/**
+ * A field's value on an offer, event or class form: what was just sent (after an error), else what's saved (editing
+ * a draft), else the form's default. $name is the form field's name ("slots[0][day]" for nested ones).
+ */
+function hub_view_submission_value( array $page, $name ) {
+	if ( 'POST' === $_SERVER['REQUEST_METHOD'] ) { // phpcs:ignore WordPress.Security.ValidatedSanitizedInput
+		$v = $_POST; // phpcs:ignore WordPress.Security.NonceVerification
+		foreach ( preg_split( '/[\[\]]+/', $name, -1, PREG_SPLIT_NO_EMPTY ) as $k ) {
+			$v = is_array( $v ) && isset( $v[ $k ] ) ? $v[ $k ] : '';
+		}
+		return is_scalar( $v ) ? wp_unslash( (string) $v ) : '';
+	}
+	$f = $page['form'];
+	// Form field -> saved key (and how to turn the saved value back into the form's)
+	$map = array(
+		'terms' => 'terms_text', 'start_date' => 'date', 'start_time' => 'start', 'end_time' => 'end', 'venue' => 'venue_name',
+		'price' => 'price_text', 'slots[0][start]' => 'start', 'slots[0][end]' => 'end', 'term_type' => 'term',
+	);
+	if ( $f ) {
+		if ( 'venue_is_listing' === $name ) {
+			return ! empty( $f['at_listing'] ) ? '1' : '0';
+		}
+		if ( 'slots[0][day]' === $name ) {
+			return isset( $f['day'] ) ? HUB_SUBMISSIONS_DAYS[ (int) $f['day'] ] : 'Monday';
+		}
+		if ( in_array( $name, array( 'no_half_term', 'free_trial' ), true ) ) {
+			return ! empty( $f[ $name ] ) ? '1' : '';
+		}
+		$key = isset( $map[ $name ] ) ? $map[ $name ] : $name;
+		if ( isset( $f[ $key ] ) && is_scalar( $f[ $key ] ) ) {
+			return (string) $f[ $key ];
+		}
+	}
+	$defaults = array(
+		'audience' => 'everyone', 'age' => 'All ages', 'level' => 'All levels', 'price_per' => 'session', 'booking' => 'turn-up',
+		'term_type' => 'ongoing', 'slots[0][day]' => 'Monday', 'venue_is_listing' => $page['business'] ? '1' : '0',
+		'redeem' => 'Mention Harrow Online when you book.',
+	);
+	return isset( $defaults[ $name ] ) ? $defaults[ $name ] : '';
+}
+
+/** Above an offer, event or class form: saved / sent notices, the item's status, errors, or why it can't be used. */
+function hub_view_submission_notices( array $page, $result ) {
+	$kind  = $page['kind'];
+	$saved = isset( $_GET['saved'] ) ? sanitize_key( $_GET['saved'] ) : ''; // phpcs:ignore WordPress.Security.NonceVerification
+	$box   = function ( $type, $icon, $html ) {
+		echo '<div class="notice notice--' . esc_attr( $type ) . ' mb-5" role="status"><svg class="ho-icon"><use href="#i-' . esc_attr( $icon ) . '"/></svg><div>' . $html . '</div></div>'; // phpcs:ignore WordPress.Security.EscapeOutput -- built from escaped parts
+	};
+	if ( 'ready' !== $page['state'] ) {
+		$more = 'upgrade' === $page['state'] ? ' <a href="' . esc_url( hub_url( 'pricing/' ) ) . '">See plans</a>' : ( 'unconfirmed' === $page['state'] ? ' <a href="' . esc_url( hub_url( 'account/' ) ) . '">Go to my account</a>' : '' );
+		$box( 'locked' === $page['state'] ? 'plain' : 'warn', 'locked' === $page['state'] ? 'check' : 'alert', '<p class="mb-0">' . wp_kses( $page['message'], array() ) . $more . '</p>' );
+		return;
+	}
+	if ( 'pending' === $saved ) {
+		$pay = $page['item'] && $page['item']['needs_pay'] && ! $page['item']['paid']
+			? ' The £15 listing fee is still to pay: online payments aren&rsquo;t switched on yet, so we&rsquo;ll be in touch about it.' : '';
+		$box( 'ok', 'check', '<p class="mb-0"><strong>Sent for checking.</strong> We check every ' . esc_html( $kind ) . ' before it goes live, usually within 2 working days, and email you either way.' . $pay . '</p>' );
+	} elseif ( 'draft' === $saved ) {
+		$box( 'ok', 'check', '<p class="mb-0"><strong>Draft saved.</strong> Send it for approval when you&rsquo;re ready.</p>' );
+	} elseif ( $page['item'] ) {
+		$box( 'plain', 'info', '<p class="mb-0">Status: <strong>' . esc_html( $page['item']['status_label'] ) . '</strong>' . ( 'pending' === $page['item']['status'] ? '. You can still change it while we check it.' : '.' ) . '</p>' );
+	}
+	if ( 'pay' === $page['access'] && ! $page['item'] && ! $result ) {
+		$box( 'plain', 'info', '<p class="mb-0">On the Basic plan, each event costs <strong>£15</strong>, paid when you send it. Featured and Local Partner include unlimited events. <a href="' . esc_url( hub_url( 'pricing/' ) ) . '">See plans</a></p>' );
+	}
+	if ( $result && ! $result['ok'] ) {
+		$items = '';
+		foreach ( (array) $result['errors'] as $msg ) {
+			$items .= '<li>' . wp_kses( $msg, array() ) . '</li>';
+		}
+		$box( 'error', 'alert', '<p><strong>' . wp_kses( $result['message'], array() ) . '</strong></p>' . ( $items ? '<ul class="mb-0">' . $items . '</ul>' : '' ) );
+	}
+}
+
+/** Where an offer, event or class form posts: its own page (with ?id= when editing). */
+function hub_view_submission_action( array $page ) {
+	$url = hub_url( HUB_SUBMISSIONS_KINDS[ $page['kind'] ][2] . 'edit/' );
+	return $page['item'] ? add_query_arg( 'id', $page['item']['id'], $url ) : $url;
+}
+
+/** The heading of an offer, event or class page: "Your offer", who it's for, and the item's status. */
+function hub_view_submission_head( array $page ) {
+	$kind   = $page['kind'];
+	$item   = $page['item'];
+	$status = $item ? ' &middot; <span class="status status--' . ( 'publish' === $item['status'] ? 'active' : 'pending' ) . '">' . esc_html( $item['status_label'] ) . '</span>' : '';
+	$view   = array( 'offer' => array( 'offers/', 'View Local Offers' ), 'event' => array( 'events/', 'View What&rsquo;s On' ), 'class' => array( 'classes/', 'View Classes' ) );
+	echo '<div class="dash-head"><div><h1>Your ' . esc_html( $kind ) . '</h1>'
+		. '<p>' . ( '' !== $page['by'] ? 'For ' . esc_html( $page['by'] ) . '. ' : '' ) . 'We check every ' . esc_html( $kind ) . ' before it goes live, usually within 2 working days.' . $status . '</p></div>'
+		. '<a class="ho-btn ho-btn--outline" href="' . esc_url( $item && 'publish' === $item['status'] ? $item['url'] : hub_url( $view[ $kind ][0] ) ) . '"><svg class="ho-icon"><use href="#i-external"/></svg>' . $view[ $kind ][1] . '</a></div>';
+}
+
+/** The breadcrumb's last step: the item's name when editing, else "Add an offer". */
+function hub_view_submission_crumb( array $page ) {
+	$f = $page['form'];
+	echo esc_html( $page['item'] && ! empty( $f['title'] ) ? $f['title'] : ( 'offer' === $page['kind'] ? 'Add an offer' : ( 'event' === $page['kind'] ? 'Add an event' : 'Add a class' ) ) );
+}

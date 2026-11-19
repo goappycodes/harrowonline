@@ -93,6 +93,41 @@ function hub_offers_for_business( $business_id, $mode = HUB_WEB ) {
 	return hub_respond( $out, $mode );
 }
 
+/* ------------------------------------------------------------------ offers sent from the website (submissions module) */
+
+/**
+ * Save an offer from the account pages (the submissions module checks who may, and the values).
+ *
+ * @param array $f { title, description, start, end (Y-m-d), ends_label ("31 December 2026"), code, redeem, terms[], audience }
+ * @param array $business { id, slug } of the owner's business
+ * @return int|WP_Error post ID
+ */
+function hub_offer_save_submission( $id, $status, array $f, array $business ) {
+	$record = array(
+		'title'    => $f['title'],
+		'text'     => $f['description'],
+		'start'    => $f['start'],
+		'end'      => $f['end'],
+		'ends'     => $f['ends_label'],
+		'code'     => $f['code'],
+		'redeem'   => $f['redeem'],
+		'terms'    => $f['terms'],
+		'sub'      => 'subscribers' === $f['audience'],
+		'business' => $business['slug'],
+	);
+	return hub_offers_db_save( (int) $id, $status, $f['title'], $f['description'], $record, (int) $business['id'], $f );
+}
+
+/** An offer sent from the website, any status: { id, status, title, url, form } or null. */
+function hub_offer_submission( $id ) {
+	$post = hub_offers_db_get_any( $id );
+	if ( ! $post ) {
+		return null;
+	}
+	$form = get_post_meta( $post->ID, '_hub_form', true );
+	return array( 'id' => $post->ID, 'status' => $post->post_status, 'title' => hub_plain( $post->post_title ), 'url' => hub_url( 'offers/' . $post->post_name . '/' ), 'form' => is_array( $form ) ? $form : null );
+}
+
 /* ------------------------------------------------------------------ internal */
 
 /** One offer in the shape.php shape (with "_sort"). */

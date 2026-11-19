@@ -35,7 +35,8 @@ app/
 │   ├── accounts.php       sign-in redirects for /account/ pages, sign-out, wp-admin Users: plan and business fields
 │   ├── billing.php        /billing/checkout/ and /billing/portal/ (send to Stripe), Payments log in wp-admin
 │   ├── claims.php         claim pages' sign-in and email link, wp-admin > Claims (review, approve, reject)
-│   └── add-business.php   /add-business/ sign-in; Pending Review -> Published (owner gets it) or Trash (declined)
+│   ├── add-business.php   /add-business/ sign-in; Pending Review -> Published (owner gets it) or Trash (declined)
+│   └── submissions.php    account offer/event/class forms: saving, Publish or Trash emails, £15 event payment
 └── modules/
     ├── businesses/        data.php  rules.php  shape.php  controller.php  routes.php
     ├── events/            one-off events and weekly classes (What's On)
@@ -44,7 +45,8 @@ app/
     ├── areas/
     ├── account/           sign-in, register, reset, the signed-in account and its business
     ├── billing/           Stripe: checkout, customer portal, webhook (sets the business's plan)
-    └── claims/            claiming a business: proof (email, phone, document), staff approve or reject
+    ├── claims/            claiming a business: proof (email, phone, document), staff approve or reject
+    └── submissions/       offers, events and classes from the account pages: who may, drafts, Pending Review
 parts/                     display only: each part gets arrays in $args and prints them
 ├── account/               settings (the settings page's forms)
 ├── businesses/            row, card, ticker, event-row, profile, profile-imported, directory
