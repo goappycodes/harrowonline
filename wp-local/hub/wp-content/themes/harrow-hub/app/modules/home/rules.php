@@ -94,8 +94,19 @@ function hub_home_rule_defaults() {
 	);
 }
 
-/** The categories shown when none are picked: today's six. */
-const HUB_HOME_DEFAULT_CATEGORIES = array( 'shops', 'restaurants', 'doctors-dentists-and-clinics', 'hair-and-beauty', 'motoring', 'finance-and-accountants' );
+/**
+ * Popular categories: the $max categories with the most businesses, or, when some are picked, the picked ones.
+ * Most businesses first (equal counts A to Z); categories with no businesses are left out.
+ */
+function hub_home_rule_categories( array $cats, array $picked, $max ) {
+	$cats = array_filter( $cats, function ( $c ) use ( $picked ) {
+		return $c['business_count'] > 0 && ( ! $picked || in_array( $c['slug'], $picked, true ) );
+	} );
+	usort( $cats, function ( $a, $b ) {
+		return array( $b['business_count'], $a['name'] ) <=> array( $a['business_count'], $b['name'] );
+	} );
+	return array_slice( $cats, 0, $max );
+}
 
 /**
  * A link as typed in wp-admin -> full URL. "events/classes/" or "/hub/events/" is a Hub page; a full web address,

@@ -12,7 +12,7 @@ defined( 'ABSPATH' ) || exit;
  *     offers:        offer[]        More Local Offers (6, without the weekend's offer)
  *     stats:         { offers, week_events, classes, businesses, areas }
  *     featured:      business[]     the picked businesses, otherwise the automatic Featured and Local Partner ones
- *     categories:    category[]     the picked categories (default: today's six), most businesses first
+ *     categories:    category[]     the 6 with the most businesses (or the picked ones), most businesses first
  *     areas:         area[] + bar (% of the biggest area)
  *     newest:        business[]     "Just joined"
  * }
@@ -52,13 +52,8 @@ function hub_home_page( $mode = HUB_WEB ) {
 		$featured = hub_businesses_featured( HUB_HOME_FEATURED )['items'];
 	}
 
-	// Popular categories: the picked ones (or today's six), most businesses first
-	$wanted = $s['home_cats_pick'] ? $s['home_cats_pick'] : HUB_HOME_DEFAULT_CATEGORIES;
-	$cats   = array_values( array_filter( hub_categories_list()['items'], function ( $c ) use ( $wanted ) {   // categories module
-		return in_array( $c['slug'], $wanted, true );
-	} ) );
-	usort( $cats, function ( $a, $b ) { return $b['business_count'] <=> $a['business_count']; } );
-	$cats = array_slice( $cats, 0, HUB_HOME_CATEGORIES );
+	// Popular categories: the 6 with the most businesses, or the picked ones
+	$cats = hub_home_rule_categories( hub_categories_list()['items'], $s['home_cats_pick'], HUB_HOME_CATEGORIES );   // categories module
 
 	// Browse by area: every area, with a bar against the biggest
 	$areas = hub_areas_list();                                                  // areas module
@@ -100,9 +95,6 @@ function hub_home_fields() {
 		if ( ( '' === $v || array() === $v ) && isset( $defaults[ $k ] ) ) {
 			$saved[ $k ] = $defaults[ $k ];
 		}
-	}
-	if ( ! $saved['home_cats_pick'] ) {
-		$saved['home_cats_pick'] = HUB_HOME_DEFAULT_CATEGORIES;
 	}
 	return $saved;
 }

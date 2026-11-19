@@ -81,12 +81,13 @@ function hub_admin_home_fields() {
 			array(
 				array( 'key' => 'home_featured_pick', 'label' => 'Businesses to feature (up to 4)', 'type' => 'businesses', 'max' => HUB_HOME_FEATURED,
 					'help' => 'Leave empty for the automatic choice: businesses on the Featured and Local Partner plans, one per category. Drag to change the order.' ),
-				array( 'key' => 'note', 'type' => 'note', 'label' => '<strong>Popular categories</strong>: business counts are worked out from the listings.' ),
+				array( 'key' => 'note', 'type' => 'note', 'label' => '<strong>Popular categories</strong>: the 6 categories with the most businesses, worked out from the listings, so they change as businesses are added.' ),
 				$hide( 'home_cats_hide', 'Popular categories' ),
 			),
 			$head( 'cats', '' ),
 			array(
-				array( 'key' => 'home_cats_pick', 'label' => 'Categories to show (up to 6, most businesses first)', 'type' => 'checks', 'choices' => $c['categories'] ),
+				array( 'key' => 'home_cats_pick', 'label' => 'Choose the categories yourself (optional)', 'type' => 'checks', 'choices' => $c['categories'],
+					'help' => 'Leave all unticked to show the 6 with the most businesses. Tick some to show those instead (up to 6, most businesses first).' ),
 			)
 		) ),
 		'areas' => array( 'Areas', array_merge(
