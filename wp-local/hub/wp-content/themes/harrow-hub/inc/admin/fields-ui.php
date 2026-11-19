@@ -7,7 +7,8 @@
  * A field definition: array(
  *   'key'     => 'biz_phone',            meta key / option key
  *   'label'   => 'Phone',
- *   'type'    => text | textarea | url | email | number | date | time | select | toggle | image | gallery | hours | list | note
+ *   'type'    => text | textarea | url | email | number | date | time | select | checks | toggle | image | gallery | hours |
+ *                list | businesses (several, picked by name; 'max' => 4) | note
  *   'help'    => 'Shown under the label',
  *   'width'   => 50,                     % of the row (fields sit side by side until they fill 100)
  *   'choices' => [ value => label ]      select ('other' => true keeps a saved value that is not in the list)
@@ -82,6 +83,29 @@ function hub_admin_field( array $f, $value, $name ) {
 				}
 			}
 			echo '</ul><button type="button" class="button" data-hub-gallery-add>Add photos</button> <span class="hub-f__help">Drag to change the order.</span></div>';
+			break;
+
+		case 'checks':
+			$on = array_map( 'strval', is_array( $value ) ? $value : array() );
+			echo '<input type="hidden" name="' . esc_attr( $name ) . '[]" value=""><ul class="hub-checks">';
+			foreach ( $f['choices'] as $v => $label ) {
+				echo '<li><label><input type="checkbox" name="' . esc_attr( $name ) . '[]" value="' . esc_attr( $v ) . '"' . checked( in_array( (string) $v, $on, true ), true, false ) . '> ' . esc_html( $label ) . '</label></li>';
+			}
+			echo '</ul>';
+			break;
+
+		case 'businesses':
+			$max = isset( $f['max'] ) ? (int) $f['max'] : 0;
+			echo '<div class="hub-pick hub-pick--multi" data-hub-pick data-hub-multi="' . esc_attr( $name ) . '[]" data-max="' . $max . '">';
+			echo '<input type="hidden" name="' . esc_attr( $name ) . '[]" value=""><ol class="hub-picked" data-hub-picked>';
+			foreach ( is_array( $value ) ? $value : array() as $bid ) {
+				$bid = (int) $bid;
+				if ( $bid && get_post( $bid ) ) {
+					echo '<li><input type="hidden" name="' . esc_attr( $name ) . '[]" value="' . $bid . '"><span>' . esc_html( html_entity_decode( get_the_title( $bid ), ENT_QUOTES, 'UTF-8' ) ) . '</span> <button type="button" class="button-link hub-picked__remove" aria-label="Remove">&times;</button></li>';
+				}
+			}
+			echo '</ol><input type="search" class="widefat" placeholder="Search businesses by name to add one…" autocomplete="off" data-hub-pick-search>';
+			echo '<ul class="hub-pick__results" data-hub-pick-results hidden></ul></div>';
 			break;
 
 		case 'hours':
@@ -164,7 +188,11 @@ function hub_admin_clean( array $f, $raw ) {
 		case 'image':
 			return absint( $raw ) ? (string) absint( $raw ) : '';
 		case 'gallery':
-			return array_values( array_filter( array_map( 'absint', (array) $raw ) ) );
+		case 'businesses':
+			return array_values( array_unique( array_filter( array_map( 'absint', (array) $raw ) ) ) );
+		case 'checks':
+			$v = array_map( 'sanitize_key', array_map( 'wp_unslash', (array) $raw ) );
+			return array_values( array_filter( $v, function ( $x ) use ( $f ) { return '' !== $x && isset( $f['choices'][ $x ] ); } ) );
 		case 'hours':
 			$out = array();
 			for ( $i = 0; $i < 7; $i++ ) {
@@ -222,4 +250,41 @@ function hub_admin_enqueue() {
 		'ajax'  => admin_url( 'admin-ajax.php' ),
 		'nonce' => wp_create_nonce( 'hub_business_search' ),
 	) );
+}
+
+/**
+ * A box of tabbed fields: $tabs = [ slug => [ tab label, fields[] ] ], $values = [ key => value ]. Each field is named
+ * {$prefix}[key]. Used by the Homepage and Page text boxes.
+ */
+function hub_admin_tabs( array $tabs, array $values, $prefix = 'hub' ) {
+	echo '<div class="hub-box" data-hub-box><nav class="hub-tabs" role="tablist">';
+	$first = true;
+	foreach ( $tabs as $slug => $tab ) {
+		echo '<button type="button" role="tab" class="hub-tabs__tab' . ( $first ? ' is-active' : '' ) . '" data-hub-tab="' . esc_attr( $slug ) . '">' . esc_html( $tab[0] ) . '</button>';
+		$first = false;
+	}
+	echo '</nav>';
+	$first = true;
+	foreach ( $tabs as $slug => $tab ) {
+		echo '<div class="hub-panel" data-hub-panel="' . esc_attr( $slug ) . '"' . ( $first ? '' : ' hidden' ) . '><div class="hub-grid">';
+		foreach ( $tab[1] as $f ) {
+			$v = 'note' === $f['type'] || ! isset( $values[ $f['key'] ] ) ? '' : $values[ $f['key'] ];
+			if ( 'list' === $f['type'] && is_array( $v ) ) {
+				$v = array_map( function ( $row ) { return is_array( $row ) ? $row : array(); }, $v );
+			}
+			hub_admin_field( $f, $v, $prefix . '[' . $f['key'] . ']' );
+		}
+		echo '</div></div>';
+		$first = false;
+	}
+	echo '</div>';
+}
+
+/** Every field of a set of tabs, in one list (for hub_admin_clean_all). */
+function hub_admin_tab_fields( array $tabs ) {
+	$fields = array();
+	foreach ( $tabs as $tab ) {
+		$fields = array_merge( $fields, $tab[1] );
+	}
+	return $fields;
 }
