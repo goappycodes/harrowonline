@@ -2,7 +2,8 @@
 /**
  * Page text API:
  *   GET /wp-json/hub/v1/pages/events    the What's On page's text, links and switches
- *   GET /wp-json/hub/v1/pages/classes   the Classes and activities page's (404 for a page without any)
+ *   GET /wp-json/hub/v1/pages/classes   the Classes and activities page's
+ *   GET /wp-json/hub/v1/pages/offers    the Local Offers page's (404 for a page without any)
  */
 defined( 'ABSPATH' ) || exit;
 

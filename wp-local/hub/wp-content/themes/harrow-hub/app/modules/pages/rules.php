@@ -1,6 +1,6 @@
 <?php
 /**
- * Page text rules: which pages have editable text (What's On, Classes and activities), and the default wording of each (used for any field left empty).
+ * Page text rules: which pages have editable text (What's On, Classes and activities, Local Offers), and the default wording of each (used for any field left empty).
  *
  * To give another page a "Page text" box: add it to HUB_PAGES, write hub_pages_rule_defaults_{page}() here and
  * hub_admin_page_text_{page}() in inc/admin/page-text-box.php, then read hub_pages_text( '{page}' ) in its template.
@@ -11,6 +11,7 @@ defined( 'ABSPATH' ) || exit;
 const HUB_PAGES = array(
 	'events'  => 'events',           // What's On (page-templates/events.php)
 	'classes' => 'events/classes',   // Classes and activities (page-templates/classes.php)
+	'offers'  => 'offers',           // Local Offers (page-templates/offers.php)
 );
 
 /** Every field of a page with its default: text, '' for the "…_hide" switches, rows for lists. */
@@ -94,6 +95,35 @@ function hub_pages_rule_defaults_classes() {
 		'classes_cta_buttons'      => array(
 			array( 'label' => 'List your class', 'link' => 'register/' ),
 			array( 'label' => 'Business plans', 'link' => 'pricing/' ),
+		),
+	);
+}
+
+/** Local Offers (/offers/): today's wording. */
+function hub_pages_rule_defaults_offers() {
+	return array(
+		// Search engines
+		'offers_seo_title'         => 'Local Offers: deals from Harrow businesses',
+		'offers_seo_description'   => 'Discounts and deals from Harrow businesses, from restaurants and cafés to gyms and barbers. Some offers are just for Harrow Online Newsletter subscribers.',
+		// Top of the page
+		'offers_crumb'             => 'Local Offers',
+		'offers_title'             => 'Local Offers',
+		'offers_lead'              => 'Deals from Harrow businesses, checked by our team and removed automatically when they end. Some are just for newsletter subscribers.',
+		// The list
+		'offers_all_label'         => 'All offers',
+		'offers_empty_text'        => 'No offers match that yet.',
+		'offers_empty_link_label'  => 'See all offers',
+		'offers_note_hide'         => '',
+		'offers_note'              => 'Offers are run by the businesses listed. Check terms with the business before you buy. Spotted a problem with an offer?',
+		'offers_note_link_label'   => 'Let us know',
+		'offers_note_link'         => 'report/',
+		// The box at the bottom
+		'offers_cta_hide'          => '',
+		'offers_cta_title'         => 'Run an offer for Harrow',
+		'offers_cta_text'          => 'Hub members on a paid plan can post Local Offers from their dashboard. Offers appear here, on your profile and in the newsletter.',
+		'offers_cta_buttons'       => array(
+			array( 'label' => 'See plans', 'link' => 'pricing/' ),
+			array( 'label' => 'Add an offer', 'link' => 'account/offers/' ),
 		),
 	);
 }
