@@ -1,0 +1,51 @@
+/* wp-admin: the Hub's own field boxes (inc/admin/). Plain WordPress admin look. */
+.hub-box { margin: -6px -12px -12px; }
+.hub-box--page { margin: 16px 0 0; max-width: 980px; background: #fff; border: 1px solid #c3c4c7; padding: 4px 16px 8px; }
+.hub-tabs { display: flex; flex-wrap: wrap; gap: 4px; padding: 10px 12px 0; border-bottom: 1px solid #c3c4c7; background: #f6f7f7; }
+.hub-tabs__tab { margin-bottom: -1px; padding: 8px 14px; border: 1px solid #c3c4c7; border-bottom: 0; background: #f0f0f1; color: #50575e; font-size: 13px; font-weight: 600; cursor: pointer; }
+.hub-tabs__tab:hover { background: #fff; color: #1d2327; }
+.hub-tabs__tab.is-active { background: #fff; color: #1d2327; border-bottom: 1px solid #fff; }
+.hub-panel { padding: 4px 12px 12px; }
+.hub-grid { display: flex; flex-wrap: wrap; margin: 0 -8px; }
+.hub-f { box-sizing: border-box; flex: 0 0 var(--w, 100%); max-width: var(--w, 100%); padding: 12px 8px 4px; }
+.hub-f__label { display: block; margin-bottom: 4px; font-weight: 600; color: #1d2327; }
+.hub-f__help { margin: 0 0 6px; color: #646970; font-size: 12px; }
+.hub-f input[type=text], .hub-f input[type=url], .hub-f input[type=email], .hub-f input[type=number], .hub-f input[type=search], .hub-f select, .hub-f textarea { width: 100%; max-width: 100%; }
+.hub-f--note p { margin: 0; padding: 10px 12px; border-left: 4px solid #72aee6; background: #f0f6fc; }
+@media (max-width: 782px) { .hub-f { flex-basis: 100%; max-width: 100%; } }
+
+/* Claimed-only fields hide while "Claimed by the business" is off; their notes show instead */
+[data-claimed="0"] [data-claimed-only], [data-claimed="1"] [data-unclaimed-only] { display: none; }
+
+.hub-toggle { display: inline-flex; align-items: center; gap: 6px; font-weight: 400; }
+
+.hub-hours { display: grid; grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); gap: 8px 12px; }
+.hub-hours label { display: grid; gap: 2px; font-size: 12px; color: #50575e; }
+
+.hub-list table { margin-bottom: 6px; }
+.hub-list th { font-weight: 600; }
+.hub-list td { padding: 4px 6px; }
+.hub-list td input[type=text], .hub-list td input[type=url] { width: 100%; }
+.hub-list__x { width: 28px; text-align: center; }
+.hub-list__check { width: 70px; text-align: center; }
+.hub-list__remove { font-size: 18px; color: #b32d2e; text-decoration: none; }
+
+.hub-image__preview img { display: block; max-width: 150px; max-height: 150px; margin-bottom: 6px; border: 1px solid #dcdcde; background: #f6f7f7; }
+.hub-image__remove { color: #b32d2e; }
+
+.hub-gallery__list { display: flex; flex-wrap: wrap; gap: 8px; margin: 0 0 8px; }
+.hub-gallery__list li { position: relative; margin: 0; cursor: move; }
+.hub-gallery__list img { display: block; width: 110px; height: 110px; object-fit: cover; border: 1px solid #dcdcde; }
+.hub-gallery__remove { position: absolute; top: 2px; right: 2px; width: 22px; height: 22px; border: 0; border-radius: 50%; background: rgba(0, 0, 0, .65); color: #fff; line-height: 20px; cursor: pointer; }
+
+.hub-links__search { width: 100%; max-width: 420px; margin-bottom: 6px; }
+.hub-links { max-height: 260px; overflow: auto; margin: 0; padding: 6px 10px; border: 1px solid #dcdcde; background: #fff; }
+.hub-links li { margin: 4px 0; }
+.hub-links__other { color: #8a4b00; font-size: 12px; }
+.hub-links__edit { margin-left: 6px; font-size: 12px; }
+
+.hub-pick__current { margin: 0 0 8px; }
+.hub-pick__results { max-height: 220px; overflow: auto; margin: 4px 0 0; border: 1px solid #dcdcde; background: #fff; }
+.hub-pick__results li { margin: 0; padding: 6px 8px; border-bottom: 1px solid #f0f0f1; }
+.hub-pick__results .button-link { text-align: left; }
+.hub-pick__none { color: #646970; }

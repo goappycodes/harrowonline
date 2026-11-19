@@ -129,10 +129,8 @@ wp_defer_term_counting( false );
 update_option( 'hub_today', $data['today'] );   // the preview's fixed "today"; empty = the real date
 flush_rewrite_rules();
 
-// Copy the imported details into the ACF fields the pages read (theme inc/acf-migrate.php; needs ACF Pro on)
-if ( function_exists( 'hub_acf_migrate' ) ) {
-	hub_acf_migrate();
-}
+// Fill the business fields the pages read and wp-admin edits (theme inc/fields-migrate.php)
+hub_fields_migrate();
 
 printf( "Imported %d businesses, %d offers, %d events, %d classes, %d categories, %d areas in %.0fs\n",
 	count( $data['businesses'] ), count( $data['offers'] ), count( $data['events'] ), count( $data['classes'] ),

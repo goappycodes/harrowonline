@@ -14,7 +14,7 @@ add_action( 'init', function () {
 		'public'          => true,
 		'show_ui'         => true,
 		'show_in_rest'    => false,   // classic editing (block editor off)
-		'supports'        => array( 'title', 'editor', 'custom-fields' ),
+		'supports'        => array( 'title', 'editor' ),   // no "Custom Fields" box: details are edited in the Hub's own boxes (inc/admin/)
 		'has_archive'     => false,   // the list pages are WordPress Pages with their own templates
 		'capability_type' => 'post',
 	);

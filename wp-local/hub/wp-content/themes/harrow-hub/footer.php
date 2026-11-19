@@ -4,7 +4,7 @@ defined( 'ABSPATH' ) || exit;
 ?>
 </main>
 <?php if ( hub_page( 'layout' ) !== 'bare' && hub_page( 'nl' ) !== 'off' ) : ?>
-<?php hub_newsletter_strip(); // Hub settings > Newsletter (inc/business-acf.php) ?>
+<?php hub_newsletter_strip(); // Hub settings > Newsletter (inc/newsletter.php) ?>
 
 <?php endif; ?>
 <?php if ( hub_page( 'layout' ) !== 'bare' ) : ?>

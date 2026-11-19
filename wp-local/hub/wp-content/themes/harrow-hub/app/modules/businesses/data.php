@@ -2,8 +2,8 @@
 /**
  * Businesses (post type hub_business): the only file that reads or writes businesses in WordPress.
  *
- * A business's details are its ACF fields (inc/acf-fields.php), on top of the record imported into its "_hub" meta.
- * Posts saved with ACF have "_hub_acf" = 1. Claimed businesses keep their profile in $record['claimed'].
+ * A business's details are its fields (plain post meta, below; edited in wp-admin through inc/admin/), on top of the
+ * record imported into its "_hub" meta. Posts with fields have "_hub_fields" = 1. Claimed businesses keep their profile in $record['claimed'].
  * Sort keys kept in step on every save: "_hub_tier" (plan), "_hub_status", "_hub_rank" and "_hub_order"
  * (directory order).
  */
@@ -57,15 +57,15 @@ function hub_businesses_db_query( array $args ) {
 }
 
 /**
- * The business record: the imported record with the ACF fields on top. Cached per post.
+ * The business record: the imported record with the fields on top. Cached per post.
  * $record['claimed'] (array) is set for claimed businesses only.
  */
 function hub_businesses_db_record( WP_Post $post ) {
 	static $cache = array();
 	if ( ! isset( $cache[ $post->ID ] ) ) {
 		$x = hub_record( $post );
-		if ( hub_businesses_db_uses_acf( $post->ID ) ) {
-			$x = _hub_businesses_db_acf( $post, $x );
+		if ( hub_businesses_db_uses_fields( $post->ID ) ) {
+			$x = _hub_businesses_db_fields( $post, $x );
 		}
 		if ( ! empty( $x['claimed'] ) ) {
 			// Description: the post content (editable in wp-admin), one paragraph per <p>
@@ -96,17 +96,48 @@ function hub_businesses_db_today() {
 	return hub_today();
 }
 
-/* ------------------------------------------------------------------ ACF fields */
+/* ------------------------------------------------------------------ fields (post meta, edited in wp-admin) */
 
-/** True when this post's details live in ACF fields. */
-function hub_businesses_db_uses_acf( $post_id ) {
-	return function_exists( 'get_field' ) && '1' === (string) get_post_meta( $post_id, '_hub_acf', true );
+/**
+ * The fields a business can have, all plain post meta (edited in the "Business details" box, inc/admin/).
+ * Single values are strings; the "list" ones are arrays stored in one meta key each:
+ *   biz_phones_extra  [ "020 ..." ]                 biz_hours     seven strings, Monday first
+ *   biz_schedule      [ [ day, text ] ]             biz_gallery   [ attachment IDs ]
+ *   biz_other_locations [ { label, name, address } ]  biz_news   [ { title, url, cat, date } ]
+ * Posts whose details live in these fields have "_hub_fields" = 1.
+ */
+const HUB_BUSINESSES_FIELDS = array(
+	'biz_plan', 'biz_claimed', 'biz_checked', 'biz_sub', 'biz_tagline', 'biz_icon', 'biz_claimed_since', 'biz_botw',
+	'biz_verified_note', 'biz_seo_title', 'biz_address', 'biz_postcode', 'biz_service_area', 'biz_phone', 'biz_website',
+	'biz_email', 'biz_lat', 'biz_lng', 'biz_hours_note', 'biz_status', 'biz_schedule_title', 'biz_schedule_note',
+	'biz_logo', 'biz_cover', 'biz_cover_bg', 'biz_facebook', 'biz_instagram', 'biz_tiktok', 'biz_linkedin', 'biz_x',
+	'biz_phones_extra', 'biz_hours', 'biz_schedule', 'biz_other_locations', 'biz_news', 'biz_gallery',
+);
+
+/** True when this post's details live in the fields (otherwise the imported record is used as it is). */
+function hub_businesses_db_uses_fields( $post_id ) {
+	return '1' === (string) get_post_meta( $post_id, '_hub_fields', true );
 }
 
-/** An ACF field value as stored (no formatting), or $default when empty. */
+/** A single field's value, or $default when empty. */
 function hub_businesses_db_field( $name, $post_id, $default = '' ) {
-	$v = get_field( $name, $post_id, false );
-	return ( null === $v || '' === $v || false === $v || array() === $v ) ? $default : $v;
+	$v = get_post_meta( $post_id, $name, true );
+	return ( '' === $v || null === $v || false === $v || array() === $v ) ? $default : $v;
+}
+
+/** A list field (array), or an empty array. */
+function hub_businesses_db_list( $name, $post_id ) {
+	$v = get_post_meta( $post_id, $name, true );
+	return is_array( $v ) ? array_values( $v ) : array();
+}
+
+/** Every field's stored value (for the wp-admin box). */
+function hub_businesses_db_fields( $post_id ) {
+	$out = array();
+	foreach ( HUB_BUSINESSES_FIELDS as $k ) {
+		$out[ $k ] = get_post_meta( $post_id, $k, true );
+	}
+	return $out;
 }
 
 /** Attachment ID -> [ url, alt ], or null. */
@@ -116,8 +147,8 @@ function hub_businesses_db_attachment( $id, $size = 'large' ) {
 	return $url ? array( $url, (string) get_post_meta( $id, '_wp_attachment_image_alt', true ) ) : null;
 }
 
-/** The record from the ACF fields, on top of the imported record. */
-function _hub_businesses_db_acf( WP_Post $post, array $x ) {
+/** The record from the fields, on top of the imported record. */
+function _hub_businesses_db_fields( WP_Post $post, array $x ) {
 	$id   = $post->ID;
 	$f    = 'hub_businesses_db_field';
 	$cats = get_the_terms( $id, 'hub_category' );
@@ -133,12 +164,7 @@ function _hub_businesses_db_acf( WP_Post $post, array $x ) {
 	$x['postcode'] = $f( 'biz_postcode', $id );
 
 	$phone  = trim( $f( 'biz_phone', $id ) );
-	$extras = array();
-	foreach ( (array) get_field( 'biz_phones_extra', $id ) as $row ) {
-		if ( ! empty( $row['biz_phone_extra'] ) ) {
-			$extras[] = trim( $row['biz_phone_extra'] );
-		}
-	}
+	$extras = array_values( array_filter( array_map( 'trim', array_map( 'strval', hub_businesses_db_list( 'biz_phones_extra', $id ) ) ) ) );
 	$phones         = array_values( array_filter( array_merge( array( $phone ), $extras ) ) );
 	$x['phone']     = $phones;
 	$x['phone_raw'] = array_map( 'hub_businesses_rule_phone_tel', $phones );
@@ -180,21 +206,22 @@ function _hub_businesses_db_acf( WP_Post $post, array $x ) {
 
 	// Opening hours: seven days, or none (clubs use the timetable)
 	$hours = array();
-	foreach ( HUB_BUSINESSES_HOUR_KEYS as $k ) {
-		$hours[] = trim( (string) get_post_meta( $id, 'biz_hours_biz_hours_' . $k, true ) );
+	$saved = hub_businesses_db_list( 'biz_hours', $id );
+	foreach ( array_keys( HUB_BUSINESSES_HOUR_KEYS ) as $i ) {
+		$hours[] = trim( (string) ( isset( $saved[ $i ] ) ? $saved[ $i ] : '' ) );
 	}
 	$c['hours'] = array_filter( $hours, 'strlen' ) ? $hours : array();
 
 	$c['schedule'] = array();
-	foreach ( (array) get_field( 'biz_schedule', $id ) as $row ) {
-		if ( ! empty( $row['biz_sch_day'] ) || ! empty( $row['biz_sch_text'] ) ) {
-			$c['schedule'][] = array( $row['biz_sch_day'], $row['biz_sch_text'] );
+	foreach ( hub_businesses_db_list( 'biz_schedule', $id ) as $row ) {
+		if ( ! empty( $row[0] ) || ! empty( $row[1] ) ) {
+			$c['schedule'][] = array( (string) $row[0], (string) $row[1] );
 		}
 	}
 
 	$c['other_locations'] = array();
-	foreach ( (array) get_field( 'biz_other_locations', $id ) as $row ) {
-		$c['other_locations'][] = array( 'label' => $row['biz_loc_label'], 'name' => $row['biz_loc_name'], 'address' => $row['biz_loc_address'] );
+	foreach ( hub_businesses_db_list( 'biz_other_locations', $id ) as $row ) {
+		$c['other_locations'][] = array( 'label' => $row['label'], 'name' => $row['name'], 'address' => $row['address'] );
 	}
 
 	// Logo, cover and photos (media library)
@@ -212,7 +239,7 @@ function _hub_businesses_db_acf( WP_Post $post, array $x ) {
 		unset( $c['cover'], $c['cover_alt'] );
 	}
 	$images = $alts = array();
-	foreach ( (array) $f( 'biz_gallery', $id, array() ) as $aid ) {
+	foreach ( hub_businesses_db_list( 'biz_gallery', $id ) as $aid ) {
 		$img = hub_businesses_db_attachment( $aid );
 		if ( $img ) {
 			$images[] = $img[0];
@@ -244,15 +271,24 @@ function _hub_businesses_db_acf( WP_Post $post, array $x ) {
 	}
 
 	$c['news'] = array();
-	foreach ( (array) get_field( 'biz_news', $id ) as $row ) {
-		$c['news'][] = array( 'title' => $row['biz_news_title'], 'url' => $row['biz_news_url'], 'cat' => $row['biz_news_cat'], 'date' => $row['biz_news_date'] );
+	foreach ( hub_businesses_db_list( 'biz_news', $id ) as $row ) {
+		$c['news'][] = array( 'title' => $row['title'], 'url' => $row['url'], 'cat' => $row['cat'], 'date' => $row['date'] );
 	}
 
 	$x['claimed'] = $c;
 	return $x;
 }
 
-/* ------------------------------------------------------------------ writing: keep the sort keys in step */
+/* ------------------------------------------------------------------ writing */
+
+/**
+ * Save a business's fields (already checked and cleaned by the wp-admin box). Empty values are removed rather than
+ * stored. Then the sort keys are brought in step.
+ */
+function hub_businesses_db_save_fields( $post_id, array $values ) {
+	hub_db_save_meta( $post_id, HUB_BUSINESSES_FIELDS, $values );
+	hub_businesses_db_sync_sort( $post_id );
+}
 
 /** _hub_tier, _hub_status and _hub_rank (directory order: Checked, Verified, imported; then plan) from the fields. */
 function hub_businesses_db_sync_sort( $post_id ) {
@@ -269,9 +305,22 @@ function hub_businesses_db_sync_sort( $post_id ) {
 	}
 }
 
-add_action( 'acf/save_post', function ( $post_id ) {
-	if ( is_numeric( $post_id ) && 'hub_business' === get_post_type( $post_id ) ) {
-		update_post_meta( $post_id, '_hub_acf', 1 );
-		hub_businesses_db_sync_sort( $post_id );
+/** Businesses whose name contains $term, for the business picker on offers and classes: [ { id, name, area } ]. */
+function hub_businesses_db_search( $term, $limit = 20 ) {
+	$q   = new WP_Query( array(
+		'post_type'      => 'hub_business',
+		'post_status'    => 'any',
+		's'              => $term,
+		'search_columns' => array( 'post_title' ),
+		'posts_per_page' => $limit,
+		'orderby'        => 'title',
+		'order'          => 'ASC',
+		'no_found_rows'  => true,
+	) );
+	$out = array();
+	foreach ( $q->posts as $p ) {
+		$a     = get_the_terms( $p->ID, 'hub_area' );
+		$out[] = array( 'id' => $p->ID, 'name' => html_entity_decode( $p->post_title, ENT_QUOTES, 'UTF-8' ), 'area' => $a && ! is_wp_error( $a ) ? html_entity_decode( $a[0]->name, ENT_QUOTES, 'UTF-8' ) : '' );
 	}
-}, 20 );
+	return $out;
+}
