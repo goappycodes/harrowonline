@@ -1,7 +1,7 @@
 <?php
 /**
  * Claims API (namespace hub/v1):
- *   GET  /claims/mine                    the signed-in account's latest claim
+ *   GET  /claims/mine                    { claim }: the signed-in account's latest claim, or null
  *   GET  /claims/check?listing={slug}    can this account claim it? (state, message)
  *   POST /claims                         { listing, method, email_local | ask_for, call_times[] | doc_type + document (file), role, phone, note, declaration }
  *   POST /claims/{id}/approve            staff

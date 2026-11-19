@@ -176,12 +176,19 @@ function hub_claim_verify_email( array $params, $mode = HUB_WEB ) {
 	return _hub_claim_result( $ok, $ok ? 'Email confirmed.' : 'That link isn&rsquo;t valid or has expired.', array(), hub_url( 'claim/submitted/?verified=' . ( $ok ? '1' : '0' ) ), $mode );
 }
 
-/** The signed-in account's latest claim (claim shape), or null: for the claim-received page and the dashboard. */
+/**
+ * The signed-in account's latest claim (claim shape), or null when there's none: for the claim-received page and the
+ * dashboard. The API answers { claim: ... | null }.
+ */
 function hub_claim_mine( $mode = HUB_WEB ) {
 	$account = hub_account_current();
 	$ids     = $account['signed_in'] ? hub_claims_db_find( array( 'user' => $account['id'] ), 1 ) : array();
 	$c       = $ids ? hub_claims_db_get( $ids[0] ) : null;
-	return hub_respond( $c ? hub_claim_shape( $c, _hub_claims_business( $c['business'] ), get_userdata( $c['user'] ), false ) : null, $mode );
+	$claim   = $c ? hub_claim_shape( $c, _hub_claims_business( $c['business'] ), get_userdata( $c['user'] ), false ) : null;
+	if ( HUB_API === $mode ) {
+		return hub_respond( array( 'claim' => $claim ), $mode );
+	}
+	return $claim ? hub_respond( $claim, $mode ) : null;
 }
 
 /** A claim with its evidence, for staff (wp-admin). */
