@@ -108,7 +108,7 @@ get_header();
         </div>
         <div class="claim-side__part">
           <div class="side-plan"><h3 class="claim-side__h">Local Partner</h3><p class="side-plan__price"><strong>&pound;79</strong> a month, or &pound;790 a year</p></div>
-          <p class="small mb-0">Everything in Featured, plus one sponsored slot each month in the Daily News newsletter and one sponsored post each month in the Harrow Online Facebook Group.</p>
+          <p class="small mb-0">Everything in Featured, plus one Daily News advert each month and one Harrow Online Facebook Group post each month.</p>
         </div>
         <div class="claim-side__part">
           <a class="ho-btn ho-btn--outline ho-btn--block" href="<?php echo esc_url( hub_url( 'pricing/' ) ); ?>">See plans</a>

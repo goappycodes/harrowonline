@@ -62,7 +62,7 @@ get_header();
 
       <div class="authx__foot">
         <p class="mb-0">New to the Hub? <a href="<?php echo esc_url( hub_url( 'register/' ) ); ?>">Create a free account</a></p>
-        <p class="help mb-0">Creating an account is free. You only pay if you choose a paid plan, a featured spot or a sponsor slot.</p>
+        <p class="help mb-0">Creating an account is free. You only pay if you choose a paid plan, a featured spot or a newsletter advert.</p>
       </div>
   </div>
 
@@ -73,7 +73,7 @@ get_header();
       <ul class="ticks authx__ticks">
         <li>Claim your listing free and get a verified badge</li>
         <li>Add Local Offers, events and weekly classes on the Featured or Local Partner plan</li>
-        <li>Reach Harrow Online Newsletter readers with featured spots and sponsor slots</li>
+        <li>Reach Harrow Online Newsletter readers with featured spots and newsletter adverts</li>
         <li>Schools, clubs and charities add events and classes free</li>
       </ul>
   </aside>

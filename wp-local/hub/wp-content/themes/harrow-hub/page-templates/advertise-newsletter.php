@@ -1,28 +1,28 @@
 <?php
 /**
- * Sponsor the Harrow Online newsletter: book a Presented by slot (converted from src/pages/advertise-newsletter.html).
+ * Advertise in the Harrow Online newsletter: book an advert (converted from src/pages/advertise-newsletter.html).
  * URL: /advertise/newsletter/
  */
 defined( 'ABSPATH' ) || exit;
 hub_set_page( array(
 	'body' => 'is-logged-in page-sponsor',
-	'description' => 'Book a "Presented by" sponsor slot in the Harrow Online Daily News, The Weekend or Harrow Business newsletter. Pick dates, add your logo and pay online.',
+	'description' => 'Book an advert in the Harrow Online Daily News, The Weekend or Harrow Business newsletter. Pick dates, add your logo and pay online.',
 	'nav' => 'advertise',
-	'title' => 'Sponsor the Harrow Online newsletter: book a Presented by slot',
+	'title' => 'Advertise in the Harrow Online newsletter: book an advert',
 ) );
 get_header();
 ?>
 <nav class="crumbs ho-container" aria-label="Breadcrumb">
-  <ol><li><a href="<?php echo esc_url( hub_url( '' ) ); ?>">Hub</a></li><li><a href="<?php echo esc_url( hub_url( 'news-site/advertise/' ) ); ?>">Advertise</a></li><li><span aria-current="page">Newsletter sponsorship</span></li></ol>
+  <ol><li><a href="<?php echo esc_url( hub_url( '' ) ); ?>">Hub</a></li><li><a href="<?php echo esc_url( hub_url( 'news-site/advertise/' ) ); ?>">Advertise</a></li><li><span aria-current="page">Newsletter advertising</span></li></ol>
 </nav>
 
 <header class="page-head ho-container sp-head">
   <div>
-    <h1 class="page-head__title">Sponsor the newsletter</h1>
-    <p class="page-head__lead">Put your business at the top of a Harrow Online newsletter with a &ldquo;Presented by&rdquo; slot. One sponsor per issue. Book a day or a week, add your logo and message, and pay online.</p>
+    <h1 class="page-head__title">Advertise in the newsletter</h1>
+    <p class="page-head__lead">Put your business in front of Harrow Online newsletter readers with an advert: your logo, a short message and a link. One advert per issue. Book a day or a week and pay online.</p>
   </div>
   <ul class="sp-facts" aria-label="At a glance">
-    <li><svg class="ho-icon"><use href="#i-star"/></svg><span><strong>One sponsor per issue</strong>Your business is the only one at the top</span></li>
+    <li><svg class="ho-icon"><use href="#i-star"/></svg><span><strong>One advert per issue</strong>No other advert in that issue</span></li>
     <li><svg class="ho-icon"><use href="#i-calendar"/></svg><span><strong>A day or a week</strong>Daily News, The Weekend or Harrow Business</span></li>
     <li><svg class="ho-icon"><use href="#i-mail"/></svg><span><strong>Logo, message and link</strong>Checked by our team before it goes out</span></li>
   </ul>
@@ -32,18 +32,18 @@ get_header();
   <!-- Signed-out visitors see this instead of the form (a Hub account is required to book):
   <div class="notice notice--plain mb-6">
     <svg class="ho-icon"><use href="#i-user"/></svg>
-    <div><p><strong>Sign in to book a sponsor slot.</strong> You need a free Hub account so we can send your confirmation and invoice.</p>
+    <div><p><strong>Sign in to book an advert.</strong> You need a free Hub account so we can send your confirmation and invoice.</p>
     <p><a href="<?php echo esc_url( hub_url( 'sign-in/' ) ); ?>">Sign in</a> or <a href="<?php echo esc_url( hub_url( 'register/' ) ); ?>">create a free account</a></p></div>
   </div>
   -->
   <div class="sp-who">
     <p><svg class="ho-icon ho-icon--sm"><use href="#i-user"/></svg>Signed in as <strong>Hill Street Kitchen</strong> (Featured) &middot; <a href="<?php echo esc_url( hub_url( 'account/' ) ); ?>">My account</a></p>
-    <a class="link-quiet" href="<?php echo esc_url( hub_url( 'news-site/advertise/' ) ); ?>">Other ways to advertise</a>
+    <span class="cluster"><a class="link-quiet" href="https://harrowonline.org/advertise/">Become our main newsletter sponsor</a><a class="link-quiet" href="<?php echo esc_url( hub_url( 'news-site/advertise/' ) ); ?>">Other ways to advertise</a></span>
   </div>
 
   <ol class="sp-steps" aria-label="Booking steps">
     <li class="is-current" aria-current="step"><span class="sp-steps__n">1</span><span><small>Step 1</small>Edition and dates</span></li>
-    <li><span class="sp-steps__n">2</span><span><small>Step 2</small>Your sponsor message</span></li>
+    <li><span class="sp-steps__n">2</span><span><small>Step 2</small>Your advert</span></li>
     <li><span class="sp-steps__n">3</span><span><small>Step 3</small>Pay</span></li>
   </ol>
 
@@ -200,7 +200,7 @@ get_header();
       </section>
 
       <section class="form-step" aria-labelledby="s2-title">
-        <h2 class="form-step__title sp-title" id="s2-title"><span>2</span>Your sponsor message</h2>
+        <h2 class="form-step__title sp-title" id="s2-title"><span>2</span>Your advert</h2>
         <p class="help mt-0">This is what readers see at the top of the newsletter. Keep it short and friendly.</p>
         <div class="form">
           <div class="field">
@@ -233,13 +233,13 @@ get_header();
     <aside class="sticky stack" aria-label="Preview and order summary">
       <div>
         <p class="eyebrow mb-2">Preview</p>
-        <div class="nl-preview" aria-label="How your slot looks in the newsletter">
+        <div class="nl-preview" aria-label="How your advert looks in the newsletter">
           <div class="nl-preview__mast"><span>Harrow Online</span><small>Tuesday 24 November</small></div>
           <div class="nl-preview__body">
             <div class="nl-preview__sponsor">
               <div class="ph"><svg class="ho-icon"><use href="#i-food"/></svg></div>
-              <div>Today&rsquo;s newsletter is presented by <strong>Hill Street Kitchen</strong> &middot; <a href="#sp-url">Sunday roasts are back. Book a table for four and the first bottle of wine is on us. &rarr;</a></div>
-              <span class="nl-preview__tag">Sponsor</span>
+              <div><strong>Hill Street Kitchen</strong> &middot; <a href="#sp-url">Sunday roasts are back. Book a table for four and the first bottle of wine is on us. &rarr;</a></div>
+              <span class="nl-preview__tag">Advert</span>
             </div>
             <p class="nl-preview__hello">Good morning, Harrow.</p>
             <div aria-hidden="true"><div class="nl-preview__line"></div><div class="nl-preview__line"></div><div class="nl-preview__line"></div><div class="nl-preview__line"></div></div>
@@ -257,7 +257,7 @@ get_header();
           <li class="total"><span>Total</span><span data-slot-total>&pound;90.00</span></li>
         </ul>
         <p class="help mt-2">VAT shown at checkout if it applies.</p>
-        <p class="sp-tip"><svg class="ho-icon ho-icon--sm"><use href="#i-star"/></svg><span><strong>Local Partner members get an included slot:</strong> one Daily News slot a month at no charge. Pick your date and it&rsquo;s free at checkout, or ask our team to place it for you.</span></p>
+        <p class="sp-tip"><svg class="ho-icon ho-icon--sm"><use href="#i-star"/></svg><span><strong>Local Partner members get an included advert:</strong> one Daily News advert a month at no charge. Pick your date and it&rsquo;s free at checkout, or ask our team to place it for you.</span></p>
         <button class="ho-btn ho-btn--primary ho-btn--block mt-4" type="submit"><svg class="ho-icon"><use href="#i-lock"/></svg>Pay with Stripe</button>
         <ul class="ticks small mt-5 mb-0">
           <li>We hold your dates for 30 minutes while you pay.</li>
@@ -265,8 +265,25 @@ get_header();
           <li>You get a confirmation email with your dates and a receipt.</li>
         </ul>
       </div>
-      <p class="small muted">Questions about sponsorship? <a href="<?php echo esc_url( hub_url( 'news-site/advertise/' ) ); ?>">Contact our advertising team</a>.</p>
+      <p class="small muted">Questions about advertising? <a href="<?php echo esc_url( hub_url( 'news-site/advertise/' ) ); ?>">Contact our advertising team</a>.</p>
     </aside>
   </form>
 </div>
+
+<!-- Main newsletter sponsor (client, Nov 2026): one business at a time, set up by hand for an agreed period. For now
+     it links to the Harrow Online advertising page (the client will redo that page after launch; no form on the Hub). -->
+<section class="section section--soft" id="main-sponsor" aria-labelledby="ms-title">
+  <div class="ho-container">
+    <div class="cta-band">
+      <div>
+        <p class="eyebrow">Main newsletter sponsor</p>
+        <h2 id="ms-title">Become our main newsletter sponsor</h2>
+        <p>Your logo, &ldquo;Supported by&rdquo; your business name and a link to your website at the top of every Daily News issue, for the period we agree. Individual adverts can still run alongside it.</p>
+      </div>
+      <div class="cta-band__actions">
+        <a class="ho-btn ho-btn--primary" href="https://harrowonline.org/advertise/">Contact us for pricing</a>
+      </div>
+    </div>
+  </div>
+</section>
 <?php get_footer();
