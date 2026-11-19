@@ -60,7 +60,7 @@ inc/view.php               small markup helpers for parts (hub_view_*): name wit
 
 | File | Does | Naming | May call |
 | --- | --- | --- | --- |
-| `data.php` | the **only** place that touches WordPress (WP_Query, meta, ACF, terms) | `hub_{module}_db_*` | WordPress |
+| `data.php` | the **only** place that touches WordPress (WP_Query, post meta, options, terms) | `hub_{module}_db_*` | WordPress |
 | `rules.php` | business rules on plain values: what is live, what is shown, the order | `hub_{module}_rule_*`, constants `HUB_{MODULE}_*` | nothing (pure PHP) |
 | `shape.php` | turns a post into the module's one array shape; the comment at the top lists every field | `hub_{singular}_shape*` | rules |
 | `controller.php` | the functions pages and routes call; `$mode` is always the last argument | `hub_{module}_list`, `hub_{singular}_get`, ... | its own data, rules, shape; **other modules' controllers only** |
@@ -140,4 +140,4 @@ request counts as signed out.
   move to the API.
 - **Homepage categories and areas**, the categories page, the account pages' forms and lists (listing, offers,
   events, classes: still the prototype's sample content; only the account name, greeting and billing are real) and the newsletter band
-  (`inc/business-acf.php`) are still old-style.
+  (`inc/newsletter.php`) are still old-style.

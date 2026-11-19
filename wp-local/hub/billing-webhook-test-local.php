@@ -80,9 +80,8 @@ function last_mail_subject() {
 
 /* ------------------------------------------------------------------ temporary business and owner */
 $biz  = wp_insert_post( array( 'post_type' => 'hub_business', 'post_status' => 'publish', 'post_title' => 'Webhook Test Bakery ' . $run ) );
-// A claimed business saved with ACF, like one an owner manages (unclaimed listings never show a plan)
-update_post_meta( $biz, '_hub_acf', '1' );
-update_field( 'biz_claimed', 1, $biz );
+// A claimed business with fields, like one an owner manages (unclaimed listings never show a plan)
+hub_businesses_db_save_fields( $biz, array( 'biz_claimed' => '1' ) );
 $user = wp_insert_user( array( 'user_login' => 'whtest-' . $run . '@harrowonline.test', 'user_email' => 'whtest-' . $run . '@harrowonline.test', 'user_pass' => wp_generate_password( 20 ), 'first_name' => 'Wendy', 'role' => 'subscriber' ) );
 update_user_meta( $user, 'hub_account_type', 'business' );
 update_user_meta( $user, 'hub_plan', 'basic' );

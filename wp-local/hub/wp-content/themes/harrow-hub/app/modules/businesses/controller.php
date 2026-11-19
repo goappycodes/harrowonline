@@ -396,7 +396,7 @@ function _hub_businesses_events( WP_Post $post ) {
 		if ( ! empty( $x['claimed'] ) ) {
 			$found = hub_events_for_business( $post->ID, array( $x['claimed']['name'] ) );   // events module
 			$rows  = array_map( 'hub_business_shape_event_row', $found['events'] );
-			if ( hub_businesses_db_uses_acf( $post->ID ) ) {
+			if ( hub_businesses_db_uses_fields( $post->ID ) ) {
 				$today = hub_businesses_db_today();
 				foreach ( $found['classes'] as $c ) {
 					$rows[] = hub_business_shape_class_row( $c, $today );

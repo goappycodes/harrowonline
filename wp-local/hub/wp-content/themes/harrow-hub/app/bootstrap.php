@@ -9,7 +9,7 @@
  * The data is the same in both modes. Only the wrapping differs (app/core/respond.php).
  *
  * Each module has the same five files:
- *   data.php        the only place that reads or writes WordPress (WP_Query, post meta, ACF, terms)
+ *   data.php        the only place that reads or writes WordPress (WP_Query, post meta, terms)
  *   rules.php       the business rules (what is live, what is listed, the order)
  *   shape.php       turns a post into the module's one fixed array shape (what the app and the templates get)
  *   controller.php  the functions pages and routes call; nothing outside the module calls anything else in it
@@ -20,11 +20,12 @@ defined( 'ABSPATH' ) || exit;
 
 $hub_app = __DIR__;
 
-// Core: debugging, modes and responses, request params, URLs
+// Core: debugging, modes and responses, request params, URLs, saving fields
 require_once $hub_app . '/core/debug.php';
 require_once $hub_app . '/core/respond.php';
 require_once $hub_app . '/core/request.php';
 require_once $hub_app . '/core/url.php';
+require_once $hub_app . '/core/meta.php';
 
 // Setup: REST namespace and route helper
 require_once $hub_app . '/setup/rest-routes.php';

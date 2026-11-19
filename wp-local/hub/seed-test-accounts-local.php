@@ -20,13 +20,7 @@ wp_set_current_user( get_users( array( 'role' => 'administrator', 'number' => 1 
 
 /* ------------------------------------------------------------------ remove last run's */
 foreach ( get_posts( array( 'post_type' => array( 'hub_offer', 'hub_event', 'hub_class', 'hub_claim' ), 'post_status' => 'any', 'numberposts' => -1, 'meta_key' => '_hub_seed', 'meta_value' => '1' ) ) as $p ) {
-	foreach ( array( 'offer_business' => 'biz_offers', 'class_business' => 'biz_classes' ) as $link => $list ) {
-		$b = (int) get_post_meta( $p->ID, $link, true );
-		if ( $b ) {
-			update_post_meta( $b, $list, array_values( array_diff( (array) get_post_meta( $b, $list, true ), array( (string) $p->ID ) ) ) );
-		}
-	}
-	wp_delete_post( $p->ID, true );
+	wp_delete_post( $p->ID, true );   // an offer's or class's business link is stored on it, so it goes with it
 }
 foreach ( get_users( array( 'meta_key' => 'hub_seed', 'meta_value' => '1' ) ) as $u ) {
 	$b = hub_account_business_id( $u->ID );

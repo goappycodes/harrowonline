@@ -2,9 +2,10 @@
 /**
  * Offers (post type hub_offer): the only file that reads offers from WordPress.
  *
- * An offer's details are in its "_hub" meta record (value, code, end, sub, featured, terms, redeem); its title and
- * description are the post title and content. Its business is the ACF field "offer_business", or the imported link
- * "_hub_business" for offers not saved with that field yet. "_hub_index" is its order within its business.
+ * An offer's details are its fields (offer_*, below; edited in wp-admin) on top of its imported "_hub" record (value,
+ * code, end, sub, featured, terms, redeem); its title and description are the post title and content. Its business is the post meta "offer_business" (set in wp-admin on the
+ * offer or on the business), or the imported link "_hub_business" for offers never saved. "_hub_index" is its order
+ * within its business.
  */
 defined( 'ABSPATH' ) || exit;
 
@@ -38,10 +39,49 @@ function hub_offers_db_for_business( $business_id ) {
 	} ) );
 }
 
-/** The offer's details record (array). */
+/**
+ * The offer's fields (plain post meta, edited in wp-admin's "Offer details" box): one meta key each, terms a list.
+ * Offers with fields have "_hub_fields" = 1; the others still read their imported record.
+ */
+const HUB_OFFERS_FIELDS = array( 'offer_value', 'offer_end', 'offer_featured', 'offer_sub', 'offer_code', 'offer_redeem', 'offer_terms', 'offer_icon', 'offer_position' );
+
+/** The offer's details record (array): the imported record with the fields on top. */
 function hub_offers_db_record( WP_Post $post ) {
 	$r = get_post_meta( $post->ID, '_hub', true );
-	return is_array( $r ) ? $r : array();
+	$r = is_array( $r ) ? $r : array();
+	if ( '1' !== (string) get_post_meta( $post->ID, '_hub_fields', true ) ) {
+		return $r;
+	}
+	$v = hub_offers_db_fields( $post->ID );
+	foreach ( array( 'value', 'end', 'code', 'redeem', 'icon' ) as $k ) {
+		if ( '' !== (string) $v[ 'offer_' . $k ] ) {
+			$r[ $k ] = $v[ 'offer_' . $k ];
+		} else {
+			unset( $r[ $k ] );
+		}
+	}
+	$r['featured'] = '1' === (string) $v['offer_featured'];
+	$r['sub']      = '1' === (string) $v['offer_sub'];
+	$r['terms']    = is_array( $v['offer_terms'] ) ? array_values( $v['offer_terms'] ) : array();
+	return $r;
+}
+
+/** Every field's stored value (for the wp-admin box). */
+function hub_offers_db_fields( $post_id ) {
+	$out = array();
+	foreach ( HUB_OFFERS_FIELDS as $k ) {
+		$out[ $k ] = get_post_meta( $post_id, $k, true );
+	}
+	return $out;
+}
+
+/** Save an offer's fields (already cleaned by the wp-admin box), then the sort keys. Empty values are removed. */
+function hub_offers_db_save_fields( $post_id, array $values ) {
+	hub_db_save_meta( $post_id, HUB_OFFERS_FIELDS, $values );
+	$f = hub_offers_db_fields( $post_id );
+	update_post_meta( $post_id, '_hub_end', (string) $f['offer_end'] );
+	update_post_meta( $post_id, '_hub_featured', '1' === (string) $f['offer_featured'] ? 1 : 0 );
+	update_post_meta( $post_id, '_hub_index', '' !== (string) $f['offer_position'] ? (int) $f['offer_position'] : 99 );
 }
 
 /** The offer's position within its business (for the order of lists). */
@@ -61,33 +101,26 @@ function hub_offers_db_today() {
 	return hub_today();
 }
 
-/* ------------------------------------------------------------------ writing: keep the sort keys in step */
+/* ------------------------------------------------------------------ writing */
 
-add_action( 'acf/save_post', function ( $post_id ) {
-	if ( ! is_numeric( $post_id ) || 'hub_offer' !== get_post_type( $post_id ) ) {
-		return;
+/** Every offer for the wp-admin lists, any status: [ { id, title, status, business } ] by title. */
+function hub_offers_db_admin_list() {
+	$out = array();
+	foreach ( get_posts( array( 'post_type' => 'hub_offer', 'post_status' => array( 'publish', 'draft', 'pending', 'future', 'private' ), 'posts_per_page' => -1, 'orderby' => 'title', 'order' => 'ASC' ) ) as $p ) {
+		$out[] = array( 'id' => $p->ID, 'title' => $p->post_title, 'status' => $p->post_status, 'business' => hub_offers_db_business_id( $p->ID ) );
 	}
-	update_post_meta( $post_id, '_hub_business', (int) get_post_meta( $post_id, 'offer_business', true ) );
-	if ( '' === get_post_meta( $post_id, '_hub_index', true ) ) {
-		update_post_meta( $post_id, '_hub_index', 99 );   // new offers go after the business's imported ones
-	}
-}, 20 );
+	return $out;
+}
 
-/* An offer has one business. When an offer is added on a business, ACF puts both businesses in the offer's "Business"
- * field ([old, new]): keep the new one and take the offer off the old business's list. (ACF is already inside its
- * own two-way update here, so this does not loop.) */
-add_filter( 'acf/update_value/key=field_hub_offer_business', function ( $value, $post_id ) {
-	if ( ! is_array( $value ) ) {
-		return $value;
+/** Set (or clear, with 0) the business an offer belongs to. An offer has one business. */
+function hub_offers_db_set_business( $offer_id, $business_id ) {
+	$business_id = (int) $business_id;
+	update_post_meta( $offer_id, 'offer_business', $business_id ? (string) $business_id : '' );
+	update_post_meta( $offer_id, '_hub_business', $business_id );
+	if ( '' === get_post_meta( $offer_id, '_hub_index', true ) ) {
+		update_post_meta( $offer_id, '_hub_index', 99 );   // new offers go after the business's imported ones
 	}
-	$ids = array_values( array_filter( array_map( 'intval', $value ) ) );
-	$new = $ids ? end( $ids ) : 0;
-	foreach ( array_diff( $ids, array( $new ) ) as $old ) {
-		$list = array_map( 'intval', acf_get_array( get_field( 'biz_offers', $old, false ) ) );
-		update_field( 'field_hub_biz_offers', array_values( array_diff( $list, array( (int) $post_id ) ) ), $old );
-	}
-	return $new ? (string) $new : '';
-}, 20, 2 );
+}
 
 /* ------------------------------------------------------------------ offers sent from the website (submissions module) */
 
@@ -98,7 +131,7 @@ function hub_offers_db_get_any( $id ) {
 }
 
 /**
- * Create or update an offer sent from the website. Its business gets it in its Offers list too.
+ * Create or update an offer sent from the website: its record, business and fields.
  *
  * @param int    $id          0 for a new offer
  * @param string $status      'draft' | 'pending'
@@ -127,15 +160,12 @@ function hub_offers_db_save( $id, $status, $title, $content, array $record, $bus
 	update_post_meta( $id, '_hub_end', $record['end'] );
 	update_post_meta( $id, '_hub_featured', 0 );
 	update_post_meta( $id, '_hub_form', $form );
-	update_post_meta( $id, 'offer_business', (int) $business_id );
-	update_post_meta( $id, '_offer_business', 'field_hub_offer_business' );
-	update_post_meta( $id, '_hub_business', (int) $business_id );
 	if ( '' === get_post_meta( $id, '_hub_index', true ) ) {
 		update_post_meta( $id, '_hub_index', 99 );   // after the business's existing offers
 	}
-	$list = array_map( 'intval', (array) get_field( 'biz_offers', $business_id, false ) );
-	if ( ! in_array( (int) $id, $list, true ) ) {
-		update_post_meta( $business_id, 'biz_offers', array_map( 'strval', array_merge( $list, array( (int) $id ) ) ) );
-	}
+	hub_offers_db_set_business( $id, (int) $business_id );
+	// The offer's fields (what the pages read and wp-admin edits) follow the record sent from the website
+	hub_offers_db_save_fields( $id, hub_fields_offer_from_record( $id, $record ) );
+	update_post_meta( $id, '_hub_featured', 0 );
 	return (int) $id;
 }
