@@ -71,7 +71,7 @@ get_header();
         <li class="pidx-row"><div class="pidx-row__main"><a class="pidx-row__name" href="<?php echo esc_url( hub_url( 'claim/?listing=1-stop-letting-solutions-west-harrow' ) ); ?>">Claim a business</a><span class="pidx-row__desc">Opened from an unclaimed listing</span></div><code class="pidx-row__url">/hub/claim/</code></li>
         <li class="pidx-row"><div class="pidx-row__main"><a class="pidx-row__name" href="<?php echo esc_url( hub_url( 'claim/submitted/' ) ); ?>">Claim submitted</a></div><code class="pidx-row__url">/hub/claim/submitted/</code></li>
         <li class="pidx-row"><div class="pidx-row__main"><a class="pidx-row__name" href="<?php echo esc_url( hub_url( 'report/?listing=1-stop-letting-solutions-west-harrow' ) ); ?>">Correction or removal request</a></div><code class="pidx-row__url">/hub/report/</code></li>
-        <li class="pidx-row"><div class="pidx-row__main"><a class="pidx-row__name" href="<?php echo esc_url( hub_url( 'advertise/newsletter/' ) ); ?>">Sponsor the newsletter</a><span class="pidx-row__desc">Book a Presented by slot (Advertise in the main menu)</span></div><code class="pidx-row__url">/hub/advertise/newsletter/</code></li>
+        <li class="pidx-row"><div class="pidx-row__main"><a class="pidx-row__name" href="<?php echo esc_url( hub_url( 'advertise/newsletter/' ) ); ?>">Advertise in the newsletter</a><span class="pidx-row__desc">Book an advert; main sponsor links to the advertising page (Advertise in the main menu)</span></div><code class="pidx-row__url">/hub/advertise/newsletter/</code></li>
     </ul>
   </section>
   <section class="pidx-sec" id="account" aria-labelledby="account-t">
@@ -88,7 +88,7 @@ get_header();
         <li class="pidx-row"><div class="pidx-row__main"><a class="pidx-row__name" href="<?php echo esc_url( hub_url( 'account/events/edit/' ) ); ?>">Add or edit an event</a></div><code class="pidx-row__url">/hub/account/events/edit/</code></li>
         <li class="pidx-row"><div class="pidx-row__main"><a class="pidx-row__name" href="<?php echo esc_url( hub_url( 'account/classes/' ) ); ?>">My classes</a></div><code class="pidx-row__url">/hub/account/classes/</code></li>
         <li class="pidx-row"><div class="pidx-row__main"><a class="pidx-row__name" href="<?php echo esc_url( hub_url( 'account/classes/edit/' ) ); ?>">Add or edit a class</a></div><code class="pidx-row__url">/hub/account/classes/edit/</code></li>
-        <li class="pidx-row"><div class="pidx-row__main"><a class="pidx-row__name" href="<?php echo esc_url( hub_url( 'account/newsletter/' ) ); ?>">Newsletter bookings</a><span class="pidx-row__desc">Booked newsletter sponsor slots</span></div><code class="pidx-row__url">/hub/account/newsletter/</code></li>
+        <li class="pidx-row"><div class="pidx-row__main"><a class="pidx-row__name" href="<?php echo esc_url( hub_url( 'account/newsletter/' ) ); ?>">Newsletter bookings</a><span class="pidx-row__desc">Booked newsletter adverts</span></div><code class="pidx-row__url">/hub/account/newsletter/</code></li>
         <li class="pidx-row"><div class="pidx-row__main"><a class="pidx-row__name" href="<?php echo esc_url( hub_url( 'account/billing/' ) ); ?>">Plan and billing</a></div><code class="pidx-row__url">/hub/account/billing/</code></li>
         <li class="pidx-row"><div class="pidx-row__main"><a class="pidx-row__name" href="<?php echo esc_url( hub_url( 'account/settings/' ) ); ?>">Settings</a></div><code class="pidx-row__url">/hub/account/settings/</code></li>
     </ul>
@@ -107,7 +107,7 @@ get_header();
     <ul class="pidx-list">
         <li class="pidx-row"><div class="pidx-row__main"><a class="pidx-row__name" href="<?php echo esc_url( hub_url( 'news-site/article/' ) ); ?>">News article</a><span class="pidx-row__desc">Support box, businesses mentioned, related stories</span></div><code class="pidx-row__url">harrowonline.org/{article}/</code></li>
         <li class="pidx-row"><div class="pidx-row__main"><a class="pidx-row__name" href="<?php echo esc_url( hub_url( 'news-site/support/' ) ); ?>">Support Harrow Online</a></div><code class="pidx-row__url">harrowonline.org/support/</code></li>
-        <li class="pidx-row"><div class="pidx-row__main"><a class="pidx-row__name" href="<?php echo esc_url( hub_url( 'news-site/advertise/' ) ); ?>">Advertise with Harrow Online</a><span class="pidx-row__desc">Includes newsletter sponsorship</span></div><code class="pidx-row__url">harrowonline.org/advertise/</code></li>
+        <li class="pidx-row"><div class="pidx-row__main"><a class="pidx-row__name" href="<?php echo esc_url( hub_url( 'news-site/advertise/' ) ); ?>">Advertise with Harrow Online</a><span class="pidx-row__desc">Includes newsletter advertising</span></div><code class="pidx-row__url">harrowonline.org/advertise/</code></li>
     </ul>
   </section>
 

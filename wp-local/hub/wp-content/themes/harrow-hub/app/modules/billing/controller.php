@@ -5,7 +5,7 @@
  *   hub_billing_status()                     the signed-in business's plan and subscription
  *   hub_billing_catalogue()                  plans and one-off items with their prices (pricing page, app)
  *   hub_billing_checkout_plan( $params )     Stripe Checkout for Featured or Local Partner, monthly or annual
- *   hub_billing_checkout_item( $params )     Stripe Checkout for a one-off item (event listing, feature, sponsor slot)
+ *   hub_billing_checkout_item( $params )     Stripe Checkout for a one-off item (event listing, feature, newsletter advert)
  *   hub_billing_portal()                     Stripe's billing portal: card, invoices, change plan, cancel
  *   hub_billing_webhook( $payload, $sig )    Stripe's events: switch plans on and off, record payments
  *   hub_billing_setup()                      admin/CLI: create the products and prices in Stripe
@@ -107,7 +107,7 @@ function hub_billing_checkout_plan( array $params, $mode = HUB_WEB ) {
 }
 
 /**
- * @param array $params { item (a HUB_BILLING_ITEMS key), ref (what it's for: an event, offer or sponsor slot), return (a Hub URL) }
+ * @param array $params { item (a HUB_BILLING_ITEMS key), ref (what it's for: an event, offer or newsletter advert), return (a Hub URL) }
  */
 function hub_billing_checkout_item( array $params, $mode = HUB_WEB ) {
 	$item = isset( $params['item'] ) ? sanitize_key( (string) $params['item'] ) : '';

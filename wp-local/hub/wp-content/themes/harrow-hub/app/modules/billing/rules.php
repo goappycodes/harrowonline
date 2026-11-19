@@ -15,13 +15,14 @@ const HUB_BILLING_PLANS = array(
 );
 
 /** One-off purchases: key => { name, amount, what (shown at checkout) } */
+// Newsletter adverts keep their sponsor_* keys: they're the Stripe price lookup keys (hub_sponsor_daily_day_once...).
 const HUB_BILLING_ITEMS = array(
 	'event_listing'      => array( 'name' => 'One-off event listing', 'amount' => 1500, 'what' => 'One event on What&rsquo;s On until its date, no plan needed' ),
 	'feature_7days'      => array( 'name' => 'Feature this (7 days)', 'amount' => 1500, 'what' => 'Shown first on What&rsquo;s On or Local Offers, and in The Weekend newsletter, for 7 days' ),
-	'sponsor_daily_day'  => array( 'name' => 'Daily News sponsor slot (one day)', 'amount' => 4500, 'what' => '&ldquo;Presented by&rdquo; slot in one Daily News issue' ),
-	'sponsor_daily_week' => array( 'name' => 'Daily News sponsor slot (full week)', 'amount' => 18000, 'what' => '&ldquo;Presented by&rdquo; slot in Monday to Friday Daily News issues' ),
-	'sponsor_weekend'    => array( 'name' => 'The Weekend sponsor slot', 'amount' => 6000, 'what' => '&ldquo;Presented by&rdquo; slot in one Thursday issue of The Weekend' ),
-	'sponsor_business'   => array( 'name' => 'Harrow Business sponsor slot', 'amount' => 5000, 'what' => '&ldquo;Presented by&rdquo; slot in one Monday issue of Harrow Business' ),
+	'sponsor_daily_day'  => array( 'name' => 'Daily News advert (one day)', 'amount' => 4500, 'what' => 'Your advert in one Daily News issue' ),
+	'sponsor_daily_week' => array( 'name' => 'Daily News advert (full week)', 'amount' => 18000, 'what' => 'Your advert in the Monday to Friday Daily News issues' ),
+	'sponsor_weekend'    => array( 'name' => 'The Weekend advert', 'amount' => 6000, 'what' => 'Your advert in one Thursday issue of The Weekend' ),
+	'sponsor_business'   => array( 'name' => 'Harrow Business advert', 'amount' => 5000, 'what' => 'Your advert in one Monday issue of Harrow Business' ),
 );
 
 const HUB_BILLING_INTERVALS = array( 'monthly' => 'month', 'annual' => 'year' );

@@ -42,7 +42,7 @@ get_header();
       <li><a href="#content">Offers, events and other content</a></li>
       <li><a href="#plans">Plans and billing</a></li>
       <li><a href="#cancel">Cancelling and downgrading</a></li>
-      <li><a href="#sponsor">Newsletter sponsorship and featured items</a></li>
+      <li><a href="#sponsor">Newsletter advertising and featured items</a></li>
       <li><a href="#liability">Our liability</a></li>
       <li><a href="#suspend">Removing content and accounts</a></li>
       <li><a href="#changes">Changes to these terms</a></li>
@@ -71,7 +71,7 @@ get_header();
     <p>Offers, events and classes are run by the businesses and organisers that list them, not by us. Any booking or purchase is between you and them.</p>
 
     <h2 id="accounts">3. Accounts</h2>
-    <p>You need a free Hub account to claim or add a business, submit events or offers, or book newsletter sponsorship. You must be 18 or over, give accurate details and keep your password safe. You&rsquo;re responsible for what happens under your account. Free organiser accounts (for schools, clubs and charities) can submit events and classes only.</p>
+    <p>You need a free Hub account to claim or add a business, submit events or offers, or book newsletter adverts. You must be 18 or over, give accurate details and keep your password safe. You&rsquo;re responsible for what happens under your account. Free organiser accounts (for schools, clubs and charities) can submit events and classes only.</p>
 
     <h2 id="listings">4. Business listings</h2>
     <p>Many listings were created from open data (see <a href="<?php echo esc_url( hub_url( 'data-sources/' ) ); ?>">Data sources</a>). We work to keep them accurate but can&rsquo;t promise every detail is correct or up to date. A listing doesn&rsquo;t mean we recommend or endorse a business.</p>
@@ -114,12 +114,12 @@ get_header();
     <p><strong>Downgrading keeps your data.</strong> Extra photos, social links, offers and featured settings are hidden, not deleted, so they come back if you upgrade again. Offers that need a paid plan end when the plan ends; events stay published without the featured label.</p>
     <p>Payments are not refundable for part-used periods, except where the law gives you a right to a refund or we have failed to provide the service. [Cooling-off wording for consumers to confirm.]</p>
 
-    <h2 id="sponsor">9. Newsletter sponsorship and featured items</h2>
+    <h2 id="sponsor">9. Newsletter advertising and featured items</h2>
     <ul>
-      <li>Newsletter &ldquo;Presented by&rdquo; slots and &ldquo;Feature this&rdquo; upgrades are one-off payments for the dates or period shown when you buy.</li>
+      <li>Newsletter adverts and &ldquo;Feature this&rdquo; upgrades are one-off payments for the dates or period shown when you buy.</li>
       <li>We hold your chosen dates for 30 minutes during checkout. The booking is confirmed once payment succeeds, and we email you the dates.</li>
-      <li>We review every sponsor message and logo. If we can&rsquo;t run it, we&rsquo;ll tell you why and refund you in full.</li>
-      <li>If you need to cancel a sponsor slot, tell us at least [5 working days, to confirm] before the issue for a full refund.</li>
+      <li>We review every advert&rsquo;s message and logo. If we can&rsquo;t run it, we&rsquo;ll tell you why and refund you in full.</li>
+      <li>If you need to cancel an advert, tell us at least [5 working days, to confirm] before the issue for a full refund.</li>
       <li>If we can&rsquo;t send an issue you&rsquo;ve booked, we&rsquo;ll offer another date or a refund.</li>
       <li>Local Partner members&rsquo; included newsletter slots have no cash value and can&rsquo;t be carried over [to confirm].</li>
     </ul>

@@ -16,7 +16,7 @@ return array(
 	'account/offers/edit' => array( 'tpl' => 'account-offer-edit', 'title' => 'Add an offer' ),
 	'account/settings' => array( 'tpl' => 'account-settings', 'title' => 'Account settings' ),
 	'add-business' => array( 'tpl' => 'add-business', 'title' => 'Add your business' ),
-	'advertise/newsletter' => array( 'tpl' => 'advertise-newsletter', 'title' => 'Sponsor the Harrow Online newsletter: book a Presented by slot' ),
+	'advertise/newsletter' => array( 'tpl' => 'advertise-newsletter', 'title' => 'Advertise in the Harrow Online newsletter: book an advert' ),
 	'categories' => array( 'tpl' => 'categories', 'title' => 'All business categories in Harrow' ),
 	'claim' => array( 'tpl' => 'claim', 'title' => 'Claim your business' ),
 	'claim/submitted' => array( 'tpl' => 'claim-submitted', 'title' => 'Claim received' ),

@@ -114,8 +114,8 @@ get_header();
           <a class="ho-btn ho-btn--primary ho-btn--block ho-btn--sm" href="<?php echo esc_url( hub_url( 'billing/portal/' ) ); ?>">Change plan</a>
           <ul class="ticks small">
             <li class="ticks__lead">Everything in Featured, plus:</li>
-            <li>One sponsored slot each month in the Daily News newsletter</li>
-            <li>One sponsored post each month in the Harrow Online Facebook Group</li>
+            <li>One advert each month in the Daily News newsletter</li>
+            <li>One Harrow Online Facebook Group post each month</li>
           </ul>
         </div>
       </div>
@@ -141,7 +141,7 @@ get_header();
         <h2 class="panel__title" id="q-title">Questions</h2>
         <details class="faq-mini">
           <summary>Have a discount code?</summary>
-          <p class="small">Enter it on the Stripe payment page when you upgrade. Codes work on Hub plans only, not on featured spots or sponsor slots. Already paying? <a href="https://harrowonline.org/contact-us/">Contact us</a> and we&rsquo;ll apply it to your next invoice.</p>
+          <p class="small">Enter it on the Stripe payment page when you upgrade. Codes work on Hub plans only, not on featured spots or newsletter adverts. Already paying? <a href="https://harrowonline.org/contact-us/">Contact us</a> and we&rsquo;ll apply it to your next invoice.</p>
         </details>
         <details class="faq-mini">
           <summary>What happens if I cancel?</summary>
@@ -165,7 +165,7 @@ get_header();
           </thead>
           <tbody>
             <tr>
-              <td data-label="Date">11 Nov 2026</td><td data-label="Invoice">HOHUB-0009</td><td data-label="For">Sponsor slot: Daily News, week of 30 Nov</td><td data-label="Amount">&pound;180.00</td>
+              <td data-label="Date">11 Nov 2026</td><td data-label="Invoice">HOHUB-0009</td><td data-label="For">Newsletter advert: Daily News, week of 30 Nov</td><td data-label="Amount">&pound;180.00</td>
               <td data-label="Status"><span class="status status--paid">Paid</span></td>
               <td><div class="table__actions"><a class="ho-btn ho-btn--sm ho-btn--ghost" href="#invoice-pdf"><svg class="ho-icon"><use href="#i-download"/></svg>PDF</a></div></td>
             </tr>
@@ -180,7 +180,7 @@ get_header();
               <td><div class="table__actions"><a class="ho-btn ho-btn--sm ho-btn--ghost" href="#invoice-pdf"><svg class="ho-icon"><use href="#i-download"/></svg>PDF</a></div></td>
             </tr>
             <tr>
-              <td data-label="Date">5 Nov 2026</td><td data-label="Invoice">HOHUB-0006</td><td data-label="For">Sponsor slot: The Weekend, 3 Dec</td><td data-label="Amount">&pound;60.00</td>
+              <td data-label="Date">5 Nov 2026</td><td data-label="Invoice">HOHUB-0006</td><td data-label="For">Newsletter advert: The Weekend, 3 Dec</td><td data-label="Amount">&pound;60.00</td>
               <td data-label="Status"><span class="status status--paid">Paid</span></td>
               <td><div class="table__actions"><a class="ho-btn ho-btn--sm ho-btn--ghost" href="#invoice-pdf"><svg class="ho-icon"><use href="#i-download"/></svg>PDF</a></div></td>
             </tr>
@@ -195,7 +195,7 @@ get_header();
               <td><div class="table__actions"><a class="ho-btn ho-btn--sm ho-btn--ghost" href="#invoice-pdf"><svg class="ho-icon"><use href="#i-download"/></svg>PDF</a></div></td>
             </tr>
             <tr>
-              <td data-label="Date">20 Oct 2026</td><td data-label="Invoice">HOHUB-0003</td><td data-label="For">Sponsor slot: Harrow Business, 26 Oct</td><td data-label="Amount">&pound;50.00</td>
+              <td data-label="Date">20 Oct 2026</td><td data-label="Invoice">HOHUB-0003</td><td data-label="For">Newsletter advert: Harrow Business, 26 Oct</td><td data-label="Amount">&pound;50.00</td>
               <td data-label="Status"><span class="status status--ended">Refunded</span></td>
               <td><div class="table__actions"><a class="ho-btn ho-btn--sm ho-btn--ghost" href="#invoice-pdf"><svg class="ho-icon"><use href="#i-download"/></svg>PDF</a></div></td>
             </tr>
