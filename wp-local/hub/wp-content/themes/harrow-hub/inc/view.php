@@ -164,3 +164,262 @@ function hub_view_two_initials( $name ) {
 	$words = preg_split( '/\s+/', trim( (string) $name ) );
 	return strtoupper( implode( '', array_map( function ( $w ) { return mb_substr( $w, 0, 1 ); }, array_slice( $words, 0, 2 ) ) ) );
 }
+
+/** ---------------------------------------------------------------- account forms */
+/** The message box above a form after it was sent: { ok, message } from an account controller (nothing if null). */
+function hub_view_form_notice( $result, $ok_title = '' ) {
+	if ( ! $result || '' === $result['message'] ) {
+		return;
+	}
+	$ok = ! empty( $result['ok'] );
+	echo '<div class="notice ' . ( $ok ? 'notice--ok' : 'notice--error' ) . ' mb-5" role="' . ( $ok ? 'status' : 'alert' ) . '">'
+		. '<svg class="ho-icon"><use href="#i-' . ( $ok ? 'mail' : 'alert' ) . '"/></svg><div>'
+		. ( $ok && $ok_title ? '<p><strong>' . esc_html( $ok_title ) . '</strong></p>' : '' )
+		. '<p>' . wp_kses( $result['message'], array() ) . '</p></div></div>'; // messages may hold &rsquo;
+}
+
+/** " has-error" for a field's wrapper when the controller flagged it. */
+function hub_view_field_class( $result, $field ) {
+	return ( $result && ! empty( $result['errors'][ $field ] ) ) ? ' has-error' : '';
+}
+
+/** The field's error line under its input (nothing when it's fine). */
+function hub_view_field_error( $result, $field ) {
+	if ( $result && ! empty( $result['errors'][ $field ] ) ) {
+		echo '<p class="field__error" id="' . esc_attr( $field ) . '-error"><svg class="ho-icon"><use href="#i-alert"/></svg>' . wp_kses( $result['errors'][ $field ], array() ) . '</p>';
+	}
+}
+
+/** A sent value, to put back in the field after an error (never passwords). */
+function hub_view_posted( $key ) {
+	return isset( $_POST[ $key ] ) && is_scalar( $_POST[ $key ] ) ? sanitize_text_field( wp_unslash( $_POST[ $key ] ) ) : ''; // phpcs:ignore WordPress.Security.NonceVerification -- display only, after the controller checked the nonce
+}
+
+/** ---------------------------------------------------------------- account pages: who is signed in */
+/** The account box at the top of the account menu: the business (or the person) and the plan. */
+function hub_view_account_who() {
+	$a     = hub_account_current();
+	$b     = $a['business'];
+	$title = $b ? $b['name'] : ( '' !== $a['name'] ? $a['name'] : 'Your account' );
+	if ( $b ) {
+		$sub = $a['plan_label'] . ' plan';
+	} else {
+		$sub = 'organiser' === $a['type'] ? 'Organiser' : 'No listing yet';
+	}
+	$words    = preg_split( '/\s+/', trim( preg_replace( '/[^\p{L}\p{N} ]/u', ' ', $title ) ) );
+	$initials = strtoupper( implode( '', array_map( function ( $w ) { return mb_substr( $w, 0, 1 ); }, array_slice( array_filter( $words ), 0, 2 ) ) ) );
+	echo '<span class="mono mono--sm" aria-hidden="true">' . esc_html( '' !== $initials ? $initials : '?' ) . '</span>'
+		. '<div><strong>' . esc_html( $title ) . '</strong><span>' . esc_html( $sub ) . '</span></div>';
+}
+
+/** The dashboard greeting: "Good morning, Sam" and the business with a link to its page. */
+function hub_view_account_hello() {
+	$a    = hub_account_current();
+	$h    = (int) current_time( 'G' );
+	$when = $h < 12 ? 'Good morning' : ( $h < 18 ? 'Good afternoon' : 'Good evening' );
+	$name = '' !== $a['first_name'] ? $a['first_name'] : 'there';
+	echo '<h1 data-welcome-text="' . esc_attr( 'Welcome to the Hub, ' . $name ) . '">' . esc_html( $when . ', ' . $name ) . '</h1>';
+	if ( $a['business'] ) {
+		echo '<p>' . esc_html( $a['business']['name'] ) . ' &middot; <a href="' . esc_url( $a['business']['url'] ) . '">View my listing</a></p>';
+	} else {
+		$claim = hub_claim_mine();   // claims module: their latest claim, if any
+		$added = hub_businesses_added_pending( $a['id'] );   // businesses they added that we're still checking
+		if ( $added ) {
+			echo '<p>We&rsquo;re checking ' . $added[0]['name'] . ', which you added. We&rsquo;ll email you when it&rsquo;s live.</p>'; // phpcs:ignore WordPress.Security.EscapeOutput -- name is escaped by the controller
+		} elseif ( $claim && 'pending' === $claim['status'] ) {
+			echo '<p>Your claim for ' . esc_html( $claim['business']['name'] ) . ' is being checked &middot; <a href="' . esc_url( hub_url( 'claim/submitted/' ) ) . '">See your claim</a></p>';
+		} elseif ( $claim && 'rejected' === $claim['status'] ) {
+			echo '<p>We couldn&rsquo;t approve your claim for ' . esc_html( $claim['business']['name'] ) . ' &middot; <a href="' . esc_url( hub_url( 'claim/submitted/' ) ) . '">See why</a></p>';
+		} else {
+			echo '<p>No listing linked yet &middot; <a href="' . esc_url( hub_url( 'search/' ) ) . '">Find your business to claim it</a></p>';
+		}
+	}
+	hub_view_account_email_notice( $a );
+	if ( isset( $_GET['sign_out'] ) && 'confirm' === $_GET['sign_out'] ) { // phpcs:ignore WordPress.Security.NonceVerification
+		echo '<div class="notice mt-4" role="status"><svg class="ho-icon"><use href="#i-logout"/></svg><div><p class="mb-0"><strong>Sign out?</strong> <a class="ho-btn ho-btn--outline ho-btn--sm ml-2" href="' . esc_url( hub_account_sign_out_url() ) . '">Sign out</a></p></div></div>';
+	}
+}
+
+/** The "Sign out" link with its token (account sidebar, claim page). */
+function hub_view_sign_out_url() {
+	return hub_account_sign_out_url();
+}
+
+/** Dashboard: "Confirm your email" (with a resend button) until it's confirmed, and the result of the link or resend. */
+function hub_view_account_email_notice( array $a ) {
+	$q     = isset( $_GET['email'] ) ? sanitize_key( $_GET['email'] ) : ''; // phpcs:ignore WordPress.Security.NonceVerification
+	$gate  = isset( $_GET['confirm'] ) && 'needed' === $_GET['confirm']; // phpcs:ignore WordPress.Security.NonceVerification
+	$notes = array(
+		'confirmed'    => array( 'ok', 'check', 'Email address confirmed.', 'Thanks. You can now choose a plan for your business.' ),
+		'link-invalid' => array( 'warn', 'alert', 'That confirmation link didn&rsquo;t work.', 'It may have expired or been replaced by a newer one. Send yourself a new link below.' ),
+	);
+	if ( isset( $notes[ $q ] ) && ( 'confirmed' === $q || ! $a['email_confirmed'] ) ) {
+		list( $kind, $icon, $title, $text ) = $notes[ $q ];
+		echo '<div class="notice notice--' . $kind . ' mt-4" role="status"><svg class="ho-icon"><use href="#i-' . $icon . '"/></svg><div><p><strong>' . $title . '</strong> ' . $text . '</p></div></div>'; // phpcs:ignore WordPress.Security.EscapeOutput -- fixed strings
+	}
+	if ( $a['email_confirmed'] ) {
+		return;
+	}
+	$sent = 'sent' === $q ? '<p class="mb-0"><strong>New link sent.</strong> Check your inbox and spam folder.</p>' : ( 'wait' === $q ? '<p class="mb-0"><strong>We&rsquo;ve sent several links already.</strong> Please check your spam folder, or try again in an hour.</p>' : '' );
+	echo '<div class="notice notice--warn mt-4" role="status"><svg class="ho-icon"><use href="#i-mail"/></svg><div>'
+		. '<p><strong>' . ( $gate ? 'Confirm your email before choosing a plan.' : 'Please confirm your email address.' ) . '</strong> We sent a link to ' . esc_html( $a['email'] ) . '.</p>'
+		. $sent
+		. '<form method="post" action="' . esc_url( hub_url( 'confirm-email/resend/' ) ) . '" class="mt-2">' . wp_nonce_field( 'hub_account', '_hub_nonce', true, false )
+		. '<button class="ho-btn ho-btn--outline ho-btn--sm" type="submit">Resend the email</button></form>'
+		. '</div></div>';
+}
+
+/** Account billing: the failed-payment warning, shown while Stripe is retrying (subscription past due). */
+function hub_view_billing_failed_notice() {
+	$b = hub_billing_status();
+	if ( 'past_due' !== $b['status'] ) {
+		return;
+	}
+	echo '<div class="notice notice--warn mb-5"><svg class="ho-icon"><use href="#i-alert"/></svg><div>'
+		. '<p><strong>We couldn&rsquo;t take your last payment.</strong> Update your card to keep ' . esc_html( $b['plan_name'] ) . ' plan features. We&rsquo;ll try again automatically over the next few days.</p>'
+		. '<p><a href="' . esc_url( hub_url( 'billing/portal/' ) ) . '">Update your card</a></p></div></div>';
+}
+
+/** ---------------------------------------------------------------- account billing: the current plan card */
+function hub_view_billing_plan_card() {
+	$b      = hub_billing_status();
+	$notice = isset( $_GET['checkout'] ) ? sanitize_key( $_GET['checkout'] ) : ( isset( $_GET['billing'] ) ? sanitize_key( $_GET['billing'] ) : '' ); // phpcs:ignore WordPress.Security.NonceVerification
+	$notes  = array(
+		'success'     => array( 'ok', 'Thanks, your payment went through.', 'Your plan switches on as soon as Stripe confirms it, usually within a minute. Refresh this page to see it.' ),
+		'cancelled'   => array( 'plain', 'Payment cancelled.', 'Nothing was charged. Choose a plan whenever you&rsquo;re ready.' ),
+		'unavailable' => array( 'warn', 'Online payments aren&rsquo;t switched on yet.', 'Please contact hub@harrowonline.org to upgrade, and we&rsquo;ll set it up for you.' ),
+		'error'       => array( 'warn', 'We couldn&rsquo;t reach the payment service.', 'Nothing was charged. Please try again in a minute.' ),
+		'no_business' => array( 'warn', 'Plans are for a business listing.', 'Your account isn&rsquo;t linked to a business yet. <a href="' . esc_url( hub_url( 'search/' ) ) . '">Find your business</a> and claim it, then choose a plan.' ),
+	);
+	if ( isset( $notes[ $notice ] ) ) {
+		list( $kind, $title, $text ) = $notes[ $notice ];
+		echo '<div class="notice notice--' . esc_attr( $kind ) . ' mb-5" role="status"><svg class="ho-icon"><use href="#i-' . ( 'ok' === $kind ? 'check' : 'alert' ) . '"/></svg><div><p><strong>' . wp_kses( $title, array() ) . '</strong> ' . wp_kses( $text, array( 'a' => array( 'href' => true ) ) ) . '</p></div></div>';
+	}
+	if ( ! $b ) {
+		return;
+	}
+	$portal = hub_url( 'billing/portal/' );
+	if ( $b['has_subscription'] ) {
+		$title = $b['plan_name'] . ', paid ' . ( 'annual' === $b['interval'] ? 'annually' : 'monthly' );
+		$line  = esc_html( $b['price'] . ' a ' . $b['price_per'] );
+		if ( $b['renews_on'] ) {
+			$line .= ' &middot; ' . ( $b['cancels_at_period_end'] ? 'ends on ' : 'renews on ' ) . esc_html( wp_date( 'j F Y', strtotime( $b['renews_on'] ) ) );
+		}
+		$ok    = in_array( $b['status'], array( 'active', 'trialing' ), true );
+		$line .= ' &middot; <span class="status status--' . ( $ok ? 'active' : 'pending' ) . '">' . esc_html( $b['status_label'] ) . '</span>';
+		$extra = $b['annual_saving'] ? '<p class="small mb-0 mt-2">Switch to annual billing and save ' . esc_html( $b['annual_saving'] ) . ' a year.</p>' : '';
+		$btn   = '<a class="ho-btn ho-btn--primary ho-btn--sm" href="' . esc_url( $portal ) . '">' . ( $b['annual_saving'] ? 'Switch to annual' : 'Manage billing' ) . '</a>';
+	} elseif ( in_array( $b['plan'], array( 'enhanced', 'premium', 'partner' ), true ) ) {
+		// A paid plan with no online subscription: arranged with Harrow Online (launch offer, invoice, or set in wp-admin)
+		$title = $b['plan_name'];
+		$line  = 'Arranged with Harrow Online, not billed online. Questions? Email hub@harrowonline.org.';
+		$extra = '';
+		$btn   = '';
+	} else {
+		$title = 'Basic, free';
+		$line  = 'No subscription. Upgrade for Local Offers, events, more photos and a place at the top of your category.';
+		$extra = '';
+		$btn   = '<a class="ho-btn ho-btn--primary ho-btn--sm" href="' . esc_url( hub_url( 'billing/checkout/?plan=featured&billing=monthly' ) ) . '">Upgrade to Featured</a>';
+	}
+	echo '<section class="plan-card" aria-labelledby="cur-plan"><div><span class="eyebrow">Current plan</span><h2 id="cur-plan">' . esc_html( $title ) . '</h2>'
+		. '<p class="mb-0">' . $line . '</p>' . $extra . '</div><div class="plan-card__actions">' . $btn . '</div></section>'; // phpcs:ignore WordPress.Security.EscapeOutput -- built from escaped parts above
+}
+
+/* ------------------------------------------------------------------ add/edit offer, event, class forms */
+
+/**
+ * A field's value on an offer, event or class form: what was just sent (after an error), else what's saved (editing
+ * a draft), else the form's default. $name is the form field's name ("slots[0][day]" for nested ones).
+ */
+function hub_view_submission_value( array $page, $name ) {
+	if ( 'POST' === $_SERVER['REQUEST_METHOD'] ) { // phpcs:ignore WordPress.Security.ValidatedSanitizedInput
+		$v = $_POST; // phpcs:ignore WordPress.Security.NonceVerification
+		foreach ( preg_split( '/[\[\]]+/', $name, -1, PREG_SPLIT_NO_EMPTY ) as $k ) {
+			$v = is_array( $v ) && isset( $v[ $k ] ) ? $v[ $k ] : '';
+		}
+		return is_scalar( $v ) ? wp_unslash( (string) $v ) : '';
+	}
+	$f = $page['form'];
+	// Form field -> saved key (and how to turn the saved value back into the form's)
+	$map = array(
+		'terms' => 'terms_text', 'start_date' => 'date', 'start_time' => 'start', 'end_time' => 'end', 'venue' => 'venue_name',
+		'price' => 'price_text', 'slots[0][start]' => 'start', 'slots[0][end]' => 'end', 'term_type' => 'term',
+	);
+	if ( $f ) {
+		if ( 'venue_is_listing' === $name ) {
+			return ! empty( $f['at_listing'] ) ? '1' : '0';
+		}
+		if ( 'slots[0][day]' === $name ) {
+			return isset( $f['day'] ) ? HUB_SUBMISSIONS_DAYS[ (int) $f['day'] ] : 'Monday';
+		}
+		if ( in_array( $name, array( 'no_half_term', 'free_trial' ), true ) ) {
+			return ! empty( $f[ $name ] ) ? '1' : '';
+		}
+		$key = isset( $map[ $name ] ) ? $map[ $name ] : $name;
+		if ( isset( $f[ $key ] ) && is_scalar( $f[ $key ] ) ) {
+			return (string) $f[ $key ];
+		}
+	}
+	$defaults = array(
+		'audience' => 'everyone', 'age' => 'All ages', 'level' => 'All levels', 'price_per' => 'session', 'booking' => 'turn-up',
+		'term_type' => 'ongoing', 'slots[0][day]' => 'Monday', 'venue_is_listing' => $page['business'] ? '1' : '0',
+		'redeem' => 'Mention Harrow Online when you book.',
+	);
+	return isset( $defaults[ $name ] ) ? $defaults[ $name ] : '';
+}
+
+/** Above an offer, event or class form: saved / sent notices, the item's status, errors, or why it can't be used. */
+function hub_view_submission_notices( array $page, $result ) {
+	$kind  = $page['kind'];
+	$saved = isset( $_GET['saved'] ) ? sanitize_key( $_GET['saved'] ) : ''; // phpcs:ignore WordPress.Security.NonceVerification
+	$box   = function ( $type, $icon, $html ) {
+		echo '<div class="notice notice--' . esc_attr( $type ) . ' mb-5" role="status"><svg class="ho-icon"><use href="#i-' . esc_attr( $icon ) . '"/></svg><div>' . $html . '</div></div>'; // phpcs:ignore WordPress.Security.EscapeOutput -- built from escaped parts
+	};
+	if ( 'ready' !== $page['state'] ) {
+		$more = 'upgrade' === $page['state'] ? ' <a href="' . esc_url( hub_url( 'pricing/' ) ) . '">See plans</a>' : ( 'unconfirmed' === $page['state'] ? ' <a href="' . esc_url( hub_url( 'account/' ) ) . '">Go to my account</a>' : '' );
+		$box( 'locked' === $page['state'] ? 'plain' : 'warn', 'locked' === $page['state'] ? 'check' : 'alert', '<p class="mb-0">' . wp_kses( $page['message'], array() ) . $more . '</p>' );
+		return;
+	}
+	if ( 'pending' === $saved ) {
+		$pay = $page['item'] && $page['item']['needs_pay'] && ! $page['item']['paid']
+			? ' The £15 listing fee is still to pay: online payments aren&rsquo;t switched on yet, so we&rsquo;ll be in touch about it.' : '';
+		$box( 'ok', 'check', '<p class="mb-0"><strong>Sent for checking.</strong> We check every ' . esc_html( $kind ) . ' before it goes live, usually within 2 working days, and email you either way.' . $pay . '</p>' );
+	} elseif ( 'draft' === $saved ) {
+		$box( 'ok', 'check', '<p class="mb-0"><strong>Draft saved.</strong> Send it for approval when you&rsquo;re ready.</p>' );
+	} elseif ( $page['item'] ) {
+		$box( 'plain', 'info', '<p class="mb-0">Status: <strong>' . esc_html( $page['item']['status_label'] ) . '</strong>' . ( 'pending' === $page['item']['status'] ? '. You can still change it while we check it.' : '.' ) . '</p>' );
+	}
+	if ( 'pay' === $page['access'] && ! $page['item'] && ! $result ) {
+		$box( 'plain', 'info', '<p class="mb-0">On the Basic plan, each event costs <strong>£15</strong>, paid when you send it. Featured and Local Partner include unlimited events. <a href="' . esc_url( hub_url( 'pricing/' ) ) . '">See plans</a></p>' );
+	}
+	if ( $result && ! $result['ok'] ) {
+		$items = '';
+		foreach ( (array) $result['errors'] as $msg ) {
+			$items .= '<li>' . wp_kses( $msg, array() ) . '</li>';
+		}
+		$box( 'error', 'alert', '<p><strong>' . wp_kses( $result['message'], array() ) . '</strong></p>' . ( $items ? '<ul class="mb-0">' . $items . '</ul>' : '' ) );
+	}
+}
+
+/** Where an offer, event or class form posts: its own page (with ?id= when editing). */
+function hub_view_submission_action( array $page ) {
+	$url = hub_url( HUB_SUBMISSIONS_KINDS[ $page['kind'] ][2] . 'edit/' );
+	return $page['item'] ? add_query_arg( 'id', $page['item']['id'], $url ) : $url;
+}
+
+/** The heading of an offer, event or class page: "Your offer", who it's for, and the item's status. */
+function hub_view_submission_head( array $page ) {
+	$kind   = $page['kind'];
+	$item   = $page['item'];
+	$status = $item ? ' &middot; <span class="status status--' . ( 'publish' === $item['status'] ? 'active' : 'pending' ) . '">' . esc_html( $item['status_label'] ) . '</span>' : '';
+	$view   = array( 'offer' => array( 'offers/', 'View Local Offers' ), 'event' => array( 'events/', 'View What&rsquo;s On' ), 'class' => array( 'classes/', 'View Classes' ) );
+	echo '<div class="dash-head"><div><h1>Your ' . esc_html( $kind ) . '</h1>'
+		. '<p>' . ( '' !== $page['by'] ? 'For ' . esc_html( $page['by'] ) . '. ' : '' ) . 'We check every ' . esc_html( $kind ) . ' before it goes live, usually within 2 working days.' . $status . '</p></div>'
+		. '<a class="ho-btn ho-btn--outline" href="' . esc_url( $item && 'publish' === $item['status'] ? $item['url'] : hub_url( $view[ $kind ][0] ) ) . '"><svg class="ho-icon"><use href="#i-external"/></svg>' . $view[ $kind ][1] . '</a></div>';
+}
+
+/** The breadcrumb's last step: the item's name when editing, else "Add an offer". */
+function hub_view_submission_crumb( array $page ) {
+	$f = $page['form'];
+	echo esc_html( $page['item'] && ! empty( $f['title'] ) ? $f['title'] : ( 'offer' === $page['kind'] ? 'Add an offer' : ( 'event' === $page['kind'] ? 'Add an event' : 'Add a class' ) ) );
+}

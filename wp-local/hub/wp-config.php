@@ -85,6 +85,16 @@ define( 'WP_DEBUG_DISPLAY', false );
 define( 'DISALLOW_FILE_EDIT', true );
 define( 'DISALLOW_FILE_MODS', $hub_bool( 'DISALLOW_FILE_MODS', false ) );   // servers: plugins and themes come from git
 define( 'AUTOMATIC_UPDATER_DISABLED', true );
+
+// Email (wp-content/mu-plugins/hub-mail.php): sent through an SMTP service when SMTP_HOST is set (servers);
+// locally, with no SMTP_HOST, emails are saved to wp-content/mail-log/ instead (mu-plugins/hub-local-mail.php)
+define( 'HUB_SMTP_HOST', $hub_cfg( 'SMTP_HOST', '' ) );
+define( 'HUB_SMTP_PORT', (int) $hub_cfg( 'SMTP_PORT', '587' ) );
+define( 'HUB_SMTP_SECURE', $hub_cfg( 'SMTP_SECURE', 'tls' ) );           // tls (port 587) or ssl (port 465)
+define( 'HUB_SMTP_USER', $hub_cfg( 'SMTP_USER', '' ) );
+define( 'HUB_SMTP_PASS', $hub_cfg( 'SMTP_PASS', '' ) );
+define( 'HUB_MAIL_FROM', $hub_cfg( 'MAIL_FROM', 'hub@harrowonline.org' ) );   // must be a sender the SMTP service has verified
+define( 'HUB_MAIL_FROM_NAME', $hub_cfg( 'MAIL_FROM_NAME', 'Harrow Online' ) );
 unset( $hub_env, $hub_env_file, $hub_line, $hub_k, $hub_v, $hub_cfg, $hub_bool, $hub_homes, $hub_home, $hub_host, $hub_h );
 
 if ( ! defined( 'ABSPATH' ) ) {

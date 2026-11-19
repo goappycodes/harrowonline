@@ -17,8 +17,7 @@ get_header();
 <div class="ho-container dash">
   <aside class="dash-nav" aria-label="Account">
     <div class="dash-nav__who">
-      <span class="mono mono--sm" aria-hidden="true">SR</span>
-      <div><strong>Station Road Barbers</strong><span>Featured plan</span></div>
+      <?php hub_view_account_who(); ?>
     </div>
     <div class="dash-add">
       <!-- "+ Add" on every account page (client plan, Nov 2026): an event, a class or an offer, one tap from anywhere. -->
@@ -45,7 +44,7 @@ get_header();
     </ul>
     <hr>
     <ul>
-      <li><a href="<?php echo esc_url( hub_url( 'sign-in/' ) ); ?>"><svg class="ho-icon"><use href="#i-logout"/></svg>Sign out</a></li>
+      <li><a href="<?php echo esc_url( hub_view_sign_out_url() ); ?>"><svg class="ho-icon"><use href="#i-logout"/></svg>Sign out</a></li>
     </ul>
   </aside>
 

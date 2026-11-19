@@ -179,3 +179,44 @@ function hub_business_shape_imported_class_row( array $c ) {
 		'featured' => ! empty( $c['featured'] ), 'weekly' => ! empty( $c['class'] ), 'order' => 0,
 	);
 }
+
+/**
+ * Emails about a business added from the website, plain text: { subject, body }.
+ *
+ * @param string $kind 'received' | 'staff' | 'live' (owner) | 'live_recommend' | 'declined'
+ * @param array  $a    { first_name, business, link, account_email, as_label }
+ */
+function hub_businesses_shape_added_email( $kind, array $a ) {
+	$hi   = 'Hi ' . ( '' !== $a['first_name'] ? $a['first_name'] : 'there' ) . ",\n\n";
+	$sign = "\n\nThanks,\nThe Harrow Online team\nhub@harrowonline.org";
+	switch ( $kind ) {
+		case 'received':
+			return array(
+				'subject' => 'We\'ve received ' . $a['business'],
+				'body'    => $hi . 'Thanks for adding ' . $a['business'] . ' to the Harrow Online Hub. A member of our team will check it, usually within 2 working days, and email you either way.' . $sign,
+			);
+		case 'live':
+			return array(
+				'subject' => $a['business'] . ' is live on Harrow Online Hub',
+				'body'    => $hi . $a['business'] . ' is now on the Harrow Online Hub, on the free Basic plan with a verified badge, and you manage it from your account:'
+					. "\n" . $a['link']
+					. "\n\nWant more photos, Local Offers, events and a place at the top of your category? You can upgrade any time." . $sign,
+			);
+		case 'live_recommend':
+			return array(
+				'subject' => 'Thanks: ' . $a['business'] . ' is on Harrow Online Hub',
+				'body'    => $hi . 'Thanks for recommending ' . $a['business'] . '. It\'s now on the Harrow Online Hub:' . "\n" . $a['link']
+					. "\n\nIf you know the owner, let them know they can claim it free to keep it up to date." . $sign,
+			);
+		case 'declined':
+			return array(
+				'subject' => 'About ' . $a['business'] . ' on Harrow Online Hub',
+				'body'    => $hi . 'We couldn\'t add ' . $a['business'] . ' to the Harrow Online Hub this time. It may already be listed, be outside Harrow, or we couldn\'t check the details.'
+					. "\n\nReply to this email and we'll explain or help." . $sign,
+			);
+	}
+	return array(
+		'subject' => 'New business to check: ' . $a['business'],
+		'body'    => $a['account_email'] . ' added ' . $a['business'] . ' (' . $a['as_label'] . ").\n\nCheck it, then Publish or move it to the Trash:\n" . $a['link'],
+	);
+}

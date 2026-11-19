@@ -31,14 +31,24 @@ app/
 │   ├── request.php        hub_param_slug/bool/int(): read $_GET and API params the same way
 │   └── url.php            hub_media_url()
 ├── setup/
-│   └── rest-routes.php    namespace hub/v1, hub_route()
+│   ├── rest-routes.php    namespace hub/v1, hub_route()
+│   ├── accounts.php       sign-in redirects for /account/ pages, sign-out, wp-admin Users: plan and business fields
+│   ├── billing.php        /billing/checkout/ and /billing/portal/ (send to Stripe), Payments log in wp-admin
+│   ├── claims.php         claim pages' sign-in and email link, wp-admin > Claims (review, approve, reject)
+│   ├── add-business.php   /add-business/ sign-in; Pending Review -> Published (owner gets it) or Trash (declined)
+│   └── submissions.php    account offer/event/class forms: saving, Publish or Trash emails, £15 event payment
 └── modules/
     ├── businesses/        data.php  rules.php  shape.php  controller.php  routes.php
     ├── events/            one-off events and weekly classes (What's On)
     ├── offers/
     ├── categories/
-    └── areas/
+    ├── areas/
+    ├── account/           sign-in, register, reset, the signed-in account and its business
+    ├── billing/           Stripe: checkout, customer portal, webhook (sets the business's plan)
+    ├── claims/            claiming a business: proof (email, phone, document), staff approve or reject
+    └── submissions/       offers, events and classes from the account pages: who may, drafts, Pending Review
 parts/                     display only: each part gets arrays in $args and prints them
+├── account/               settings (the settings page's forms)
 ├── businesses/            row, card, ticker, event-row, profile, profile-imported, directory
 ├── events/                row (What's On list), card, class-card, single (event page), class-single
 └── offers/                card, tile, card-full, unlock-box, filters, single
@@ -116,13 +126,18 @@ Functions starting with `_hub_` are internal helpers of their module's controlle
 | `GET /wp-json/hub/v1/businesses/{id}/offers` | `hub_offers_for_business()` |
 | `GET /wp-json/hub/v1/categories`, `/categories/{slug}` | `hub_categories_list()`, `hub_category_get()` |
 | `GET /wp-json/hub/v1/areas`, `/areas/{slug}` | `hub_areas_list()`, `hub_area_get()` |
+| `GET /wp-json/hub/v1/account/me`; `POST /account/sign-in`, `/account/register`, `/account/reset`, `/account/sign-out` | `hub_account_current()`, `hub_account_sign_in()`, `hub_account_register()`, `hub_account_reset_request()`, `hub_account_sign_out()` |
+| `GET /wp-json/hub/v1/billing/catalogue`, `/billing/status`; `POST /billing/checkout`, `/billing/portal` | `hub_billing_catalogue()`, `hub_billing_status()`, `hub_billing_checkout_plan()` / `_item()`, `hub_billing_portal()` |
+| `POST /wp-json/hub/v1/billing/webhook` (Stripe only, checked by signature) | `hub_billing_webhook()` |
 
-All routes are public and read-only for now. Routes that change data (account pages) will need a permission
-callback (the 4th argument of `hub_route()`).
+Content routes are public and read-only. Account and billing routes that need a signed-in user use the permission
+callback (the 4th argument of `hub_route()`). From JavaScript, send WordPress's REST nonce (`X-WP-Nonce`) or the
+request counts as signed out.
 
 ## Modules still to move here
 
 - **Search** (`page-templates/search.php` and hub.js) reads the prototype's `assets/data/hub-index.json`; it should
   move to the API.
-- **Homepage categories and areas**, the categories page, account pages and the newsletter band
+- **Homepage categories and areas**, the categories page, the account pages' forms and lists (listing, offers,
+  events, classes: still the prototype's sample content; only the account name, greeting and billing are real) and the newsletter band
   (`inc/business-acf.php`) are still old-style.

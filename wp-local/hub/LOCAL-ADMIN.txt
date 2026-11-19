@@ -8,3 +8,30 @@ Password: tH2V07vDcRN80y12S1WM
 
 User: shubhankar
 Password: KVSlmrWkVf5wHLoOemEs
+
+Test business owner (front-end account at /hub/sign-in/, linked to AJ Pizza's)
+User: owner@harrowonline.test
+Password: qjDW7gFfmKFAfoKv2hsW
+
+# Test accounts (made by seed-test-accounts-local.php; sign in at /hub/sign-in/)
+Local Partner owner (Stanmore Family Dental): a live offer; a pending event and class
+Email: partner@harrowonline.test
+Password: V0AnBGJ6suevqqvI
+
+Basic owner (Pinner Village Florist): a pending £15 event (unpaid) and a draft event; offers and classes ask to upgrade
+Email: basic@harrowonline.test
+Password: 1VNCBlpzR7uKQ3P3
+
+Organiser (Harrow Chess Club): a pending event and class, a draft class; no offers
+Email: organiser@harrowonline.test
+Password: vtrRRPXIoBW524uI
+
+Newcomer: confirmed email, no business yet (try claiming one, or Add a business)
+Email: newcomer@harrowonline.test
+Password: q9uDv484Obf8xE6y
+
+Claimer: a claim for 1 Stop Letting Solutions waiting in wp-admin > Claims
+Email: claimer@harrowonline.test
+Password: D8sAchw3ZXPuZvYL
+
+# End of test accounts

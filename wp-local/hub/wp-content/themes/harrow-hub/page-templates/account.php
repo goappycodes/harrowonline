@@ -17,8 +17,7 @@ get_header();
 <div class="ho-container dash">
   <aside class="dash-nav" aria-label="Account">
     <div class="dash-nav__who">
-      <span class="mono mono--sm" aria-hidden="true">SR</span>
-      <div><strong>Station Road Barbers</strong><span>Featured plan</span></div>
+      <?php hub_view_account_who(); ?>
     </div>
     <div class="dash-add">
       <!-- "+ Add" on every account page (client plan, Nov 2026): an event, a class or an offer, one tap from anywhere. -->
@@ -45,7 +44,7 @@ get_header();
     </ul>
     <hr>
     <ul>
-      <li><a href="<?php echo esc_url( hub_url( 'sign-in/' ) ); ?>"><svg class="ho-icon"><use href="#i-logout"/></svg>Sign out</a></li>
+      <li><a href="<?php echo esc_url( hub_view_sign_out_url() ); ?>"><svg class="ho-icon"><use href="#i-logout"/></svg>Sign out</a></li>
     </ul>
   </aside>
 
@@ -53,8 +52,7 @@ get_header();
     <!-- Simplified dashboard (client feedback, Nov 2026): what needs me, what can I do, how am I doing. -->
     <div class="dash-hello">
       <div>
-        <h1 data-welcome-text="Welcome to the Hub, Sam">Good morning, Sam</h1>
-        <p>Station Road Barbers &middot; <a href="<?php echo esc_url( hub_url( 'business/station-road-barbers-harrow-town-centre/' ) ); ?>">View my listing</a></p>
+        <?php hub_view_account_hello(); ?>
       </div>
       <a class="ho-btn ho-btn--primary" href="<?php echo esc_url( hub_url( 'account/listings/edit/' ) ); ?>"><svg class="ho-icon"><use href="#i-edit"/></svg>Edit my listing</a>
     </div>

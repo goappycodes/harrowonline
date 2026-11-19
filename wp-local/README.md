@@ -59,6 +59,136 @@ local only). In the Claude desktop app, start the **wp-local** preview instead.
 - **Local only:** `wp-config.php`, its keys and the admin login are for local development. Staging and live have
   their own config and a MySQL database.
 
+## Accounts and payments (Stripe)
+
+- **Accounts** (`app/modules/account/`, `app/setup/accounts.php`): sign-in, register, forgot password and
+  sign-out (`/hub/sign-out/`) are real WordPress logins. Every `/hub/account/...` page needs a signed-in user. Every
+  Hub account is a WordPress **Subscriber** and can't open wp-admin. Two user fields say what it is: **account
+  type** (`hub_account_type`: business owner or organiser) and **plan** (`hub_plan`: Basic, Featured or Local
+  Partner, business owners only; new ones start on Basic). Each account is linked to at most one business. In
+  wp-admin under Users, the list has *Hub account* and *Plan* columns and Basic / Featured / Local Partner filters.
+  Each user's page has **Plan** and **Business** (post ID or slug).
+- **The plan follows the business.** Stripe payments, plan edits on the business, and linking or unlinking an
+  owner all update the user's Plan, and an owner with no business is Basic. Changing Plan on the user changes the
+  business's plan too, but a business paying through Stripe gets Stripe's plan back on its next billing event, so
+  change those in Stripe. A local test owner linked to AJ Pizza's (Featured) is in `hub/LOCAL-ADMIN.txt`.
+- **Claiming a business** (`app/modules/claims/`, `app/setup/claims.php`): "Claim this business" opens
+  `/hub/claim/?listing={slug}`, which needs a signed-in account with a confirmed email. It refuses businesses that
+  are already claimed, accounts that already manage one, and a second claim while one is waiting (5 a day). There
+  are three ways to prove it:
+  - **Email:** a link is sent to an address on the business website's own domain. Shared hosts such as Facebook
+    or Wix don't count.
+  - **Phone:** staff call the number on the listing.
+  - **Document:** the upload is a PDF, JPG or PNG of 10MB or less. It's stored in `wp-content/hub-private/`
+    (gitignored and blocked in nginx), and staff download it from wp-admin.
+
+  Staff are emailed about each new claim (the site admin email) and review it in **wp-admin > Claims**, which shows
+  a count while claims are waiting.
+  - **Approve:** the business becomes claimed on Basic, the account manages it, and they get an email.
+  - **Reject:** they get an email with the note, and they can claim again.
+
+- **Adding a business** (`/hub/add-business/`, businesses module, `app/setup/add-business.php`) needs a signed-in
+  account with a confirmed email (3 a day). Owners add their own business; with `?recommend=1`, readers suggest
+  one without becoming its owner (fewer fields). An owner can't add one while they manage a business or have a
+  claim or added business waiting.
+  - **What's checked:** the same name and postcode as a live or waiting business is refused, with a link to claim
+    the live one.
+  - **What's saved:** the business is created as **Pending Review** with the usual ACF fields (opening hours as
+    "9am to 5:30pm"), categories and area, and the photo in the Media Library as its listing photo. Facilities
+    are post meta `_hub_facilities` until the listing editor has a field for them.
+  - **Emails:** the person gets a receipt and the site admin a "New business to check" email.
+  - **Staff review** it in wp-admin > Businesses > Pending; a box shows who added it and how.
+    - **Publish:** an owner gets it, claimed on the Basic plan and linked to their account.
+    - **Move to Trash:** declines it.
+
+    Both email the person who added it.
+- **Offers, events and classes from accounts** (`app/modules/submissions/`, `app/setup/submissions.php`): every
+  "Add an offer / event / class" button opens `/hub/account/{offers,events,classes}/edit/`. **Send for approval**
+  saves it as **Pending Review**; **Save draft** saves a Draft. Who can add what follows the Pricing page:
+  - **Offers:** Featured and Local Partner businesses.
+  - **Classes:** Featured and Local Partner businesses, and organisers (free).
+  - **Events:** the same, plus a Basic business can add one for £15. It's saved as Pending Review and marked unpaid
+    until the Stripe payment's webhook marks it paid; staff see "not paid yet" on it.
+
+  Owners can change their drafts and pending items (`?id=`). Live ones are locked: they email us. New items get the
+  same records as the imported ones (`_hub`), their business link, and a photo for events and classes. Staff review
+  them in wp-admin > Offers / Events / Classes > Pending, with a "Sent from the website" box.
+  - **Publish:** puts it live.
+  - **Move to Trash:** declines it.
+
+  Both email the person, unless they turned those emails off in Settings.
+
+  The account list pages (`account/offers/` and so on) still show the prototype's sample items.
+- **Settings** (`/hub/account/settings/`, `parts/account/settings.php`): name; email, which changes only when a
+  link sent to the new address is clicked (the login changes with it); password, which needs the current one,
+  keeps this device signed in and gets WordPress's "Password changed" email; email choices; newsletter editions,
+  saved on the account for the newsletter module's Beehiiv sync; and closing the account. Closing needs the
+  password and a tick box, and is blocked while a paid plan is active. It deletes the account and puts the business
+  back to unclaimed: its details stay on the Hub, and its content is hidden, not deleted.
+- **Sign-out** (`/hub/sign-out/`) needs the token in the account menu's link (`hub_view_sign_out_url()`). Without
+  it, for example from an old link or another site, the dashboard asks "Sign out?" instead.
+- **Test accounts:** `php wp-local/hub/seed-test-accounts-local.php` makes one account of each kind, each with its
+  own data. The passwords go into `hub/LOCAL-ADMIN.txt`. Running it again starts them afresh; it works locally only.
+  - `owner@harrowonline.test` is Featured (AJ Pizza's), with live, pending and draft offers, an event and a class.
+  - `partner@` is Local Partner (Stanmore Family Dental).
+  - `basic@` is Basic (Pinner Village Florist), with a £15 event not paid yet.
+  - `organiser@` is an organiser (Harrow Chess Club), with an event and classes.
+  - `newcomer@` has no business yet.
+  - `claimer@` has a claim waiting in wp-admin > Claims.
+- **Passwords:** "Forgotten your password?" uses WordPress's own reset. The email (sent by WordPress, with Hub wording)
+  links to `/hub/forgot-password/?key=...`, where people choose a new password and are signed in. Links work once
+  and last an hour. WordPress's own `wp-login.php` register, lost-password and reset screens redirect to the Hub
+  pages; its plain sign-in form stays for staff. Each new sign-up sends WordPress's "New User Registration" email
+  to the site admin.
+- **Confirming email:** registering sends a "Confirm your email" link that works for 7 days, and new accounts
+  can sign in straight away. The dashboard asks them to confirm and has a **Resend the email** button (3 an hour).
+  Paying for a plan or an item needs a confirmed email; resetting the password also confirms it. Accounts made
+  before this count as confirmed (user meta `hub_email_confirmed`).
+- **Attempt limits** (`HUB_ACCOUNT_LIMITS` in `app/modules/account/rules.php`), for the Hub's forms and
+  `wp-login.php` alike:
+  - 5 wrong passwords per email and IP, or 30 per IP, then 15 minutes' wait. A right password doesn't get in during
+    the wait, and signing in successfully resets the count.
+  - 3 reset emails per address and 10 reset requests per IP an hour.
+  - 5 new accounts per IP an hour.
+
+  If you lock yourself out locally, delete the `hub_lim_` transients or wait. Behind a proxy such as Cloudflare,
+  the IP must come from the proxy's header (`hub_account_db_ip()`).
+- **Sending email** (`wp-content/mu-plugins/hub-mail.php`): mail comes from "Harrow Online
+  <hub@harrowonline.org>". On a server, set an SMTP service in Forge > Site > Environment: `SMTP_HOST`,
+  `SMTP_PORT` (587), `SMTP_SECURE` (`tls`), `SMTP_USER`, `SMTP_PASS`, and optionally `MAIL_FROM` and
+  `MAIL_FROM_NAME`. Postmark, Brevo and Amazon SES all work. The service must verify the sending domain
+  (SPF and DKIM DNS records on harrowonline.org), or mail lands in spam. Failed sends go to the PHP error log.
+- **Emails locally:** nothing is sent. `wp-content/mu-plugins/hub-local-mail.php` saves each email as a text file in
+  `hub/wp-content/mail-log/` (gitignored, and blocked in nginx), only when `WP_ENVIRONMENT_TYPE` is `local` and no
+  `SMTP_HOST` is set.
+- **Payments** (`app/modules/billing/`, `app/setup/billing.php`) use Stripe Checkout and the Stripe customer
+  portal through the official `stripe/stripe-php` library (installed in the theme's `vendor/` by Composer; commit
+  it). Plans: Featured £29/£290 and Local Partner £79/£790 a month/year, with prices including VAT. One-off items
+  (event listing, 7-day feature, sponsor slots) are listed in `app/modules/billing/rules.php`.
+- **Keys** go in the `.env` file in the repository root (never committed): `STRIPE_SECRET_KEY`,
+  `STRIPE_PUBLISHABLE_KEY`, `STRIPE_WEBHOOK_SECRET`. Use **test** keys (`sk_test_`, `pk_test_`) everywhere except
+  live. Without real keys, the payment buttons go to the account billing page with "Online payments aren't
+  switched on yet", and nothing calls Stripe.
+- **First time with a Stripe account:** `php wp-local/hub/stripe-setup-local.php` creates the products and prices
+  in Stripe (looked up by `hub_{plan}_{monthly|annual}` and `hub_{item}_once`). Running it again is safe. In the
+  Stripe dashboard, turn on the customer portal (Settings > Billing > Customer portal): card updates, invoices,
+  cancel, and switching between the Featured and Partner prices.
+- **Webhook:** Stripe tells the Hub about payments at `/hub/wp-json/hub/v1/billing/webhook`. The Hub uses these
+  events to set the business's plan, and it never sets a plan from the browser. Locally:
+  `stripe listen --forward-to localhost:8020/hub/wp-json/hub/v1/billing/webhook`, then put the `whsec_` value it
+  prints in `.env`. On a server, add the endpoint in the Stripe dashboard with these events:
+  `checkout.session.completed`, `customer.subscription.created`, `customer.subscription.updated`,
+  `customer.subscription.deleted`, `invoice.paid` and `invoice.payment_failed`.
+- **Payments log:** wp-admin > Payments lists every payment and invoice the webhook has received (read only).
+- **Billing emails:** the Hub emails the account holder when a renewal payment fails (first failure only; Stripe
+  retries for a few days, and the plan stays on meanwhile) and when a plan ends. For receipts, turn on Stripe's own emails (Settings > Customer emails > Successful payments), and leave its failed-payment emails off to avoid sending two.
+- **Test the webhook without Stripe:** `php wp-local/hub/billing-webhook-test-local.php` signs sample events and
+  checks subscribe, plan switch, failed and retried payments, cancel, plan end, one-off items and the emails, on a
+  temporary business it deletes afterwards. It needs no keys and makes no network calls.
+- **Dev server caveat:** each deploy replaces the server's database with the committed one, so accounts, plans and
+  payments made on the dev server are lost on the next push. Do payment testing locally until staging has its
+  own database.
+
 ## Dev server (Laravel Forge)
 
 The same WordPress runs on Laravel Forge (server `appy-dev`, site `harrowwp.on-forge.com`):
@@ -66,7 +196,7 @@ https://harrowwp.on-forge.com/hub/. It deploys from `main` with the committed SQ
 
 - **Site:** repository `goappycodes/harrowonline`, branch `main`, root directory `/`, web directory `/wp-local`, so
   WordPress is at `/hub/` as here. Nginx rules (send `/` to `/hub/`, block the database, logs and the local CLI
-  scripts, `noindex` header, extra HTTP password on wp-admin): `forge/nginx-hub.conf`, applied to the site's nginx
+  scripts (any new `*-local.php` script must be added there too), `noindex` header, extra HTTP password on wp-admin): `forge/nginx-hub.conf`, applied to the site's nginx
   config on the server.
 - **Deploys:** push-to-deploy is on, so every push to `main` deploys. Forge's deploy script fetches the branch and runs
   `forge/deploy.sh` from git (reset to the commit, clear SQLite's write-ahead log, reload PHP).

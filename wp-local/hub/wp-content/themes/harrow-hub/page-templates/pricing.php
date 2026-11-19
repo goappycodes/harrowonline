@@ -52,8 +52,8 @@ get_header();
         <p class="plan__for">For businesses that want to be seen first and keep customers coming back.</p>
         <p class="plan__price"><span class="price-monthly">&pound;29<small>/month</small></span><span class="price-annual">&pound;290<small>/year</small></span></p>
         <p class="plan__note"><span class="price-monthly">Or &pound;290 a year</span><span class="price-annual">Works out at &pound;24.17 a month</span></p>
-        <a class="ho-btn ho-btn--primary ho-btn--block price-monthly" href="<?php echo esc_url( hub_url( 'sign-in/?plan=featured&amp;billing=monthly' ) ); ?>">Choose Featured</a>
-        <a class="ho-btn ho-btn--primary ho-btn--block price-annual" href="<?php echo esc_url( hub_url( 'sign-in/?plan=featured&amp;billing=annual' ) ); ?>">Choose Featured</a>
+        <a class="ho-btn ho-btn--primary ho-btn--block price-monthly" href="<?php echo esc_url( hub_url( 'billing/checkout/?plan=featured&amp;billing=monthly' ) ); ?>">Choose Featured</a>
+        <a class="ho-btn ho-btn--primary ho-btn--block price-annual" href="<?php echo esc_url( hub_url( 'billing/checkout/?plan=featured&amp;billing=annual' ) ); ?>">Choose Featured</a>
         <ul class="ticks">
           <li class="ticks__lead">Everything in Basic, plus:</li>
           <li>Priority placement</li>
@@ -70,8 +70,8 @@ get_header();
         <p class="plan__for">Featured on the Hub, plus a monthly spot in the Daily News and the Facebook Group.</p>
         <p class="plan__price"><span class="price-monthly">&pound;79<small>/month</small></span><span class="price-annual">&pound;790<small>/year</small></span></p>
         <p class="plan__note"><span class="price-monthly">Or &pound;790 a year</span><span class="price-annual">Works out at &pound;65.83 a month</span></p>
-        <a class="ho-btn ho-btn--outline ho-btn--block price-monthly" href="<?php echo esc_url( hub_url( 'sign-in/?plan=partner&amp;billing=monthly' ) ); ?>">Become a Local Partner</a>
-        <a class="ho-btn ho-btn--outline ho-btn--block price-annual" href="<?php echo esc_url( hub_url( 'sign-in/?plan=partner&amp;billing=annual' ) ); ?>">Become a Local Partner</a>
+        <a class="ho-btn ho-btn--outline ho-btn--block price-monthly" href="<?php echo esc_url( hub_url( 'billing/checkout/?plan=partner&amp;billing=monthly' ) ); ?>">Become a Local Partner</a>
+        <a class="ho-btn ho-btn--outline ho-btn--block price-annual" href="<?php echo esc_url( hub_url( 'billing/checkout/?plan=partner&amp;billing=annual' ) ); ?>">Become a Local Partner</a>
         <ul class="ticks">
           <li class="ticks__lead">Everything in Featured, plus:</li>
           <li>One sponsored slot each month in the Daily News newsletter</li>

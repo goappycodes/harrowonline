@@ -1,9 +1,17 @@
 <?php
 /**
- * Create an account (converted from src/pages/register.html).
+ * Create an account (from src/pages/register.html; hand-edited: the form creates the account through the account module).
  * URL: /register/
  */
 defined( 'ABSPATH' ) || exit;
+$hub_result = null;
+if ( 'POST' === $_SERVER['REQUEST_METHOD'] ) { // phpcs:ignore WordPress.Security.ValidatedSanitizedInput
+	$hub_result = hub_account_register( $_POST ); // phpcs:ignore WordPress.Security.NonceVerification -- the controller checks it
+	if ( $hub_result['ok'] ) {
+		wp_safe_redirect( $hub_result['redirect'] );
+		exit;
+	}
+}
 hub_set_page( array(
 	'description' => 'Create a free Harrow Online Hub account to claim your business, or to list events and classes for your school, club or charity.',
 	'hubnav' => 'account',
@@ -21,10 +29,11 @@ get_header();
       <h1 class="authx__title">Create an account</h1>
       <p class="authx__lead">Already have one? <a href="<?php echo esc_url( hub_url( 'sign-in/' ) ); ?>">Sign in</a></p>
 
-      <!-- WP: creates a Hub user. Role = business_owner or organiser from account_type.
-           If join_newsletter is ticked: POST to the Beehiiv subscribe endpoint (brief 02 N3) with editions as custom fields,
-           signup_source=hub-registration, plus area + account type as tags. -->
-      <form class="form" action="<?php echo esc_url( hub_url( 'account/' ) ); ?>" method="post">
+      <!-- Creates a Hub user (a Subscriber, with account type and plan fields) through hub_account_register().
+           The chosen newsletter editions are saved on the user for the newsletter module's Beehiiv sign-up. -->
+      <?php hub_view_form_notice( $hub_result ); ?>
+      <form class="form" action="<?php echo esc_url( hub_url( 'register/' ) ); ?>" method="post">
+        <?php wp_nonce_field( 'hub_account', '_hub_nonce' ); ?>
         <fieldset class="fieldset">
           <legend class="field__label">I&rsquo;m signing up because&hellip;</legend>
           <div class="choice-grid">
@@ -49,25 +58,29 @@ get_header();
           <p class="help">After you sign up, search for your business and press <strong>Claim this business</strong>, or add it if it isn&rsquo;t listed.</p>
         </div>
 
-        <div class="field">
+        <div class="field<?php echo esc_attr( hub_view_field_class( $hub_result, 'full_name' ) ); ?>">
           <label for="reg-name">Your name</label>
-          <input class="input" id="reg-name" type="text" name="name" autocomplete="name" required>
+          <input class="input" id="reg-name" type="text" name="full_name" autocomplete="name" required value="<?php echo esc_attr( hub_view_posted( 'full_name' ) ); ?>">
+          <?php hub_view_field_error( $hub_result, 'full_name' ); ?>
         </div>
-        <div class="field">
+        <div class="field<?php echo esc_attr( hub_view_field_class( $hub_result, 'email' ) ); ?>">
           <label for="reg-email">Email address</label>
-          <input class="input" id="reg-email" type="email" name="email" autocomplete="email" required>
+          <input class="input" id="reg-email" type="email" name="email" autocomplete="email" required value="<?php echo esc_attr( hub_view_posted( 'email' ) ); ?>">
+          <?php hub_view_field_error( $hub_result, 'email' ); ?>
         </div>
-        <div class="field">
+        <div class="field<?php echo esc_attr( hub_view_field_class( $hub_result, 'password' ) ); ?>">
           <label for="reg-pass">Password</label>
           <input class="input" id="reg-pass" type="password" name="password" autocomplete="new-password" minlength="10" required aria-describedby="reg-pass-help">
           <p class="help" id="reg-pass-help">At least 10 characters.</p>
+          <?php hub_view_field_error( $hub_result, 'password' ); ?>
         </div>
 
         <div id="reg-organiser" hidden>
-          <div class="field">
+          <div class="field<?php echo esc_attr( hub_view_field_class( $hub_result, 'organisation' ) ); ?>">
             <label for="reg-org">Organisation name</label>
-            <input class="input" id="reg-org" type="text" name="organisation" autocomplete="organization" aria-describedby="reg-org-help">
+            <input class="input" id="reg-org" type="text" name="organisation" autocomplete="organization" aria-describedby="reg-org-help" value="<?php echo esc_attr( hub_view_posted( 'organisation' ) ); ?>">
             <p class="help" id="reg-org-help">For example, Pinner Park Primary PTA or Harrow Weald Running Club. Shown on your events.</p>
+            <?php hub_view_field_error( $hub_result, 'organisation' ); ?>
           </div>
         </div>
 
@@ -84,6 +97,7 @@ get_header();
           <input type="checkbox" name="terms" value="1" required>
           <span>I agree to the <a href="<?php echo esc_url( hub_url( 'terms/' ) ); ?>">terms of use</a> and have read the <a href="<?php echo esc_url( hub_url( 'privacy/' ) ); ?>">privacy notice</a>.</span>
         </label>
+        <?php hub_view_field_error( $hub_result, 'terms' ); ?>
 
         <div class="panel panel--soft">
           <label class="check">

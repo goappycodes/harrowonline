@@ -262,6 +262,89 @@ function hub_events_for_business( $business_id, array $names, $mode = HUB_WEB ) 
 	), $mode );
 }
 
+/* ------------------------------------------------------------------ events and classes sent from the website (submissions module) */
+
+/**
+ * Save a one-off event from the account pages (the submissions module checks who may, and the values).
+ *
+ * @param array $f { title, description, cat (label), icon, date (Y-m-d), start, end (H:i, end may be ''), time_label,
+ *                   venue, area (name), price, age, org (organiser's name), image (URL or ''), link }
+ * @return int|WP_Error post ID
+ */
+function hub_event_save_submission( $id, $status, array $f ) {
+	$end    = '' !== $f['end'] ? $f['end'] : gmdate( 'H:i', strtotime( $f['start'] ) + 2 * HOUR_IN_SECONDS );
+	$record = array(
+		'date'     => $f['date'],
+		'time'     => $f['time_label'],
+		'title'    => $f['title'],
+		'cat'      => $f['cat'],
+		'venue'    => $f['venue'],
+		'area'     => $f['area'],
+		'price'    => $f['price'],
+		'age'      => $f['age'],
+		'icon'     => $f['icon'],
+		'featured' => false,
+		'desc'     => $f['description'],
+		'org'      => $f['org'],
+		'image'    => $f['image'],
+		'link'     => $f['link'],
+		'day'      => $f['date'],
+		'start'    => $f['date'] . 'T' . $f['start'] . ':00',
+		'end'      => $f['date'] . 'T' . $end . ':00',
+	);
+	$meta = array( '_hub_start' => $record['start'], '_hub_day' => $f['date'], '_hub_org' => $f['org'] );
+	return hub_events_db_save( 'hub_event', (int) $id, $status, $f['title'], $f['description'], $record, $meta, $f );
+}
+
+/**
+ * Save a weekly class from the account pages.
+ *
+ * @param array $f { title, description, type (label), icon, day (0 = Monday), sort (hour), time_label, venue, street,
+ *                   postcode, area (name), price, age, provider, image (URL or ''), business_id (0 for organisers), link }
+ * @return int|WP_Error post ID
+ */
+function hub_class_save_submission( $id, $status, array $f ) {
+	$order  = $id ? (int) get_post_meta( (int) $id, '_hub_order', true ) : 0;
+	$order  = $order ? $order : hub_events_db_next_class_order();
+	$record = array(
+		'title'    => $f['title'],
+		'day'      => (int) $f['day'],
+		'time'     => $f['time_label'],
+		'sort'     => (float) $f['sort'],
+		'venue'    => $f['venue'],
+		'area'     => $f['area'],
+		'price'    => $f['price'],
+		'age'      => $f['age'],
+		'icon'     => $f['icon'],
+		'featured' => false,
+		'type'     => $f['type'],
+		'desc'     => $f['description'],
+		'provider' => $f['provider'],
+		'real'     => array(
+			'img'      => $f['image'],
+			'alt'      => '' !== $f['image'] ? $f['title'] : '',
+			'street'   => $f['street'],
+			'postcode' => $f['postcode'],
+			'note'     => 'Details from ' . $f['provider'] . ', checked by Harrow Online.',
+		),
+		'link'     => $f['link'],
+		'order'    => $order,
+		'page'     => true,
+	);
+	$meta = array( '_hub_order' => $order, '_hub_day' => (int) $f['day'], 'class_business' => (int) $f['business_id'] );
+	return hub_events_db_save( 'hub_class', (int) $id, $status, $f['title'], $f['description'], $record, $meta, $f );
+}
+
+/** An event or class sent from the website, any status: { id, status, title, url, form } or null. */
+function hub_events_submission( $type, $id ) {
+	$post = hub_events_db_get_any( $type, $id );
+	if ( ! $post ) {
+		return null;
+	}
+	$form = get_post_meta( $post->ID, '_hub_form', true );
+	return array( 'id' => $post->ID, 'status' => $post->post_status, 'title' => hub_plain( $post->post_title ), 'url' => hub_url( 'events/' . $post->post_name . '/' ), 'form' => is_array( $form ) ? $form : null );
+}
+
 /* ------------------------------------------------------------------ internal */
 
 /** Every event in the event shape, by start then title. Cached for the request. */

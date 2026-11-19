@@ -17,8 +17,7 @@ get_header();
 <div class="ho-container dash">
   <aside class="dash-nav" aria-label="Account">
     <div class="dash-nav__who">
-      <span class="mono mono--sm" aria-hidden="true">SR</span>
-      <div><strong>Station Road Barbers</strong><span>Featured plan</span></div>
+      <?php hub_view_account_who(); ?>
     </div>
     <div class="dash-add">
       <!-- "+ Add" on every account page (client plan, Nov 2026): an event, a class or an offer, one tap from anywhere. -->
@@ -45,7 +44,7 @@ get_header();
     </ul>
     <hr>
     <ul>
-      <li><a href="<?php echo esc_url( hub_url( 'sign-in/' ) ); ?>"><svg class="ho-icon"><use href="#i-logout"/></svg>Sign out</a></li>
+      <li><a href="<?php echo esc_url( hub_view_sign_out_url() ); ?>"><svg class="ho-icon"><use href="#i-logout"/></svg>Sign out</a></li>
     </ul>
   </aside>
 
@@ -53,34 +52,14 @@ get_header();
     <div class="dash-head">
       <div>
         <h1>Plan and billing</h1>
-        <p>Station Road Barbers. Payments are handled securely by Stripe.</p>
+        <p><?php echo esc_html( hub_account_current()['business'] ? hub_account_current()['business']['name'] . '. ' : '' ); ?>Payments are handled securely by Stripe.</p>
       </div>
-      <a class="ho-btn ho-btn--outline" href="#stripe-portal"><svg class="ho-icon"><use href="#i-card"/></svg>Manage billing</a>
+      <a class="ho-btn ho-btn--outline" href="<?php echo esc_url( hub_url( 'billing/portal/' ) ); ?>"><svg class="ho-icon"><use href="#i-card"/></svg>Manage billing</a>
     </div>
 
-    <!-- Example state: shown only after invoice.payment_failed, until invoice.paid. Hidden in normal use. -->
-    <div class="example-state mb-5" data-example-state="failed" hidden>
-      <p class="example-state__label">Example state: failed payment</p>
-      <div class="notice notice--warn">
-        <svg class="ho-icon"><use href="#i-alert"/></svg>
-        <div>
-          <p><strong>We couldn&rsquo;t take your last payment.</strong> Update your card to keep Featured plan features. We&rsquo;ll try again automatically over the next few days.</p>
-          <p><a href="#stripe-portal">Update your card</a></p>
-        </div>
-      </div>
-    </div>
+    <?php hub_view_billing_failed_notice(); ?>
 
-    <section class="plan-card" aria-labelledby="cur-plan">
-      <div>
-        <span class="eyebrow">Current plan</span>
-        <h2 id="cur-plan">Featured, paid monthly</h2>
-        <p class="mb-0">&pound;29 a month &middot; renews on 2 December 2026 &middot; <span class="status status--active">Active</span></p>
-        <p class="small mb-0 mt-2">Switch to annual billing and pay &pound;290 a year, saving &pound;58.</p>
-      </div>
-      <div class="plan-card__actions">
-        <a class="ho-btn ho-btn--primary ho-btn--sm" href="#stripe-portal">Switch to annual</a>
-      </div>
-    </section>
+    <?php hub_view_billing_plan_card(); ?>
     <p class="help mt-2"><strong>Manage billing</strong> opens the Stripe customer portal, where you can update your card, download invoices, switch between monthly and annual, change plan or cancel.</p>
     <!-- WP: #stripe-portal = POST to our endpoint, create a Customer Portal session for this customer, redirect to session.url.
          Return URL: /hub/account/billing/. Plan changes arrive by webhook (customer.subscription.updated). -->
@@ -103,7 +82,7 @@ get_header();
           <p class="plan__for">For any Harrow business. Claim your listing and keep it up to date.</p>
           <p class="plan__price">&pound;0</p>
           <p class="plan__note">Free for ever</p>
-          <a class="ho-btn ho-btn--outline ho-btn--block ho-btn--sm" href="#stripe-portal">Downgrade</a>
+          <a class="ho-btn ho-btn--outline ho-btn--block ho-btn--sm" href="<?php echo esc_url( hub_url( 'billing/portal/' ) ); ?>">Downgrade</a>
           <ul class="ticks small">
             <li>Verified business listing</li>
             <li>Business details and opening hours</li>
@@ -132,7 +111,7 @@ get_header();
           <p class="plan__for">Featured on the Hub, plus a monthly spot in the Daily News and the Facebook Group.</p>
           <p class="plan__price"><span class="price-monthly">&pound;79<small>/month</small></span><span class="price-annual">&pound;790<small>/year</small></span></p>
           <p class="plan__note"><span class="price-monthly">or &pound;790 a year</span><span class="price-annual">Save &pound;158</span></p>
-          <a class="ho-btn ho-btn--primary ho-btn--block ho-btn--sm" href="#stripe-portal">Change plan</a>
+          <a class="ho-btn ho-btn--primary ho-btn--block ho-btn--sm" href="<?php echo esc_url( hub_url( 'billing/portal/' ) ); ?>">Change plan</a>
           <ul class="ticks small">
             <li class="ticks__lead">Everything in Featured, plus:</li>
             <li>One sponsored slot each month in the Daily News newsletter</li>
@@ -156,7 +135,7 @@ get_header();
           </div>
         </div>
         <p class="help mt-4">Shown from Stripe. We never see or store your full card number.</p>
-        <a class="ho-btn ho-btn--sm ho-btn--outline mt-2" href="#stripe-portal">Update card in Stripe</a>
+        <a class="ho-btn ho-btn--sm ho-btn--outline mt-2" href="<?php echo esc_url( hub_url( 'billing/portal/' ) ); ?>">Update card in Stripe</a>
       </section>
       <section class="panel panel--soft" aria-labelledby="q-title">
         <h2 class="panel__title" id="q-title">Questions</h2>
@@ -172,7 +151,7 @@ get_header();
         <li>Nothing is deleted. Extra photos, social links and offers are hidden, and come back if you upgrade again.</li>
         <li>Live offers end. Events stay published but lose any featured spot.</li>
       </ul>
-          <a class="ho-btn ho-btn--sm ho-btn--outline mt-2" href="#stripe-portal">Cancel in Stripe</a>
+          <a class="ho-btn ho-btn--sm ho-btn--outline mt-2" href="<?php echo esc_url( hub_url( 'billing/portal/' ) ); ?>">Cancel in Stripe</a>
         </details>
       </section>
     </div>
@@ -233,7 +212,7 @@ get_header();
           </tbody>
         </table>
       </div>
-      <p class="help mt-2">PDF invoices come from Stripe. Older invoices are in <a href="#stripe-portal">Manage billing</a>.</p>
+      <p class="help mt-2">PDF invoices come from Stripe. Older invoices are in <a href="<?php echo esc_url( hub_url( 'billing/portal/' ) ); ?>">Manage billing</a>.</p>
       <!-- WP: list from Stripe (invoices.list + one-off payment receipts) for this customer; PDF link = invoice.invoice_pdf -->
     </section>
 

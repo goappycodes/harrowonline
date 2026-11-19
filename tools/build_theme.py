@@ -15,6 +15,7 @@ their "gen-*" partials are included here as they are for now.
     python tools/build_theme.py
 """
 import json
+import html
 import re
 import shutil
 import sys
@@ -30,7 +31,7 @@ SITE_ASSETS = ROOT / "site" / "hub" / "assets"
 SKIP = {"news-advertise", "news-article", "news-support"}   # harrowonline.org mock-ups: not part of the Hub's WordPress
 # Templates that now load their data through the theme's controllers (app/modules/): edited by hand, never
 # regenerated from the prototype. Add a page here when its template is converted.
-HAND_EDITED = {"index", "offers", "events", "events-month", "classes"}
+HAND_EDITED = {"index", "offers", "events", "events-month", "classes", "sign-in", "register", "forgot-password", "claim", "claim-submitted", "add-business"}
 
 ATTR_RE = re.compile(r'((?:href|src|action|poster|data-src|data-href)=")/(?!/)([^"]*)"')
 SRCSET_RE = re.compile(r'(srcset=")([^"]*)"')
@@ -111,6 +112,114 @@ def write_chrome():
 
 
 # ---------------------------------------------------------------- page templates
+# Account pages: the prototype's sample account (Station Road Barbers, "Sam") becomes the signed-in user's (inc/view.php)
+ACCOUNT_SWAPS = [
+    ("""      <span class="mono mono--sm" aria-hidden="true">SR</span>
+      <div><strong>Station Road Barbers</strong><span>Featured plan</span></div>""",
+     """      <?php hub_view_account_who(); ?>"""),
+    ("""        <h1 data-welcome-text="Welcome to the Hub, Sam">Good morning, Sam</h1>
+        <p>Station Road Barbers &middot; <a href="/business/station-road-barbers-harrow-town-centre.html">View my listing</a></p>""",
+     """        <?php hub_view_account_hello(); ?>"""),
+    ("""        <p>Station Road Barbers. Payments are handled securely by Stripe.</p>""",
+     """        <p><?php echo esc_html( hub_account_current()['business'] ? hub_account_current()['business']['name'] . '. ' : '' ); ?>Payments are handled securely by Stripe.</p>"""),
+]
+
+
+# Billing: the sample plan card becomes the business's own; Stripe links go to the billing pages (app/setup/billing.php)
+BILLING_FAILED = re.compile(r'    <!-- Example state: shown only after invoice.payment_failed.*?\n    </div>\n', re.S)
+# Settings: the sample forms become the account's own (parts/account/settings.php; saved by app/setup/accounts.php)
+SETTINGS_FORMS = re.compile(r'    <form class="form-card" action="#" method="post">\s*<h2 class="form-card__title">Your details</h2>.*?</section>', re.S)
+SETTINGS_PART = """    <?php
+    get_template_part( 'parts/account/settings', null, array(
+      'settings' => hub_account_settings(),
+      'result'   => hub_account_settings_result(),
+      'saved'    => isset( $_GET['saved'] ) ? sanitize_key( $_GET['saved'] ) : '', // phpcs:ignore WordPress.Security.NonceVerification
+      'email'    => isset( $_GET['email'] ) ? sanitize_key( $_GET['email'] ) : '', // phpcs:ignore WordPress.Security.NonceVerification
+    ) );
+    ?>"""
+BILLING_PLAN_CARD = re.compile(r'    <section class="plan-card" aria-labelledby="cur-plan">.*?</section>', re.S)
+
+
+def account_swaps(body):
+    for old, new in ACCOUNT_SWAPS:
+        body = body.replace(old, new)
+    body = BILLING_FAILED.sub("    <?php hub_view_billing_failed_notice(); ?>\n", body)
+    body = SETTINGS_FORMS.sub(lambda m: SETTINGS_PART, body)
+    body = BILLING_PLAN_CARD.sub("    <?php hub_view_billing_plan_card(); ?>", body)
+    body = body.replace('href="#stripe-portal"', 'href="/billing/portal/"')
+    # The prototype's "Sign out" goes to sign-in.html; signed in, that just bounces back to the account (app/setup/accounts.php)
+    body = body.replace('<a href="/sign-in.html"><svg class="ho-icon"><use href="#i-logout"/></svg>Sign out</a>',
+                        '<a href="<?php echo esc_url( hub_view_sign_out_url() ); ?>"><svg class="ho-icon"><use href="#i-logout"/></svg>Sign out</a>')
+    body = re.sub(r'href="/sign-in\.html\?plan=(\w+)&amp;billing=(\w+)"', r'href="/billing/checkout/?plan=\1&amp;billing=\2"', body)
+    return body
+
+
+
+# Account offer / event / class pages: the sample form becomes a real one (app/modules/submissions; posts are saved by
+# app/setup/submissions.php before the page is drawn). Fields keep their names, so hub.js's live preview still works.
+SUBMISSION_KINDS = {"account-offer-edit": "offer", "account-event-edit": "event", "account-class-edit": "class"}
+
+
+def submission_form(stem, body):
+    kind = SUBMISSION_KINDS.get(stem)
+    if not kind:
+        return body
+    val = lambda name: f"hub_view_submission_value( $hub_page, '{name}' )"
+    # The page's data, then the heading, crumb and notices
+    body = f"<?php $hub_page = hub_submission_page( '{kind}', $_GET ); $hub_result = hub_submission_result(); // phpcs:ignore WordPress.Security.NonceVerification ?>\n" + body
+    body = re.sub(r'<div class="dash-head">.*?\n    </div>\n', "<?php hub_view_submission_head( $hub_page ); ?>\n", body, count=1, flags=re.S)
+    body = re.sub(r'(<li><span aria-current="page">)[^<]*(</span></li></ol>\s*</nav>)', r"\1<?php hub_view_submission_crumb( $hub_page ); ?>\2", body, count=1)
+    body = re.sub(r'\n    <!-- Shown when the owner opens an offer our team sent back.*?\n    </div>\n', "\n", body, count=1, flags=re.S)
+    # The class page's "edits may need approval again" note: live items are locked for now (email us to change them)
+    body = re.sub(r'\n    <div class="notice notice--warn mb-5">\s*<svg[^>]*><use href="#i-info"/></svg>\s*<div>\s*<p><strong>Edits to an approved class.*?-->\n', "\n", body, count=1, flags=re.S)
+    body = body.replace('    <div class="layout-aside', "    <?php hub_view_submission_notices( $hub_page, $hub_result ); ?>\n    <div class=\"layout-aside", 1)
+    # The form: posts to itself, with the token and the item being edited; hidden when it can't be used
+    body, n = re.subn(r'<form class="form-card form" action="#" method="post"([^>]*)>',
+                      lambda m: ("<?php if ( 'ready' === $hub_page['state'] ) : ?>\n"
+                                 f'      <form class="form-card form" action="<?php echo esc_url( hub_view_submission_action( $hub_page ) ); ?>" method="post" enctype="multipart/form-data"{m.group(1)}>\n'
+                                 "        <?php wp_nonce_field( 'hub_submission', '_hub_nonce' ); ?>\n"
+                                 "        <?php if ( $hub_page['item'] ) : ?><input type=\"hidden\" name=\"id\" value=\"<?php echo (int) $hub_page['item']['id']; ?>\"><?php endif; ?>"),
+                      body, count=1)
+    assert n == 1, stem
+    body = body.replace("</form>", "</form>\n      <?php endif; ?>", 1)
+    body = re.sub(r'\s*<input type="hidden" name="(listing|organiser_listing)"[^>]*>', "", body)
+    if kind == "class":
+        body = body.replace('name="term"', 'name="term_type"')   # WordPress reads a posted "term" as a taxonomy query
+    # Inputs: values from the controller (what was sent, what's saved, or the defaults); radios and boxes ticked to match
+    def field(m):
+        tag = m.group(0)
+        name = re.search(r'name="([^"]+)"', tag)
+        typ = re.search(r'type="([^"]+)"', tag)
+        if not name or not typ or typ.group(1) in ("hidden", "file"):
+            return tag
+        name, typ = name.group(1), typ.group(1)
+        if typ in ("radio", "checkbox"):
+            value = re.search(r'value="([^"]*)"', tag).group(1)
+            tag = re.sub(r"\s+checked(?=[\s>])", "", tag)
+            extra = f" <?php checked( {val(name)}, '{value}' ); ?>"
+            if name == "venue_is_listing" and value == "1":
+                extra += " <?php disabled( ! $hub_page['business'] ); ?>"
+            return tag[:-1] + extra + ">"
+        tag = re.sub(r'\s+value="[^"]*"', "", tag)
+        return tag[:-1] + f' value="<?php echo esc_attr( {val(name)} ); ?>">'
+    body = re.sub(r"<input [^>]*>", field, body)
+    body = re.sub(r'(<textarea [^>]*name="([^"]+)"[^>]*>).*?(</textarea>)',
+                  lambda m: m.group(1) + f"<?php echo esc_textarea( {val(m.group(2))} ); ?>" + m.group(3), body, flags=re.S)
+    def select(m):
+        name = m.group(2)
+        def opt(o):
+            v = re.search(r'value="([^"]*)"', o.group(1))
+            v = v.group(1) if v else html.unescape(re.sub(r"<[^>]+>", "", o.group(2))).strip()
+            attrs = re.sub(r"\s+selected", "", o.group(1))
+            return f"<option{attrs} <?php selected( {val(name)}, '{v.replace(chr(39), chr(92) + chr(39))}' ); ?>>{o.group(2)}</option>"
+        return m.group(1) + re.sub(r"<option([^>]*)>(.*?)</option>", opt, m.group(3)) + m.group(4)
+    body = re.sub(r'(<select [^>]*name="([^"]+)"[^>]*>)(.*?)(</select>)', select, body, flags=re.S)
+    # The business: "At my business" address, and the preview's business line
+    body = re.sub(r"(<p class=\"help mb-0\" data-venue-home>)[^<]*(</p>)", r"\1<?php echo esc_html( $hub_page['venue_home'] ); ?>\2", body)
+    body = body.replace("Station Road Barbers &middot; Harrow Town Centre", "<?php echo esc_html( $hub_page['by'] ); ?>")
+    return body
+
+
 def write_pages():
     out_dir = THEME / "page-templates"
     out_dir.mkdir(exist_ok=True)
@@ -121,11 +230,11 @@ def write_pages():
             continue
         meta, body = build.parse(page.read_text(encoding="utf-8"))
         path = seo.clean_path(stem)                       # "/claim/submitted/", "/", "/404.html"
-        body = convert_links(nav_placeholders(hub_only(expand(body))))
+        body = convert_links(nav_placeholders(hub_only(expand(account_swaps(submission_form(stem, body))))))
         check(stem, body)
         meta_php = ",\n\t".join(f"{php_str(k)} => {php_str(v)}" for k, v in sorted(meta.items()))
         tpl = (f"<?php\n/**\n * {meta.get('title', stem)} (converted from src/pages/{stem}.html).\n * URL: {path}\n */\n"
-               f"defined( 'ABSPATH' ) || exit;\nho_set_page( array(\n\t{meta_php},\n) );\nget_header();\n?>\n{body}\n<?php get_footer();\n")
+               f"defined( 'ABSPATH' ) || exit;\nhub_set_page( array(\n\t{meta_php},\n) );\nget_header();\n?>\n{body}\n<?php get_footer();\n")
         if stem not in HAND_EDITED:
             (out_dir / f"{stem}.php").write_text(tpl, encoding="utf-8", newline="\n")
         page_map[stem] = {"path": path.strip("/"), "title": meta.get("title", stem)}
@@ -142,9 +251,15 @@ def write_pages():
 # ---------------------------------------------------------------- assets
 def copy_assets():
     dest = THEME / "assets"
+    # Theme-only assets the prototype doesn't have (the harrowonline.org favicon) are kept
+    keep = {"img/favicon"}
     if dest.exists():
-        shutil.rmtree(dest)
-    shutil.copytree(SITE_ASSETS, dest)
+        for item in sorted(dest.rglob("*"), reverse=True):
+            rel = item.relative_to(dest).as_posix()
+            if any(rel == k or rel.startswith(k + "/") or k.startswith(rel + "/") for k in keep):
+                continue
+            item.unlink() if item.is_file() else item.rmdir()
+    shutil.copytree(SITE_ASSETS, dest, dirs_exist_ok=True)
     (dest / "data").mkdir(exist_ok=True)
     shutil.copy2(ROOT / "site" / "hub" / "data" / "hub-index.json", dest / "data" / "hub-index.json")
     # hub.js: pages come from data-base (the Hub's home URL path); images, icons and data from the theme
