@@ -2,8 +2,8 @@
 /**
  * Billing: the only place that talks to Stripe (stripe-php, in the theme's vendor/) or stores billing data.
  *
- * Settings: STRIPE_SECRET_KEY, STRIPE_PUBLISHABLE_KEY, STRIPE_WEBHOOK_SECRET from the server environment or the
- * repository's .env file (never committed). Stored: the user's Stripe customer ID (user meta "hub_stripe_customer"),
+ * Settings: STRIPE_SECRET_KEY, STRIPE_PUBLISHABLE_KEY, STRIPE_WEBHOOK_SECRET, declared in wp-config.php from the server
+ * environment or the repository's .env file (never committed). Stored: the user's Stripe customer ID (user meta "hub_stripe_customer"),
  * the business's subscription (post meta "_hub_subscription") and a private log of payments ("hub_payment" posts).
  */
 defined( 'ABSPATH' ) || exit;
@@ -11,6 +11,9 @@ defined( 'ABSPATH' ) || exit;
 /** A setting from the environment, else from the first .env found from WordPress's folder upwards. */
 function hub_billing_db_env( $key ) {
 	static $file = null;
+	if ( defined( $key ) && '' !== (string) constant( $key ) ) {
+		return (string) constant( $key );   // wp-config.php declares the Stripe keys (values from the environment or .env)
+	}
 	$v = getenv( $key );
 	if ( false !== $v && '' !== $v ) {
 		return $v;
@@ -145,6 +148,7 @@ function hub_billing_db_ensure_customer( WP_User $u, $business_name ) {
 
 /** @return \Stripe\Checkout\Session */
 function hub_billing_db_checkout( array $args ) {
+	$args['managed_payments'] = array( 'enabled' => HUB_BILLING_MANAGED_PAYMENTS );   // rules.php
 	return hub_billing_db_stripe()->checkout->sessions->create( $args );
 }
 

@@ -95,6 +95,13 @@ define( 'HUB_SMTP_USER', $hub_cfg( 'SMTP_USER', '' ) );
 define( 'HUB_SMTP_PASS', $hub_cfg( 'SMTP_PASS', '' ) );
 define( 'HUB_MAIL_FROM', $hub_cfg( 'MAIL_FROM', 'hub@harrowonline.org' ) );   // must be a sender the SMTP service has verified
 define( 'HUB_MAIL_FROM_NAME', $hub_cfg( 'MAIL_FROM_NAME', 'Harrow Online' ) );
+
+// Stripe (app/modules/billing): the keys are declared here, but their values come from the server environment or the
+// gitignored .env (Forge: Site > Environment), never from this file, which is in git. Test keys (sk_test_/pk_test_)
+// everywhere but live. Placeholders or empty values mean online payments are off.
+define( 'STRIPE_SECRET_KEY', $hub_cfg( 'STRIPE_SECRET_KEY', '' ) );
+define( 'STRIPE_PUBLISHABLE_KEY', $hub_cfg( 'STRIPE_PUBLISHABLE_KEY', '' ) );
+define( 'STRIPE_WEBHOOK_SECRET', $hub_cfg( 'STRIPE_WEBHOOK_SECRET', '' ) );
 unset( $hub_env, $hub_env_file, $hub_line, $hub_k, $hub_v, $hub_cfg, $hub_bool, $hub_homes, $hub_home, $hub_host, $hub_h );
 
 if ( ! defined( 'ABSPATH' ) ) {
