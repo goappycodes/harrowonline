@@ -1,5 +1,5 @@
-# Deploy script for the Hub WordPress on Laravel Forge (Forge: Site > Deployments > Deploy script), also run by
-# autodeploy.sh. Runs in the site folder (the repository root) as the forge user.
+# Deploy steps for the Hub WordPress on Laravel Forge. Forge's deploy script (Site > Settings > Deployments) runs
+# this file from git: git show origin/$FORGE_SITE_BRANCH:wp-local/forge/deploy.sh | ... bash, as the forge user.
 #
 # The database is the committed SQLite file (wp-local/hub/wp-content/database/hub.sqlite), so git wins: every
 # deploy replaces the server's database with the committed one. Changes made in the server's wp-admin are lost
@@ -16,7 +16,7 @@ rm -f "$DB-wal" "$DB-shm"                      # SQLite's write-ahead log belong
 git reset --hard "origin/$FORGE_SITE_BRANCH"
 rm -f "$DB-wal" "$DB-shm"
 
-# Reload PHP so OPcache picks up the new code (Forge sets FORGE_PHP_FPM; autodeploy.sh reloads it as root instead)
+# Reload PHP so OPcache picks up the new code (FORGE_PHP_FPM is set by Forge)
 if [ -n "${FORGE_PHP_FPM:-}" ]; then
   ( flock -w 10 9 || exit 1
     echo 'Reloading PHP FPM...'; sudo -S service "$FORGE_PHP_FPM" reload ) 9>/tmp/fpmlock
