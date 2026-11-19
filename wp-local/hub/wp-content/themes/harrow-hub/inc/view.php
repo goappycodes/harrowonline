@@ -424,12 +424,12 @@ function hub_view_submission_crumb( array $page ) {
 	echo esc_html( $page['item'] && ! empty( $f['title'] ) ? $f['title'] : ( 'offer' === $page['kind'] ? 'Add an offer' : ( 'event' === $page['kind'] ? 'Add an event' : 'Add a class' ) ) );
 }
 
-/** The buttons of a page's bottom box (cta-band): rows of { label, link }; the first is the red one, with a "+". */
-function hub_view_cta_buttons( array $buttons, $indent = '      ' ) {
+/** The buttons of a page's bottom box (cta-band): rows of { label, link }; the first is the red one, with a "+" if $plus. */
+function hub_view_cta_buttons( array $buttons, $plus = true, $indent = '      ' ) {
 	$out = '';
 	foreach ( array_values( $buttons ) as $i => $b ) {
 		$out .= $indent . '<a class="ho-btn ' . ( 0 === $i ? 'ho-btn--primary' : 'ho-btn--outline' ) . '" href="' . esc_url( $b['link'] ) . '">'
-			. ( 0 === $i ? hub_icon( 'plus' ) : '' ) . esc_html( $b['label'] ) . "</a>\n";
+			. ( 0 === $i && $plus ? hub_icon( 'plus' ) : '' ) . esc_html( $b['label'] ) . "</a>\n";
 	}
 	return $out;
 }

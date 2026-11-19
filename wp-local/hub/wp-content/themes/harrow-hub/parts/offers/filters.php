@@ -4,11 +4,17 @@
  * (they apply on change). The category select stays hidden so the chosen chip is kept when another filter changes.
  * Pages are filtered server-side; hub.js applies the same ?cat=, ?area= and ?sub=1 in the browser.
  *
- * $args: list (hub_offers_list() result), categories (hub_categories_list() items), areas (hub_areas_list() items)
+ * $args: list (hub_offers_list() result), categories (hub_categories_list() items), areas (hub_areas_list() items);
+ *        optional wording: all_label ("All offers"), empty_text, empty_link_label (the Local Offers page's Page text)
  */
 defined( 'ABSPATH' ) || exit;
 
 $list    = $args['list'];
+$words   = array_merge( array( 'all_label' => 'All offers', 'empty_text' => 'No offers match that yet.', 'empty_link_label' => 'See all offers' ), array_filter( array(
+	'all_label'        => isset( $args['all_label'] ) ? (string) $args['all_label'] : '',
+	'empty_text'       => isset( $args['empty_text'] ) ? (string) $args['empty_text'] : '',
+	'empty_link_label' => isset( $args['empty_link_label'] ) ? (string) $args['empty_link_label'] : '',
+), 'strlen' ) );
 $f       = $list['filters'];
 $offers  = hub_url( 'offers/' );
 $cat_tag = '';
@@ -23,11 +29,11 @@ foreach ( $args['areas'] as $a ) {
 		$where = 'in ' . $a['name'];
 	}
 }
-$words = trim( $cat_tag . ( $f['sub'] ? ' subscriber-only' : '' ) );
-$count = ( '' !== $words ? $words . ' ' : '' ) . ( 1 === $list['total'] ? 'offer' : 'offers' ) . ' ' . $where;
+$what  = trim( $cat_tag . ( $f['sub'] ? ' subscriber-only' : '' ) );
+$count = ( '' !== $what ? $what . ' ' : '' ) . ( 1 === $list['total'] ? 'offer' : 'offers' ) . ' ' . $where;
 ?>
   <div class="chips chips--scroll" aria-label="Popular categories">
-    <a class="chip" href="<?php echo esc_url( $offers ); ?>" data-cat=""<?php echo '' === $f['cat'] ? ' aria-current="page"' : ''; ?>>All offers <span class="count"><?php echo (int) $list['live_total']; ?></span></a>
+    <a class="chip" href="<?php echo esc_url( $offers ); ?>" data-cat=""<?php echo '' === $f['cat'] ? ' aria-current="page"' : ''; ?>><?php echo esc_html( $words['all_label'] ); ?> <span class="count"><?php echo (int) $list['live_total']; ?></span></a>
 <?php foreach ( $list['facets']['categories'] as $c ) : ?>
     <a class="chip" href="<?php echo esc_url( add_query_arg( 'cat', $c['slug'], $offers ) ); ?>" data-cat="<?php echo esc_attr( $c['slug'] ); ?>"<?php echo $c['slug'] === $f['cat'] ? ' aria-current="page"' : ''; ?>><?php echo esc_html( $c['name'] ); ?> <span class="count"><?php echo (int) $c['count']; ?></span></a>
 <?php endforeach; ?>
@@ -51,4 +57,4 @@ $count = ( '' !== $words ? $words . ' ' : '' ) . ( 1 === $list['total'] ? 'offer
     </form>
   </div>
 
-  <div class="notice mb-5" data-offers-empty<?php echo $list['total'] ? ' hidden' : ''; ?>><?php echo hub_icon( 'tag' ); ?><p>No offers match that yet. <a href="<?php echo esc_url( $offers ); ?>">See all offers</a>.</p></div>
+  <div class="notice mb-5" data-offers-empty<?php echo $list['total'] ? ' hidden' : ''; ?>><?php echo hub_icon( 'tag' ); ?><p><?php echo esc_html( $words['empty_text'] ); ?> <a href="<?php echo esc_url( $offers ); ?>"><?php echo esc_html( $words['empty_link_label'] ); ?></a>.</p></div>

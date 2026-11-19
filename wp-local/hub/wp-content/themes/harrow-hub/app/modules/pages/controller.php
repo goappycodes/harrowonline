@@ -1,6 +1,6 @@
 <?php
 /**
- * Page text: the editable wording of the Hub's listing pages (What's On, Classes and activities; see rules.php to add one).
+ * Page text: the editable wording of the Hub's listing pages (What's On, Classes and activities, Local Offers; see rules.php to add one).
  */
 defined( 'ABSPATH' ) || exit;
 

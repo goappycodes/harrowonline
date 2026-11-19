@@ -1,6 +1,6 @@
 <?php
 /**
- * Page text (What's On, Classes and activities, and any page added to HUB_PAGES): the only file that reads or writes it.
+ * Page text (What's On, Classes and activities, Local Offers, and any page added to HUB_PAGES): the only file that reads or writes it.
  *
  * Every field is plain post meta on the page's WordPress Page ({page}_*), edited in wp-admin's "Page text" box
  * (inc/admin/page-text-box.php). Lists are arrays in one meta key each. An empty field means "use the default"
