@@ -19,3 +19,8 @@ __pycache__/
 
 # Server settings (Forge: Site > Environment writes this file in the repository root). Never commit it.
 /.env
+
+# Emails saved by the local mail catcher (mu-plugins/hub-local-mail.php)
+/wp-local/hub/wp-content/mail-log/
+# Claim proof documents (private uploads; app/modules/claims)
+/wp-local/hub/wp-content/hub-private/

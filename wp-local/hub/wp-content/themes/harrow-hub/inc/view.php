@@ -222,8 +222,48 @@ function hub_view_account_hello() {
 	if ( $a['business'] ) {
 		echo '<p>' . esc_html( $a['business']['name'] ) . ' &middot; <a href="' . esc_url( $a['business']['url'] ) . '">View my listing</a></p>';
 	} else {
-		echo '<p>No listing linked yet &middot; <a href="' . esc_url( hub_url( 'search/' ) ) . '">Find your business to claim it</a></p>';
+		$claim = hub_claim_mine();   // claims module: their latest claim, if any
+		if ( $claim && 'pending' === $claim['status'] ) {
+			echo '<p>Your claim for ' . esc_html( $claim['business']['name'] ) . ' is being checked &middot; <a href="' . esc_url( hub_url( 'claim/submitted/' ) ) . '">See your claim</a></p>';
+		} elseif ( $claim && 'rejected' === $claim['status'] ) {
+			echo '<p>We couldn&rsquo;t approve your claim for ' . esc_html( $claim['business']['name'] ) . ' &middot; <a href="' . esc_url( hub_url( 'claim/submitted/' ) ) . '">See why</a></p>';
+		} else {
+			echo '<p>No listing linked yet &middot; <a href="' . esc_url( hub_url( 'search/' ) ) . '">Find your business to claim it</a></p>';
+		}
 	}
+	hub_view_account_email_notice( $a );
+	if ( isset( $_GET['sign_out'] ) && 'confirm' === $_GET['sign_out'] ) { // phpcs:ignore WordPress.Security.NonceVerification
+		echo '<div class="notice mt-4" role="status"><svg class="ho-icon"><use href="#i-logout"/></svg><div><p class="mb-0"><strong>Sign out?</strong> <a class="ho-btn ho-btn--outline ho-btn--sm ml-2" href="' . esc_url( hub_account_sign_out_url() ) . '">Sign out</a></p></div></div>';
+	}
+}
+
+/** The "Sign out" link with its token (account sidebar, claim page). */
+function hub_view_sign_out_url() {
+	return hub_account_sign_out_url();
+}
+
+/** Dashboard: "Confirm your email" (with a resend button) until it's confirmed, and the result of the link or resend. */
+function hub_view_account_email_notice( array $a ) {
+	$q     = isset( $_GET['email'] ) ? sanitize_key( $_GET['email'] ) : ''; // phpcs:ignore WordPress.Security.NonceVerification
+	$gate  = isset( $_GET['confirm'] ) && 'needed' === $_GET['confirm']; // phpcs:ignore WordPress.Security.NonceVerification
+	$notes = array(
+		'confirmed'    => array( 'ok', 'check', 'Email address confirmed.', 'Thanks. You can now choose a plan for your business.' ),
+		'link-invalid' => array( 'warn', 'alert', 'That confirmation link didn&rsquo;t work.', 'It may have expired or been replaced by a newer one. Send yourself a new link below.' ),
+	);
+	if ( isset( $notes[ $q ] ) && ( 'confirmed' === $q || ! $a['email_confirmed'] ) ) {
+		list( $kind, $icon, $title, $text ) = $notes[ $q ];
+		echo '<div class="notice notice--' . $kind . ' mt-4" role="status"><svg class="ho-icon"><use href="#i-' . $icon . '"/></svg><div><p><strong>' . $title . '</strong> ' . $text . '</p></div></div>'; // phpcs:ignore WordPress.Security.EscapeOutput -- fixed strings
+	}
+	if ( $a['email_confirmed'] ) {
+		return;
+	}
+	$sent = 'sent' === $q ? '<p class="mb-0"><strong>New link sent.</strong> Check your inbox and spam folder.</p>' : ( 'wait' === $q ? '<p class="mb-0"><strong>We&rsquo;ve sent several links already.</strong> Please check your spam folder, or try again in an hour.</p>' : '' );
+	echo '<div class="notice notice--warn mt-4" role="status"><svg class="ho-icon"><use href="#i-mail"/></svg><div>'
+		. '<p><strong>' . ( $gate ? 'Confirm your email before choosing a plan.' : 'Please confirm your email address.' ) . '</strong> We sent a link to ' . esc_html( $a['email'] ) . '.</p>'
+		. $sent
+		. '<form method="post" action="' . esc_url( hub_url( 'confirm-email/resend/' ) ) . '" class="mt-2">' . wp_nonce_field( 'hub_account', '_hub_nonce', true, false )
+		. '<button class="ho-btn ho-btn--outline ho-btn--sm" type="submit">Resend the email</button></form>'
+		. '</div></div>';
 }
 
 /** Account billing: the failed-payment warning, shown while Stripe is retrying (subscription past due). */
@@ -246,10 +286,11 @@ function hub_view_billing_plan_card() {
 		'cancelled'   => array( 'plain', 'Payment cancelled.', 'Nothing was charged. Choose a plan whenever you&rsquo;re ready.' ),
 		'unavailable' => array( 'warn', 'Online payments aren&rsquo;t switched on yet.', 'Please contact hub@harrowonline.org to upgrade, and we&rsquo;ll set it up for you.' ),
 		'error'       => array( 'warn', 'We couldn&rsquo;t reach the payment service.', 'Nothing was charged. Please try again in a minute.' ),
+		'no_business' => array( 'warn', 'Plans are for a business listing.', 'Your account isn&rsquo;t linked to a business yet. <a href="' . esc_url( hub_url( 'search/' ) ) . '">Find your business</a> and claim it, then choose a plan.' ),
 	);
 	if ( isset( $notes[ $notice ] ) ) {
 		list( $kind, $title, $text ) = $notes[ $notice ];
-		echo '<div class="notice notice--' . esc_attr( $kind ) . ' mb-5" role="status"><svg class="ho-icon"><use href="#i-' . ( 'ok' === $kind ? 'check' : 'alert' ) . '"/></svg><div><p><strong>' . wp_kses( $title, array() ) . '</strong> ' . wp_kses( $text, array() ) . '</p></div></div>';
+		echo '<div class="notice notice--' . esc_attr( $kind ) . ' mb-5" role="status"><svg class="ho-icon"><use href="#i-' . ( 'ok' === $kind ? 'check' : 'alert' ) . '"/></svg><div><p><strong>' . wp_kses( $title, array() ) . '</strong> ' . wp_kses( $text, array( 'a' => array( 'href' => true ) ) ) . '</p></div></div>';
 	}
 	if ( ! $b ) {
 		return;

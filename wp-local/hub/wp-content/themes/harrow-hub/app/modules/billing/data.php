@@ -112,6 +112,11 @@ function hub_billing_db_seen_event( $event_id ) {
 	return false;
 }
 
+/** Send a plain-text billing email. False when WordPress couldn't hand it to the mail server. */
+function hub_billing_db_send_email( $to, $subject, $body ) {
+	return wp_mail( $to, $subject, $body, array( 'Reply-To: Harrow Online <hub@harrowonline.org>' ) );
+}
+
 /* ------------------------------------------------------------------ Stripe calls */
 
 /** Prices by lookup key: { lookup_key: \Stripe\Price } */

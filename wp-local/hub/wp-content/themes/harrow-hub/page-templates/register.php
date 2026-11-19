@@ -29,7 +29,7 @@ get_header();
       <h1 class="authx__title">Create an account</h1>
       <p class="authx__lead">Already have one? <a href="<?php echo esc_url( hub_url( 'sign-in/' ) ); ?>">Sign in</a></p>
 
-      <!-- Creates a Hub user (role hub_business or hub_organiser from account_type) through hub_account_register().
+      <!-- Creates a Hub user (a Subscriber, with account type and plan fields) through hub_account_register().
            The chosen newsletter editions are saved on the user for the newsletter module's Beehiiv sign-up. -->
       <?php hub_view_form_notice( $hub_result ); ?>
       <form class="form" action="<?php echo esc_url( hub_url( 'register/' ) ); ?>" method="post">

@@ -44,7 +44,7 @@ get_header();
     </ul>
     <hr>
     <ul>
-      <li><a href="<?php echo esc_url( hub_url( 'sign-in/' ) ); ?>"><svg class="ho-icon"><use href="#i-logout"/></svg>Sign out</a></li>
+      <li><a href="<?php echo esc_url( hub_view_sign_out_url() ); ?>"><svg class="ho-icon"><use href="#i-logout"/></svg>Sign out</a></li>
     </ul>
   </aside>
 
@@ -56,91 +56,14 @@ get_header();
       </div>
     </div>
 
-    <form class="form-card" action="#" method="post">
-      <h2 class="form-card__title">Your details</h2>
-      <p class="form-card__sub">Used for your login and for emails about your account. Not shown on your listing.</p>
-      <div class="stack">
-        <div class="row row-2">
-          <div class="field">
-            <label for="st-name">Your name</label>
-            <input class="input" id="st-name" type="text" name="name" value="Sam Reid" autocomplete="name">
-          </div>
-          <div class="field">
-            <label for="st-email">Email address</label>
-            <input class="input" id="st-email" type="email" name="email" value="sam@stationroadbarbers.co.uk" autocomplete="email" aria-describedby="st-email-help">
-            <p class="help" id="st-email-help">If you change it, we&rsquo;ll send a link to the new address to confirm.</p>
-          </div>
-        </div>
-        <div class="form-actions"><button class="ho-btn ho-btn--primary" type="submit">Save details</button></div>
-      </div>
-    </form>
-
-    <form class="form-card" action="#" method="post">
-      <h2 class="form-card__title">Change password</h2>
-      <p class="form-card__sub">At least 10 characters. You&rsquo;ll stay signed in on this device.</p>
-      <div class="stack">
-        <div class="field">
-          <label for="st-cur">Current password</label>
-          <input class="input" id="st-cur" type="password" name="current_password" autocomplete="current-password">
-        </div>
-        <div class="row row-2">
-          <div class="field">
-            <label for="st-new">New password</label>
-            <input class="input" id="st-new" type="password" name="new_password" minlength="10" autocomplete="new-password">
-          </div>
-          <div class="field">
-            <label for="st-new2">Confirm new password</label>
-            <input class="input" id="st-new2" type="password" name="new_password_2" minlength="10" autocomplete="new-password">
-          </div>
-        </div>
-        <div class="form-actions"><button class="ho-btn ho-btn--primary" type="submit">Change password</button></div>
-      </div>
-    </form>
-
-    <form class="form-card" action="#" method="post">
-      <h2 class="form-card__title">Email notifications</h2>
-      <p class="form-card__sub">Emails we send about your listing, offers and events.</p>
-      <div class="stack">
-        <label class="check"><input type="checkbox" name="notify[approved]" value="1" checked> <span>Approvals<small>When an offer, event, class or claim is approved</small></span></label>
-        <label class="check"><input type="checkbox" name="notify[rejected]" value="1" checked> <span>Changes needed<small>When something isn&rsquo;t approved, with our note on what to change</small></span></label>
-        <label class="check"><input type="checkbox" name="notify[ended]" value="1" checked> <span>Reminders<small>A few days before an offer ends or a featured spot runs out</small></span></label>
-        <label class="check"><input type="checkbox" checked disabled> <span>Receipts and billing<small>Always on. Payment receipts, failed payments and plan changes.</small></span></label>
-        <div class="form-actions"><button class="ho-btn ho-btn--primary" type="submit">Save notifications</button></div>
-      </div>
-    </form>
-
-    <form class="form-card" action="#" method="post">
-      <h2 class="form-card__title">Harrow Online Newsletter</h2>
-      <p class="form-card__sub">Free editions sent to sam@stationroadbarbers.co.uk. Untick all three to unsubscribe.</p>
-      <!-- WP: read and update the Beehiiv subscriber's edition custom fields (brief 02 N3) -->
-      <fieldset class="fieldset">
-        <legend class="ho-sr">Editions</legend>
-        <div class="stack">
-          <label class="check"><input type="checkbox" name="editions[]" value="daily" checked> <span>Daily News<small>Every morning: the day&rsquo;s Harrow news, what&rsquo;s on and offers</small></span></label>
-          <label class="check"><input type="checkbox" name="editions[]" value="weekend"> <span>The Weekend<small>Thursdays: what&rsquo;s on in Harrow this weekend</small></span></label>
-          <label class="check"><input type="checkbox" name="editions[]" value="business" checked> <span>Harrow Business<small>Mondays: local business news, openings and new Hub members</small></span></label>
-        </div>
-      </fieldset>
-      <div class="form-actions mt-4"><button class="ho-btn ho-btn--primary" type="submit">Save newsletter choices</button></div>
-    </form>
-
-    <section class="form-card" aria-labelledby="close-title">
-      <h2 class="form-card__title" id="close-title">Close your account</h2>
-      <p class="form-card__sub">This can&rsquo;t be undone.</p>
-      <ul class="ticks ticks--dark small">
-        <li>Your listings go back to unclaimed. The business details stay on the Hub, but your photos, offers and events are removed.</li>
-        <li>Cancel your Featured plan in <a href="<?php echo esc_url( hub_url( 'billing/portal/' ) ); ?>">Manage billing</a> first. We can&rsquo;t close an account with an active plan.</li>
-        <li>Your newsletter subscription isn&rsquo;t affected. Change it above.</li>
-      </ul>
-      <div class="notice notice--warn mt-4">
-        <svg class="ho-icon"><use href="#i-alert"/></svg>
-        <p>You have an active Featured plan. Cancel it before closing your account.</p>
-      </div>
-      <div class="form-actions mt-4">
-        <button class="ho-btn ho-btn--outline is-disabled" type="button" disabled>Close my account</button>
-        <a class="link-quiet" href="https://harrowonline.org/contact-us/">Need help? Contact us</a>
-      </div>
-    </section>
+    <?php
+    get_template_part( 'parts/account/settings', null, array(
+      'settings' => hub_account_settings(),
+      'result'   => hub_account_settings_result(),
+      'saved'    => isset( $_GET['saved'] ) ? sanitize_key( $_GET['saved'] ) : '', // phpcs:ignore WordPress.Security.NonceVerification
+      'email'    => isset( $_GET['email'] ) ? sanitize_key( $_GET['email'] ) : '', // phpcs:ignore WordPress.Security.NonceVerification
+    ) );
+    ?>
   </div>
 </div>
 <?php get_footer();

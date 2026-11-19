@@ -30,6 +30,15 @@ get_header();
       <h1 class="authx__title">Sign in</h1>
       <p class="authx__lead">Welcome back. Sign in to manage your listing, offers and events.</p>
 
+      <?php
+      // Opened the email confirmation link while signed out (app/setup/accounts.php)
+      $hub_email_q = isset( $_GET['email'] ) ? sanitize_key( $_GET['email'] ) : ''; // phpcs:ignore WordPress.Security.NonceVerification
+      if ( ! $hub_result && 'confirmed' === $hub_email_q ) {
+          hub_view_form_notice( array( 'ok' => true, 'message' => 'Thanks, your email address is confirmed. Sign in to carry on.' ) );
+      } elseif ( ! $hub_result && 'link-invalid' === $hub_email_q ) {
+          hub_view_form_notice( array( 'ok' => false, 'message' => 'That confirmation link didn&rsquo;t work. Sign in and we&rsquo;ll send you a new one.' ) );
+      }
+      ?>
       <?php hub_view_form_notice( $hub_result ); ?>
       <form class="form" action="<?php echo esc_url( hub_url( 'sign-in/' ) ); ?>" method="post">
         <?php wp_nonce_field( 'hub_account', '_hub_nonce' ); ?>

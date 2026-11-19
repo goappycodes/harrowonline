@@ -32,8 +32,9 @@ app/
 │   └── url.php            hub_media_url()
 ├── setup/
 │   ├── rest-routes.php    namespace hub/v1, hub_route()
-│   ├── accounts.php       roles, sign-in redirects for /account/ pages, sign-out, wp-admin "Business" link field
-│   └── billing.php        /billing/checkout/ and /billing/portal/ (send to Stripe), Payments log in wp-admin
+│   ├── accounts.php       sign-in redirects for /account/ pages, sign-out, wp-admin Users: plan and business fields
+│   ├── billing.php        /billing/checkout/ and /billing/portal/ (send to Stripe), Payments log in wp-admin
+│   └── claims.php         claim pages' sign-in and email link, wp-admin > Claims (review, approve, reject)
 └── modules/
     ├── businesses/        data.php  rules.php  shape.php  controller.php  routes.php
     ├── events/            one-off events and weekly classes (What's On)
@@ -41,8 +42,10 @@ app/
     ├── categories/
     ├── areas/
     ├── account/           sign-in, register, reset, the signed-in account and its business
-    └── billing/           Stripe: checkout, customer portal, webhook (sets the business's plan)
+    ├── billing/           Stripe: checkout, customer portal, webhook (sets the business's plan)
+    └── claims/            claiming a business: proof (email, phone, document), staff approve or reject
 parts/                     display only: each part gets arrays in $args and prints them
+├── account/               settings (the settings page's forms)
 ├── businesses/            row, card, ticker, event-row, profile, profile-imported, directory
 ├── events/                row (What's On list), card, class-card, single (event page), class-single
 └── offers/                card, tile, card-full, unlock-box, filters, single

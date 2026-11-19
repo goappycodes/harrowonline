@@ -32,6 +32,17 @@ function hub_billing_status( $mode = HUB_WEB ) {
 	), $mode );
 }
 
+/** A business's billing, for staff screens (wp-admin > Users): the same shape, from the business's stored subscription. */
+function hub_billing_status_for_business( $business_id, $mode = HUB_WEB ) {
+	$owner = hub_account_for_user( hub_account_owner_id( $business_id ) );
+	return hub_respond( hub_billing_shape(
+		_hub_billing_configured(),
+		hub_billing_rule_mode( hub_billing_db_env( 'STRIPE_SECRET_KEY' ) ),
+		$owner['plan'],
+		hub_billing_db_subscription( (int) $business_id ),
+		! empty( $owner['id'] ) && '' !== hub_billing_db_customer_id( $owner['id'] )
+	), $mode );
+}
 /** Plans and one-off items with their prices. */
 function hub_billing_catalogue( $mode = HUB_WEB ) {
 	$plans = $items = array();
@@ -106,6 +117,9 @@ function hub_billing_checkout_item( array $params, $mode = HUB_WEB ) {
 	$account = hub_account_current();
 	if ( ! $account['signed_in'] ) {
 		return _hub_billing_result( false, 'Sign in to pay.', hub_url( 'sign-in/' ), $mode );
+	}
+	if ( ! $account['email_confirmed'] ) {
+		return _hub_billing_result( false, 'Confirm your email address before paying.', hub_url( 'account/?confirm=needed' ), $mode );
 	}
 	if ( ! _hub_billing_configured() ) {
 		return _hub_billing_unavailable( $mode );
@@ -195,8 +209,13 @@ function hub_billing_webhook( $payload, $signature, $mode = HUB_API ) {
 		case 'customer.subscription.deleted':
 			$biz = isset( $o->metadata->hub_business ) ? (int) $o->metadata->hub_business : hub_billing_db_business_by_subscription( $o->id );
 			if ( $biz ) {
+				$was = hub_billing_db_subscription( $biz );
 				_hub_billing_sync_subscription( hub_billing_db_get_subscription( $o->id ), $biz );
 				$handled = 'plan';
+				if ( 'customer.subscription.deleted' === $event->type ) {
+					$user = isset( $o->metadata->hub_user ) ? (int) $o->metadata->hub_user : hub_billing_db_user_by_customer( (string) $o->customer );
+					_hub_billing_email( 'plan_ended', $user, $biz, isset( $was['plan_key'] ) ? $was['plan_key'] : '', '' );
+				}
 			}
 			break;
 		case 'invoice.paid':
@@ -206,7 +225,12 @@ function hub_billing_webhook( $payload, $signature, $mode = HUB_API ) {
 			$paid = 'invoice.paid' === $event->type;
 			hub_billing_db_log( array( 'stripe_id' => $o->id, 'kind' => 'Invoice', 'item' => (string) $o->number, 'amount' => (int) ( $paid ? $o->amount_paid : $o->amount_due ), 'status' => $paid ? 'paid' : 'payment failed', 'user' => $user, 'business' => $biz, 'ref' => '' ) );
 			if ( ! $paid ) {
-				do_action( 'hub_billing_payment_failed', $user, $biz );   // email the business (newsletter/email module)
+				// Email on the first failure only: Stripe retries over the next days, and the business shouldn't get one per retry
+				if ( (int) $o->attempt_count <= 1 ) {
+					$sub = $biz ? hub_billing_db_subscription( $biz ) : array();
+					_hub_billing_email( 'payment_failed', $user, $biz, isset( $sub['plan_key'] ) ? $sub['plan_key'] : '', hub_billing_rule_money( (int) $o->amount_due ) );
+				}
+				do_action( 'hub_billing_payment_failed', $user, $biz );
 			}
 			$handled = 'invoice';
 			break;
@@ -241,6 +265,27 @@ function hub_billing_setup( $mode = HUB_WEB ) {
 
 /* ------------------------------------------------------------------ internal */
 
+/** Email the account holder about their plan (see hub_billing_shape_email). Quietly skipped with no user. */
+function _hub_billing_email( $kind, $user_id, $business_id, $plan_key, $amount ) {
+	$u = $user_id ? get_userdata( $user_id ) : null;
+	if ( ! $u ) {
+		return false;
+	}
+	$account = hub_account_for_user( $u->ID );
+	$mail    = hub_billing_shape_email( $kind, array(
+		'first_name' => $account['first_name'],
+		'business'   => $account['business'] ? html_entity_decode( $account['business']['name'], ENT_QUOTES ) : 'your business',
+		'plan_name'  => isset( HUB_BILLING_PLANS[ $plan_key ] ) ? HUB_BILLING_PLANS[ $plan_key ]['name'] : 'paid',
+		'amount'     => html_entity_decode( $amount, ENT_QUOTES, 'UTF-8' ),
+		'link'       => hub_url( 'payment_failed' === $kind ? 'billing/portal/' : 'pricing/' ),
+	) );
+	$sent = hub_billing_db_send_email( $u->user_email, $mail['subject'], $mail['body'] );
+	if ( ! $sent ) {
+		hub_debug_log( 'billing: could not send the ' . $kind . ' email to user ' . $u->ID );
+	}
+	return $sent;
+}
+
 function _hub_billing_configured() {
 	return null !== hub_billing_db_stripe();
 }
@@ -274,8 +319,11 @@ function _hub_billing_need_business( array $account, $mode ) {
 	if ( ! $account['signed_in'] ) {
 		return _hub_billing_result( false, 'Sign in to choose a plan.', hub_url( 'sign-in/' ), $mode );
 	}
+	if ( ! $account['email_confirmed'] ) {
+		return _hub_billing_result( false, 'Confirm your email address before choosing a plan.', hub_url( 'account/?confirm=needed' ), $mode );
+	}
 	if ( ! $account['business'] ) {
-		return _hub_billing_result( false, 'Plans are for a business listing. Claim or add your business first.', hub_url( 'search/' ), $mode );
+		return _hub_billing_result( false, 'Plans are for a business listing. Claim or add your business first.', hub_url( 'account/billing/?billing=no_business' ), $mode );
 	}
 	return null;
 }

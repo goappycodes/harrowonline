@@ -30,7 +30,7 @@ SITE_ASSETS = ROOT / "site" / "hub" / "assets"
 SKIP = {"news-advertise", "news-article", "news-support"}   # harrowonline.org mock-ups: not part of the Hub's WordPress
 # Templates that now load their data through the theme's controllers (app/modules/): edited by hand, never
 # regenerated from the prototype. Add a page here when its template is converted.
-HAND_EDITED = {"index", "offers", "events", "events-month", "classes", "sign-in", "register", "forgot-password"}
+HAND_EDITED = {"index", "offers", "events", "events-month", "classes", "sign-in", "register", "forgot-password", "claim", "claim-submitted"}
 
 ATTR_RE = re.compile(r'((?:href|src|action|poster|data-src|data-href)=")/(?!/)([^"]*)"')
 SRCSET_RE = re.compile(r'(srcset=")([^"]*)"')
@@ -126,6 +126,16 @@ ACCOUNT_SWAPS = [
 
 # Billing: the sample plan card becomes the business's own; Stripe links go to the billing pages (app/setup/billing.php)
 BILLING_FAILED = re.compile(r'    <!-- Example state: shown only after invoice.payment_failed.*?\n    </div>\n', re.S)
+# Settings: the sample forms become the account's own (parts/account/settings.php; saved by app/setup/accounts.php)
+SETTINGS_FORMS = re.compile(r'    <form class="form-card" action="#" method="post">\s*<h2 class="form-card__title">Your details</h2>.*?</section>', re.S)
+SETTINGS_PART = """    <?php
+    get_template_part( 'parts/account/settings', null, array(
+      'settings' => hub_account_settings(),
+      'result'   => hub_account_settings_result(),
+      'saved'    => isset( $_GET['saved'] ) ? sanitize_key( $_GET['saved'] ) : '', // phpcs:ignore WordPress.Security.NonceVerification
+      'email'    => isset( $_GET['email'] ) ? sanitize_key( $_GET['email'] ) : '', // phpcs:ignore WordPress.Security.NonceVerification
+    ) );
+    ?>"""
 BILLING_PLAN_CARD = re.compile(r'    <section class="plan-card" aria-labelledby="cur-plan">.*?</section>', re.S)
 
 
@@ -133,8 +143,12 @@ def account_swaps(body):
     for old, new in ACCOUNT_SWAPS:
         body = body.replace(old, new)
     body = BILLING_FAILED.sub("    <?php hub_view_billing_failed_notice(); ?>\n", body)
+    body = SETTINGS_FORMS.sub(lambda m: SETTINGS_PART, body)
     body = BILLING_PLAN_CARD.sub("    <?php hub_view_billing_plan_card(); ?>", body)
     body = body.replace('href="#stripe-portal"', 'href="/billing/portal/"')
+    # The prototype's "Sign out" goes to sign-in.html; signed in, that just bounces back to the account (app/setup/accounts.php)
+    body = body.replace('<a href="/sign-in.html"><svg class="ho-icon"><use href="#i-logout"/></svg>Sign out</a>',
+                        '<a href="<?php echo esc_url( hub_view_sign_out_url() ); ?>"><svg class="ho-icon"><use href="#i-logout"/></svg>Sign out</a>')
     body = re.sub(r'href="/sign-in\.html\?plan=(\w+)&amp;billing=(\w+)"', r'href="/billing/checkout/?plan=\1&amp;billing=\2"', body)
     return body
 

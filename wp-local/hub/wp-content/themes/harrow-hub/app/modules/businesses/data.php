@@ -62,7 +62,8 @@ function hub_businesses_db_query( array $args ) {
  */
 function hub_businesses_db_record( WP_Post $post ) {
 	static $cache = array();
-	if ( ! isset( $cache[ $post->ID ] ) ) {
+	$key = $post->ID . '@' . hub_businesses_db_cache_gen();
+	if ( ! isset( $cache[ $key ] ) ) {
 		$x = hub_record( $post );
 		if ( hub_businesses_db_uses_acf( $post->ID ) ) {
 			$x = _hub_businesses_db_acf( $post, $x );
@@ -72,9 +73,22 @@ function hub_businesses_db_record( WP_Post $post ) {
 			preg_match_all( '#<p>(.*?)</p>#s', wpautop( $post->post_content ), $m );
 			$x['claimed']['description'] = $m[1];
 		}
-		$cache[ $post->ID ] = $x;
+		$cache[ $key ] = $x;
 	}
-	return $cache[ $post->ID ];
+	return $cache[ $key ];
+}
+
+/**
+ * Per-request caches (records here, shapes in the controller) include this number in their keys. Changing a business
+ * moves it on, so the same request reads the change instead of the cached copy (e.g. a billing webhook that sets a
+ * plan and then emails the owner).
+ */
+function hub_businesses_db_cache_gen( $bump = false ) {
+	static $gen = 0;
+	if ( $bump ) {
+		$gen++;
+	}
+	return $gen;
 }
 
 /** The imported record as it was before any wp-admin edits (events still find a renamed business by its old name). */
@@ -273,6 +287,9 @@ add_action( 'acf/save_post', function ( $post_id ) {
 	if ( is_numeric( $post_id ) && 'hub_business' === get_post_type( $post_id ) ) {
 		update_post_meta( $post_id, '_hub_acf', 1 );
 		hub_businesses_db_sync_sort( $post_id );
+		hub_businesses_db_cache_gen( true );
+		// Saved in wp-admin: the plan may have changed (other modules follow it, e.g. the owner's role)
+		do_action( 'hub_business_plan_changed', (int) $post_id, hub_businesses_db_meta( get_post( $post_id ) )['plan'] );
 	}
 }, 20 );
 
@@ -282,6 +299,7 @@ add_action( 'acf/save_post', function ( $post_id ) {
  */
 function hub_businesses_db_set_plan( $post_id, $plan ) {
 	$post_id = (int) $post_id;
+	hub_businesses_db_cache_gen( true );
 	if ( hub_businesses_db_uses_acf( $post_id ) && function_exists( 'update_field' ) ) {
 		update_field( 'biz_plan', $plan, $post_id );
 		hub_businesses_db_sync_sort( $post_id );
@@ -295,4 +313,25 @@ function hub_businesses_db_set_plan( $post_id, $plan ) {
 	$status = (int) get_post_meta( $post_id, '_hub_status', true );
 	update_post_meta( $post_id, '_hub_tier', $plan );
 	update_post_meta( $post_id, '_hub_rank', $status * 10 + HUB_BUSINESSES_PLAN_RANK[ $plan ] );
+}
+
+/**
+ * Mark a business claimed (a claim was approved: Basic plan, claimed today) or unclaimed (its owner left: back to
+ * an unclaimed listing). Details, photos, offers and events are kept, and hidden while it's unclaimed.
+ */
+function hub_businesses_db_set_claimed( $post_id, $claimed ) {
+	$post_id = (int) $post_id;
+	hub_businesses_db_cache_gen( true );
+	update_post_meta( $post_id, '_hub_acf', 1 );
+	update_field( 'biz_claimed', $claimed ? 1 : 0, $post_id );
+	if ( $claimed ) {
+		update_field( 'biz_claimed_since', current_time( 'F Y' ), $post_id );   // "November 2026", as on the profile
+		$plan = (string) get_field( 'biz_plan', $post_id );
+		if ( '' === $plan || 'unclaimed' === $plan ) {
+			update_field( 'biz_plan', 'basic', $post_id );
+		}
+	} else {
+		update_field( 'biz_plan', 'unclaimed', $post_id );
+	}
+	hub_businesses_db_sync_sort( $post_id );
 }

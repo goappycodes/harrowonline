@@ -36,3 +36,28 @@ function hub_billing_shape( $configured, $mode, $plan, array $sub, $has_customer
 		'annual_saving'         => ( $prices && 'monthly' === $interval ) ? hub_billing_rule_money( 12 * $prices['monthly'] - $prices['annual'] ) : null,
 	);
 }
+
+/**
+ * Billing emails, as plain text: { subject, body }.
+ *
+ * @param string $kind 'payment_failed' | 'plan_ended'
+ * @param array  $a    { first_name, business, plan_name, amount (e.g. "£29"), link }
+ */
+function hub_billing_shape_email( $kind, array $a ) {
+	$hi   = 'Hi ' . ( '' !== $a['first_name'] ? $a['first_name'] : 'there' ) . ",\n\n";
+	$sign = "\n\nThanks,\nThe Harrow Online team\nhub@harrowonline.org";
+	if ( 'payment_failed' === $kind ) {
+		return array(
+			'subject' => 'We couldn\'t take your Harrow Online payment',
+			'body'    => $hi . 'We couldn\'t take the ' . $a['amount'] . ' payment for ' . $a['business'] . '\'s ' . $a['plan_name'] . ' plan on the Harrow Online Hub.'
+				. "\n\nPlease update your card here:\n" . $a['link']
+				. "\n\nWe'll try again automatically over the next few days. Your listing keeps its " . $a['plan_name'] . ' features while we do. If the last try fails, it moves to the free Basic plan. Nothing is deleted, and everything comes back when you upgrade again.' . $sign,
+		);
+	}
+	return array(
+		'subject' => 'Your Harrow Online ' . $a['plan_name'] . ' plan has ended',
+		'body'    => $hi . $a['business'] . '\'s ' . $a['plan_name'] . ' plan on the Harrow Online Hub has ended, and the listing is now on the free Basic plan.'
+			. "\n\nYour extra photos, social links, offers and events are hidden, not deleted. They come back as soon as you choose a plan again:\n" . $a['link']
+			. "\n\nIf this wasn't what you expected, just reply to this email." . $sign,
+	);
+}

@@ -30,9 +30,10 @@ require_once $hub_app . '/core/url.php';
 require_once $hub_app . '/setup/rest-routes.php';
 require_once $hub_app . '/setup/accounts.php';   // roles, signed-in pages, admin user <-> business link
 require_once $hub_app . '/setup/billing.php';    // checkout and billing-portal pages, Payments log
+require_once $hub_app . '/setup/claims.php';     // claim pages, wp-admin > Claims (review, approve, reject)
 
 // Modules
-foreach ( array( 'categories', 'areas', 'businesses', 'offers', 'events', 'account', 'billing' ) as $hub_module ) {
+foreach ( array( 'categories', 'areas', 'businesses', 'offers', 'events', 'account', 'billing', 'claims' ) as $hub_module ) {
 	foreach ( array( 'data', 'rules', 'shape', 'controller', 'routes' ) as $hub_file ) {
 		require_once $hub_app . '/modules/' . $hub_module . '/' . $hub_file . '.php';
 	}

@@ -1,20 +1,35 @@
 <?php
 /**
- * Reset your password (from src/pages/forgot-password.html; hand-edited: sends WordPress's reset email through the
- * account module, and shows the same answer whether or not the email has an account).
- * URL: /forgot-password/
+ * Reset your password (from src/pages/forgot-password.html; hand-edited). Two steps on one page:
+ *   1. /forgot-password/                      email address -> WordPress emails a reset link (same answer for any email)
+ *   2. /forgot-password/?key=...&login=...    the link from that email: choose a new password, then signed in
+ * The reset email itself and wp-login.php's reset screens are pointed here by app/setup/accounts.php.
  */
 defined( 'ABSPATH' ) || exit;
 $hub_result = null;
-if ( 'POST' === $_SERVER['REQUEST_METHOD'] ) { // phpcs:ignore WordPress.Security.ValidatedSanitizedInput
-	$hub_result = hub_account_reset_request( $_POST ); // phpcs:ignore WordPress.Security.NonceVerification -- the controller checks it
+$hub_reset  = isset( $_REQUEST['key'], $_REQUEST['login'] ); // phpcs:ignore WordPress.Security.NonceVerification
+$hub_link   = $hub_reset ? array( 'key' => wp_unslash( $_REQUEST['key'] ), 'login' => wp_unslash( $_REQUEST['login'] ) ) : array(); // phpcs:ignore WordPress.Security
+if ( $hub_reset ) {
+	header( 'Referrer-Policy: no-referrer' );   // keep the reset key out of other sites' logs
 }
+if ( 'POST' === $_SERVER['REQUEST_METHOD'] ) { // phpcs:ignore WordPress.Security.ValidatedSanitizedInput
+	// phpcs:ignore WordPress.Security.NonceVerification -- the controller checks it
+	$hub_result = $hub_reset ? hub_account_reset_password( $_POST ) : hub_account_reset_request( $_POST );
+	if ( $hub_reset && $hub_result['ok'] ) {
+		wp_safe_redirect( $hub_result['redirect'] );
+		exit;
+	}
+} elseif ( $hub_reset ) {
+	$hub_result = hub_account_reset_check( $hub_link );
+}
+// A bad or expired link falls back to step 1, with the reason shown above the email form
+$hub_choose = $hub_reset && $hub_result && ( $hub_result['ok'] || ! empty( $hub_result['errors'] ) );
 hub_set_page( array(
 	'description' => 'Reset the password for your Harrow Online Hub account. We will email you a secure link to choose a new password.',
 	'hubnav' => 'account',
 	'layout' => 'bare',
 	'robots' => 'noindex',
-	'title' => 'Reset your password',
+	'title' => $hub_choose ? 'Choose a new password' : 'Reset your password',
 ) );
 get_header();
 ?>
@@ -23,10 +38,29 @@ get_header();
 <div class="authx">
   <div class="authx__card">
 
+      <?php if ( $hub_choose ) : ?>
+      <h1 class="authx__title">Choose a new password</h1>
+      <p class="authx__lead">For <?php echo esc_html( $hub_link['login'] ); ?>. Use at least <?php echo (int) HUB_ACCOUNT_MIN_PASSWORD; ?> characters.</p>
+
+      <?php hub_view_form_notice( $hub_result['ok'] ? null : $hub_result ); ?>
+      <form class="form" action="<?php echo esc_url( hub_url( 'forgot-password/' ) ); ?>" method="post">
+        <?php wp_nonce_field( 'hub_account', '_hub_nonce' ); ?>
+        <input type="hidden" name="key" value="<?php echo esc_attr( $hub_link['key'] ); ?>">
+        <input type="hidden" name="login" value="<?php echo esc_attr( $hub_link['login'] ); ?>">
+        <input type="email" name="username" value="<?php echo esc_attr( $hub_link['login'] ); ?>" autocomplete="username" hidden>
+        <div class="field<?php echo esc_attr( hub_view_field_class( $hub_result, 'password' ) ); ?>">
+          <label for="fp-pass">New password</label>
+          <input class="input" id="fp-pass" type="password" name="password" autocomplete="new-password" minlength="<?php echo (int) HUB_ACCOUNT_MIN_PASSWORD; ?>" required>
+          <?php hub_view_field_error( $hub_result, 'password' ); ?>
+        </div>
+        <button class="ho-btn ho-btn--primary ho-btn--block" type="submit">Save password and sign in</button>
+      </form>
+
+      <?php else : ?>
       <h1 class="authx__title">Reset your password</h1>
       <p class="authx__lead">Enter the email address you use for the Hub and we&rsquo;ll send you a reset link.</p>
 
-      <?php if ( $hub_result && $hub_result['ok'] ) : ?>
+      <?php if ( ! $hub_reset && $hub_result && $hub_result['ok'] ) : ?>
       <div class="notice notice--ok" role="status">
         <svg class="ho-icon"><use href="#i-mail"/></svg>
         <div>
@@ -38,13 +72,14 @@ get_header();
       <?php hub_view_form_notice( $hub_result ); ?>
       <form class="form" action="<?php echo esc_url( hub_url( 'forgot-password/' ) ); ?>" method="post">
         <?php wp_nonce_field( 'hub_account', '_hub_nonce' ); ?>
-        <div class="field<?php echo esc_attr( hub_view_field_class( $hub_result, 'user_login' ) ); ?>">
+        <div class="field<?php echo esc_attr( hub_view_field_class( $hub_reset ? null : $hub_result, 'user_login' ) ); ?>">
           <label for="fp-email">Email address</label>
-          <input class="input" id="fp-email" type="email" name="user_login" autocomplete="email" required value="<?php echo esc_attr( hub_view_posted( 'user_login' ) ); ?>">
-          <?php hub_view_field_error( $hub_result, 'user_login' ); ?>
+          <input class="input" id="fp-email" type="email" name="user_login" autocomplete="email" required value="<?php echo esc_attr( $hub_reset ? '' : hub_view_posted( 'user_login' ) ); ?>">
+          <?php hub_view_field_error( $hub_reset ? null : $hub_result, 'user_login' ); ?>
         </div>
         <button class="ho-btn ho-btn--primary ho-btn--block" type="submit">Send reset link</button>
       </form>
+      <?php endif; ?>
       <?php endif; ?>
 
       <div class="authx__foot">

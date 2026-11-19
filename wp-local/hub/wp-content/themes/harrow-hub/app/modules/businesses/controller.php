@@ -130,12 +130,27 @@ function hub_businesses_newest( $limit = 10, $mode = HUB_WEB ) {
 	return hub_respond( array( 'items' => hub_businesses_rule_newest( $all, max( 1, (int) $limit ) ) ), $mode );
 }
 
+/**
+ * A claim was approved (claims module) or the owner closed their account: mark the business claimed or unclaimed.
+ * Fires hub_business_plan_changed, as the plan may change with it.
+ */
+function hub_business_set_claimed( $id, $claimed, $mode = HUB_WEB ) {
+	$post = hub_businesses_db_get( (int) $id );
+	if ( ! $post ) {
+		return hub_respond_error( 'not_found', 'No business ' . (int) $id, $mode );
+	}
+	hub_businesses_db_set_claimed( $post->ID, (bool) $claimed );
+	$b = _hub_business_build( hub_businesses_db_get( $post->ID ) );
+	do_action( 'hub_business_plan_changed', (int) $post->ID, $b['plan'] );
+	return hub_respond( $b, $mode );
+}
+
 /* ------------------------------------------------------------------ internal */
 
 /** A business (or its profile) in the shape.php shape. Cached per post. */
 function _hub_business_build( WP_Post $post, $profile = false ) {
 	static $cache = array();
-	$key = $post->ID . ( $profile ? 'p' : 's' );
+	$key = $post->ID . ( $profile ? 'p' : 's' ) . '@' . hub_businesses_db_cache_gen();
 	if ( ! isset( $cache[ $key ] ) ) {
 		$fn            = $profile ? 'hub_business_shape_profile' : 'hub_business_shape';
 		$cache[ $key ] = $fn( $post, hub_businesses_db_record( $post ), hub_businesses_db_meta( $post ), _hub_businesses_names(), hub_weekday( hub_businesses_db_today() ) );
@@ -230,5 +245,6 @@ function hub_business_set_plan( $id, $plan, $mode = HUB_WEB ) {
 		return hub_respond_error( 'not_found', 'No business ' . (int) $id, $mode );
 	}
 	hub_businesses_db_set_plan( $post->ID, $plan );
+	do_action( 'hub_business_plan_changed', (int) $post->ID, $plan );   // e.g. the owner's role (app/setup/accounts.php)
 	return hub_respond( _hub_business_build( hub_businesses_db_get( $post->ID ) ), $mode );
 }
