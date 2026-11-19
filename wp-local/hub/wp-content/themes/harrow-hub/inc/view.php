@@ -223,7 +223,10 @@ function hub_view_account_hello() {
 		echo '<p>' . esc_html( $a['business']['name'] ) . ' &middot; <a href="' . esc_url( $a['business']['url'] ) . '">View my listing</a></p>';
 	} else {
 		$claim = hub_claim_mine();   // claims module: their latest claim, if any
-		if ( $claim && 'pending' === $claim['status'] ) {
+		$added = hub_businesses_added_pending( $a['id'] );   // businesses they added that we're still checking
+		if ( $added ) {
+			echo '<p>We&rsquo;re checking ' . $added[0]['name'] . ', which you added. We&rsquo;ll email you when it&rsquo;s live.</p>'; // phpcs:ignore WordPress.Security.EscapeOutput -- name is escaped by the controller
+		} elseif ( $claim && 'pending' === $claim['status'] ) {
 			echo '<p>Your claim for ' . esc_html( $claim['business']['name'] ) . ' is being checked &middot; <a href="' . esc_url( hub_url( 'claim/submitted/' ) ) . '">See your claim</a></p>';
 		} elseif ( $claim && 'rejected' === $claim['status'] ) {
 			echo '<p>We couldn&rsquo;t approve your claim for ' . esc_html( $claim['business']['name'] ) . ' &middot; <a href="' . esc_url( hub_url( 'claim/submitted/' ) ) . '">See why</a></p>';

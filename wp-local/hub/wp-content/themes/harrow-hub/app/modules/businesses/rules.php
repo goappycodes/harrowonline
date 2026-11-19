@@ -143,3 +143,59 @@ function hub_businesses_rule_newest( array $businesses, $limit ) {
 	} );
 	return array_slice( array_column( $keyed, 2 ), 0, $limit );
 }
+
+/* ------------------------------------------------------------------ adding a business (/add-business/) */
+
+/** Facilities on the add-business form: value => label. */
+const HUB_BUSINESSES_FACILITIES = array(
+	'wheelchair' => 'Wheelchair access',
+	'parking'    => 'Parking nearby',
+	'card'       => 'Card payments',
+	'wifi'       => 'Free Wi-Fi',
+	'toilets'    => 'Toilets',
+	'children'   => 'Child friendly',
+	'booking'    => 'Online booking',
+	'walkin'     => 'Walk-ins welcome',
+	'delivery'   => 'Delivery',
+	'outdoor'    => 'Outdoor seating',
+);
+
+const HUB_BUSINESSES_DAYS = array( 'mon' => 'Monday', 'tue' => 'Tuesday', 'wed' => 'Wednesday', 'thu' => 'Thursday', 'fri' => 'Friday', 'sat' => 'Saturday', 'sun' => 'Sunday' );
+
+/** The listing photo: extension => MIME type, and the size limit. */
+const HUB_BUSINESSES_PHOTO_TYPES = array( 'jpg' => 'image/jpeg', 'jpeg' => 'image/jpeg', 'png' => 'image/png' );
+const HUB_BUSINESSES_PHOTO_MAX   = 8388608;   // 8MB
+
+/** "09:00" -> "9am", "17:30" -> "5:30pm", as the opening hours are written elsewhere. '' if it isn't a time. */
+function hub_businesses_rule_time_label( $hhmm ) {
+	if ( ! preg_match( '/^([01]?\d|2[0-3]):([0-5]\d)$/', (string) $hhmm, $m ) ) {
+		return '';
+	}
+	$h = (int) $m[1];
+	$p = $h >= 12 ? 'pm' : 'am';
+	$h = 0 === $h % 12 ? 12 : $h % 12;
+	return $h . ( '00' === $m[2] ? '' : ':' . $m[2] ) . $p;
+}
+
+/** One day's hours as stored: "Closed", "9am to 5:30pm", or '' when not given. */
+function hub_businesses_rule_hours_text( $open, $close, $closed ) {
+	if ( $closed ) {
+		return 'Closed';
+	}
+	$o = hub_businesses_rule_time_label( $open );
+	$c = hub_businesses_rule_time_label( $close );
+	return ( '' !== $o && '' !== $c ) ? $o . ' to ' . $c : '';
+}
+
+/** A UK postcode, tidied ("ha12ta" -> "HA1 2TA"), or '' if it doesn't look like one. */
+function hub_businesses_rule_postcode( $pc ) {
+	$pc = strtoupper( preg_replace( '/\s+/', '', (string) $pc ) );
+	return preg_match( '/^[A-Z]{1,2}\d[A-Z\d]?\d[A-Z]{2}$/', $pc ) ? substr( $pc, 0, -3 ) . ' ' . substr( $pc, -3 ) : '';
+}
+
+/** Names compared loosely for the duplicate check: "The Hill St. Kitchen" ~ "hill st kitchen". */
+function hub_businesses_rule_name_key( $name ) {
+	$n = strtolower( html_entity_decode( (string) $name, ENT_QUOTES, 'UTF-8' ) );
+	$n = preg_replace( '/^the\s+/', '', $n );
+	return preg_replace( '/[^a-z0-9]+/', '', $n );
+}

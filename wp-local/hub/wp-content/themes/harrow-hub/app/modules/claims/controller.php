@@ -43,6 +43,10 @@ function hub_claim_page( array $params, $mode = HUB_WEB ) {
 		$other          = _hub_claims_business( $pending['business'] );
 		$out['state']   = 'pending_other';
 		$out['message'] = 'You already have a claim waiting for ' . esc_html( $other ? $other['name'] : 'another business' ) . '. We&rsquo;ll email you when it&rsquo;s checked.';
+	} elseif ( $account['signed_in'] && hub_businesses_added_pending( $account['id'] ) ) {
+		$added          = hub_businesses_added_pending( $account['id'] );   // businesses module
+		$out['state']   = 'pending_other';
+		$out['message'] = 'We&rsquo;re still checking ' . $added[0]['name'] . ', which you added. We&rsquo;ll email you when it&rsquo;s live.';
 	} elseif ( $account['signed_in'] && ! $account['email_confirmed'] ) {
 		$out['state']   = 'unconfirmed';
 		$out['message'] = 'Please confirm your email address first: use the link we sent to ' . esc_html( $account['email'] ) . ', or resend it from your account.';

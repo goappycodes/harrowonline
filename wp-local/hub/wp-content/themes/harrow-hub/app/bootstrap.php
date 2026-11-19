@@ -31,6 +31,7 @@ require_once $hub_app . '/setup/rest-routes.php';
 require_once $hub_app . '/setup/accounts.php';   // roles, signed-in pages, admin user <-> business link
 require_once $hub_app . '/setup/billing.php';    // checkout and billing-portal pages, Payments log
 require_once $hub_app . '/setup/claims.php';     // claim pages, wp-admin > Claims (review, approve, reject)
+require_once $hub_app . '/setup/add-business.php'; // adding a business: sign-in, publish or trash after review
 
 // Modules
 foreach ( array( 'categories', 'areas', 'businesses', 'offers', 'events', 'account', 'billing', 'claims' ) as $hub_module ) {

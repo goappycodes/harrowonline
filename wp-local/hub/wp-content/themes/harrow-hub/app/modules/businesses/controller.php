@@ -145,6 +145,225 @@ function hub_business_set_claimed( $id, $claimed, $mode = HUB_WEB ) {
 	return hub_respond( $b, $mode );
 }
 
+/* ------------------------------------------------------------------ adding a business (/add-business/) */
+
+/**
+ * What the add-business page needs: { recommend, state, message, account, categories[], areas[] }
+ * state: ready | unconfirmed | has_business | waiting   (owners only: one business per account)
+ *
+ * @param array $params { recommend: 1 for a reader suggesting a business they don't own }
+ */
+function hub_business_add_page( array $params, $mode = HUB_WEB ) {
+	$account   = hub_account_current();   // account module
+	$recommend = hub_param_bool( $params, 'recommend' );
+	$out       = array(
+		'recommend'  => $recommend,
+		'state'      => 'ready',
+		'message'    => '',
+		'account'    => $account,
+		'categories' => hub_categories_list()['items'],   // categories module
+		'areas'      => hub_areas_list()['items'],        // areas module
+	);
+	if ( $account['signed_in'] && ! $account['email_confirmed'] ) {
+		$out['state']   = 'unconfirmed';
+		$out['message'] = 'Please confirm your email address first: use the link we sent to ' . esc_html( $account['email'] ) . ', or resend it from your account.';
+	} elseif ( ! $recommend && $account['business'] ) {
+		$out['state']   = 'has_business';
+		$out['message'] = 'Your account already manages ' . esc_html( $account['business']['name'] ) . '. Each account manages one business; email hub@harrowonline.org if you run more than one, or recommend this one instead.';
+	} elseif ( ! $recommend && $account['signed_in'] ) {
+		$claim = hub_claim_mine();   // claims module
+		$added = hub_businesses_added_pending( $account['id'] );
+		if ( $claim && 'pending' === $claim['status'] ) {
+			$out['state']   = 'waiting';
+			$out['message'] = 'You already have a claim waiting for ' . esc_html( $claim['business']['name'] ) . '. We&rsquo;ll email you when it&rsquo;s checked.';
+		} elseif ( $added ) {
+			$out['state']   = 'waiting';
+			$out['message'] = 'We&rsquo;re still checking ' . esc_html( $added[0]['name'] ) . ', which you added. We&rsquo;ll email you when it&rsquo;s live.';
+		}
+	}
+	return hub_respond( $out, $mode );
+}
+
+/**
+ * Add a business from the website: it waits as "Pending Review" until staff publish it.
+ *
+ * @param array $params { recommend, business_name, cat, cat_extra[], business_type, summary, address, postcode, area, phone,
+ *                        website, email, description, facilities[], hours { mon: { open, close, closed } ... },
+ *                        declaration, _hub_nonce (web) }
+ * @param array $files  { photo: an entry of $_FILES } (optional, owners only)
+ * @return array { ok, message, errors, redirect, duplicate { name, url, claim } | null }
+ */
+function hub_business_add( array $params, array $files, $mode = HUB_WEB ) {
+	$res = function ( $ok, $msg, $errors = array(), $redirect = '', $dupe = null ) use ( $mode ) {
+		return hub_respond( array( 'ok' => $ok, 'message' => $msg, 'errors' => array_filter( $errors ), 'redirect' => $redirect, 'duplicate' => $dupe ), $mode, $ok ? 200 : 400 );
+	};
+	if ( HUB_WEB === $mode && ! wp_verify_nonce( isset( $params['_hub_nonce'] ) ? (string) $params['_hub_nonce'] : '', 'hub_add_business' ) ) {
+		return $res( false, 'This form has expired. Please try again.' );
+	}
+	$page = hub_business_add_page( $params );
+	if ( ! $page['account']['signed_in'] ) {
+		return $res( false, 'Sign in to add a business.', array(), hub_url( 'sign-in/' ) );
+	}
+	if ( 'ready' !== $page['state'] ) {
+		return $res( false, $page['message'] );
+	}
+	$account = $page['account'];
+	if ( hub_account_limited( 'add_business', array( $account['id'] ) ) ) {   // account module
+		return $res( false, 'You&rsquo;ve added several businesses today. Please try again tomorrow, or email hub@harrowonline.org.' );
+	}
+	$owner = ! $page['recommend'];
+	$get   = function ( $k ) use ( $params ) { return isset( $params[ $k ] ) && is_scalar( $params[ $k ] ) ? trim( wp_unslash( (string) $params[ $k ] ) ) : ''; };
+	$cats  = wp_list_pluck( $page['categories'], 'slug' );
+	$areas = wp_list_pluck( $page['areas'], 'slug' );
+	$errors = array();
+
+	$name = sanitize_text_field( $get( 'business_name' ) );   // not "name": WordPress reads a posted "name" as a page slug and 404s
+	if ( '' === $name || mb_strlen( $name ) > 100 ) {
+		$errors['business_name'] = 'Enter the business name.';
+	}
+	$cat = $get( 'cat' );
+	if ( ! in_array( $cat, $cats, true ) ) {
+		$errors['cat'] = 'Choose a category.';
+	}
+	$extra = isset( $params['cat_extra'] ) ? array_slice( array_intersect( array_map( 'strval', (array) $params['cat_extra'] ), $cats ), 0, 2 ) : array();
+	$sub   = sanitize_text_field( $get( 'business_type' ) );
+	if ( '' === $sub ) {
+		$errors['business_type'] = 'Say what kind of business it is.';
+	}
+	$tagline = sanitize_text_field( $get( 'summary' ) );
+	if ( '' === $tagline || mb_strlen( $tagline ) > 120 ) {
+		$errors['summary'] = 'Write a one-line summary of up to 120 characters.';
+	}
+	$address = sanitize_text_field( $get( 'address' ) );
+	if ( '' === $address ) {
+		$errors['address'] = 'Enter the street address.';
+	}
+	$postcode = hub_businesses_rule_postcode( $get( 'postcode' ) );
+	if ( '' === $postcode ) {
+		$errors['postcode'] = 'Enter a UK postcode, for example HA1 2TA.';
+	}
+	$area = $get( 'area' );
+	if ( ! in_array( $area, $areas, true ) ) {
+		$errors['area'] = 'Choose an area.';
+	}
+	$phone = sanitize_text_field( $get( 'phone' ) );
+	if ( strlen( preg_replace( '/\D/', '', $phone ) ) < 10 ) {
+		$errors['phone'] = 'Enter a phone number, for example 020 8123 4567.';
+	}
+	$website = esc_url_raw( $get( 'website' ) );
+	// Shape only: wp_http_validate_url() also looks the host up in DNS, which fails for sites that aren't live yet
+	if ( '' !== $get( 'website' ) && ( '' === $website || ! filter_var( $website, FILTER_VALIDATE_URL ) || ! preg_match( '#^https?://[^/]+\.[a-z]{2,}#i', $website ) ) ) {
+		$errors['website'] = 'Enter the full website address, starting https://';
+	}
+	$email = $owner ? sanitize_email( $get( 'email' ) ) : '';
+	if ( $owner && '' !== $get( 'email' ) && ! is_email( $email ) ) {
+		$errors['email'] = 'Enter a valid email address, or leave it empty.';
+	}
+	$description = sanitize_textarea_field( $get( 'description' ) );
+	if ( '' === $description || mb_strlen( $description ) > 1500 ) {
+		$errors['description'] = 'Describe the business in up to 1,500 characters.';
+	}
+	$hours = array();
+	foreach ( HUB_BUSINESSES_DAYS as $day => $label ) {
+		$h            = $owner && isset( $params['hours'][ $day ] ) && is_array( $params['hours'][ $day ] ) ? $params['hours'][ $day ] : array();
+		$hours[ $day ] = hub_businesses_rule_hours_text( isset( $h['open'] ) ? $h['open'] : '', isset( $h['close'] ) ? $h['close'] : '', ! empty( $h['closed'] ) );
+	}
+	$facilities = $owner && isset( $params['facilities'] ) ? array_values( array_intersect( array_map( 'strval', (array) $params['facilities'] ), array_keys( HUB_BUSINESSES_FACILITIES ) ) ) : array();
+	$photo      = $owner && isset( $files['photo'] ) && is_array( $files['photo'] ) && UPLOAD_ERR_NO_FILE !== (int) $files['photo']['error'] ? $files['photo'] : null;
+	if ( $photo ) {
+		$type = UPLOAD_ERR_OK === (int) $photo['error'] ? wp_check_filetype_and_ext( $photo['tmp_name'], $photo['name'], HUB_BUSINESSES_PHOTO_TYPES ) : array( 'type' => '' );
+		if ( UPLOAD_ERR_OK !== (int) $photo['error'] || ! in_array( $type['type'], HUB_BUSINESSES_PHOTO_TYPES, true ) || (int) $photo['size'] > HUB_BUSINESSES_PHOTO_MAX ) {
+			$errors['photo'] = 'Choose a JPG or PNG photo of 8MB or less, or leave it out.';
+		}
+	}
+	if ( ! hub_param_bool( $params, 'declaration' ) ) {
+		$errors['declaration'] = $owner ? 'Please confirm you own or manage this business.' : 'Please confirm the details are correct as far as you know.';
+	}
+	if ( $errors ) {
+		return $res( false, 'Please check the highlighted fields.', $errors );
+	}
+	$same = hub_businesses_db_find_same( $name, $postcode );
+	if ( $same ) {
+		$live = 'publish' === get_post_status( $same );
+		$slug = get_post_field( 'post_name', $same );
+		return $res( false, $live ? 'This business is already on the Hub.' : 'Someone has already added this business, and we&rsquo;re checking it.', array(), '', $live ? array(
+			'name'  => get_the_title( $same ),
+			'url'   => hub_url( 'business/' . $slug . '/' ),
+			'claim' => hub_url( 'claim/?listing=' . $slug ),
+		) : null );
+	}
+
+	$id = hub_businesses_db_create_pending( array(
+		'name' => $name, 'cats' => array_values( array_unique( array_merge( array( $cat ), $extra ) ) ), 'area' => $area, 'sub' => $sub,
+		'tagline' => $tagline, 'address' => $address, 'postcode' => $postcode, 'phone' => $phone, 'website' => $website,
+		'email' => $email, 'description' => $description, 'hours' => $hours, 'facilities' => $facilities,
+		'added_by' => $account['id'], 'added_as' => $owner ? 'owner' : 'recommend',
+	) );
+	if ( is_wp_error( $id ) ) {
+		hub_debug_log( 'add business: ' . $id->get_error_message() );
+		return $res( false, 'We couldn&rsquo;t save it just now. Please try again.' );
+	}
+	if ( $photo ) {
+		$aid = hub_businesses_db_attach_photo( $id, 'photo' );
+		if ( is_wp_error( $aid ) ) {
+			hub_debug_log( 'add business: photo not saved for ' . $id . ': ' . $aid->get_error_message() );   // the listing is saved; staff can add the photo
+		}
+	}
+	hub_account_count_attempt( 'add_business', array( $account['id'] ) );
+	$u = get_userdata( $account['id'] );
+	_hub_businesses_added_mail( 'received', $u->user_email, $u, $name, '' );
+	_hub_businesses_added_mail( 'staff', get_option( 'admin_email' ), $u, $name, admin_url( 'post.php?post=' . $id . '&action=edit' ), $owner ? 'as the owner' : 'as a recommendation' );
+	return $res( true, 'Sent for checking.', array(), add_query_arg( array( 'sent' => $owner ? 'owner' : 'recommend', 'added' => rawurlencode( $name ) ), hub_url( 'add-business/' ) ) );
+}
+
+/** Businesses a user added that are still waiting for review: [ { id, name } ]. */
+function hub_businesses_added_pending( $user_id, $mode = HUB_WEB ) {
+	$out = array();
+	foreach ( hub_businesses_db_added_pending( $user_id ) as $id ) {
+		$out[] = array( 'id' => (int) $id, 'name' => esc_html( get_the_title( $id ) ) );
+	}
+	return hub_respond( $out, $mode );
+}
+
+/** Who added this business from the website, for staff screens: { user, email, as, facilities[] } or null. */
+function hub_business_added_info( $post_id ) {
+	$i = hub_businesses_db_added_info( $post_id );
+	if ( ! $i ) {
+		return null;
+	}
+	$u = get_userdata( $i['user'] );
+	return $i + array( 'email' => $u ? $u->user_email : '(account deleted)', 'facility_labels' => array_values( array_intersect_key( HUB_BUSINESSES_FACILITIES, array_flip( $i['facilities'] ) ) ) );
+}
+
+/**
+ * Staff published a business added from the website (Pending Review -> Published). An owner gets it: claimed on
+ * Basic and linked to their account, unless they've got a business meanwhile. Everyone is emailed.
+ */
+function hub_business_added_published( $post_id ) {
+	$i = hub_businesses_db_added_info( $post_id );
+	$u = $i ? get_userdata( $i['user'] ) : null;
+	if ( ! $u ) {
+		return;
+	}
+	$name = get_the_title( $post_id );
+	if ( 'owner' === $i['as'] && ! hub_account_business_id( $u->ID ) && ! hub_account_owner_id( $post_id ) && current_user_can( 'edit_users' ) ) {
+		hub_business_set_claimed( $post_id, true );
+		hub_account_link_business( $u->ID, $post_id );   // account module: also sets their plan
+		_hub_businesses_added_mail( 'live', $u->user_email, $u, $name, hub_url( 'account/' ) );
+		return;
+	}
+	_hub_businesses_added_mail( 'live_recommend', $u->user_email, $u, $name, hub_url( 'business/' . get_post_field( 'post_name', $post_id ) . '/' ) );
+}
+
+/** Staff moved a waiting business to the Trash: tell the person who added it. */
+function hub_business_added_declined( $post_id ) {
+	$i = hub_businesses_db_added_info( $post_id );
+	$u = $i ? get_userdata( $i['user'] ) : null;
+	if ( $u ) {
+		_hub_businesses_added_mail( 'declined', $u->user_email, $u, get_the_title( $post_id ), '' );
+	}
+}
+
 /* ------------------------------------------------------------------ internal */
 
 /** A business (or its profile) in the shape.php shape. Cached per post. */
@@ -247,4 +466,17 @@ function hub_business_set_plan( $id, $plan, $mode = HUB_WEB ) {
 	hub_businesses_db_set_plan( $post->ID, $plan );
 	do_action( 'hub_business_plan_changed', (int) $post->ID, $plan );   // e.g. the owner's role (app/setup/accounts.php)
 	return hub_respond( _hub_business_build( hub_businesses_db_get( $post->ID ) ), $mode );
+}
+
+function _hub_businesses_added_mail( $kind, $to, WP_User $u, $business, $link, $as_label = '' ) {
+	$mail = hub_businesses_shape_added_email( $kind, array(
+		'first_name'    => (string) $u->first_name,
+		'business'      => html_entity_decode( $business, ENT_QUOTES, 'UTF-8' ),
+		'link'          => $link,
+		'account_email' => $u->user_email,
+		'as_label'      => $as_label,
+	) );
+	if ( ! hub_businesses_db_send_email( $to, $mail['subject'], $mail['body'] ) ) {
+		hub_debug_log( 'add business: could not send the ' . $kind . ' email' );
+	}
 }

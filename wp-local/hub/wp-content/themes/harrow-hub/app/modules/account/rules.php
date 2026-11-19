@@ -38,6 +38,7 @@ const HUB_ACCOUNT_LIMITS = array(
 	'register_ip' => array( 5, 60 * 60 ),    // new accounts from one IP
 	'confirm'     => array( 3, 60 * 60 ),    // confirmation emails resent for one account
 	'claim'       => array( 5, 24 * 60 * 60 ),   // claims sent by one account in a day (claims module)
+	'add_business' => array( 3, 24 * 60 * 60 ),  // businesses added by one account in a day (businesses module)
 );
 
 /** Email notification choices on the settings page: key => [ label, description ]. Receipts are always sent. */

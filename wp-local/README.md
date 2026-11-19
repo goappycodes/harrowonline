@@ -87,7 +87,21 @@ local only). In the Claude desktop app, start the **wp-local** preview instead.
   - **Approve:** the business becomes claimed on Basic, the account manages it, and they get an email.
   - **Reject:** they get an email with the note, and they can claim again.
 
-  New businesses that aren't listed (`/add-business/`) are not built yet.
+- **Adding a business** (`/hub/add-business/`, businesses module, `app/setup/add-business.php`) needs a signed-in
+  account with a confirmed email (3 a day). Owners add their own business; with `?recommend=1`, readers suggest
+  one without becoming its owner (fewer fields). An owner can't add one while they manage a business or have a
+  claim or added business waiting.
+  - **What's checked:** the same name and postcode as a live or waiting business is refused, with a link to claim
+    the live one.
+  - **What's saved:** the business is created as **Pending Review** with the usual ACF fields (opening hours as
+    "9am to 5:30pm"), categories and area, and the photo in the Media Library as its listing photo. Facilities
+    are post meta `_hub_facilities` until the listing editor has a field for them.
+  - **Emails:** the person gets a receipt and the site admin a "New business to check" email.
+  - **Staff review** it in wp-admin > Businesses > Pending; a box shows who added it and how.
+    - **Publish:** an owner gets it, claimed on the Basic plan and linked to their account.
+    - **Move to Trash:** declines it.
+
+    Both email the person who added it.
 - **Settings** (`/hub/account/settings/`, `parts/account/settings.php`): name; email, which changes only when a
   link sent to the new address is clicked (the login changes with it); password, which needs the current one,
   keeps this device signed in and gets WordPress's "Password changed" email; email choices; newsletter editions,

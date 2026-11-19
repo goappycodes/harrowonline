@@ -34,7 +34,8 @@ app/
 │   ├── rest-routes.php    namespace hub/v1, hub_route()
 │   ├── accounts.php       sign-in redirects for /account/ pages, sign-out, wp-admin Users: plan and business fields
 │   ├── billing.php        /billing/checkout/ and /billing/portal/ (send to Stripe), Payments log in wp-admin
-│   └── claims.php         claim pages' sign-in and email link, wp-admin > Claims (review, approve, reject)
+│   ├── claims.php         claim pages' sign-in and email link, wp-admin > Claims (review, approve, reject)
+│   └── add-business.php   /add-business/ sign-in; Pending Review -> Published (owner gets it) or Trash (declined)
 └── modules/
     ├── businesses/        data.php  rules.php  shape.php  controller.php  routes.php
     ├── events/            one-off events and weekly classes (What's On)

@@ -24,3 +24,5 @@ __pycache__/
 /wp-local/hub/wp-content/mail-log/
 # Claim proof documents (private uploads; app/modules/claims)
 /wp-local/hub/wp-content/hub-private/
+# stripe-php README: its sample API key trips GitHub push protection; not needed to run
+/wp-local/hub/wp-content/themes/harrow-hub/vendor/stripe/stripe-php/README.md

@@ -335,3 +335,90 @@ function hub_businesses_db_set_claimed( $post_id, $claimed ) {
 	}
 	hub_businesses_db_sync_sort( $post_id );
 }
+
+/* ------------------------------------------------------------------ businesses added from the website */
+
+/**
+ * Create a business waiting for review (post status "pending": not on the Hub until staff publish it).
+ *
+ * @param array $f { name, cats[], area, sub, tagline, address, postcode, phone, website, email, description,
+ *                   hours { mon: "9am to 5pm" | "Closed" | '' ... }, facilities[], added_by (user ID), added_as ('owner' | 'recommend') }
+ * @return int|WP_Error
+ */
+function hub_businesses_db_create_pending( array $f ) {
+	$content = implode( "\n\n", array_map( function ( $p ) { return '<p>' . esc_html( $p ) . '</p>'; }, array_filter( array_map( 'trim', preg_split( '/\n\s*\n/', $f['description'] ) ) ) ) );
+	$id      = wp_insert_post( array( 'post_type' => 'hub_business', 'post_status' => 'pending', 'post_title' => $f['name'], 'post_content' => $content ), true );
+	if ( is_wp_error( $id ) ) {
+		return $id;
+	}
+	wp_set_object_terms( $id, $f['cats'], 'hub_category' );
+	wp_set_object_terms( $id, array( $f['area'] ), 'hub_area' );
+	update_post_meta( $id, '_hub_acf', 1 );
+	foreach ( array( 'biz_sub' => 'sub', 'biz_tagline' => 'tagline', 'biz_address' => 'address', 'biz_postcode' => 'postcode', 'biz_phone' => 'phone', 'biz_website' => 'website', 'biz_email' => 'email' ) as $field => $k ) {
+		if ( '' !== $f[ $k ] ) {
+			update_field( $field, $f[ $k ], $id );
+		}
+	}
+	update_field( 'biz_plan', 'unclaimed', $id );
+	update_field( 'biz_claimed', 0, $id );
+	$hours = array();
+	foreach ( $f['hours'] as $day => $text ) {
+		$hours[ 'biz_hours_' . $day ] = $text;
+	}
+	if ( array_filter( $hours, 'strlen' ) ) {
+		update_field( 'biz_hours', $hours, $id );
+	}
+	update_post_meta( $id, '_hub_facilities', array_values( $f['facilities'] ) );   // no ACF field yet: kept for the listing editor
+	update_post_meta( $id, '_hub_added_by', (int) $f['added_by'] );
+	update_post_meta( $id, '_hub_added_as', $f['added_as'] );
+	hub_businesses_db_sync_sort( $id );
+	return $id;
+}
+
+/** Add the uploaded photo ($_FILES key) to the media library and make it the listing's photo. Attachment ID or WP_Error. */
+function hub_businesses_db_attach_photo( $post_id, $file_key ) {
+	require_once ABSPATH . 'wp-admin/includes/file.php';
+	require_once ABSPATH . 'wp-admin/includes/media.php';
+	require_once ABSPATH . 'wp-admin/includes/image.php';
+	$aid = media_handle_upload( $file_key, (int) $post_id, array(), array( 'test_form' => false, 'mimes' => HUB_BUSINESSES_PHOTO_TYPES ) );
+	if ( ! is_wp_error( $aid ) ) {
+		update_field( 'biz_gallery', array( $aid ), (int) $post_id );
+	}
+	return $aid;
+}
+
+/** A live or waiting business with the same name and postcode, or 0. */
+function hub_businesses_db_find_same( $name, $postcode ) {
+	$key = hub_businesses_rule_name_key( $name );
+	$ids = get_posts( array(
+		'post_type'      => 'hub_business',
+		'post_status'    => array( 'publish', 'pending' ),
+		'posts_per_page' => 50,
+		'fields'         => 'ids',
+		'meta_query'     => array( array( 'key' => 'biz_postcode', 'value' => array( $postcode, str_replace( ' ', '', $postcode ) ), 'compare' => 'IN' ) ),
+	) );
+	foreach ( $ids as $id ) {
+		if ( hub_businesses_rule_name_key( get_the_title( $id ) ) === $key ) {
+			return (int) $id;
+		}
+	}
+	return 0;
+}
+
+/** Businesses this user added that are still waiting for review: post IDs. */
+function hub_businesses_db_added_pending( $user_id ) {
+	return get_posts( array( 'post_type' => 'hub_business', 'post_status' => 'pending', 'posts_per_page' => 5, 'fields' => 'ids', 'meta_key' => '_hub_added_by', 'meta_value' => (int) $user_id ) );
+}
+
+/** Who added a business from the website: { user, as ('owner' | 'recommend'), facilities[] } or null. */
+function hub_businesses_db_added_info( $post_id ) {
+	$user = (int) get_post_meta( (int) $post_id, '_hub_added_by', true );
+	if ( ! $user ) {
+		return null;
+	}
+	return array( 'user' => $user, 'as' => (string) get_post_meta( (int) $post_id, '_hub_added_as', true ), 'facilities' => (array) get_post_meta( (int) $post_id, '_hub_facilities', true ) );
+}
+
+function hub_businesses_db_send_email( $to, $subject, $body ) {
+	return wp_mail( $to, $subject, $body, array( 'Reply-To: Harrow Online <hub@harrowonline.org>' ) );
+}
