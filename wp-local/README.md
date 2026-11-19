@@ -127,6 +127,14 @@ local only). In the Claude desktop app, start the **wp-local** preview instead.
   back to unclaimed: its details stay on the Hub, and its content is hidden, not deleted.
 - **Sign-out** (`/hub/sign-out/`) needs the token in the account menu's link (`hub_view_sign_out_url()`). Without
   it, for example from an old link or another site, the dashboard asks "Sign out?" instead.
+- **Test accounts:** `php wp-local/hub/seed-test-accounts-local.php` makes one account of each kind, each with its
+  own data. The passwords go into `hub/LOCAL-ADMIN.txt`. Running it again starts them afresh; it works locally only.
+  - `owner@harrowonline.test` is Featured (AJ Pizza's), with live, pending and draft offers, an event and a class.
+  - `partner@` is Local Partner (Stanmore Family Dental).
+  - `basic@` is Basic (Pinner Village Florist), with a £15 event not paid yet.
+  - `organiser@` is an organiser (Harrow Chess Club), with an event and classes.
+  - `newcomer@` has no business yet.
+  - `claimer@` has a claim waiting in wp-admin > Claims.
 - **Passwords:** "Forgotten your password?" uses WordPress's own reset. The email (sent by WordPress, with Hub wording)
   links to `/hub/forgot-password/?key=...`, where people choose a new password and are signed in. Links work once
   and last an hour. WordPress's own `wp-login.php` register, lost-password and reset screens redirect to the Hub
