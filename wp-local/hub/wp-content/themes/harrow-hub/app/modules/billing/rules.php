@@ -8,6 +8,13 @@ defined( 'ABSPATH' ) || exit;
 
 const HUB_BILLING_CURRENCY = 'gbp';
 
+/**
+ * Stripe Managed Payments (Stripe as merchant of record, handling VAT): off for now, so Harrow Online stays the
+ * seller and prices are shown including VAT (client to decide before going live, 19 Nov 2026). Turning it on needs
+ * a Stripe product tax code on every product (stripe-setup-local.php), as Stripe refuses checkouts without them.
+ */
+const HUB_BILLING_MANAGED_PAYMENTS = false;
+
 /** Plans (subscriptions): key => { plan (the business's biz_plan), name, prices: { monthly, annual } } */
 const HUB_BILLING_PLANS = array(
 	'featured' => array( 'plan' => 'premium', 'name' => 'Featured', 'prices' => array( 'monthly' => 2900, 'annual' => 29000 ) ),
