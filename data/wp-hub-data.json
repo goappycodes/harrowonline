@@ -75613,7 +75613,12 @@
     "note": "Details from the club, checked by Harrow Online."
    },
    "provider": "Parkfield Youth FC",
-   "order": 0
+   "order": 0,
+   "page": true,
+   "card": {
+    "order": 0,
+    "text": "Football coaching from DBS-checked, FA-qualified coaches. No booking needed: just turn up."
+   }
   },
   {
    "title": "Saturday Soccer School: Years 3 to 9",
@@ -75637,7 +75642,12 @@
     "note": "Details from the club, checked by Harrow Online."
    },
    "provider": "Parkfield Youth FC",
-   "order": 1
+   "order": 1,
+   "page": true,
+   "card": {
+    "order": 1,
+    "text": "Football coaching from DBS-checked, FA-qualified coaches. No booking needed: just turn up."
+   }
   },
   {
    "title": "Girls&rsquo; Saturday Soccer School",
@@ -75661,7 +75671,12 @@
     "note": "Details from the club, checked by Harrow Online."
    },
    "provider": "Parkfield Youth FC",
-   "order": 2
+   "order": 2,
+   "page": true,
+   "card": {
+    "order": 2,
+    "text": "A girls-only Soccer School session. Call or email the club for the time before you go."
+   }
   },
   {
    "title": "Saturday Small Group Tuition",
@@ -75686,7 +75701,12 @@
     "note": "Details from GradeSmart Tuition, checked by Harrow Online."
    },
    "provider": "GradeSmart Tuition",
-   "order": 3
+   "order": 3,
+   "page": true,
+   "card": {
+    "order": 3,
+    "text": "Maths, English and Science in groups of six or fewer. Free assessment and 75% off the first month."
+   }
   },
   {
    "title": "Kids&rsquo; Breakdance",
@@ -75710,7 +75730,12 @@
     "note": "Details from Kidology Dance Co, checked by Harrow Online."
    },
    "provider": "Kidology Dance Co",
-   "order": 4
+   "order": 4,
+   "page": true,
+   "card": {
+    "order": 4,
+    "text": "Footwork, freezes and power moves at Harrow Arts Centre. Book by half term. Free trial class available."
+   }
   },
   {
    "title": "Musical Theatre for Kids",
@@ -75734,7 +75759,12 @@
     "note": "Details from Kidology Dance Co, checked by Harrow Online."
    },
    "provider": "Kidology Dance Co",
-   "order": 5
+   "order": 5,
+   "page": true,
+   "card": {
+    "order": 5,
+    "text": "Singing, acting and dance from the musicals. Book by half term. Free trial class available."
+   }
   },
   {
    "title": "Toddler Dance",
@@ -75758,7 +75788,12 @@
     "note": "Details from Kidology Dance Co, checked by Harrow Online."
    },
    "provider": "Kidology Dance Co",
-   "order": 6
+   "order": 6,
+   "page": true,
+   "card": {
+    "order": 6,
+    "text": "A first dance class: music, movement and fun. Book by half term. Free trial class available."
+   }
   },
   {
    "title": "Mini Street Dance",
@@ -75782,7 +75817,12 @@
     "note": "Details from Kidology Dance Co, checked by Harrow Online."
    },
    "provider": "Kidology Dance Co",
-   "order": 7
+   "order": 7,
+   "page": true,
+   "card": {
+    "order": 7,
+    "text": "Fun street dance routines to the latest music. Book by half term. Free trial class available."
+   }
   },
   {
    "title": "Junior Street Dance",
@@ -75806,7 +75846,12 @@
     "note": "Details from Kidology Dance Co, checked by Harrow Online."
    },
    "provider": "Kidology Dance Co",
-   "order": 8
+   "order": 8,
+   "page": true,
+   "card": {
+    "order": 8,
+    "text": "Street dance and hip-hop routines. Book by half term. Free trial class available."
+   }
   },
   {
    "title": "Senior Street Dance and Hip-Hop",
@@ -75830,7 +75875,12 @@
     "note": "Details from Kidology Dance Co, checked by Harrow Online."
    },
    "provider": "Kidology Dance Co",
-   "order": 9
+   "order": 9,
+   "page": true,
+   "card": {
+    "order": 9,
+    "text": "Routines for performances and the annual showcase. Book by half term. Free trial class available."
+   }
   },
   {
    "title": "Chair Yoga for Over-60s",
@@ -75848,7 +75898,13 @@
    "desc": "",
    "real": null,
    "provider": "",
-   "order": 10
+   "order": 10,
+   "page": true,
+   "card": {
+    "order": 21,
+    "text": "Gentle seated yoga to help with balance and movement.",
+    "provider": "St George&rsquo;s Hall"
+   }
   },
   {
    "title": "Beginners&rsquo; Pottery",
@@ -75866,7 +75922,15 @@
    "desc": "",
    "real": null,
    "provider": "",
-   "order": 11
+   "order": 11,
+   "page": true,
+   "card": {
+    "order": 18,
+    "text": "Learn to throw and glaze on the wheel. Clay and firing included.",
+    "when": "Tuesdays, 7pm (6 weeks)",
+    "price": "&pound;150 course",
+    "provider": "Harrow Arts Centre"
+   }
   },
   {
    "title": "Lunchtime Spin",
@@ -75884,7 +75948,12 @@
    "desc": "45 minutes of high-energy spin. Bikes set up for you, towels provided.",
    "real": null,
    "provider": "Wealdstone Fitness Studio",
-   "order": 12
+   "order": 12,
+   "page": true,
+   "card": {
+    "order": 20,
+    "text": "45 minutes of high-energy spin, back at your desk by 1.30pm."
+   }
   },
   {
    "title": "Toddler Rhyme Time",
@@ -75902,7 +75971,13 @@
    "desc": "Songs, rhymes and stories for little ones and their grown-ups. Just turn up.",
    "real": null,
    "provider": "",
-   "order": 13
+   "order": 13,
+   "page": true,
+   "card": {
+    "order": 19,
+    "text": "Songs, rhymes and stories for little ones. Just turn up.",
+    "provider": "Stanmore Library"
+   }
   },
   {
    "title": "Conversational Spanish",
@@ -75920,7 +75995,13 @@
    "desc": "Relaxed evening course for improvers. Join at any point this term.",
    "real": null,
    "provider": "",
-   "order": 14
+   "order": 14,
+   "page": true,
+   "card": {
+    "order": 22,
+    "text": "A relaxed evening class for improvers. Join any week.",
+    "provider": "North Harrow Community Library"
+   }
   },
   {
    "title": "Street Dance for Teens",
@@ -75938,7 +76019,13 @@
    "desc": "Hip hop and commercial routines. No experience needed.",
    "real": null,
    "provider": "",
-   "order": 15
+   "order": 15,
+   "page": true,
+   "card": {
+    "order": 17,
+    "text": "Hip hop and commercial routines. No experience needed.",
+    "provider": "Rayners Lane Youth Hall"
+   }
   },
   {
    "title": "Evening Yoga Flow",
@@ -75956,7 +76043,12 @@
    "desc": "Unwind after work with an hour of vinyasa yoga. Mats provided.",
    "real": null,
    "provider": "Wealdstone Fitness Studio",
-   "order": 16
+   "order": 16,
+   "page": true,
+   "card": {
+    "order": 13,
+    "text": "An hour of vinyasa yoga to end the week. Mats provided."
+   }
   },
   {
    "title": "Weekend Bootcamp",
@@ -75974,7 +76066,12 @@
    "desc": "Outdoor-style circuits indoors, for every fitness level. First session free.",
    "real": null,
    "provider": "Wealdstone Fitness Studio",
-   "order": 17
+   "order": 17,
+   "page": true,
+   "card": {
+    "order": 12,
+    "text": "Circuits for every fitness level. First session free."
+   }
   },
   {
    "title": "Junior Ballet",
@@ -75992,7 +76089,13 @@
    "desc": "Playful ballet for little dancers, working towards a summer show.",
    "real": null,
    "provider": "",
-   "order": 18
+   "order": 18,
+   "page": true,
+   "card": {
+    "order": 16,
+    "text": "Playful ballet for little dancers, working towards a summer show.",
+    "provider": "Pinner Village Hall"
+   }
   },
   {
    "title": "Saturday Kids&rsquo; Coding Club",
@@ -76010,7 +76113,12 @@
    "desc": "Build games and animations in Scratch and Python. Laptops provided.",
    "real": null,
    "provider": "Bright Sparks Coding",
-   "order": 19
+   "order": 19,
+   "page": true,
+   "card": {
+    "order": 14,
+    "text": "Games and animations in Scratch and Python. Laptops provided."
+   }
   },
   {
    "title": "Story Time",
@@ -76028,7 +76136,69 @@
    "desc": "Picture books, songs and a craft. Free, with a babyccino for the grown-ups.",
    "real": null,
    "provider": "Hatch End Bookshop & Café",
-   "order": 20
+   "order": 20,
+   "page": true,
+   "card": {
+    "order": 15,
+    "text": "Picture books, songs and a craft, with a babyccino for grown-ups.",
+    "provider": "Hatch End Bookshop &amp; Caf&eacute;"
+   }
+  },
+  {
+   "title": "Kodak FC Youth Football",
+   "slug": "kodak-fc-youth-football",
+   "day": null,
+   "time": "",
+   "sort": 0,
+   "venue": "",
+   "area": "Harrow Weald",
+   "price": "Ask the club",
+   "age": "Youth teams",
+   "icon": "family",
+   "featured": true,
+   "type": "Children&rsquo;s activities",
+   "desc": "",
+   "real": {
+    "img": "/assets/img/business/kodak-fc-badge.jpg",
+    "alt": "Kodak FC badge",
+    "fit": "logo"
+   },
+   "provider": "Kodak FC",
+   "order": 21,
+   "page": false,
+   "card": {
+    "order": 10,
+    "text": "Youth teams in the Harrow Youth Football League, with FA-qualified coaches. Call the club to find the right age group.",
+    "when": "Training and matches, times vary by age group"
+   }
+  },
+  {
+   "title": "Kodak FC Adult Football",
+   "slug": "kodak-fc-adult-football",
+   "day": null,
+   "time": "",
+   "sort": 0,
+   "venue": "",
+   "area": "Harrow Weald",
+   "price": "Ask the club",
+   "age": "Adults",
+   "icon": "people",
+   "featured": true,
+   "type": "Fitness",
+   "desc": "",
+   "real": {
+    "img": "/assets/img/business/kodak-fc-badge.jpg",
+    "alt": "Kodak FC badge",
+    "fit": "logo"
+   },
+   "provider": "Kodak FC",
+   "order": 22,
+   "page": false,
+   "card": {
+    "order": 11,
+    "text": "Senior teams in the Middlesex County Football League. New players welcome, including those coming back to football.",
+    "when": "Training and Saturday matches, times vary by team"
+   }
   }
  ]
 }

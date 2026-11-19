@@ -175,30 +175,47 @@ function hub_event_get( $id_or_slug, $mode = HUB_WEB ) {
 }
 
 /**
- * Weekly classes, in the classes order.
+ * Weekly classes, in the Classes and activities page order (including the entries listed there only).
  *
  * @param array $params { type, area (slugs), day ('mon'...'sun'), age (age group slug) }
- * @return array|WP_REST_Response { items: class[], total, types: [ { slug, name, count } ] }
+ * @return array|WP_REST_Response {
+ *     items: class[], total,
+ *     all_total: int  every class (no filters)
+ *     weekly_total: int  classes with a fixed weekly time and their own page (no filters)
+ *     types: [ { slug, name, count } ]  every class type, in the page order, with how many classes (no filters)
+ *     filters: { type, area, day, age }
+ * }
  */
 function hub_classes_list( array $params = array(), $mode = HUB_WEB ) {
-	$type  = hub_param_slug( $params, 'type' );
-	$area  = hub_param_slug( $params, 'area' );
-	$day   = hub_param_slug( $params, 'day' );
-	$age   = hub_param_slug( $params, 'age' );
-	$all   = _hub_classes_all();
-	$items = array_values( array_filter( $all, function ( $c ) use ( $type, $area, $day, $age ) {
-		return ( '' === $type || $c['type']['slug'] === $type ) && ( '' === $area || $c['area']['slug'] === $area )
-			&& ( '' === $day || strtolower( substr( $c['day_name'], 0, 3 ) ) === $day ) && ( '' === $age || in_array( $age, $c['age_groups'], true ) );
+	$f   = array(
+		'type' => hub_param_slug( $params, 'type' ),
+		'area' => hub_param_slug( $params, 'area' ),
+		'day'  => hub_param_slug( $params, 'day' ),
+		'age'  => hub_param_slug( $params, 'age' ),
+	);
+	$all = _hub_classes_all();
+	usort( $all, function ( $a, $b ) {
+		return $a['card']['order'] <=> $b['card']['order'];
+	} );
+	$items = array_values( array_filter( $all, function ( $c ) use ( $f ) {
+		return ( '' === $f['type'] || $c['type']['slug'] === $f['type'] ) && ( '' === $f['area'] || $c['area']['slug'] === $f['area'] )
+			&& ( '' === $f['day'] || $c['card']['day'] === $f['day'] ) && ( '' === $f['age'] || in_array( $f['age'], $c['age_groups'], true ) );
 	} ) );
 	$types = array();
-	foreach ( $all as $c ) {
-		$k = $c['type']['slug'];
-		if ( ! isset( $types[ $k ] ) ) {
-			$types[ $k ] = $c['type'] + array( 'count' => 0 );
-		}
-		$types[ $k ]['count']++;
+	foreach ( HUB_EVENTS_CLASS_TYPES as $name => $slug ) {
+		$types[ $slug ] = array( 'slug' => $slug, 'name' => $name, 'count' => 0 );
 	}
-	return hub_respond( array( 'items' => $items, 'total' => count( $items ), 'types' => array_values( $types ) ), $mode );
+	foreach ( $all as $c ) {
+		$types[ $c['type']['slug'] ]['count']++;
+	}
+	return hub_respond( array(
+		'items'        => $items,
+		'total'        => count( $items ),
+		'all_total'    => count( $all ),
+		'weekly_total' => count( wp_list_filter( $all, array( 'page' => true ) ) ),
+		'types'        => array_values( $types ),
+		'filters'      => $f,
+	), $mode );
 }
 
 /**
@@ -211,7 +228,7 @@ function hub_class_get( $id_or_slug, $mode = HUB_WEB ) {
 	if ( ! $post ) {
 		return hub_respond_error( 'hub_class_not_found', 'No class with that ID or slug.', $mode );
 	}
-	$class = _hub_class_build( $post );
+	$class = current( wp_list_filter( _hub_classes_all(), array( 'id' => $post->ID ) ) );   // with its business's page
 	// Who runs it: the business picked in wp-admin, otherwise the business with the provider's (or venue's) name
 	if ( $class['business_id'] ) {
 		$found    = hub_businesses_summaries( array( $class['business_id'] ) )['items'];   // businesses module
@@ -240,7 +257,7 @@ function hub_events_for_business( $business_id, array $names, $mode = HUB_WEB ) 
 			return $e['organiser'] && in_array( $e['organiser'], $names, true ) && $e['date'] >= $today;
 		} ) ),
 		'classes' => array_values( array_filter( _hub_classes_all(), function ( $c ) use ( $business_id ) {
-			return (int) $c['business_id'] === (int) $business_id && $business_id;
+			return $c['page'] && $business_id && (int) $c['business_id'] === (int) $business_id;
 		} ) ),
 	), $mode );
 }
@@ -259,11 +276,22 @@ function _hub_events_all() {
 	return $all;
 }
 
-/** Every weekly class in the class shape, in the classes order. Cached for the request. */
+/**
+ * Every weekly class in the class shape, in the classes order, with its business's page (provider_url; also the url
+ * of classes with no page of their own). Cached for the request.
+ */
 function _hub_classes_all() {
 	static $all = null;
 	if ( null === $all ) {
-		$all = array_map( '_hub_class_build', hub_events_db_classes() );
+		$all  = array_map( '_hub_class_build', hub_events_db_classes() );
+		$biz  = hub_businesses_summaries( array_filter( array_column( $all, 'business_id' ) ) )['items'];   // businesses module
+		$all  = array_map( function ( $c ) use ( $biz ) {
+			$c['provider_url'] = $c['business_id'] && isset( $biz[ $c['business_id'] ] ) ? $biz[ $c['business_id'] ]['url'] : null;
+			if ( ! $c['page'] ) {
+				$c['url'] = $c['provider_url'];
+			}
+			return $c;
+		}, $all );
 	}
 	return $all;
 }
@@ -291,7 +319,7 @@ function _hub_events_on( DateTimeImmutable $day ) {
 
 /** Upcoming one-off events per category, plus the weekly classes, in the filter order. */
 function _hub_events_category_counts( DateTimeImmutable $today ) {
-	$cats = array( 'classes' => HUB_EVENTS_CLASSES_CATEGORY + array( 'count' => count( _hub_classes_all() ) ) );
+	$cats = array( 'classes' => HUB_EVENTS_CLASSES_CATEGORY + array( 'count' => count( wp_list_filter( _hub_classes_all(), array( 'page' => true ) ) ) ) );
 	foreach ( _hub_events_all() as $e ) {
 		if ( $e['date'] < $today->format( 'Y-m-d' ) || '' === $e['category']['slug'] ) {
 			continue;

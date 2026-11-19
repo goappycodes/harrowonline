@@ -48,7 +48,11 @@ function hub_events_rule_is_free( $price ) {
 	return 0 === strpos( strtolower( trim( (string) $price ) ), 'free' );
 }
 
-/** The age groups an age line suits ("Ages 5 to 7" -> [ "5-11" ]; "All ages" -> all of them). */
+/**
+ * The age groups an age line suits, for the Age filters: "Ages 5 to 7" -> [ "5-11" ]; "Ages 8+" -> children, teens and
+ * adults; "Adults" -> adults and over-60s; "Ages 60+" -> over-60s and adults; "Girls" (no ages) -> under-18s;
+ * "All ages" or nothing -> all of them.
+ */
 function hub_events_rule_age_groups( $age ) {
 	$all = array_column( HUB_EVENTS_AGE_GROUPS, 0 );
 	$a   = strtolower( (string) $age );
@@ -61,12 +65,15 @@ function hub_events_rule_age_groups( $age ) {
 	if ( false !== strpos( $a, 'adult' ) && ! preg_match( '/\d/', $a ) ) {
 		return array( 'adults', '60-plus' );
 	}
+	if ( ! preg_match( '/\d/', $a ) && preg_match( '/\b(girls?|boys?|youth|children|kids)\b/', $a ) ) {
+		return array( 'under-5', '5-11', '12-17' );   // a children's session whose exact ages aren't published
+	}
 	preg_match_all( '/\d+/', $a, $m );
 	$nums = array_map( 'intval', $m[0] );
 	if ( false !== strpos( $a, 'under' ) && $nums ) {
 		list( $lo, $hi ) = array( 0, $nums[0] - 1 );
 	} elseif ( false !== strpos( $a, '+' ) && $nums ) {
-		list( $lo, $hi ) = array( $nums[0], 120 );
+		list( $lo, $hi ) = array( $nums[0], $nums[0] >= 60 ? 120 : 59 );   // "Ages 8+" is for children and adults, not aimed at over-60s
 	} elseif ( count( $nums ) >= 2 ) {
 		list( $lo, $hi ) = array( $nums[0], $nums[1] );
 	} elseif ( $nums ) {
@@ -96,6 +103,21 @@ function hub_events_rule_start_time( $time ) {
 		return null;
 	}
 	return sprintf( '%02d:%02d', ( (int) $m[1] ) % 12 + ( 'pm' === $m[3] ? 12 : 0 ), isset( $m[2] ) && '' !== $m[2] ? (int) $m[2] : 0 );
+}
+
+/** Day filter value: 0 -> "mon"; '' for a class with no fixed day. */
+function hub_events_rule_day_slug( $weekday ) {
+	return null === $weekday ? '' : strtolower( substr( HUB_EVENTS_DAY_NAMES[ $weekday ], 0, 3 ) );
+}
+
+/** Day filter value from a "when" line that names a day ("Training and Saturday matches" -> "sat"), or ''. */
+function hub_events_rule_day_slug_in( $text ) {
+	foreach ( HUB_EVENTS_DAY_NAMES as $i => $name ) {
+		if ( false !== stripos( (string) $text, $name ) ) {
+			return hub_events_rule_day_slug( $i );
+		}
+	}
+	return '';
 }
 
 /** Weekday index, Monday = 0. */
@@ -143,7 +165,7 @@ function hub_events_rule_more_events( array $event, array $events, DateTimeImmut
 /** Classes to suggest on a class page: same provider first, then same type, then same area; then by day and order. */
 function hub_events_rule_more_classes( array $class, array $classes, $limit = HUB_EVENTS_MORE ) {
 	$others = array_values( array_filter( $classes, function ( $c ) use ( $class ) {
-		return $c['title'] !== $class['title'];
+		return $c['page'] && $c['title'] !== $class['title'];
 	} ) );
 	usort( $others, function ( $a, $b ) use ( $class ) {
 		$k = function ( $x ) use ( $class ) {

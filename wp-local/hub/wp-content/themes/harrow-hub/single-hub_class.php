@@ -14,6 +14,11 @@ if ( ! $hub_data ) {
 	return;
 }
 $hub_c = $hub_data['class'];
+if ( ! $hub_c['page'] ) {
+	// Listed on the classes page only (a club's teams with no fixed weekly time): its business's page has the details
+	wp_safe_redirect( $hub_c['url'] ? $hub_c['url'] : hub_url( 'events/classes/' ), 301 );
+	exit;
+}
 
 // Page title, description and robots
 $hub_meta = array(

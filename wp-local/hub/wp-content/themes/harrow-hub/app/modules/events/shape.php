@@ -10,11 +10,15 @@
  *   featured, sample, organiser (business name | null), past
  *
  * class (weekly):
- *   kind 'class', id, slug, url, title, description, category (always "Classes and activities"),
+ *   kind 'class', id, slug, url, page, title, description, category (always "Classes and activities"),
  *   type { slug, name }, weekday (0 = Monday), day_name, time, start_time ('HH:MM' | null), sort, order,
  *   venue, area { slug, name }, price, free, age, age_groups, icon, featured, sample,
  *   image { url, alt, fit ('photo' | 'logo') } | null, address { street, postcode } | null, note,
- *   provider (name), business_id (int | null)
+ *   provider (name), business_id (int | null), provider_url (its business's page | null; set by the controller),
+ *   card { order, text, when, price, age, provider, day }   (how it shows on the Classes and activities page; day is the
+ *   Day filter value: its weekday, or a day its "when" line names)
+ *   A class with "page" false (a club's teams with no fixed weekly time) has no page, weekday or day_name (null):
+ *   it is listed on the Classes and activities page only, and its url is its business's page (set by the controller).
  *
  * A class on a given day (What's On list, calendar) is the class plus "date" (Y-m-d).
  */
@@ -64,27 +68,32 @@ function hub_class_shape( WP_Post $post, array $r, array $areas, $business_id ) 
 	$type = hub_plain( isset( $r['type'] ) ? $r['type'] : '' );
 	$area = hub_plain( isset( $r['area'] ) ? $r['area'] : '' );
 	$age  = hub_plain( isset( $r['age'] ) ? $r['age'] : '' );
-	$real = ! empty( $r['real'] ) && is_array( $r['real'] ) ? $r['real'] : null;
-	$day  = (int) $r['day'];
+	$real  = ! empty( $r['real'] ) && is_array( $r['real'] ) ? $r['real'] : null;
+	$page  = ! isset( $r['page'] ) || $r['page'];
+	$day   = $page && isset( $r['day'] ) && '' !== $r['day'] && null !== $r['day'] ? (int) $r['day'] : null;
+	$time  = hub_plain( isset( $r['time'] ) ? $r['time'] : '' );
+	$price = hub_plain( isset( $r['price'] ) ? $r['price'] : '' );
+	$card  = isset( $r['card'] ) && is_array( $r['card'] ) ? $r['card'] : array();
 	return array(
 		'kind'        => 'class',
 		'id'          => $post->ID,
 		'slug'        => $post->post_name,
-		'url'         => hub_url( 'events/' . $post->post_name . '/' ),
+		'url'         => $page ? hub_url( 'events/' . $post->post_name . '/' ) : null,
+		'page'        => $page,
 		'title'       => hub_plain( $post->post_title ),
 		'description' => hub_plain( $post->post_content ),
 		'category'    => HUB_EVENTS_CLASSES_CATEGORY,
 		'type'        => array( 'slug' => hub_events_rule_class_type_slug( $type ), 'name' => $type ),
 		'weekday'     => $day,
-		'day_name'    => HUB_EVENTS_DAY_NAMES[ $day ],
-		'time'        => hub_plain( isset( $r['time'] ) ? $r['time'] : '' ),
-		'start_time'  => hub_events_rule_start_time( hub_plain( isset( $r['time'] ) ? $r['time'] : '' ) ),
+		'day_name'    => null === $day ? null : HUB_EVENTS_DAY_NAMES[ $day ],
+		'time'        => $time,
+		'start_time'  => hub_events_rule_start_time( $time ),
 		'sort'        => (float) ( isset( $r['sort'] ) ? $r['sort'] : 0 ),
 		'order'       => (int) ( isset( $r['order'] ) ? $r['order'] : 0 ),
 		'venue'       => hub_plain( isset( $r['venue'] ) ? $r['venue'] : '' ),
 		'area'        => array( 'slug' => isset( $areas['by_name'][ $area ] ) ? $areas['by_name'][ $area ] : '', 'name' => $area ),
-		'price'       => hub_plain( isset( $r['price'] ) ? $r['price'] : '' ),
-		'free'        => hub_events_rule_is_free( hub_plain( isset( $r['price'] ) ? $r['price'] : '' ) ),
+		'price'       => $price,
+		'free'        => hub_events_rule_is_free( $price ),
 		'age'         => $age,
 		'age_groups'  => hub_events_rule_age_groups( $age ),
 		'icon'        => ! empty( $r['icon'] ) ? $r['icon'] : 'repeat',
@@ -99,5 +108,14 @@ function hub_class_shape( WP_Post $post, array $r, array $areas, $business_id ) 
 		'note'        => $real ? hub_plain( isset( $real['note'] ) ? $real['note'] : 'Details from the organiser, checked by Harrow Online.' ) : 'Made-up sample for the preview.',
 		'provider'    => hub_plain( isset( $r['provider'] ) ? $r['provider'] : '' ),
 		'business_id' => $business_id ? (int) $business_id : null,
+		'card'        => array(
+			'order'    => isset( $card['order'] ) ? (int) $card['order'] : 1000 + (int) ( isset( $r['order'] ) ? $r['order'] : 0 ),
+			'text'     => hub_plain( isset( $card['text'] ) ? $card['text'] : '' ),
+			'when'     => isset( $card['when'] ) ? hub_plain( $card['when'] ) : ( null === $day ? $time : 'Every ' . HUB_EVENTS_DAY_NAMES[ $day ] . ', ' . $time ),
+			'price'    => isset( $card['price'] ) ? hub_plain( $card['price'] ) : $price,
+			'age'      => isset( $card['age'] ) ? hub_plain( $card['age'] ) : $age,
+			'provider' => hub_plain( isset( $card['provider'] ) ? $card['provider'] : ( isset( $r['provider'] ) ? $r['provider'] : '' ) ),
+			'day'      => null !== $day ? hub_events_rule_day_slug( $day ) : hub_events_rule_day_slug_in( isset( $card['when'] ) ? $card['when'] : '' ),
+		),
 	);
 }

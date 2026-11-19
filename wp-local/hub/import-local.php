@@ -119,7 +119,7 @@ foreach ( $data['classes'] as $c ) {
 	hub_import_post( 'hub_class', $c['slug'], $c['title'], $c['desc'], array(
 		'_hub'       => $c,
 		'_hub_order' => (int) $c['order'],
-		'_hub_day'   => (int) $c['day'],
+		'_hub_day'   => null === $c['day'] ? '' : (int) $c['day'],   // none: on the classes page only (Kodak FC's teams)
 	) );
 }
 

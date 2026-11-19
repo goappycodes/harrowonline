@@ -44,6 +44,10 @@ local only). In the Claude desktop app, start the **wp-local** preview instead.
   `data/wp-hub-data.json` from the prototype's data, then `php wp-local/hub/import-local.php` replaces all Hub
   content in WordPress with it (about 3 minutes). Post types: `hub_business`, `hub_offer`, `hub_event`, `hub_class`;
   taxonomies: `hub_category`, `hub_area`; each post's full record is in its `_hub` meta.
+- **Classes and activities page cards** (short text, place on the page, wording) come from `tools/classes_data.py`
+  (each class's `card` in the export; Kodak FC's teams are listed there only, with no page of their own). After
+  changing it: `python tools/export_wp_data.py`, then `php wp-local/hub/update-classes-local.php` (updates the
+  classes without a full import), then commit `hub.sqlite`.
 - **The preview's date:** offers and events are worked out from the option `hub_today` (2026-11-11, the sample
   data's "today"). Delete the option to use the real date.
 - **Check against the prototype:** with the server running, `python tools/compare_theme.py` (hand-written pages) and
