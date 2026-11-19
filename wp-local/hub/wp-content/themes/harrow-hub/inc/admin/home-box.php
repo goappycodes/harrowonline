@@ -140,27 +140,7 @@ function hub_admin_home_box( WP_Post $post ) {
 	$values = hub_home_fields();
 	wp_nonce_field( 'hub_home_save', 'hub_home_nonce' );
 	echo '<p class="hub-f__help" style="margin:4px 12px 0">The front page’s text, links and sections. Empty a box to go back to the default wording. The events, offers, businesses, categories and areas come from the listings.</p>';
-	echo '<div class="hub-box" data-hub-box><nav class="hub-tabs" role="tablist">';
-	$first = true;
-	foreach ( hub_admin_home_fields() as $slug => $tab ) {
-		echo '<button type="button" role="tab" class="hub-tabs__tab' . ( $first ? ' is-active' : '' ) . '" data-hub-tab="' . esc_attr( $slug ) . '">' . esc_html( $tab[0] ) . '</button>';
-		$first = false;
-	}
-	echo '</nav>';
-	$first = true;
-	foreach ( hub_admin_home_fields() as $slug => $tab ) {
-		echo '<div class="hub-panel" data-hub-panel="' . esc_attr( $slug ) . '"' . ( $first ? '' : ' hidden' ) . '><div class="hub-grid">';
-		foreach ( $tab[1] as $f ) {
-			$v = 'note' === $f['type'] ? '' : $values[ $f['key'] ];
-			if ( 'list' === $f['type'] && is_array( $v ) ) {
-				$v = array_map( function ( $row ) { return is_array( $row ) ? $row : array(); }, $v );
-			}
-			hub_admin_field( $f, $v, 'hub[' . $f['key'] . ']' );
-		}
-		echo '</div></div>';
-		$first = false;
-	}
-	echo '</div>';
+	hub_admin_tabs( hub_admin_home_fields(), $values );
 }
 
 add_action( 'save_post_page', function ( $post_id ) {
@@ -170,10 +150,7 @@ add_action( 'save_post_page', function ( $post_id ) {
 	if ( ( defined( 'DOING_AUTOSAVE' ) && DOING_AUTOSAVE ) || wp_is_post_revision( $post_id ) || ! current_user_can( 'edit_post', $post_id ) ) {
 		return;
 	}
-	$fields = array();
-	foreach ( hub_admin_home_fields() as $tab ) {
-		$fields = array_merge( $fields, $tab[1] );
-	}
+	$fields = hub_admin_tab_fields( hub_admin_home_fields() );
 	$sent  = isset( $_POST['hub'] ) && is_array( $_POST['hub'] ) ? $_POST['hub'] : array(); // phpcs:ignore -- cleaned field by field
 	$clean = hub_admin_clean_all( $fields, $sent );
 	$clean['home_cats_pick'] = array_slice( $clean['home_cats_pick'], 0, HUB_HOME_CATEGORIES );

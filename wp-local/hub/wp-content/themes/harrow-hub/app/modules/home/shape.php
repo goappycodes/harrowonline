@@ -32,7 +32,7 @@ function hub_home_shape( array $saved ) {
 					$r[ $col ] = isset( $row[ $col ] ) ? (string) $row[ $col ] : '';
 				}
 				if ( isset( $r['link'] ) ) {
-					$r['link'] = hub_home_rule_link( $r['link'] );
+					$r['link'] = hub_link( $r['link'] );
 				}
 				if ( isset( $r['checked'] ) ) {
 					$r['checked'] = '1' === $r['checked'];
@@ -47,7 +47,7 @@ function hub_home_shape( array $saved ) {
 			$out[ $k ] = array_values( array_filter( array_map( 'strval', is_array( $v ) ? $v : array() ) ) );
 		} else {
 			$text      = '' !== (string) $v ? (string) $v : ( isset( $defaults[ $k ] ) ? $defaults[ $k ] : '' );
-			$out[ $k ] = '_link' === substr( $k, -5 ) ? hub_home_rule_link( $text ) : $text;
+			$out[ $k ] = '_link' === substr( $k, -5 ) ? hub_link( $text ) : $text;
 		}
 	}
 	return $out;

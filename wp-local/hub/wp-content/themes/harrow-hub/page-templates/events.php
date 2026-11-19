@@ -3,7 +3,8 @@
  * What's On in Harrow: featured events, then everything on each of the next 7 days.
  * URL: /events/   Filters (hub.js 6b): ?when=today|weekend|7days|date&date=, ?area=, ?cat[]=, ?age[]=, ?free=1, ?classes=0
  *
- * Data: hub_events_whats_on() (app/modules/events), hub_areas_list(). Markup: parts/events/row.php.
+ * Data: hub_events_whats_on() (app/modules/events), hub_areas_list(). The page's text: hub_pages_text( 'events' )
+ * (app/modules/pages; wp-admin: the "Page text" box on Pages > What's On). Markup: parts/events/row.php.
  * Edited by hand (tools/build_theme.py leaves it alone).
  */
 defined( 'ABSPATH' ) || exit;
@@ -14,23 +15,26 @@ $hub_w0    = date_create_immutable( $hub_wo['weekend']['from'] );
 $hub_w1    = date_create_immutable( $hub_wo['weekend']['to'] );
 $hub_from  = date_create_immutable( $hub_wo['range']['from'] );
 $hub_span  = hub_events_rule_long_date( $hub_from ) . ' to ' . hub_events_rule_long_date( date_create_immutable( $hub_wo['range']['to'] ) );
+$hub_t     = hub_pages_text( 'events' );
+$hub_e     = function ( $k ) use ( $hub_t ) { return esc_html( $hub_t[ $k ] ); };   // a text field, escaped
+$hub_u     = function ( $k ) use ( $hub_t ) { return esc_url( $hub_t[ $k ] ); };    // a link field, escaped
 
 hub_set_page( array(
 	'body' => 'page-events',
-	'description' => 'Events, things to do and classes across Harrow this week and weekend: family days out, live music, markets and community events.',
+	'description' => $hub_t['events_seo_description'],
 	'hubnav' => 'events',
 	'nav' => 'events',
-	'title' => 'What\'s On in Harrow: events this week and weekend',
+	'title' => $hub_t['events_seo_title'],
 ) );
 get_header();
 ?>
 <nav class="crumbs ho-container" aria-label="Breadcrumb">
-  <ol><li><a href="<?php echo esc_url( hub_url( '' ) ); ?>">Hub</a></li><li><span aria-current="page">What&rsquo;s On</span></li></ol>
+  <ol><li><a href="<?php echo esc_url( hub_url( '' ) ); ?>">Hub</a></li><li><span aria-current="page"><?php echo $hub_e( 'events_crumb' ); ?></span></li></ol>
 </nav>
 
 <header class="page-head ho-container">
-  <h1 class="page-head__title">What&rsquo;s On in Harrow</h1>
-  <p class="page-head__lead">Events, days out and regular classes across the borough, checked by the Harrow Online team. Running something? <a href="<?php echo esc_url( hub_url( 'register/' ) ); ?>">Add your event</a>. It&rsquo;s free for schools, clubs and charities, and included in the Featured and Local Partner plans for businesses.</p>
+  <h1 class="page-head__title"><?php echo $hub_e( 'events_title' ); ?></h1>
+  <p class="page-head__lead"><?php echo $hub_e( 'events_lead' ); ?> <a href="<?php echo $hub_u( 'events_lead_link' ); ?>"><?php echo $hub_e( 'events_lead_link_label' ); ?></a><?php echo $hub_e( 'events_lead_after' ); ?></p>
 </header>
 
 <div class="ho-container">
@@ -108,20 +112,23 @@ get_header();
         </div>
       </div>
 
+<?php if ( ! $hub_t['events_chips_hide'] ) : ?>
       <div class="chips chips--scroll mb-5" aria-label="Quick dates">
-        <a class="chip" href="<?php echo esc_url( hub_url( 'events/?when=today' ) ); ?>" data-when="today">Today</a>
-        <a class="chip" href="<?php echo esc_url( hub_url( 'events/?when=weekend' ) ); ?>" data-when="weekend">This weekend</a>
-        <a class="chip" href="<?php echo esc_url( hub_url( 'events/?when=7days' ) ); ?>" data-when="7days">Next 7 days</a>
-        <a class="chip" href="<?php echo esc_url( hub_url( 'events/classes/' ) ); ?>"><?php echo hub_icon( 'repeat', 'ho-icon ho-icon--sm' ); ?>Classes and activities</a>
-        <a class="chip" href="<?php echo esc_url( hub_url( 'events/?cat=family' ) ); ?>">Family</a>
-        <a class="chip" href="<?php echo esc_url( hub_url( 'events/?free=1' ) ); ?>">Free</a>
+<?php
+	foreach ( $hub_t['events_chips'] as $hub_chip ) {
+		$hub_when = hub_pages_rule_when( $hub_chip['link'] );   // a date link is shown as selected by its date
+		echo '        <a class="chip" href="' . esc_url( $hub_chip['link'] ) . '"' . ( '' !== $hub_when ? ' data-when="' . esc_attr( $hub_when ) . '"' : '' ) . '>'
+			. ( '' !== $hub_chip['icon'] ? hub_icon( sanitize_key( $hub_chip['icon'] ), 'ho-icon ho-icon--sm' ) : '' ) . esc_html( $hub_chip['label'] ) . "</a>\n";
+	}
+	?>
       </div>
+<?php endif; ?>
 
-      <div class="notice mb-5" data-events-empty hidden><?php echo hub_icon( 'calendar' ); ?><p>Nothing listed for that date yet. <a href="<?php echo esc_url( hub_url( 'events/month/' ) ); ?>">See the month calendar</a>.</p></div>
+      <div class="notice mb-5" data-events-empty hidden><?php echo hub_icon( 'calendar' ); ?><p><?php echo $hub_e( 'events_empty_text' ); ?> <a href="<?php echo $hub_u( 'events_empty_link' ); ?>"><?php echo $hub_e( 'events_empty_link_label' ); ?></a>.</p></div>
 
 <?php if ( $hub_wo['featured'] ) : ?>
   <section class="day-group day-group--featured" data-featured-group aria-labelledby="day-featured">
-    <h2 class="day-group__title" id="day-featured"><?php echo hub_icon( 'star' ); ?>Featured events <small data-day-count><?php echo count( $hub_wo['featured'] ); ?> coming up</small></h2>
+    <h2 class="day-group__title" id="day-featured"><?php echo hub_icon( 'star' ); ?><?php echo $hub_e( 'events_featured_title' ); ?> <small data-day-count><?php echo count( $hub_wo['featured'] ); ?> coming up</small></h2>
     <div>
 <?php
 	foreach ( $hub_wo['featured'] as $hub_x ) {
@@ -156,42 +163,54 @@ foreach ( $hub_wo['days'] as $hub_day ) :
 
       <div class="split mt-6">
         <p class="muted small mb-0" data-events-range>Showing <?php echo esc_html( $hub_span ); ?>.</p>
-        <a class="ho-btn ho-btn--outline" href="<?php echo esc_url( hub_url( 'events/month/' ) ); ?>">See the whole month <?php echo hub_icon( 'arrow' ); ?></a>
+        <a class="ho-btn ho-btn--outline" href="<?php echo $hub_u( 'events_month_link' ); ?>"><?php echo $hub_e( 'events_month_button' ); ?> <?php echo hub_icon( 'arrow' ); ?></a>
       </div>
 
+<?php if ( ! $hub_t['events_classes_hide'] || ! $hub_t['events_nl_hide'] ) : ?>
       <div class="grid grid-2 mt-6">
+<?php if ( ! $hub_t['events_classes_hide'] ) : ?>
         <div class="panel panel--soft">
-          <h2 class="panel__title"><?php echo hub_icon( 'repeat' ); ?> Looking for a regular class?</h2>
-          <p class="small">Fitness, dance, kids&rsquo; clubs and workshops that run every week, all in one place.</p>
-          <a class="link-arrow" href="<?php echo esc_url( hub_url( 'events/classes/' ) ); ?>">Browse classes and activities <?php echo hub_icon( 'arrow' ); ?></a>
+          <h2 class="panel__title"><?php echo hub_icon( 'repeat' ); ?> <?php echo $hub_e( 'events_classes_title' ); ?></h2>
+          <p class="small"><?php echo $hub_e( 'events_classes_text' ); ?></p>
+          <a class="link-arrow" href="<?php echo $hub_u( 'events_classes_link' ); ?>"><?php echo $hub_e( 'events_classes_link_label' ); ?> <?php echo hub_icon( 'arrow' ); ?></a>
         </div>
+<?php endif; ?>
+<?php if ( ! $hub_t['events_nl_hide'] ) : ?>
         <div class="panel panel--soft">
-          <h2 class="panel__title"><?php echo hub_icon( 'mail' ); ?> The Weekend, every Thursday</h2>
-          <p class="small">Our Thursday newsletter picks the best things to do in Harrow that weekend.</p>
-          <form class="inline-signup" action="https://harrowonline.org/wp-json/ho/v1/subscribe" method="post" data-nl-form data-nl-done="Thanks! Check your inbox to confirm. The Weekend arrives every Thursday.">
-            <input type="hidden" name="signup_source" value="events-weekend">
-            <input type="hidden" name="editions[]" value="weekend">
+          <h2 class="panel__title"><?php echo hub_icon( 'mail' ); ?> <?php echo $hub_e( 'events_nl_title' ); ?></h2>
+          <p class="small"><?php echo $hub_e( 'events_nl_text' ); ?></p>
+          <form class="inline-signup" action="https://harrowonline.org/wp-json/ho/v1/subscribe" method="post" data-nl-form data-nl-done="<?php echo esc_attr( $hub_t['events_nl_done'] ); ?>">
+            <input type="hidden" name="signup_source" value="events-<?php echo esc_attr( $hub_t['events_nl_edition'] ); ?>">
+            <input type="hidden" name="editions[]" value="<?php echo esc_attr( $hub_t['events_nl_edition'] ); ?>">
             <div class="inline-signup__row">
               <label class="ho-sr" for="wk-email">Email address</label>
-              <input class="input" id="wk-email" type="email" name="email" placeholder="Your email" autocomplete="email" required>
-              <button class="ho-btn ho-btn--primary ho-btn--sm" type="submit">Get The Weekend</button>
+              <input class="input" id="wk-email" type="email" name="email" placeholder="<?php echo esc_attr( $hub_t['events_nl_placeholder'] ); ?>" autocomplete="email" required>
+              <button class="ho-btn ho-btn--primary ho-btn--sm" type="submit"><?php echo $hub_e( 'events_nl_button' ); ?></button>
             </div>
-            <p class="help mt-2 mb-0" role="status" aria-live="polite">Free. The Weekend only: it won&rsquo;t sign you up to Daily News or Harrow Business.</p>
+            <p class="help mt-2 mb-0" role="status" aria-live="polite"><?php echo $hub_e( 'events_nl_note' ); ?></p>
           </form>
         </div>
+<?php endif; ?>
       </div>
+<?php endif; ?>
     </div>
   </div>
 
+<?php if ( ! $hub_t['events_cta_hide'] ) : ?>
   <div class="cta-band mt-7">
     <div>
-      <h2>Running an event in Harrow?</h2>
-      <p>Businesses add events and classes on the Featured or Local Partner plan, or list a single event for &pound;15 with no plan. Schools, clubs, charities and community groups add them free with an organiser account. We check every listing before it goes live, usually within one working day.</p>
+      <h2><?php echo $hub_e( 'events_cta_title' ); ?></h2>
+      <p><?php echo $hub_e( 'events_cta_text' ); ?></p>
     </div>
     <div class="cta-band__actions">
-      <a class="ho-btn ho-btn--primary" href="<?php echo esc_url( hub_url( 'register/' ) ); ?>"><?php echo hub_icon( 'plus' ); ?>Add your event</a>
-      <a class="ho-btn ho-btn--outline" href="<?php echo esc_url( hub_url( 'pricing/' ) ); ?>">Business plans</a>
+<?php
+	foreach ( $hub_t['events_cta_buttons'] as $hub_i => $hub_b ) {   // the first button is the red one
+		echo '      <a class="ho-btn ' . ( 0 === $hub_i ? 'ho-btn--primary' : 'ho-btn--outline' ) . '" href="' . esc_url( $hub_b['link'] ) . '">'
+			. ( 0 === $hub_i ? hub_icon( 'plus' ) : '' ) . esc_html( $hub_b['label'] ) . "</a>\n";
+	}
+	?>
     </div>
   </div>
+<?php endif; ?>
 </div>
 <?php get_footer();

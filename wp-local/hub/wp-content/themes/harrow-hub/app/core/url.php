@@ -13,3 +13,20 @@ function hub_media_url( $path ) {
 	}
 	return hub_asset( preg_replace( '#^/assets/#', '', $path ) );
 }
+
+/**
+ * A link as typed in a wp-admin field -> full URL. "events/classes/" or "/hub/events/" is a Hub page (a query such as
+ * "events/?when=today" is kept); a full web address, "mailto:", "tel:" or "#…" is used as it is.
+ */
+function hub_link( $link ) {
+	$link = trim( (string) $link );
+	if ( '' === $link || preg_match( '#^(https?:|mailto:|tel:|\#)#', $link ) ) {
+		return $link;
+	}
+	$path = ltrim( $link, '/' );
+	$base = trim( (string) wp_parse_url( hub_url(), PHP_URL_PATH ), '/' );   // "hub"
+	if ( '' !== $base && 0 === strpos( $path, $base . '/' ) ) {
+		$path = substr( $path, strlen( $base ) + 1 );
+	}
+	return hub_url( $path );
+}

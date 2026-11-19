@@ -29,3 +29,4 @@ require_once get_template_directory() . '/inc/admin/link-box.php';
 require_once get_template_directory() . '/inc/admin/listing-boxes.php';
 require_once get_template_directory() . '/inc/admin/newsletter-page.php';
 require_once get_template_directory() . '/inc/admin/home-box.php';       // Pages > Home: the homepage's text, links and sections
+require_once get_template_directory() . '/inc/admin/page-text-box.php';  // Pages > What's On (and others): the page's text and panels

@@ -29,7 +29,7 @@ app/
 │   ├── debug.php          ?hub_debug=1, hub_debug_log()
 │   ├── respond.php        HUB_WEB / HUB_API, hub_respond(), hub_respond_error()
 │   ├── request.php        hub_param_slug/bool/int(): read $_GET and API params the same way
-│   └── url.php            hub_media_url()
+│   └── url.php            hub_media_url(), hub_link() (a link typed in wp-admin -> full URL)
 ├── setup/
 │   ├── rest-routes.php    namespace hub/v1, hub_route()
 │   ├── accounts.php       sign-in redirects for /account/ pages, sign-out, wp-admin Users: plan and business fields
@@ -47,8 +47,9 @@ app/
     ├── billing/           Stripe: checkout, customer portal, webhook (sets the business's plan)
     ├── claims/            claiming a business: proof (email, phone, document), staff approve or reject
     ├── submissions/       offers, events and classes from the account pages: who may, drafts, Pending Review
-    └── home/              the front page: its fields (Homepage box) with the weekend, offers, numbers, featured
-                           businesses, categories and areas from the other modules
+    ├── home/              the front page: its fields (Homepage box) with the weekend, offers, numbers, featured
+    │                      businesses, categories and areas from the other modules
+    └── pages/             page text of the listing pages (Page text box): What's On for now, more in HUB_PAGES
 parts/                     display only: each part gets arrays in $args and prints them
 ├── account/               settings (the settings page's forms)
 ├── businesses/            row, card, ticker, event-row, profile, profile-imported, directory

@@ -1,6 +1,6 @@
 <?php
 /**
- * Homepage rules: the default wording (used for any field left empty) and how links are written.
+ * Homepage rules: the default wording (used for any field left empty) and what the sections show.
  */
 defined( 'ABSPATH' ) || exit;
 
@@ -106,23 +106,6 @@ function hub_home_rule_categories( array $cats, array $picked, $max ) {
 		return array( $b['business_count'], $a['name'] ) <=> array( $a['business_count'], $b['name'] );
 	} );
 	return array_slice( $cats, 0, $max );
-}
-
-/**
- * A link as typed in wp-admin -> full URL. "events/classes/" or "/hub/events/" is a Hub page; a full web address,
- * "mailto:" or "#…" is used as it is.
- */
-function hub_home_rule_link( $link ) {
-	$link = trim( (string) $link );
-	if ( '' === $link || preg_match( '#^(https?:|mailto:|tel:|\#)#', $link ) ) {
-		return $link;
-	}
-	$path = ltrim( $link, '/' );
-	$base = trim( (string) wp_parse_url( hub_url(), PHP_URL_PATH ), '/' );   // "hub"
-	if ( '' !== $base && 0 === strpos( $path, $base . '/' ) ) {
-		$path = substr( $path, strlen( $base ) + 1 );
-	}
-	return hub_url( $path );
 }
 
 /** The width of an area's bar: its count against the biggest area, as a whole percentage. */
