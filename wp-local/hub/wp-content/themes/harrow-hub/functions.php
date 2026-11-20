@@ -17,6 +17,7 @@ require_once get_template_directory() . '/inc/assets.php';
 require_once get_template_directory() . '/inc/editor.php';
 require_once get_template_directory() . '/inc/content-types.php';
 require_once get_template_directory() . '/inc/no-comments.php';
+require_once get_template_directory() . '/inc/no-posts.php';      // the Hub doesn't use Posts: menu, admin bar and Quick Draft removed
 require_once get_template_directory() . '/inc/render-common.php';
 require_once get_template_directory() . '/inc/view.php';         // markup helpers for parts/ (work on the controllers' shapes)
 require_once get_template_directory() . '/inc/menus.php';        // Appearance > Menus: main menu, social links
@@ -35,3 +36,5 @@ require_once get_template_directory() . '/inc/admin/listing-boxes.php';
 require_once get_template_directory() . '/inc/admin/newsletter-page.php';
 require_once get_template_directory() . '/inc/admin/home-box.php';       // Pages > Home: the homepage's text, links and sections
 require_once get_template_directory() . '/inc/admin/page-text-box.php';  // Pages > What's On (and others): the page's text and panels
+require_once get_template_directory() . '/inc/admin/list-screens.php';   // wp-admin lists: Businesses, Offers, Events, Classes, Pages, Payments, Claims, Users, Categories, Areas
+require_once get_template_directory() . '/inc/admin/attention.php';      // wp-admin: Needs attention on the Dashboard, waiting counts on the menus

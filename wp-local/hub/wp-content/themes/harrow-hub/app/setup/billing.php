@@ -38,7 +38,7 @@ add_action( 'template_redirect', function () {
 /** Private log of payments and invoices (wp-admin > Payments). Written by the billing webhook only. */
 add_action( 'init', function () {
 	register_post_type( 'hub_payment', array(
-		'labels'          => array( 'name' => 'Payments', 'singular_name' => 'Payment', 'menu_name' => 'Payments', 'all_items' => 'All payments' ),
+		'labels'          => array( 'name' => 'Payments', 'singular_name' => 'Payment', 'menu_name' => 'Payments', 'all_items' => 'All payments', 'search_items' => 'Search payments', 'not_found' => 'No payments yet.' ),
 		'public'          => false,
 		'show_ui'         => true,
 		'show_in_rest'    => false,
@@ -50,15 +50,4 @@ add_action( 'init', function () {
 	) );
 } );
 
-add_filter( 'manage_hub_payment_posts_columns', function ( $cols ) {
-	return array( 'cb' => $cols['cb'], 'title' => 'Payment', 'hub_business' => 'Business', 'hub_user' => 'Account', 'date' => 'Date' );
-} );
-add_action( 'manage_hub_payment_posts_custom_column', function ( $col, $post_id ) {
-	if ( 'hub_business' === $col ) {
-		$b = (int) get_post_meta( $post_id, '_hub_business', true );
-		echo $b ? '<a href="' . esc_url( get_edit_post_link( $b ) ) . '">' . esc_html( get_the_title( $b ) ) . '</a>' : '&ndash;';
-	} elseif ( 'hub_user' === $col ) {
-		$u = get_userdata( (int) get_post_meta( $post_id, '_hub_user', true ) );
-		echo $u ? '<a href="' . esc_url( get_edit_user_link( $u->ID ) ) . '">' . esc_html( $u->user_email ) . '</a>' : '&ndash;';
-	}
-}, 10, 2 );
+// The Payments list's columns are in inc/admin/list-screens.php

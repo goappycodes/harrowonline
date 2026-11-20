@@ -105,6 +105,12 @@ function hub_billing_db_log( array $p ) {
 	return wp_insert_post( $args );
 }
 
+/** One logged payment: { stripe_id, kind, item, amount, status, user, business, ref }, or null. */
+function hub_billing_db_payment( $post_id ) {
+	$p = get_post_meta( (int) $post_id, '_hub_payment', true );
+	return is_array( $p ) ? $p : null;
+}
+
 /** True when this webhook event was already handled (Stripe can send an event more than once). */
 function hub_billing_db_seen_event( $event_id ) {
 	$key = 'hub_stripe_evt_' . md5( $event_id );

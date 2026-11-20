@@ -30,7 +30,7 @@ add_action( 'template_redirect', function () {
 
 add_action( 'init', function () {
 	register_post_type( 'hub_claim', array(
-		'labels'          => array( 'name' => 'Claims', 'singular_name' => 'Claim', 'menu_name' => 'Claims', 'all_items' => 'All claims', 'edit_item' => 'Review claim' ),
+		'labels'          => array( 'name' => 'Claims', 'singular_name' => 'Claim', 'menu_name' => 'Claims', 'all_items' => 'All claims', 'edit_item' => 'Review claim', 'search_items' => 'Search claims', 'not_found' => 'No claims yet.' ),
 		'public'          => false,
 		'show_ui'         => true,
 		'show_in_rest'    => false,
@@ -54,23 +54,7 @@ add_action( 'admin_menu', function () {
 	}
 }, 99 );
 
-add_filter( 'manage_hub_claim_posts_columns', function ( $cols ) {
-	return array( 'cb' => $cols['cb'], 'title' => 'Claim', 'hub_status' => 'Status', 'hub_method' => 'Proof', 'date' => 'Sent' );
-} );
-add_action( 'manage_hub_claim_posts_custom_column', function ( $col, $post_id ) {
-	$c = hub_claim_for_staff( $post_id );
-	if ( ! $c ) {
-		return;
-	}
-	if ( 'hub_status' === $col ) {
-		echo esc_html( $c['status_label'] );
-	} elseif ( 'hub_method' === $col ) {
-		echo esc_html( $c['method_label'] );
-		if ( 'email' === $c['method'] ) {
-			echo '<br><small>' . esc_html( $c['evidence']['email'] ) . ( $c['evidence']['email_verified'] ? ' &check; confirmed' : ' (link not clicked yet)' ) . '</small>';
-		}
-	}
-}, 10, 2 );
+// The Claims list's columns are in inc/admin/list-screens.php
 add_filter( 'post_row_actions', function ( $actions, $post ) {
 	if ( 'hub_claim' !== $post->post_type ) {
 		return $actions;
