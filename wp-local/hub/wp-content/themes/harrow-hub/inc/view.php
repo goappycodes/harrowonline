@@ -477,8 +477,20 @@ function hub_view_billing_invoices() {
 	echo '</tbody></table></div><p class="help mt-4">The last 12, from Stripe. Older invoices are in <a href="' . esc_url( hub_url( 'billing/portal/' ) ) . '">the Stripe portal</a>.</p></section>';
 }
 
-/** Account billing: what "Manage billing" (Stripe's portal) lets them do. */
+/** Account billing: "Manage billing" (Stripe's portal), once the account has paid Stripe; before that there's nothing to manage. */
+function hub_view_billing_manage_button() {
+	$b = hub_billing_status();
+	if ( $b && $b['can_manage'] ) {
+		echo '<a class="ho-btn ho-btn--outline" href="' . esc_url( hub_url( 'billing/portal/' ) ) . '"><svg class="ho-icon"><use href="#i-card"/></svg>Manage billing</a>';
+	}
+}
+
+/** Account billing: what "Manage billing" (Stripe's portal) lets them do (only when the button is there). */
 function hub_view_billing_portal_note() {
+	$b = hub_billing_status();
+	if ( ! $b || ! $b['can_manage'] ) {
+		return;
+	}
 	echo '<p class="help mt-2"><strong>Manage billing</strong> opens the Stripe customer portal, where you can update your card, download invoices'
 		. ( HUB_BILLING_PLAN_CHANGES ? ', switch between monthly and annual, change plan' : '' ) . ' or cancel.</p>';
 }

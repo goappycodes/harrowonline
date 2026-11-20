@@ -54,7 +54,7 @@ get_header();
         <h1>Plan and billing</h1>
         <p><?php echo esc_html( hub_account_current()['business'] ? hub_account_current()['business']['name'] . '. ' : '' ); ?>Payments are handled securely by Stripe.</p>
       </div>
-      <a class="ho-btn ho-btn--outline" href="<?php echo esc_url( hub_url( 'billing/portal/' ) ); ?>"><svg class="ho-icon"><use href="#i-card"/></svg>Manage billing</a>
+      <?php hub_view_billing_manage_button(); ?>
     </div>
 
     <?php hub_view_billing_failed_notice(); ?>
