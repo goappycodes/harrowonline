@@ -288,6 +288,12 @@ function hub_account_db_save_notify( $user_id, array $n ) {
 	update_user_meta( (int) $user_id, 'hub_notify', $n );
 }
 
+/** What the person told us when registering (organisation, area), changed by staff in wp-admin. */
+function hub_account_db_save_profile( $user_id, $organisation, $area ) {
+	update_user_meta( (int) $user_id, 'hub_organisation', $organisation );
+	update_user_meta( (int) $user_id, 'hub_area', $area );
+}
+
 function hub_account_db_editions( $user_id ) {
 	$e = get_user_meta( (int) $user_id, 'hub_newsletter_editions', true );
 	return is_array( $e ) ? array_values( array_intersect( $e, array_keys( HUB_ACCOUNT_EDITIONS ) ) ) : array();

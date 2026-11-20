@@ -123,6 +123,42 @@ function hub_account_admin_field( $user ) {
 			<th>Account type</th>
 			<td><?php echo esc_html( '' !== $type ? HUB_ACCOUNT_TYPES[ $type ] : 'Not a Hub account (staff)' ); ?></td>
 		</tr>
+		<?php if ( '' !== $type ) : $details = hub_account_admin_details( $user->ID ); ?>
+		<?php if ( 'organiser' === $type || '' !== $details['organisation'] ) : ?>
+		<tr>
+			<th><label for="hub_organisation">Organisation</label></th>
+			<td><input type="text" class="regular-text" name="hub_organisation" id="hub_organisation" value="<?php echo esc_attr( $details['organisation'] ); ?>">
+				<p class="description">The school, club, charity or group they organise for.</p></td>
+		</tr>
+		<?php endif; ?>
+		<tr>
+			<th><label for="hub_area">Area</label></th>
+			<td>
+				<select name="hub_area" id="hub_area">
+					<option value="">&ndash; Not given &ndash;</option>
+					<?php foreach ( hub_areas_list()['items'] as $a ) : ?>
+						<option value="<?php echo esc_attr( $a['slug'] ); ?>" <?php selected( $details['area'], $a['slug'] ); ?>><?php echo esc_html( $a['name'] ); ?></option>
+					<?php endforeach; ?>
+				</select>
+				<p class="description">Chosen when they registered, to send them news and events near them.</p>
+			</td>
+		</tr>
+		<tr>
+			<th>Newsletter</th>
+			<td>
+				<?php foreach ( HUB_ACCOUNT_EDITIONS as $value => $label ) : ?>
+					<label style="margin-right:1.5em"><input type="checkbox" name="hub_editions[]" value="<?php echo esc_attr( $value ); ?>" <?php checked( in_array( $value, $details['editions'], true ) ); ?>> <?php echo esc_html( $label ); ?></label>
+				<?php endforeach; ?>
+				<p class="description"><?php echo $details['editions'] ? 'Joined the newsletter.' : 'Not on the newsletter.'; ?> They can change this on their account&rsquo;s Settings page. (Sending to Beehiiv comes with the newsletter work.)</p>
+			</td>
+		</tr>
+		<?php if ( '' !== $details['signup_source'] ) : ?>
+		<tr>
+			<th>Signed up from</th>
+			<td><?php echo esc_html( 'hub-registration' === $details['signup_source'] ? 'The Hub registration page' : ( 'seed' === $details['signup_source'] ? 'Local test data' : $details['signup_source'] ) ); ?></td>
+		</tr>
+		<?php endif; ?>
+		<?php endif; ?>
 		<?php if ( 'organiser' !== $type ) : ?>
 		<tr>
 			<th><label for="hub_plan">Plan</label></th>
@@ -174,6 +210,14 @@ function hub_account_admin_save( $user_id ) {
 	$plan_before = (string) get_user_meta( $user_id, 'hub_plan', true );
 	if ( hub_account_business_id( $user_id ) !== $id ) {
 		hub_account_link_business( $user_id, $id );   // also fills in the plan from the newly linked business
+	}
+	// Organisation, area and newsletter (Hub accounts only: the fields aren't on staff accounts' pages)
+	if ( isset( $_POST['hub_area'] ) ) {
+		hub_account_admin_update_details( $user_id, array(
+			'organisation' => isset( $_POST['hub_organisation'] ) ? $_POST['hub_organisation'] : (string) get_user_meta( $user_id, 'hub_organisation', true ), // phpcs:ignore WordPress.Security.ValidatedSanitizedInput -- the controller sanitises
+			'area'         => wp_unslash( $_POST['hub_area'] ), // phpcs:ignore WordPress.Security.ValidatedSanitizedInput
+			'editions'     => isset( $_POST['hub_editions'] ) ? (array) $_POST['hub_editions'] : array(), // phpcs:ignore WordPress.Security.ValidatedSanitizedInput
+		) );
 	}
 	// Then the plan, only if the admin changed the dropdown
 	$plan = isset( $_POST['hub_plan'] ) ? sanitize_key( wp_unslash( $_POST['hub_plan'] ) ) : '';
