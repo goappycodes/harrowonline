@@ -1,8 +1,10 @@
-# Deploy the Hub's code to the SiteGround test site (https://hub.harrowonline.org/hub/) on every push to main.
-#
-# Code only: the site's own database, uploads, mail log, private claim files, debug log and server .htaccess are
-# never overwritten or deleted, so accounts, sign-ups and payments made on the test site survive deploys.
-# (The Forge dev site deploys separately, with the committed database: wp-local/forge/deploy.sh.)
+# Deploy the Hub to the SiteGround test site (https://hub.harrowonline.org/hub/) on every push to main, so the
+# test site matches git main: the code, the committed SQLite database (wp-local/hub/wp-content/database/) and the
+# uploads. Anything made only on the test site (accounts, sign-ups, payments) is replaced on the next deploy; put
+# what should stay into the committed database.
+# Kept on the server: its .htaccess (access rules), .user.ini, private claim files (hub-private), the mail log and
+# debug log, and its settings file (~/www/hub.harrowonline.org/.env, outside the site folder). LOCAL-ADMIN.txt is
+# never uploaded.
 #
 # Secrets (GitHub > Settings > Secrets and variables > Actions):
 #   SITEGROUND_SSH_KEY      private key whose public half is in SiteGround Site Tools > Devs > SSH Keys Manager
@@ -44,15 +46,13 @@ jobs:
           printf '%s\n' "${{ secrets.SITEGROUND_KNOWN_HOSTS }}" > ~/.ssh/known_hosts
           chmod 644 ~/.ssh/known_hosts
 
-      - name: Copy the code (not the database or anything the site writes)
+      - name: Copy the site from git (code, database, uploads)
         run: |
           rsync -rlptz --delete --omit-dir-times \
             -e "ssh -i ~/.ssh/deploy_key -o IdentitiesOnly=yes -o StrictHostKeyChecking=yes -p ${{ secrets.SITEGROUND_SSH_PORT }}" \
             --exclude '/.htaccess' \
             --exclude '/.user.ini' \
             --exclude '/LOCAL-ADMIN.txt' \
-            --exclude '/wp-content/database/' \
-            --exclude '/wp-content/uploads/' \
             --exclude '/wp-content/mail-log/' \
             --exclude '/wp-content/hub-private/' \
             --exclude '/wp-content/debug.log' \
@@ -61,11 +61,12 @@ jobs:
             --exclude '/wp_auto_login_*.php' \
             wp-local/hub/ "${{ secrets.SITEGROUND_SSH_USER }}@${{ secrets.SITEGROUND_SSH_HOST }}:${TARGET}/"
 
-      - name: Add new committed uploads (never delete the site's own)
+      - name: Clear the database's journal files
+        # SQLite's write-ahead log from the old database would not match the new one (as the old Forge deploy did)
         run: |
-          rsync -rlptz --ignore-existing --omit-dir-times \
-            -e "ssh -i ~/.ssh/deploy_key -o IdentitiesOnly=yes -o StrictHostKeyChecking=yes -p ${{ secrets.SITEGROUND_SSH_PORT }}" \
-            wp-local/hub/wp-content/uploads/ "${{ secrets.SITEGROUND_SSH_USER }}@${{ secrets.SITEGROUND_SSH_HOST }}:${TARGET}/wp-content/uploads/"
+          ssh -i ~/.ssh/deploy_key -o IdentitiesOnly=yes -o StrictHostKeyChecking=yes -p ${{ secrets.SITEGROUND_SSH_PORT }} \
+            "${{ secrets.SITEGROUND_SSH_USER }}@${{ secrets.SITEGROUND_SSH_HOST }}" \
+            "rm -f ${TARGET}/wp-content/database/hub.sqlite-wal ${TARGET}/wp-content/database/hub.sqlite-shm && ls -la ${TARGET}/wp-content/database/"
 
       - name: Check the site answers
         # Run on the server: SiteGround's bot check answers GitHub's machines with 202, not the real page
