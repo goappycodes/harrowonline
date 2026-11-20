@@ -142,6 +142,13 @@ SETTINGS_PART = """    <?php
     ) );
     ?>"""
 BILLING_PLAN_CARD = re.compile(r'    <section class="plan-card" aria-labelledby="cur-plan">.*?</section>', re.S)
+# ... and the sample card, invoices and cancel date become the account's own, from Stripe (inc/view.php)
+BILLING_MANAGE = '      <a class="ho-btn ho-btn--outline" href="#stripe-portal"><svg class="ho-icon"><use href="#i-card"/></svg>Manage billing</a>'
+BILLING_PORTAL_NOTE = re.compile(r'    <p class="help mt-2"><strong>Manage billing</strong> opens the Stripe customer portal.*?</p>')
+BILLING_PLANS = re.compile(r'    <section class="mt-6" aria-labelledby="plans-title" data-billing="monthly">.*?</section>', re.S)
+BILLING_CARD = re.compile(r'      <section class="panel" aria-labelledby="pm-title">.*?</section>', re.S)
+BILLING_INVOICES = re.compile(r'    <section class="mt-6" aria-labelledby="inv-title">.*?</section>', re.S)
+BILLING_CANCEL_KEEP = re.compile(r'<li>You keep Featured until the end of the period you&rsquo;ve paid for \([^)]*\)\.</li>')
 
 
 def account_swaps(body):
@@ -150,6 +157,12 @@ def account_swaps(body):
     body = BILLING_FAILED.sub("    <?php hub_view_billing_failed_notice(); ?>\n", body)
     body = SETTINGS_FORMS.sub(lambda m: SETTINGS_PART, body)
     body = BILLING_PLAN_CARD.sub("    <?php hub_view_billing_plan_card(); ?>", body)
+    body = body.replace(BILLING_MANAGE, "      <?php hub_view_billing_manage_button(); ?>")
+    body = BILLING_PORTAL_NOTE.sub("    <?php hub_view_billing_portal_note(); ?>", body)
+    body = BILLING_PLANS.sub("    <?php hub_view_billing_plans(); ?>", body)
+    body = BILLING_CARD.sub("      <?php hub_view_billing_card(); ?>", body)
+    body = BILLING_INVOICES.sub("    <?php hub_view_billing_invoices(); ?>", body)
+    body = BILLING_CANCEL_KEEP.sub("<li><?php hub_view_billing_cancel_keep(); ?></li>", body)
     body = body.replace('href="#stripe-portal"', 'href="/billing/portal/"')
     # The prototype's "Sign out" goes to sign-in.html; signed in, that just bounces back to the account (app/setup/accounts.php)
     body = body.replace('<a href="/sign-in.html"><svg class="ho-icon"><use href="#i-logout"/></svg>Sign out</a>',

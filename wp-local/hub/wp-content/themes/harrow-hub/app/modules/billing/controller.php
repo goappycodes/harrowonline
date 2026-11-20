@@ -32,6 +32,32 @@ function hub_billing_status( $mode = HUB_WEB ) {
 	), $mode );
 }
 
+/**
+ * The signed-in account's card and invoices, from Stripe (hub_billing_shape_details()). When Stripe can't be reached,
+ * "available" is false and the page says so; it never stops the page.
+ */
+function hub_billing_details( $mode = HUB_WEB ) {
+	$account = hub_account_current();
+	if ( ! $account['signed_in'] ) {
+		return hub_respond_error( 'signed_out', 'Sign in to see your billing.', $mode, 401 );
+	}
+	$customer = _hub_billing_configured() ? hub_billing_db_customer_id( $account['id'] ) : '';
+	$today    = hub_today()->format( 'Ym' );
+	if ( '' === $customer ) {
+		return hub_respond( hub_billing_shape_details( _hub_billing_configured(), false, null, array(), $today ), $mode );
+	}
+	$biz = $account['business'] ? (int) $account['business']['id'] : 0;
+	$sub = $biz ? hub_billing_db_subscription( $biz ) : array();
+	$sid = ! empty( $sub['id'] ) && in_array( isset( $sub['status'] ) ? $sub['status'] : '', array( 'active', 'trialing', 'past_due' ), true ) ? $sub['id'] : '';
+	try {
+		$d = hub_billing_db_details( $customer, $sid );
+	} catch ( \Exception $e ) {
+		hub_debug_log( 'billing: could not load card and invoices: ' . $e->getMessage() );
+		return hub_respond( hub_billing_shape_details( false, true, null, array(), $today ), $mode );
+	}
+	return hub_respond( hub_billing_shape_details( true, true, $d['card'], $d['invoices'], $today ), $mode );
+}
+
 /** A business's billing, for staff screens (wp-admin > Users): the same shape, from the business's stored subscription. */
 function hub_billing_status_for_business( $business_id, $mode = HUB_WEB ) {
 	$owner = hub_account_for_user( hub_account_owner_id( $business_id ) );
@@ -78,6 +104,10 @@ function hub_billing_checkout_plan( array $params, $mode = HUB_WEB ) {
 	}
 	$biz = (int) $account['business']['id'];
 	$sub = hub_billing_db_subscription( $biz );
+	if ( ! empty( $sub['id'] ) && in_array( isset( $sub['status'] ) ? $sub['status'] : '', array( 'active', 'trialing', 'past_due' ), true ) && ! HUB_BILLING_PLAN_CHANGES ) {
+		// Launch: plans can't be changed online yet (rules.php); staff change them on request
+		return _hub_billing_result( false, 'Changing plans online isn&rsquo;t available yet. Email hub@harrowonline.org and we&rsquo;ll change it for you.', hub_url( 'account/billing/?billing=plan_changes' ), $mode );
+	}
 	if ( ! empty( $sub['id'] ) && in_array( isset( $sub['status'] ) ? $sub['status'] : '', array( 'active', 'trialing', 'past_due' ), true ) ) {
 		// Already subscribed: changing plan or billing period happens in Stripe's portal (it works out the difference)
 		return hub_billing_portal( $mode );
@@ -114,6 +144,9 @@ function hub_billing_checkout_item( array $params, $mode = HUB_WEB ) {
 	$item = isset( $params['item'] ) ? sanitize_key( (string) $params['item'] ) : '';
 	if ( ! isset( HUB_BILLING_ITEMS[ $item ] ) ) {
 		return _hub_billing_result( false, 'Unknown item.', hub_url( 'account/' ), $mode );
+	}
+	if ( ! HUB_BILLING_NEWSLETTER_ADVERTS && hub_billing_rule_is_newsletter_advert( $item ) ) {
+		return _hub_billing_result( false, 'Newsletter adverts are booked with Harrow Online.', HUB_BILLING_ADVERTISE_URL, $mode );   // launch switch, rules.php
 	}
 	$account = hub_account_current();
 	if ( ! $account['signed_in'] ) {
@@ -189,6 +222,9 @@ function hub_billing_webhook( $payload, $signature, $mode = HUB_API ) {
 	}
 	$o       = $event->data->object;
 	$handled = 'ignored';
+	if ( ! empty( $o->customer ) && is_string( $o->customer ) ) {
+		hub_billing_db_forget_details( $o->customer );   // the billing page asks Stripe again for the card and invoices
+	}
 	switch ( $event->type ) {
 		case 'checkout.session.completed':
 			$user = (int) ( isset( $o->metadata->hub_user ) ? $o->metadata->hub_user : 0 );
@@ -218,6 +254,21 @@ function hub_billing_webhook( $payload, $signature, $mode = HUB_API ) {
 					_hub_billing_email( 'plan_ended', $user, $biz, isset( $was['plan_key'] ) ? $was['plan_key'] : '', '' );
 				}
 			}
+			break;
+		case 'charge.refunded':
+			// Refunded in Stripe (in full or in part): the logged payment it belongs to says so; a refund we can't
+			// match to one is logged on its own. The plan isn't changed: cancelling is separate, in the portal.
+			$pi     = $o->payment_intent ? ( is_string( $o->payment_intent ) ? $o->payment_intent : $o->payment_intent->id ) : '';
+			$source = '' !== $pi ? hub_billing_db_payment_source( $pi ) : '';
+			$was    = '' !== $source ? hub_billing_db_logged( $source ) : null;
+			$status = $o->refunded ? 'refunded' : 'part refunded';
+			if ( $was ) {
+				hub_billing_db_log( array_merge( $was, array( 'status' => $status, 'refunded' => (int) $o->amount_refunded ) ) );
+			} else {
+				$user = hub_billing_db_user_by_customer( (string) $o->customer );
+				hub_billing_db_log( array( 'stripe_id' => $o->id, 'kind' => 'Refund', 'item' => '' !== (string) $o->description ? (string) $o->description : 'a payment', 'amount' => (int) $o->amount_refunded, 'status' => $status, 'refunded' => (int) $o->amount_refunded, 'user' => $user, 'business' => $user ? hub_account_business_id( $user ) : 0, 'ref' => '' ) );
+			}
+			$handled = 'refund';
 			break;
 		case 'invoice.paid':
 		case 'invoice.payment_failed':
@@ -256,8 +307,15 @@ function hub_billing_setup( $mode = HUB_WEB ) {
 	foreach ( HUB_BILLING_ITEMS as $key => $i ) {
 		$rows[] = array( 'product' => $key, 'name' => $i['name'], 'description' => html_entity_decode( $i['what'], ENT_QUOTES, 'UTF-8' ), 'amount' => $i['amount'], 'interval' => null, 'lookup_key' => hub_billing_rule_lookup_key( $key ) );
 	}
+	$portal = array();
+	foreach ( HUB_BILLING_PLANS as $key => $p ) {
+		$portal[ 'hub_' . $key ] = array_map( function ( $interval ) use ( $key ) {
+			return hub_billing_rule_lookup_key( $key, $interval );
+		}, array_keys( HUB_BILLING_INTERVALS ) );
+	}
 	try {
-		$done = hub_billing_db_sync_catalogue( $rows );
+		$done   = hub_billing_db_sync_catalogue( $rows );
+		$done[] = hub_billing_db_sync_portal( $portal, 'Harrow Online Hub: your plan, card and invoices' );
 	} catch ( \Stripe\Exception\ApiErrorException $e ) {
 		return hub_respond( array( 'ok' => false, 'mode' => null, 'done' => array( 'Stripe: ' . $e->getMessage() ) ), $mode );
 	}
@@ -300,13 +358,16 @@ function _hub_billing_sync_subscription( $sub, $business_id ) {
 	$parsed = $item ? hub_billing_rule_parse_lookup_key( $item->price->lookup_key ) : null;
 	// The billing period end is on the item in newer Stripe API versions, on the subscription in older ones
 	$end = $item && isset( $item->current_period_end ) ? $item->current_period_end : ( isset( $sub->current_period_end ) ? $sub->current_period_end : 0 );
+	// Cancelling: older API versions set cancel_at_period_end; newer ones (and the billing portal) set a cancel_at date
+	$cancel_at = isset( $sub->cancel_at ) ? (int) $sub->cancel_at : 0;
 	hub_billing_db_save_subscription( $business_id, array(
 		'id'                   => $sub->id,
 		'status'               => $sub->status,
 		'plan_key'             => $parsed ? $parsed[0] : null,
 		'interval'             => $parsed ? $parsed[1] : null,
 		'period_end'           => (int) $end,
-		'cancel_at_period_end' => (bool) $sub->cancel_at_period_end,
+		'cancel_at_period_end' => (bool) $sub->cancel_at_period_end || $cancel_at > 0,
+		'cancel_at'            => $cancel_at ? $cancel_at : ( $sub->cancel_at_period_end ? (int) $end : 0 ),
 	) );
 	hub_business_set_plan( $business_id, hub_billing_rule_plan_for_status( $parsed ? $parsed[0] : '', $sub->status ) );
 }

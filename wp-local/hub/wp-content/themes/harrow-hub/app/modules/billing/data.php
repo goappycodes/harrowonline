@@ -65,7 +65,7 @@ function hub_billing_db_user_by_customer( $customer_id ) {
 	return $users ? (int) $users[0] : 0;
 }
 
-/** The business's subscription as last told by Stripe: { id, status, plan_key, interval, period_end, cancel_at_period_end }. */
+/** The business's subscription as last told by Stripe: { id, status, plan_key, interval, period_end, cancel_at_period_end, cancel_at }. */
 function hub_billing_db_subscription( $business_id ) {
 	$s = get_post_meta( (int) $business_id, '_hub_subscription', true );
 	return is_array( $s ) ? $s : array();
@@ -103,6 +103,37 @@ function hub_billing_db_log( array $p ) {
 		return wp_update_post( $args );
 	}
 	return wp_insert_post( $args );
+}
+
+/** The logged payment with this Stripe ID (an invoice in_..., a Checkout session cs_..., a refund's charge ch_...), or null. */
+function hub_billing_db_logged( $stripe_id ) {
+	$ids = get_posts( array( 'post_type' => 'hub_payment', 'post_status' => 'any', 'posts_per_page' => 1, 'fields' => 'ids', 'meta_key' => '_hub_stripe_id', 'meta_value' => (string) $stripe_id ) );
+	return $ids ? hub_billing_db_payment( $ids[0] ) : null;
+}
+
+/**
+ * What a payment (PaymentIntent) paid for, as the Stripe ID the payment log uses: the invoice (plans) or the Checkout
+ * session (one-off items). '' when Stripe doesn't say.
+ */
+function hub_billing_db_payment_source( $payment_intent ) {
+	$stripe = hub_billing_db_stripe();
+	try {
+		$paid = $stripe->invoicePayments->all( array( 'payment' => array( 'type' => 'payment_intent', 'payment_intent' => $payment_intent ), 'limit' => 1 ) )->data;
+		if ( $paid ) {
+			return (string) $paid[0]->invoice;
+		}
+	} catch ( \Stripe\Exception\ApiErrorException $e ) {
+		hub_debug_log( 'billing: invoice payments lookup: ' . $e->getMessage() );
+	}
+	try {
+		$sessions = $stripe->checkout->sessions->all( array( 'payment_intent' => $payment_intent, 'limit' => 1 ) )->data;
+		if ( $sessions ) {
+			return (string) $sessions[0]->id;
+		}
+	} catch ( \Stripe\Exception\ApiErrorException $e ) {
+		hub_debug_log( 'billing: checkout session lookup: ' . $e->getMessage() );
+	}
+	return '';
 }
 
 /** One logged payment: { stripe_id, kind, item, amount, status, user, business, ref }, or null. */
@@ -158,9 +189,171 @@ function hub_billing_db_checkout( array $args ) {
 	return hub_billing_db_stripe()->checkout->sessions->create( $args );
 }
 
-/** @return \Stripe\BillingPortal\Session */
+/**
+ * Stripe's billing portal for a customer, with the Hub's own portal settings (hub_billing_db_sync_portal()) when they
+ * have been set up; Stripe's default settings otherwise.
+ *
+ * @return \Stripe\BillingPortal\Session
+ */
 function hub_billing_db_portal( $customer_id, $return_url ) {
-	return hub_billing_db_stripe()->billingPortal->sessions->create( array( 'customer' => $customer_id, 'return_url' => $return_url ) );
+	$args   = array( 'customer' => $customer_id, 'return_url' => $return_url );
+	$config = _hub_billing_db_portal_config_id();
+	if ( '' !== $config ) {
+		$args['configuration'] = $config;
+	}
+	return hub_billing_db_stripe()->billingPortal->sessions->create( $args );
+}
+
+/**
+ * Create or update the Hub's portal settings in Stripe (idempotent): change between the plans and billing periods
+ * listed, update the card, see invoices, cancel at the end of the period (with a reason). Its ID is kept per Stripe
+ * mode (test / live) in the option "hub_stripe_portal_{mode}".
+ *
+ * @param array  $plans    product ID => price lookup keys customers can switch between
+ * @param string $headline shown at the top of the portal
+ * @return string what was done
+ */
+function hub_billing_db_sync_portal( array $plans, $headline ) {
+	$stripe   = hub_billing_db_stripe();
+	$products = array();
+	foreach ( $plans as $product => $keys ) {
+		$prices = $stripe->prices->all( array( 'lookup_keys' => array_values( $keys ), 'active' => true, 'limit' => 10 ) )->data;
+		if ( $prices ) {
+			$products[] = array( 'product' => $product, 'prices' => array_map( function ( $p ) { return $p->id; }, $prices ) );
+		}
+	}
+	$args = array(
+		'business_profile' => array( 'headline' => $headline ),
+		'features'         => array(
+			'customer_update'       => array( 'enabled' => true, 'allowed_updates' => array( 'email', 'address' ) ),
+			'invoice_history'       => array( 'enabled' => true ),
+			'payment_method_update' => array( 'enabled' => true ),
+			'subscription_cancel'   => array(
+				'enabled'             => true,
+				'mode'                => 'at_period_end',
+				'cancellation_reason' => array( 'enabled' => true, 'options' => array( 'too_expensive', 'missing_features', 'switched_service', 'unused', 'other' ) ),
+			),
+			'subscription_update'   => array(
+				'enabled'                 => HUB_BILLING_PLAN_CHANGES && (bool) $products,   // rules.php launch switch
+				'default_allowed_updates' => array( 'price' ),
+				'proration_behavior'      => 'create_prorations',
+				'products'                => $products,
+			),
+		),
+		'metadata'         => array( 'hub_portal' => '1' ),
+	);
+	$id = _hub_billing_db_portal_config_id();
+	if ( '' !== $id ) {
+		try {
+			$stripe->billingPortal->configurations->update( $id, $args + array( 'active' => true ) );
+			return 'billing portal: updated (' . ( HUB_BILLING_PLAN_CHANGES ? count( $products ) . ' plans to switch between' : 'plan changes off' ) . ')';
+		} catch ( \Stripe\Exception\InvalidRequestException $e ) {
+			$id = '';   // gone, or from the other mode: make a new one
+		}
+	}
+	$config = $stripe->billingPortal->configurations->create( $args );
+	update_option( _hub_billing_db_portal_option(), $config->id, false );
+	return 'billing portal: created (' . ( HUB_BILLING_PLAN_CHANGES ? count( $products ) . ' plans to switch between' : 'plan changes off' ) . ')';
+}
+
+/**
+ * The Hub's portal settings ID: from the option, else found in Stripe by its "hub_portal" tag and kept again. The
+ * dev server's database is replaced on each deploy, so the option can go missing while the settings are still in
+ * Stripe; '' when there are none yet (run the Stripe setup).
+ */
+function _hub_billing_db_portal_config_id() {
+	$id = (string) get_option( _hub_billing_db_portal_option(), '' );
+	if ( '' !== $id ) {
+		return $id;
+	}
+	try {
+		foreach ( hub_billing_db_stripe()->billingPortal->configurations->all( array( 'active' => true, 'limit' => 50 ) )->data as $c ) {
+			if ( isset( $c->metadata->hub_portal ) && '1' === (string) $c->metadata->hub_portal ) {
+				update_option( _hub_billing_db_portal_option(), $c->id, false );
+				return $c->id;
+			}
+		}
+	} catch ( \Stripe\Exception\ApiErrorException $e ) {
+		hub_debug_log( 'billing: portal settings lookup: ' . $e->getMessage() );
+	}
+	return '';
+}
+
+/** The option that keeps the portal settings' ID for the Stripe mode in use (test and live are separate). */
+function _hub_billing_db_portal_option() {
+	return 'hub_stripe_portal_' . hub_billing_rule_mode( hub_billing_db_env( 'STRIPE_SECRET_KEY' ) );
+}
+
+/**
+ * The customer's card and recent invoices, straight from Stripe, kept for 10 minutes (cleared when a webhook arrives
+ * for the customer): { card: { brand, last4, exp_month, exp_year } | null,
+ *   invoices: [ { number, created, reason, lines[] (descriptions), total, status, refunded ('' | 'part' | 'full'), refunded_amount, pdf, url } ] }.
+ * The card is the subscription's own when it has one, else the customer's default, else the latest card added.
+ */
+function hub_billing_db_details( $customer_id, $subscription_id = '' ) {
+	$key    = 'hub_billing_' . md5( $customer_id );
+	$cached = get_transient( $key );
+	if ( is_array( $cached ) ) {
+		return $cached;
+	}
+	$stripe = hub_billing_db_stripe();
+	$pm     = null;
+	if ( '' !== $subscription_id ) {
+		$sub = $stripe->subscriptions->retrieve( $subscription_id, array( 'expand' => array( 'default_payment_method' ) ) );
+		$pm  = is_object( $sub->default_payment_method ) ? $sub->default_payment_method : null;
+	}
+	if ( ! $pm ) {
+		$cus = $stripe->customers->retrieve( $customer_id, array( 'expand' => array( 'invoice_settings.default_payment_method' ) ) );
+		$pm  = isset( $cus->invoice_settings->default_payment_method ) && is_object( $cus->invoice_settings->default_payment_method ) ? $cus->invoice_settings->default_payment_method : null;
+	}
+	if ( ! $pm ) {
+		$list = $stripe->paymentMethods->all( array( 'customer' => $customer_id, 'type' => 'card', 'limit' => 1 ) )->data;
+		$pm   = $list ? $list[0] : null;
+	}
+	// Refunds are on the charges: payment => [ refunded in full, amount refunded ]
+	$refunds = array();
+	foreach ( $stripe->charges->all( array( 'customer' => $customer_id, 'limit' => 24 ) )->data as $ch ) {
+		if ( (int) $ch->amount_refunded > 0 && $ch->payment_intent ) {
+			$refunds[ is_string( $ch->payment_intent ) ? $ch->payment_intent : $ch->payment_intent->id ] = array( (bool) $ch->refunded, (int) $ch->amount_refunded );
+		}
+	}
+	$invoices = array();
+	foreach ( $stripe->invoices->all( array( 'customer' => $customer_id, 'limit' => 12, 'expand' => array( 'data.payments' ) ) )->data as $i ) {
+		if ( 'draft' === $i->status ) {
+			continue;
+		}
+		$refund = null;
+		foreach ( isset( $i->payments->data ) ? $i->payments->data : array() as $pay ) {
+			$pi = isset( $pay->payment->payment_intent ) ? $pay->payment->payment_intent : '';
+			$pi = is_object( $pi ) ? $pi->id : (string) $pi;
+			if ( isset( $refunds[ $pi ] ) ) {
+				$refund = $refunds[ $pi ];
+			}
+		}
+		$invoices[] = array(
+			'number'   => (string) $i->number,
+			'created'  => (int) $i->created,
+			'reason'   => (string) $i->billing_reason,
+			'lines'    => array_map( function ( $l ) { return array( (string) $l->description, (int) $l->amount ); }, $i->lines->data ),
+			'total'    => (int) $i->total,
+			'status'   => (string) $i->status,
+			'refunded' => $refund ? ( $refund[0] ? 'full' : 'part' ) : ( isset( $i->post_payment_credit_notes_amount ) && (int) $i->post_payment_credit_notes_amount > 0 ? 'part' : '' ),
+			'refunded_amount' => $refund ? $refund[1] : ( isset( $i->post_payment_credit_notes_amount ) ? (int) $i->post_payment_credit_notes_amount : 0 ),
+			'pdf'      => (string) $i->invoice_pdf,
+			'url'      => (string) $i->hosted_invoice_url,
+		);
+	}
+	$out = array(
+		'card'     => $pm && isset( $pm->card ) ? array( 'brand' => (string) $pm->card->brand, 'last4' => (string) $pm->card->last4, 'exp_month' => (int) $pm->card->exp_month, 'exp_year' => (int) $pm->card->exp_year ) : null,
+		'invoices' => $invoices,
+	);
+	set_transient( $key, $out, 10 * MINUTE_IN_SECONDS );
+	return $out;
+}
+
+/** Forget a customer's card and invoices, so the billing page asks Stripe again (after a webhook). */
+function hub_billing_db_forget_details( $customer_id ) {
+	delete_transient( 'hub_billing_' . md5( (string) $customer_id ) );
 }
 
 /** @return \Stripe\Subscription */

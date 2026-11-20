@@ -180,21 +180,51 @@ local only). In the Claude desktop app, start the **wp-local** preview instead.
   live. Without real keys, the payment buttons go to the account billing page with "Online payments aren't
   switched on yet", and nothing calls Stripe.
 - **First time with a Stripe account:** `php wp-local/hub/stripe-setup-local.php` creates the products and prices
-  in Stripe (looked up by `hub_{plan}_{monthly|annual}` and `hub_{item}_once`). Running it again is safe. In the
-  Stripe dashboard, turn on the customer portal (Settings > Billing > Customer portal): card updates, invoices,
-  cancel, and switching between the Featured and Partner prices.
+  in Stripe (looked up by `hub_{plan}_{monthly|annual}` and `hub_{item}_once`) and the Hub's own customer portal
+  settings: switch between Featured and Local Partner (monthly or yearly), update the card, see invoices, cancel at
+  the end of the period with a reason. Running it again is safe (it updates them). Test and live mode each need it
+  once: they are separate in Stripe.
 - **Webhook:** Stripe tells the Hub about payments at `/hub/wp-json/hub/v1/billing/webhook`. The Hub uses these
-  events to set the business's plan, and it never sets a plan from the browser. Locally:
-  `stripe listen --forward-to localhost:8020/hub/wp-json/hub/v1/billing/webhook`, then put the `whsec_` value it
-  prints in `.env`. On a server, add the endpoint in the Stripe dashboard with these events:
+  events to set the business's plan, and it never sets a plan from the browser. The events:
   `checkout.session.completed`, `customer.subscription.created`, `customer.subscription.updated`,
-  `customer.subscription.deleted`, `invoice.paid` and `invoice.payment_failed`.
+  `customer.subscription.deleted`, `invoice.paid`, `invoice.payment_failed` and `charge.refunded`.
+  Locally (Stripe CLI 1.55 and later need the events listed):
+  `stripe listen --events checkout.session.completed,customer.subscription.created,customer.subscription.updated,customer.subscription.deleted,invoice.paid,invoice.payment_failed,charge.refunded --forward-to localhost:8020/hub/wp-json/hub/v1/billing/webhook`,
+  with `STRIPE_API_KEY` set to the test secret key, then put the `whsec_` value it prints in `.env`.
 - **Payments log:** wp-admin > Payments lists every payment and invoice the webhook has received (read only).
+  A refund made in Stripe marks its payment "Refunded" or "Part refunded"; it doesn't change the plan (cancel in
+  the portal for that), and a refunded £15 event or featured spot stays as it is until staff change it.
+- **Launch switches** (`app/modules/billing/rules.php`): `HUB_BILLING_PLAN_CHANGES` is off for launch, so a
+  business can buy its first plan online but not switch plan or billing period (staff do that on request; the
+  portal still updates cards, shows invoices and cancels). `HUB_BILLING_NEWSLETTER_ADVERTS` is off, so
+  `/advertise/newsletter/` redirects to harrowonline.org/advertise and adverts can't be bought online. To turn either
+  back on: set it to `true`, deploy, and run the Stripe setup once in each Stripe mode (it updates the portal).
+- **Billing page:** the account's card and last 12 invoices (with Stripe's PDFs) come from Stripe, kept for 10
+  minutes and refreshed when a webhook arrives for the customer.
 - **Billing emails:** the Hub emails the account holder when a renewal payment fails (first failure only; Stripe
   retries for a few days, and the plan stays on meanwhile) and when a plan ends. For receipts, turn on Stripe's own emails (Settings > Customer emails > Successful payments), and leave its failed-payment emails off to avoid sending two.
 - **Test the webhook without Stripe:** `php wp-local/hub/billing-webhook-test-local.php` signs sample events and
   checks subscribe, plan switch, failed and retried payments, cancel, plan end, one-off items and the emails, on a
   temporary business it deletes afterwards. It needs no keys and makes no network calls.
+- **Stripe on a server (dev, staging or live), once per server:**
+  1. **Keys.** In Forge, Site > Environment (the server's `.env`): `STRIPE_SECRET_KEY` and `STRIPE_PUBLISHABLE_KEY`
+     from Stripe's Developers > API keys. Test keys (`sk_test_`, `pk_test_`) on dev and staging; live keys only on
+     the live site. Never put keys in `wp-config.php` or any committed file.
+  2. **Products, prices and portal.** On the server, in the site folder:
+     `php wp-local/hub/stripe-setup-local.php` (the site's PHP version). It should end with "billing portal:
+     created" (or "updated"). The dev server's database is replaced on each deploy; the Hub finds its portal
+     settings in Stripe again by itself, so this is needed once per Stripe mode, not after every deploy.
+  3. **Webhook endpoint.** Stripe dashboard (in the same mode as the keys) > Developers > Webhooks > Add endpoint:
+     `https://{site}/hub/wp-json/hub/v1/billing/webhook`, with the seven events listed above. Copy its signing
+     secret into the server's `.env` as `STRIPE_WEBHOOK_SECRET`.
+  4. **Check.** Stripe dashboard > the endpoint > Send test webhook (`invoice.paid`): it should answer 200. A 400
+     means the signing secret doesn't match. Then buy a plan with the test card 4242 4242 4242 4242 and see the
+     plan change on the account's billing page and in wp-admin > Payments.
+  5. **Dashboard settings** (live especially): Billing > Revenue recovery: after the last retry, **cancel the
+     subscription** (the Hub's failed-payment email says the listing moves to Basic); Settings > Customer emails:
+     successful payments on, failed payments off (the Hub sends its own); Settings > Branding: logo, colour #DF2028,
+     support email hub@harrowonline.org; Settings > Business details: address (and VAT number, if registered) for
+     invoices.
 - **Dev server caveat:** each deploy replaces the server's database with the committed one, so accounts, plans and
   payments made on the dev server are lost on the next push. Do payment testing locally until staging has its
   own database.

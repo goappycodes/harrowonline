@@ -407,12 +407,13 @@ add_action( 'manage_hub_payment_posts_custom_column', function ( $col, $post_id 
 	switch ( $col ) {
 		case 'hub_amount':
 			echo '<strong class="hub-amount">' . esc_html( ! empty( $p['amount'] ) ? hub_billing_rule_money( (int) $p['amount'] ) : '£0' ) . '</strong>';
-			$what = 'Invoice' === $p['kind'] ? 'Plan, invoice ' . $p['item'] : ( isset( HUB_BILLING_ITEMS[ $p['item'] ] ) ? HUB_BILLING_ITEMS[ $p['item'] ]['name'] : (string) $p['item'] );
+			$what = 'Invoice' === $p['kind'] ? 'Plan, invoice ' . $p['item'] : ( 'Refund' === $p['kind'] ? 'Refund of ' . $p['item'] : ( isset( HUB_BILLING_ITEMS[ $p['item'] ] ) ? HUB_BILLING_ITEMS[ $p['item'] ]['name'] : (string) $p['item'] ) );
 			echo hub_admin_sub( html_entity_decode( $what, ENT_QUOTES ) ); // phpcs:ignore WordPress.Security.EscapeOutput
 			break;
 		case 'hub_pstatus':
-			echo 'paid' === $p['status'] ? hub_admin_pill( 'Paid', 'green' ) : hub_admin_pill( ucfirst( (string) $p['status'] ), 'payment failed' === $p['status'] ? 'red' : 'grey' ); // phpcs:ignore WordPress.Security.EscapeOutput
-			echo hub_admin_sub( 'Invoice' === $p['kind'] ? 'Card, by subscription' : 'Card, one-off' ); // phpcs:ignore WordPress.Security.EscapeOutput
+			$tones = array( 'paid' => 'green', 'payment failed' => 'red', 'refunded' => 'grey', 'part refunded' => 'amber' );
+			echo '<span class="hub-cell-row">' . hub_admin_pill( ucfirst( (string) $p['status'] ) . ( 'part refunded' === $p['status'] && ! empty( $p['refunded'] ) ? ' ' . hub_billing_rule_money( (int) $p['refunded'] ) : '' ), isset( $tones[ $p['status'] ] ) ? $tones[ $p['status'] ] : 'grey' ) . '</span>'; // phpcs:ignore WordPress.Security.EscapeOutput
+			echo hub_admin_sub( 'Refund' === $p['kind'] ? 'Refund made in Stripe' : ( 'Invoice' === $p['kind'] ? 'Card, by subscription' : 'Card, one-off' ) ); // phpcs:ignore WordPress.Security.EscapeOutput
 			break;
 		case 'hub_pbiz':
 			echo ! empty( $p['business'] ) && hub_admin_business( (int) $p['business'] ) ? hub_admin_business_link( (int) $p['business'] ) : hub_admin_none(); // phpcs:ignore WordPress.Security.EscapeOutput

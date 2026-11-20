@@ -282,15 +282,21 @@ function hub_view_billing_failed_notice() {
 
 /** ---------------------------------------------------------------- account billing: the current plan card */
 function hub_view_billing_plan_card() {
-	$b      = hub_billing_status();
-	$notice = isset( $_GET['checkout'] ) ? sanitize_key( $_GET['checkout'] ) : ( isset( $_GET['billing'] ) ? sanitize_key( $_GET['billing'] ) : '' ); // phpcs:ignore WordPress.Security.NonceVerification
+	$b       = hub_billing_status();
+	$account = hub_account_current();
+	$no_biz  = empty( $account['business'] );   // staff accounts, organisers, owners who haven't claimed yet
+	$notice  = isset( $_GET['checkout'] ) ? sanitize_key( $_GET['checkout'] ) : ( isset( $_GET['billing'] ) ? sanitize_key( $_GET['billing'] ) : '' ); // phpcs:ignore WordPress.Security.NonceVerification
 	$notes  = array(
 		'success'     => array( 'ok', 'Thanks, your payment went through.', 'Your plan switches on as soon as Stripe confirms it, usually within a minute. Refresh this page to see it.' ),
 		'cancelled'   => array( 'plain', 'Payment cancelled.', 'Nothing was charged. Choose a plan whenever you&rsquo;re ready.' ),
 		'unavailable' => array( 'warn', 'Online payments aren&rsquo;t switched on yet.', 'Please contact hub@harrowonline.org to upgrade, and we&rsquo;ll set it up for you.' ),
 		'error'       => array( 'warn', 'We couldn&rsquo;t reach the payment service.', 'Nothing was charged. Please try again in a minute.' ),
+		'plan_changes' => array( 'plain', 'Changing plans online isn&rsquo;t available yet.', 'Email <a href="mailto:hub@harrowonline.org">hub@harrowonline.org</a> and we&rsquo;ll change your plan or billing period for you.' ),
 		'no_business' => array( 'warn', 'Plans are for a business listing.', 'Your account isn&rsquo;t linked to a business yet. <a href="' . esc_url( hub_url( 'search/' ) ) . '">Find your business</a> and claim it, then choose a plan.' ),
 	);
+	if ( $no_biz && 'no_business' === $notice ) {
+		$notice = '';   // the card below says the same
+	}
 	if ( isset( $notes[ $notice ] ) ) {
 		list( $kind, $title, $text ) = $notes[ $notice ];
 		echo '<div class="notice notice--' . esc_attr( $kind ) . ' mb-5" role="status"><svg class="ho-icon"><use href="#i-' . ( 'ok' === $kind ? 'check' : 'alert' ) . '"/></svg><div><p><strong>' . wp_kses( $title, array() ) . '</strong> ' . wp_kses( $text, array( 'a' => array( 'href' => true ) ) ) . '</p></div></div>';
@@ -299,6 +305,14 @@ function hub_view_billing_plan_card() {
 		return;
 	}
 	$portal = hub_url( 'billing/portal/' );
+	if ( $no_biz ) {
+		// Plans belong to a business listing: no plan to show or buy until the account has one
+		echo '<section class="plan-card" aria-labelledby="cur-plan"><div><span class="eyebrow">Current plan</span><h2 id="cur-plan">No business linked yet</h2>'
+			. '<p class="mb-0">Plans are for a business listing. Find your business and claim it, or add it if it isn&rsquo;t on the Hub, then choose a plan.</p></div>'
+			. '<div class="plan-card__actions"><a class="ho-btn ho-btn--primary ho-btn--sm" href="' . esc_url( hub_url( 'search/' ) ) . '">Find your business</a>'
+			. '<a class="ho-btn ho-btn--outline ho-btn--sm" href="' . esc_url( hub_url( 'add-business/' ) ) . '">Add a business</a></div></section>';
+		return;
+	}
 	if ( $b['has_subscription'] ) {
 		$title = $b['plan_name'] . ', paid ' . ( 'annual' === $b['interval'] ? 'annually' : 'monthly' );
 		$line  = esc_html( $b['price'] . ' a ' . $b['price_per'] );
@@ -307,8 +321,9 @@ function hub_view_billing_plan_card() {
 		}
 		$ok    = in_array( $b['status'], array( 'active', 'trialing' ), true );
 		$line .= ' &middot; <span class="status status--' . ( $ok ? 'active' : 'pending' ) . '">' . esc_html( $b['status_label'] ) . '</span>';
-		$extra = $b['annual_saving'] ? '<p class="small mb-0 mt-2">Switch to annual billing and save ' . esc_html( $b['annual_saving'] ) . ' a year.</p>' : '';
-		$btn   = '<a class="ho-btn ho-btn--primary ho-btn--sm" href="' . esc_url( $portal ) . '">' . ( $b['annual_saving'] ? 'Switch to annual' : 'Manage billing' ) . '</a>';
+		$switch = $b['annual_saving'] && HUB_BILLING_PLAN_CHANGES;   // launch switch (billing rules.php)
+		$extra  = $switch ? '<p class="small mb-0 mt-2">Switch to annual billing and save ' . esc_html( $b['annual_saving'] ) . ' a year.</p>' : '';
+		$btn    = '<a class="ho-btn ho-btn--primary ho-btn--sm" href="' . esc_url( $portal ) . '">' . ( $switch ? 'Switch to annual' : 'Manage billing' ) . '</a>';
 	} elseif ( in_array( $b['plan'], array( 'enhanced', 'premium', 'partner' ), true ) ) {
 		// A paid plan with no online subscription: arranged with Harrow Online (launch offer, invoice, or set in wp-admin)
 		$title = $b['plan_name'];
@@ -323,6 +338,171 @@ function hub_view_billing_plan_card() {
 	}
 	echo '<section class="plan-card" aria-labelledby="cur-plan"><div><span class="eyebrow">Current plan</span><h2 id="cur-plan">' . esc_html( $title ) . '</h2>'
 		. '<p class="mb-0">' . $line . '</p>' . $extra . '</div><div class="plan-card__actions">' . $btn . '</div></section>'; // phpcs:ignore WordPress.Security.EscapeOutput -- built from escaped parts above
+}
+
+/**
+ * ---------------------------------------------------------------- account billing: the plans to change to
+ * "Your plan" on the account's real plan; the buttons follow how they pay: no subscription (Basic) -> Upgrade opens
+ * Stripe Checkout for the price shown; paying by Stripe -> Change plan / Downgrade in the Stripe portal; a paid plan
+ * arranged with Harrow Online -> Ask us. Hidden until the account has a business (the plan card says why).
+ */
+function hub_view_billing_plans() {
+	$account = hub_account_current();
+	$b       = hub_billing_status();
+	if ( empty( $account['business'] ) || ! $b ) {
+		return;
+	}
+	$current  = in_array( $b['plan'], array( 'enhanced', 'premium' ), true ) ? 'featured' : ( 'partner' === $b['plan'] ? 'partner' : 'basic' );
+	$interval = 'annual' === $b['interval'] ? 'annual' : 'monthly';
+	$portal   = hub_url( 'billing/portal/' );
+	$ask      = 'mailto:hub@harrowonline.org?subject=' . rawurlencode( 'Changing my Hub plan (' . $account['business']['name'] . ')' );
+	$plans    = array(
+		'basic'    => array( 'Basic', 'For any Harrow business. Claim your listing and keep it up to date.', null,
+			array( 'Verified business listing', 'Business details and opening hours', 'One photograph', 'Keep the listing updated yourself' ), '' ),
+		'featured' => array( 'Featured', 'For businesses that want to be seen first and keep customers coming back.', HUB_BILLING_PLANS['featured']['prices'],
+			array( 'Priority placement', 'Social media links', 'Additional photographs', 'Publish Local Offers', 'Add events and classes', 'Featured positions within the Hub' ), '' ),
+		'partner'  => array( 'Local Partner', 'Featured on the Hub, plus a monthly spot in the Daily News and the Facebook Group.', HUB_BILLING_PLANS['partner']['prices'],
+			array( 'One advert each month in the Daily News newsletter', 'One Harrow Online Facebook Group post each month' ), 'Everything in Featured, plus:' ),
+	);
+	$rank = array( 'basic' => 0, 'featured' => 1, 'partner' => 2 );
+	$btn  = function ( $key ) use ( $current, $b, $portal, $ask, $rank ) {
+		$cls = 'ho-btn ho-btn--block ho-btn--sm ';
+		if ( $key === $current ) {
+			return '<span class="' . $cls . 'ho-btn--dark is-disabled" aria-disabled="true">Current plan</span>';
+		}
+		$up    = $rank[ $key ] > $rank[ $current ];
+		$label = $up ? ( 'basic' === $current ? 'Upgrade' : 'Change plan' ) : ( 'basic' === $key ? 'Downgrade' : 'Change plan' );
+		$style = $up ? 'ho-btn--primary' : 'ho-btn--outline';
+		if ( $b['has_subscription'] ) {
+			return HUB_BILLING_PLAN_CHANGES ? '<a class="' . $cls . $style . '" href="' . esc_url( $portal ) . '">' . $label . '</a>'
+				: '<a class="' . $cls . 'ho-btn--outline" href="' . esc_url( $ask ) . '">Ask us</a>';   // launch: no plan changes online
+		}
+		if ( 'basic' === $current ) {
+			// Stripe Checkout for the price on show: the toggle switches which link is visible
+			$out = '';
+			foreach ( array( 'monthly', 'annual' ) as $per ) {
+				$out .= '<a class="' . $cls . $style . ' price-' . $per . '" href="' . esc_url( hub_url( 'billing/checkout/?plan=' . $key . '&billing=' . $per ) ) . '">' . $label . '</a>';
+			}
+			return $out;
+		}
+		return '<a class="' . $cls . 'ho-btn--outline" href="' . esc_url( $ask ) . '">Ask us</a>';
+	};
+	echo '<section class="mt-6" aria-labelledby="plans-title" data-billing="' . esc_attr( $interval ) . '">'
+		. '<div class="split mb-6"><div><h2 class="dash-h2" id="plans-title">' . ( 'basic' === $current ? 'Upgrade your plan' : 'Change plan' ) . '</h2>'
+		. '<p class="small muted mb-0">' . ( 'basic' === $current ? 'Choose a plan and pay securely by card with Stripe.'
+			: ( $b['has_subscription'] && HUB_BILLING_PLAN_CHANGES ? 'Upgrade or downgrade any time. Stripe works out the difference for the rest of this billing period.'
+			: 'To change your plan or billing period, email hub@harrowonline.org and we&rsquo;ll do it for you.' ) ) . '</p></div>'
+		. '<div class="billing-toggle" role="group" aria-label="Billing period">'
+		. '<button type="button" data-billing-set="monthly" aria-pressed="' . ( 'monthly' === $interval ? 'true' : 'false' ) . '">Monthly</button>'
+		. '<button type="button" data-billing-set="annual" aria-pressed="' . ( 'annual' === $interval ? 'true' : 'false' ) . '">Annual <span class="save">2 months free</span></button></div></div>'
+		. '<div class="plans">';
+	foreach ( $plans as $key => $p ) {
+		$mine = $key === $current;
+		echo '<div class="plan' . ( $mine ? ' plan--popular' : '' ) . ( 'partner' === $key && ! $mine ? ' plan--partner' : '' ) . '">'
+			. ( $mine ? '<span class="plan__flag">Your plan</span>' : '' )
+			. '<h3 class="plan__name">' . esc_html( $p[0] ) . '</h3><p class="plan__for">' . esc_html( $p[1] ) . '</p>';
+		if ( $p[2] ) {
+			$m = $p[2]['monthly'];
+			$a = $p[2]['annual'];
+			echo '<p class="plan__price"><span class="price-monthly">' . esc_html( hub_billing_rule_money( $m ) ) . '<small>/month</small></span><span class="price-annual">' . esc_html( hub_billing_rule_money( $a ) ) . '<small>/year</small></span></p>'
+				. '<p class="plan__note"><span class="price-monthly">or ' . esc_html( hub_billing_rule_money( $a ) ) . ' a year</span><span class="price-annual">Save ' . esc_html( hub_billing_rule_money( 12 * $m - $a ) ) . '</span></p>';
+		} else {
+			echo '<p class="plan__price">&pound;0</p><p class="plan__note">Free for ever</p>';
+		}
+		echo $btn( $key ) . '<ul class="ticks small">' . ( '' !== $p[4] ? '<li class="ticks__lead">' . esc_html( $p[4] ) . '</li>' : '' ); // phpcs:ignore WordPress.Security.EscapeOutput -- built escaped
+		foreach ( $p[3] as $li ) {
+			echo '<li>' . esc_html( $li ) . '</li>';
+		}
+		echo '</ul></div>';
+	}
+	echo '</div><p class="help mt-4">' . ( 'basic' === $current ? 'Your new plan switches on as soon as payment goes through.' : ( HUB_BILLING_PLAN_CHANGES ? 'Plan changes apply straight away; Stripe adds or credits the difference on your next invoice.' : 'We change plans by hand for now; any difference is added to or taken off your next invoice.' ) )
+		. ' <a href="' . esc_url( hub_url( 'pricing/' ) ) . '">See everything in each plan</a>.</p></section>';
+}
+
+/** Account billing: the card and invoices from Stripe, asked once per page. */
+function hub_view_billing_details() {
+	static $d = null;
+	if ( null === $d ) {
+		$d = hub_billing_details();
+	}
+	return $d;
+}
+
+/** ---------------------------------------------------------------- account billing: the card on file */
+function hub_view_billing_card() {
+	$d      = hub_view_billing_details();
+	$portal = hub_url( 'billing/portal/' );
+	echo '<section class="panel" aria-labelledby="pm-title"><h2 class="panel__title" id="pm-title">Payment method</h2>';
+	if ( $d && $d['card'] ) {
+		$c = $d['card'];
+		echo '<div class="cluster cluster--lg"><span class="mono mono--sm mono--soft" aria-hidden="true"><svg class="ho-icon"><use href="#i-card"/></svg></span><div>'
+			. '<strong>' . esc_html( $c['brand'] . ' ending ' . $c['last4'] ) . '</strong>'
+			. '<p class="small muted mb-0">' . ( $c['expired'] ? '<span class="status status--pending">Expired ' . esc_html( $c['expires'] ) . '</span>' : 'Expires ' . esc_html( $c['expires'] ) ) . '</p></div></div>'
+			. '<p class="help mt-4">Shown from Stripe. We never see or store your full card number.</p>'
+			. '<a class="ho-btn ho-btn--sm ho-btn--outline mt-2" href="' . esc_url( $portal ) . '">Update card in Stripe</a>';
+	} elseif ( $d && $d['has_customer'] && ! $d['available'] ) {
+		echo '<p class="small mb-0">We couldn&rsquo;t load your card from Stripe just now. Please try again in a minute.</p>'
+			. '<a class="ho-btn ho-btn--sm ho-btn--outline mt-4" href="' . esc_url( $portal ) . '">Open Stripe</a>';
+	} elseif ( $d && $d['has_customer'] ) {
+		echo '<p class="small mb-0">No card on file.</p>'
+			. '<a class="ho-btn ho-btn--sm ho-btn--outline mt-4" href="' . esc_url( $portal ) . '">Add a card in Stripe</a>';
+	} else {
+		echo '<p class="small mb-0">No card on file. You add one on Stripe&rsquo;s secure page when you choose a plan, a featured spot or a newsletter advert.</p>'
+			. '<p class="help mt-4">We never see or store your full card number.</p>';
+	}
+	echo '</section>';
+}
+
+/** ---------------------------------------------------------------- account billing: invoices and receipts */
+function hub_view_billing_invoices() {
+	$d     = hub_view_billing_details();
+	$class = array( 'paid' => 'paid', 'open' => 'pending', 'uncollectible' => 'pending', 'void' => 'ended', 'refunded' => 'ended', 'part_refunded' => 'ended' );
+	echo '<section class="mt-6" aria-labelledby="inv-title"><h2 class="dash-h2 mb-4" id="inv-title">Invoices and receipts</h2>';
+	if ( ! $d || ! $d['invoices'] ) {
+		echo '<p class="muted">' . ( $d && $d['has_customer'] && ! $d['available']
+			? 'We couldn&rsquo;t load your invoices from Stripe just now. Please try again in a minute.'
+			: 'No invoices yet. Receipts for your plan, featured spots and newsletter adverts appear here.' ) . '</p></section>';
+		return;
+	}
+	echo '<div class="table-wrap"><table class="table table--stack"><thead><tr><th scope="col">Date</th><th scope="col">Invoice</th><th scope="col">For</th><th scope="col">Amount</th><th scope="col">Status</th><th scope="col"><span class="ho-sr">Download</span></th></tr></thead><tbody>';
+	foreach ( $d['invoices'] as $i ) {
+		$link = '' !== $i['pdf'] ? $i['pdf'] : $i['url'];
+		echo '<tr><td data-label="Date">' . esc_html( wp_date( 'j M Y', strtotime( $i['date'] ) ) ) . '</td>'
+			. '<td data-label="Invoice">' . esc_html( '' !== $i['number'] ? $i['number'] : '–' ) . '</td>'
+			. '<td data-label="For">' . esc_html( $i['for'] ) . '</td>'
+			. '<td data-label="Amount">' . esc_html( $i['amount'] ) . '</td>'
+			. '<td data-label="Status"><span class="status status--' . esc_attr( isset( $class[ $i['status'] ] ) ? $class[ $i['status'] ] : 'pending' ) . '">' . esc_html( $i['status_label'] ) . '</span></td>'
+			. '<td>' . ( '' !== $link ? '<div class="table__actions"><a class="ho-btn ho-btn--sm ho-btn--ghost" href="' . esc_url( $link ) . '" target="_blank" rel="noopener"><svg class="ho-icon"><use href="#i-download"/></svg>' . ( '' !== $i['pdf'] ? 'PDF' : 'View' ) . '</a></div>' : '' ) . '</td></tr>';
+	}
+	echo '</tbody></table></div><p class="help mt-4">The last 12, from Stripe. Older invoices are in <a href="' . esc_url( hub_url( 'billing/portal/' ) ) . '">the Stripe portal</a>.</p></section>';
+}
+
+/** Account billing: "Manage billing" (Stripe's portal), once the account has paid Stripe; before that there's nothing to manage. */
+function hub_view_billing_manage_button() {
+	$b = hub_billing_status();
+	if ( $b && $b['can_manage'] ) {
+		echo '<a class="ho-btn ho-btn--outline" href="' . esc_url( hub_url( 'billing/portal/' ) ) . '"><svg class="ho-icon"><use href="#i-card"/></svg>Manage billing</a>';
+	}
+}
+
+/** Account billing: what "Manage billing" (Stripe's portal) lets them do (only when the button is there). */
+function hub_view_billing_portal_note() {
+	$b = hub_billing_status();
+	if ( ! $b || ! $b['can_manage'] ) {
+		return;
+	}
+	echo '<p class="help mt-2"><strong>Manage billing</strong> opens the Stripe customer portal, where you can update your card, download invoices'
+		. ( HUB_BILLING_PLAN_CHANGES ? ', switch between monthly and annual, change plan' : '' ) . ' or cancel.</p>';
+}
+
+/** Account billing FAQ: what they keep, and until when, if they cancel. */
+function hub_view_billing_cancel_keep() {
+	$b = hub_billing_status();
+	if ( $b && $b['has_subscription'] && $b['renews_on'] ) {
+		echo 'You keep ' . esc_html( $b['plan_name'] ) . ' until the end of the period you&rsquo;ve paid for (' . esc_html( wp_date( 'j F Y', strtotime( $b['renews_on'] ) ) ) . ').';
+		return;
+	}
+	echo 'You keep your plan until the end of the period you&rsquo;ve paid for.';
 }
 
 /* ------------------------------------------------------------------ add/edit offer, event, class forms */

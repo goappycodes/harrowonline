@@ -7,7 +7,8 @@
  *   plan ('none' | 'basic' | 'enhanced' | 'premium' | 'partner'), plan_name ('Basic', 'Featured', 'Local Partner'),
  *   interval ('monthly' | 'annual' | null), price (e.g. "£29") | null, price_per ('month' | 'year' | null),
  *   status ('active' | 'trialing' | 'past_due' | 'canceled' | ... | null), status_label | null,
- *   renews_on ('Y-m-d') | null, cancels_at_period_end (bool), has_subscription (bool), can_manage (bool: has a Stripe customer),
+ *   renews_on ('Y-m-d': the next payment, or the day it ends when cancelling) | null, cancels_at_period_end (bool),
+ *   has_subscription (bool), can_manage (bool: has a Stripe customer),
  *   annual_saving (e.g. "£58") | null  (shown when paying monthly)
  */
 defined( 'ABSPATH' ) || exit;
@@ -29,7 +30,7 @@ function hub_billing_shape( $configured, $mode, $plan, array $sub, $has_customer
 		'price_per'             => $interval ? HUB_BILLING_INTERVALS[ $interval ] : null,
 		'status'                => $status,
 		'status_label'          => $status && isset( $labels[ $status ] ) ? $labels[ $status ] : $status,
-		'renews_on'             => ! empty( $sub['period_end'] ) ? gmdate( 'Y-m-d', (int) $sub['period_end'] ) : null,
+		'renews_on'             => ! empty( $sub['cancel_at'] ) ? gmdate( 'Y-m-d', (int) $sub['cancel_at'] ) : ( ! empty( $sub['period_end'] ) ? gmdate( 'Y-m-d', (int) $sub['period_end'] ) : null ),
 		'cancels_at_period_end' => ! empty( $sub['cancel_at_period_end'] ),
 		'has_subscription'      => ! empty( $sub['id'] ) && in_array( $status, array( 'active', 'trialing', 'past_due' ), true ),
 		'can_manage'            => (bool) $has_customer,
@@ -60,4 +61,44 @@ function hub_billing_shape_email( $kind, array $a ) {
 			. "\n\nYour extra photos, social links, offers and events are hidden, not deleted. They come back as soon as you choose a plan again:\n" . $a['link']
 			. "\n\nIf this wasn't what you expected, just reply to this email." . $sign,
 	);
+}
+
+/**
+ * The card and invoices on the billing page. Plain data; no Stripe IDs.
+ *   available (bool: Stripe answered), has_customer (bool),
+ *   card: { brand ('Visa'), last4, expires ('08/2028'), expired (bool) } | null,
+ *   invoices: [ { date ('Y-m-d'), number, for, amount ('£29.00'), status ('paid' | 'open' | 'void' | 'uncollectible' | 'refunded' | 'part_refunded'),
+ *                 status_label, pdf (URL | ''), url (Stripe's invoice page | '') } ]
+ */
+function hub_billing_shape_details( $available, $has_customer, $card, array $invoices, $today_ym ) {
+	$brands = array( 'visa' => 'Visa', 'mastercard' => 'Mastercard', 'amex' => 'American Express', 'discover' => 'Discover', 'diners' => 'Diners Club', 'jcb' => 'JCB', 'unionpay' => 'UnionPay' );
+	$labels = array( 'paid' => 'Paid', 'open' => 'Due', 'void' => 'Cancelled', 'uncollectible' => 'Not paid', 'refunded' => 'Refunded', 'part_refunded' => 'Part refunded' );
+	$out    = array(
+		'available'    => (bool) $available,
+		'has_customer' => (bool) $has_customer,
+		'card'         => null,
+		'invoices'     => array(),
+	);
+	if ( $card ) {
+		$out['card'] = array(
+			'brand'   => isset( $brands[ $card['brand'] ] ) ? $brands[ $card['brand'] ] : ucfirst( $card['brand'] ),
+			'last4'   => $card['last4'],
+			'expires' => sprintf( '%02d/%d', $card['exp_month'], $card['exp_year'] ),
+			'expired' => sprintf( '%04d%02d', $card['exp_year'], $card['exp_month'] ) < $today_ym,
+		);
+	}
+	foreach ( $invoices as $i ) {
+		$status            = 'full' === $i['refunded'] ? 'refunded' : ( 'part' === $i['refunded'] ? 'part_refunded' : $i['status'] );
+		$out['invoices'][] = array(
+			'date'         => gmdate( 'Y-m-d', $i['created'] ),
+			'number'       => $i['number'],
+			'for'          => hub_billing_rule_invoice_for( $i['reason'], $i['lines'] ),
+			'amount'       => '£' . number_format( $i['total'] / 100, 2 ),
+			'status'       => $status,
+			'status_label' => ( isset( $labels[ $status ] ) ? $labels[ $status ] : ucfirst( $status ) ) . ( 'part_refunded' === $status && ! empty( $i['refunded_amount'] ) ? ' (£' . number_format( $i['refunded_amount'] / 100, 2 ) . ')' : '' ),
+			'pdf'          => $i['pdf'],
+			'url'          => $i['url'],
+		);
+	}
+	return $out;
 }
