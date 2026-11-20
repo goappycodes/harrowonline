@@ -1,126 +1,127 @@
 <?php
 /**
- * Advertise in the Harrow Online newsletter: book an advert (converted from src/pages/advertise-newsletter.html).
- * URL: /advertise/newsletter/
+ * Advertise in the Harrow Online newsletter: book an advert. URL: /advertise/newsletter/
+ * Every text is the page's "Page text" box (Pages > Advertise in the newsletter); the prices come from the billing
+ * module and the dates from today's date. Data: hub_pages_advert() (app/modules/pages).
+ * The booking itself (holds, payment, the advert's review) isn't built yet: the form posts to /wp-json/ho/v1/sponsor/checkout.
  */
 defined( 'ABSPATH' ) || exit;
 hub_set_page( array(
-	'body' => 'is-logged-in page-sponsor',
+	'body' => 'page-sponsor',
 	'description' => 'Book an advert in the Harrow Online Daily News, The Weekend or Harrow Business newsletter. Pick dates, add your logo and pay online.',
 	'nav' => 'advertise',
-	'title' => 'Advertise in the Harrow Online newsletter: book an advert',
+	'title' => 'Advertise in the Harrow Online newsletter: book an advert',   // page title and description: Yoast SEO box, else these
 ) );
 get_header();
+
+$hub_a  = hub_pages_advert();
+$hub_t  = $hub_a['text'];
+$hub_pr = $hub_a['prices'];
+$hub_ac = $hub_a['account'];
+$hub_e  = function ( $k ) use ( $hub_t ) { return esc_html( $hub_t[ $k ] ); };   // a text field, escaped
+$hub_u  = function ( $k ) use ( $hub_t ) { return esc_url( $hub_t[ $k ] ); };    // a link field, escaped
+$hub_key = function () use ( $hub_e ) {   // the calendar key
+	echo '<div class="cal-legend sp-legend" aria-label="Key">'
+		. '<span><i class="a"></i>' . $hub_e( 'advertise_key_open' ) . '</span>'
+		. '<span><i class="f"></i>' . $hub_e( 'advertise_key_selected' ) . '</span>'
+		. '<span><i class="t"></i>' . $hub_e( 'advertise_key_booked' ) . '</span>'
+		. '<span><i class="h"></i>' . $hub_e( 'advertise_key_held' ) . '</span></div>';
+};
+$hub_slots = function ( array $slots, array $price ) use ( $hub_t ) {   // one calendar's buttons
+	foreach ( $slots as $s ) {
+		$mon = ( $s['week'] ? 'w/c ' : '' ) . $s['mon'];
+		if ( 'open' === $s['state'] ) {
+			echo '<button type="button" class="slot" aria-pressed="false" aria-label="' . esc_attr( $s['label'] . ', ' . $price['label'] ) . '"><small>' . esc_html( $mon ) . '</small><b>' . esc_html( $s['day'] ) . '</b><small>' . esc_html( $price['label'] ) . "</small></button>\n";
+		} else {
+			$why = 'no_issue' === $s['state'] ? $hub_t['advertise_label_no_issue'] : $hub_t['advertise_label_closed'];
+			echo '<button type="button" class="slot is-taken" aria-disabled="true" aria-label="' . esc_attr( $s['label'] . ', ' . strtolower( $why ) ) . '"><small>' . esc_html( $mon ) . '</small><b>' . esc_html( $s['day'] ) . '</b><small>' . esc_html( $why ) . "</small></button>\n";
+		}
+	}
+};
 ?>
 <nav class="crumbs ho-container" aria-label="Breadcrumb">
-  <ol><li><a href="<?php echo esc_url( hub_url( '' ) ); ?>">Hub</a></li><li><a href="<?php echo esc_url( hub_url( 'news-site/advertise/' ) ); ?>">Advertise</a></li><li><span aria-current="page">Newsletter advertising</span></li></ol>
+  <ol><li><a href="<?php echo esc_url( hub_url( '' ) ); ?>">Hub</a></li><li><a href="<?php echo $hub_u( 'advertise_crumb_parent_link' ); ?>"><?php echo $hub_e( 'advertise_crumb_parent' ); ?></a></li><li><span aria-current="page"><?php echo $hub_e( 'advertise_crumb' ); ?></span></li></ol>
 </nav>
 
 <header class="page-head ho-container sp-head">
   <div>
-    <h1 class="page-head__title">Advertise in the newsletter</h1>
-    <p class="page-head__lead">Put your business in front of Harrow Online newsletter readers with an advert: your logo, a short message and a link. One advert per issue. Book a day or a week and pay online.</p>
+    <h1 class="page-head__title"><?php echo $hub_e( 'advertise_title' ); ?></h1>
+    <p class="page-head__lead"><?php echo $hub_e( 'advertise_lead' ); ?></p>
   </div>
   <ul class="sp-facts" aria-label="At a glance">
-    <li><svg class="ho-icon"><use href="#i-star"/></svg><span><strong>One advert per issue</strong>No other advert in that issue</span></li>
-    <li><svg class="ho-icon"><use href="#i-calendar"/></svg><span><strong>A day or a week</strong>Daily News, The Weekend or Harrow Business</span></li>
-    <li><svg class="ho-icon"><use href="#i-mail"/></svg><span><strong>Logo, message and link</strong>Checked by our team before it goes out</span></li>
+<?php foreach ( $hub_t['advertise_facts'] as $hub_f ) : ?>
+    <li><svg class="ho-icon"><use href="#i-<?php echo esc_attr( sanitize_key( $hub_f['icon'] ) ); ?>"/></svg><span><strong><?php echo esc_html( $hub_f['title'] ); ?></strong><?php echo esc_html( $hub_f['text'] ); ?></span></li>
+<?php endforeach; ?>
   </ul>
 </header>
 
 <div class="ho-container">
-  <!-- Signed-out visitors see this instead of the form (a Hub account is required to book):
-  <div class="notice notice--plain mb-6">
-    <svg class="ho-icon"><use href="#i-user"/></svg>
-    <div><p><strong>Sign in to book an advert.</strong> You need a free Hub account so we can send your confirmation and invoice.</p>
-    <p><a href="<?php echo esc_url( hub_url( 'sign-in/' ) ); ?>">Sign in</a> or <a href="<?php echo esc_url( hub_url( 'register/' ) ); ?>">create a free account</a></p></div>
-  </div>
-  -->
   <div class="sp-who">
-    <p><svg class="ho-icon ho-icon--sm"><use href="#i-user"/></svg>Signed in as <strong>Hill Street Kitchen</strong> (Featured) &middot; <a href="<?php echo esc_url( hub_url( 'account/' ) ); ?>">My account</a></p>
-    <span class="cluster"><a class="link-quiet" href="https://harrowonline.org/advertise/">Become our main newsletter sponsor</a><a class="link-quiet" href="<?php echo esc_url( hub_url( 'news-site/advertise/' ) ); ?>">Other ways to advertise</a></span>
+<?php if ( $hub_ac['signed_in'] ) : ?>
+    <p><svg class="ho-icon ho-icon--sm"><use href="#i-user"/></svg><?php echo $hub_e( 'advertise_signed_in' ); ?> <strong><?php echo esc_html( $hub_ac['name'] ); ?></strong><?php echo '' !== $hub_ac['plan_label'] ? ' (' . esc_html( $hub_ac['plan_label'] ) . ')' : ''; ?> &middot; <a href="<?php echo esc_url( hub_url( 'account/' ) ); ?>"><?php echo $hub_e( 'advertise_account_label' ); ?></a></p>
+<?php else : ?>
+    <p><svg class="ho-icon ho-icon--sm"><use href="#i-user"/></svg><strong><?php echo $hub_e( 'advertise_signed_out_title' ); ?></strong> <?php echo $hub_e( 'advertise_signed_out_text' ); ?> <a href="<?php echo esc_url( add_query_arg( 'redirect_to', rawurlencode( hub_url( 'advertise/newsletter/' ) ), hub_url( 'sign-in/' ) ) ); ?>"><?php echo $hub_e( 'advertise_sign_in_label' ); ?></a> or <a href="<?php echo esc_url( hub_url( 'register/' ) ); ?>"><?php echo $hub_e( 'advertise_register_label' ); ?></a>.</p>
+<?php endif; ?>
+    <span class="cluster"><a class="link-quiet" href="<?php echo $hub_u( 'advertise_sponsor_link' ); ?>"><?php echo $hub_e( 'advertise_sponsor_label' ); ?></a><a class="link-quiet" href="<?php echo $hub_u( 'advertise_other_link' ); ?>"><?php echo $hub_e( 'advertise_other_label' ); ?></a></span>
   </div>
 
   <ol class="sp-steps" aria-label="Booking steps">
-    <li class="is-current" aria-current="step"><span class="sp-steps__n">1</span><span><small>Step 1</small>Edition and dates</span></li>
-    <li><span class="sp-steps__n">2</span><span><small>Step 2</small>Your advert</span></li>
-    <li><span class="sp-steps__n">3</span><span><small>Step 3</small>Pay</span></li>
+    <li class="is-current" aria-current="step"><span class="sp-steps__n">1</span><span><small>Step 1</small><?php echo $hub_e( 'advertise_step1' ); ?></span></li>
+    <li><span class="sp-steps__n">2</span><span><small>Step 2</small><?php echo $hub_e( 'advertise_step2' ); ?></span></li>
+    <li><span class="sp-steps__n">3</span><span><small>Step 3</small><?php echo $hub_e( 'advertise_step3' ); ?></span></li>
   </ol>
 
   <form class="layout-aside sp-form" action="<?php echo esc_url( hub_url( 'wp-json/ho/v1/sponsor/checkout' ) ); ?>" method="post" enctype="multipart/form-data">
     <div class="form-card claim-form sp-card">
       <section class="form-step" aria-labelledby="s1-title">
-        <h2 class="form-step__title sp-title" id="s1-title"><span>1</span>Choose an edition and dates</h2>
-        <p class="help mt-0">Prices include placement in every copy of that issue. Book at least two working days ahead so we can check your message.</p>
+        <h2 class="form-step__title sp-title" id="s1-title"><span>1</span><?php echo $hub_e( 'advertise_s1_title' ); ?></h2>
+        <p class="help mt-0"><?php echo $hub_e( 'advertise_s1_help' ); ?></p>
 
         <fieldset class="fieldset">
-          <legend>Edition</legend>
+          <legend><?php echo $hub_e( 'advertise_edition_legend' ); ?></legend>
           <div class="choice-grid choice-grid--3">
             <label class="choice">
               <input type="radio" name="edition" value="daily" checked data-reveal="#ed-daily">
               <span>
-                <span class="choice__title">Daily News</span>
-                <span class="choice__text">Monday to Friday, every morning.</span><span class="choice__price"><strong>&pound;45</strong> a day &middot; <strong>&pound;180</strong> a week</span>
+                <span class="choice__title"><?php echo $hub_e( 'advertise_daily_name' ); ?></span>
+                <span class="choice__text"><?php echo $hub_e( 'advertise_daily_text' ); ?></span><span class="choice__price"><strong><?php echo esc_html( $hub_pr['day']['label'] ); ?></strong> <?php echo $hub_e( 'advertise_a_day' ); ?> &middot; <strong><?php echo esc_html( $hub_pr['week']['label'] ); ?></strong> <?php echo $hub_e( 'advertise_a_week' ); ?></span>
               </span>
             </label>
             <label class="choice">
               <input type="radio" name="edition" value="weekend" data-reveal="#ed-weekend">
               <span>
-                <span class="choice__title">The Weekend</span>
-                <span class="choice__text">Thursdays: what&rsquo;s on in Harrow that weekend.</span><span class="choice__price"><strong>&pound;60</strong> an issue</span>
+                <span class="choice__title"><?php echo $hub_e( 'advertise_weekend_name' ); ?></span>
+                <span class="choice__text"><?php echo $hub_e( 'advertise_weekend_text' ); ?></span><span class="choice__price"><strong><?php echo esc_html( $hub_pr['weekend']['label'] ); ?></strong> <?php echo $hub_e( 'advertise_an_issue' ); ?></span>
               </span>
             </label>
             <label class="choice">
               <input type="radio" name="edition" value="business" data-reveal="#ed-business">
               <span>
-                <span class="choice__title">Harrow Business</span>
-                <span class="choice__text">Mondays: local business news and openings.</span><span class="choice__price"><strong>&pound;50</strong> an issue</span>
+                <span class="choice__title"><?php echo $hub_e( 'advertise_business_name' ); ?></span>
+                <span class="choice__text"><?php echo $hub_e( 'advertise_business_text' ); ?></span><span class="choice__price"><strong><?php echo esc_html( $hub_pr['business']['label'] ); ?></strong> <?php echo $hub_e( 'advertise_an_issue' ); ?></span>
               </span>
             </label>
           </div>
         </fieldset>
 
-
         <!-- Panels are in this DOM order on purpose: hub.js updates the summary from each [data-slots] on load,
-             so the default panel (Daily News, single days) comes last and its pre-selected dates show in the summary. -->
+             so the default panel (Daily News, single days) comes last and sets the summary. -->
         <div id="ed-weekend" class="mt-5" hidden>
-          <div class="cal-legend sp-legend" aria-label="Key">
-          <span><i class="a"></i>Available</span>
-          <span><i class="f"></i>Selected</span>
-          <span><i class="t"></i>Booked</span>
-          <span><i class="h"></i>On hold (someone is paying)</span>
-        </div>
-          <h3>The Weekend: Thursday issues</h3>
-          <div class="slots" data-slots data-price="60" role="group" aria-label="The Weekend issues">
-            <button type="button" class="slot" aria-pressed="false" aria-label="Thursday 19 November, &pound;60"><small>Nov</small><b>19</b><small>&pound;60</small></button>
-            <button type="button" class="slot is-taken" aria-disabled="true" aria-label="Thursday 26 November, booked"><small>Nov</small><b>26</b><small>Booked</small></button>
-            <button type="button" class="slot" aria-pressed="false" aria-label="Thursday 3 December, &pound;60"><small>Dec</small><b>3</b><small>&pound;60</small></button>
-            <button type="button" class="slot is-held" aria-disabled="true" aria-label="Thursday 10 December, on hold"><small>Dec</small><b>10</b><small>On hold</small></button>
-            <button type="button" class="slot" aria-pressed="false" aria-label="Thursday 17 December, &pound;60"><small>Dec</small><b>17</b><small>&pound;60</small></button>
-            <button type="button" class="slot is-taken" aria-disabled="true" aria-label="Thursday 24 December, no issue"><small>Dec</small><b>24</b><small>No issue</small></button>
-            <button type="button" class="slot is-taken" aria-disabled="true" aria-label="Thursday 31 December, no issue"><small>Dec</small><b>31</b><small>No issue</small></button>
+          <?php $hub_key(); ?>
+          <h3><?php echo $hub_e( 'advertise_weekend_heading' ); ?></h3>
+          <div class="slots" data-slots data-price="<?php echo esc_attr( $hub_pr['weekend']['number'] ); ?>" role="group" aria-label="<?php echo esc_attr( $hub_t['advertise_weekend_name'] ); ?> issues">
+<?php $hub_slots( $hub_a['calendars']['weekend'], $hub_pr['weekend'] ); ?>
           </div>
-          <p class="help mt-2">No Weekend issue on Christmas Eve or New Year&rsquo;s Eve.</p>
+          <p class="help mt-2"><?php echo $hub_e( 'advertise_weekend_note' ); ?></p>
         </div>
 
         <div id="ed-business" class="mt-5" hidden>
-          <div class="cal-legend sp-legend" aria-label="Key">
-          <span><i class="a"></i>Available</span>
-          <span><i class="f"></i>Selected</span>
-          <span><i class="t"></i>Booked</span>
-          <span><i class="h"></i>On hold (someone is paying)</span>
-        </div>
-          <h3>Harrow Business: Monday issues</h3>
-          <div class="slots" data-slots data-price="50" role="group" aria-label="Harrow Business issues">
-            <button type="button" class="slot is-taken" aria-disabled="true" aria-label="Monday 16 November, booked"><small>Nov</small><b>16</b><small>Booked</small></button>
-            <button type="button" class="slot" aria-pressed="false" aria-label="Monday 23 November, &pound;50"><small>Nov</small><b>23</b><small>&pound;50</small></button>
-            <button type="button" class="slot" aria-pressed="false" aria-label="Monday 30 November, &pound;50"><small>Nov</small><b>30</b><small>&pound;50</small></button>
-            <button type="button" class="slot" aria-pressed="false" aria-label="Monday 7 December, &pound;50"><small>Dec</small><b>7</b><small>&pound;50</small></button>
-            <button type="button" class="slot is-taken" aria-disabled="true" aria-label="Monday 14 December, booked"><small>Dec</small><b>14</b><small>Booked</small></button>
-            <button type="button" class="slot" aria-pressed="false" aria-label="Monday 21 December, &pound;50"><small>Dec</small><b>21</b><small>&pound;50</small></button>
-            <button type="button" class="slot is-taken" aria-disabled="true" aria-label="Monday 28 December, no issue"><small>Dec</small><b>28</b><small>No issue</small></button>
+          <?php $hub_key(); ?>
+          <h3><?php echo $hub_e( 'advertise_business_heading' ); ?></h3>
+          <div class="slots" data-slots data-price="<?php echo esc_attr( $hub_pr['business']['number'] ); ?>" role="group" aria-label="<?php echo esc_attr( $hub_t['advertise_business_name'] ); ?> issues">
+<?php $hub_slots( $hub_a['calendars']['business'], $hub_pr['business'] ); ?>
           </div>
-          <p class="help mt-2">No Business issue on 28 December.</p>
+          <p class="help mt-2"><?php echo $hub_e( 'advertise_business_note' ); ?></p>
         </div>
 
         <div id="ed-daily" class="mt-5">
@@ -129,102 +130,62 @@ get_header();
             <div class="choice-grid choice-grid--2">
               <label class="choice">
                 <input type="radio" name="length" value="day" checked data-reveal="#daily-days">
-                <span><span class="choice__title">Single days</span><span class="choice__text">&pound;45 a day. Pick as many as you like.</span></span>
+                <span><span class="choice__title"><?php echo $hub_e( 'advertise_days_title' ); ?></span><span class="choice__text"><?php echo $hub_e( 'advertise_days_text' ); ?></span></span>
               </label>
               <label class="choice">
                 <input type="radio" name="length" value="week" data-reveal="#daily-weeks">
-                <span><span class="choice__title">Full week <span class="badge badge--red">Save &pound;45</span></span><span class="choice__text">&pound;180 for Monday to Friday.</span></span>
+                <span><span class="choice__title"><?php echo $hub_e( 'advertise_week_title' ); ?> <span class="badge badge--red"><?php echo $hub_e( 'advertise_week_badge' ); ?></span></span><span class="choice__text"><?php echo $hub_e( 'advertise_week_text' ); ?></span></span>
               </label>
             </div>
           </fieldset>
 
           <div id="daily-weeks" class="mt-5" hidden>
-            <div class="cal-legend sp-legend" aria-label="Key">
-          <span><i class="a"></i>Available</span>
-          <span><i class="f"></i>Selected</span>
-          <span><i class="t"></i>Booked</span>
-          <span><i class="h"></i>On hold (someone is paying)</span>
-        </div>
-            <h3>Daily News: full weeks</h3>
-            <div class="slots" data-slots data-price="180" role="group" aria-label="Daily News weeks">
-            <button type="button" class="slot is-taken" aria-disabled="true" aria-label="Week commencing Monday 16 November, booked"><small>w/c Nov</small><b>16</b><small>Booked</small></button>
-            <button type="button" class="slot is-taken" aria-disabled="true" aria-label="Week commencing Monday 23 November, booked"><small>w/c Nov</small><b>23</b><small>Booked</small></button>
-            <button type="button" class="slot is-taken" aria-disabled="true" aria-label="Week commencing Monday 30 November, booked"><small>w/c Nov</small><b>30</b><small>Booked</small></button>
-            <button type="button" class="slot is-taken" aria-disabled="true" aria-label="Week commencing Monday 7 December, booked"><small>w/c Dec</small><b>7</b><small>Booked</small></button>
-            <button type="button" class="slot" aria-pressed="false" aria-label="Week commencing Monday 14 December, &pound;180"><small>w/c Dec</small><b>14</b><small>&pound;180</small></button>
-            <button type="button" class="slot" aria-pressed="false" aria-label="Week commencing Monday 21 December, &pound;180"><small>w/c Dec</small><b>21</b><small>&pound;180</small></button>
-            <button type="button" class="slot" aria-pressed="false" aria-label="Week commencing Monday 4 January, &pound;180"><small>w/c Jan</small><b>4</b><small>&pound;180</small></button>
+            <?php $hub_key(); ?>
+            <h3><?php echo $hub_e( 'advertise_weeks_heading' ); ?></h3>
+            <div class="slots" data-slots data-price="<?php echo esc_attr( $hub_pr['week']['number'] ); ?>" role="group" aria-label="<?php echo esc_attr( $hub_t['advertise_daily_name'] ); ?> weeks">
+<?php $hub_slots( $hub_a['calendars']['weeks'], $hub_pr['week'] ); ?>
             </div>
-            <p class="help mt-2">A week can only be booked when all five days are free.</p>
+            <p class="help mt-2"><?php echo $hub_e( 'advertise_weeks_note' ); ?></p>
           </div>
 
           <div id="daily-days" class="mt-5">
-            <div class="cal-legend sp-legend" aria-label="Key">
-          <span><i class="a"></i>Available</span>
-          <span><i class="f"></i>Selected</span>
-          <span><i class="t"></i>Booked</span>
-          <span><i class="h"></i>On hold (someone is paying)</span>
-        </div>
-            <h3>Daily News: 16 November to 18 December 2026</h3>
-            <div class="slots slots--weekdays" data-slots data-price="45" role="group" aria-label="Daily News dates">
+            <?php $hub_key(); ?>
+            <h3><?php echo $hub_e( 'advertise_days_heading' ); ?></h3>
+            <div class="slots slots--weekdays" data-slots data-price="<?php echo esc_attr( $hub_pr['day']['number'] ); ?>" role="group" aria-label="<?php echo esc_attr( $hub_t['advertise_daily_name'] ); ?> dates">
             <span class="slots__dow" aria-hidden="true">Mon</span><span class="slots__dow" aria-hidden="true">Tue</span><span class="slots__dow" aria-hidden="true">Wed</span><span class="slots__dow" aria-hidden="true">Thu</span><span class="slots__dow" aria-hidden="true">Fri</span>
-            <button type="button" class="slot is-taken" aria-disabled="true" aria-label="Monday 16 November, booked"><small>Nov</small><b>16</b><small>Booked</small></button>
-            <button type="button" class="slot is-taken" aria-disabled="true" aria-label="Tuesday 17 November, booked"><small>Nov</small><b>17</b><small>Booked</small></button>
-            <button type="button" class="slot" aria-pressed="false" aria-label="Wednesday 18 November, &pound;45"><small>Nov</small><b>18</b><small>&pound;45</small></button>
-            <button type="button" class="slot is-held" aria-disabled="true" aria-label="Thursday 19 November, on hold"><small>Nov</small><b>19</b><small>On hold</small></button>
-            <button type="button" class="slot" aria-pressed="false" aria-label="Friday 20 November, &pound;45"><small>Nov</small><b>20</b><small>&pound;45</small></button>
-            <button type="button" class="slot is-taken" aria-disabled="true" aria-label="Monday 23 November, booked"><small>Nov</small><b>23</b><small>Booked</small></button>
-            <button type="button" class="slot is-selected" aria-pressed="true" aria-label="Tuesday 24 November, &pound;45"><small>Nov</small><b>24</b><small>&pound;45</small></button>
-            <button type="button" class="slot" aria-pressed="false" aria-label="Wednesday 25 November, &pound;45"><small>Nov</small><b>25</b><small>&pound;45</small></button>
-            <button type="button" class="slot is-selected" aria-pressed="true" aria-label="Thursday 26 November, &pound;45"><small>Nov</small><b>26</b><small>&pound;45</small></button>
-            <button type="button" class="slot" aria-pressed="false" aria-label="Friday 27 November, &pound;45"><small>Nov</small><b>27</b><small>&pound;45</small></button>
-            <button type="button" class="slot" aria-pressed="false" aria-label="Monday 30 November, &pound;45"><small>Nov</small><b>30</b><small>&pound;45</small></button>
-            <button type="button" class="slot is-taken" aria-disabled="true" aria-label="Tuesday 1 December, booked"><small>Dec</small><b>1</b><small>Booked</small></button>
-            <button type="button" class="slot is-taken" aria-disabled="true" aria-label="Wednesday 2 December, booked"><small>Dec</small><b>2</b><small>Booked</small></button>
-            <button type="button" class="slot" aria-pressed="false" aria-label="Thursday 3 December, &pound;45"><small>Dec</small><b>3</b><small>&pound;45</small></button>
-            <button type="button" class="slot" aria-pressed="false" aria-label="Friday 4 December, &pound;45"><small>Dec</small><b>4</b><small>&pound;45</small></button>
-            <button type="button" class="slot" aria-pressed="false" aria-label="Monday 7 December, &pound;45"><small>Dec</small><b>7</b><small>&pound;45</small></button>
-            <button type="button" class="slot" aria-pressed="false" aria-label="Tuesday 8 December, &pound;45"><small>Dec</small><b>8</b><small>&pound;45</small></button>
-            <button type="button" class="slot is-taken" aria-disabled="true" aria-label="Wednesday 9 December, booked"><small>Dec</small><b>9</b><small>Booked</small></button>
-            <button type="button" class="slot" aria-pressed="false" aria-label="Thursday 10 December, &pound;45"><small>Dec</small><b>10</b><small>&pound;45</small></button>
-            <button type="button" class="slot" aria-pressed="false" aria-label="Friday 11 December, &pound;45"><small>Dec</small><b>11</b><small>&pound;45</small></button>
-            <button type="button" class="slot" aria-pressed="false" aria-label="Monday 14 December, &pound;45"><small>Dec</small><b>14</b><small>&pound;45</small></button>
-            <button type="button" class="slot" aria-pressed="false" aria-label="Tuesday 15 December, &pound;45"><small>Dec</small><b>15</b><small>&pound;45</small></button>
-            <button type="button" class="slot" aria-pressed="false" aria-label="Wednesday 16 December, &pound;45"><small>Dec</small><b>16</b><small>&pound;45</small></button>
-            <button type="button" class="slot" aria-pressed="false" aria-label="Thursday 17 December, &pound;45"><small>Dec</small><b>17</b><small>&pound;45</small></button>
-            <button type="button" class="slot" aria-pressed="false" aria-label="Friday 18 December, &pound;45"><small>Dec</small><b>18</b><small>&pound;45</small></button>
+<?php $hub_slots( $hub_a['calendars']['days'], $hub_pr['day'] ); ?>
             </div>
-            <p class="help mt-2">Daily News goes out Monday to Friday. Later dates open as each month is published.</p>
+            <p class="help mt-2"><?php echo $hub_e( 'advertise_days_note' ); ?></p>
           </div>
         </div>
       </section>
 
       <section class="form-step" aria-labelledby="s2-title">
-        <h2 class="form-step__title sp-title" id="s2-title"><span>2</span>Your advert</h2>
-        <p class="help mt-0">This is what readers see at the top of the newsletter. Keep it short and friendly.</p>
+        <h2 class="form-step__title sp-title" id="s2-title"><span>2</span><?php echo $hub_e( 'advertise_s2_title' ); ?></h2>
+        <p class="help mt-0"><?php echo $hub_e( 'advertise_s2_help' ); ?></p>
         <div class="form">
           <div class="field">
-            <label for="sp-name">Business name</label>
-            <input class="input" id="sp-name" name="sponsor_name" type="text" value="Hill Street Kitchen" required>
+            <label for="sp-name"><?php echo $hub_e( 'advertise_name_label' ); ?></label>
+            <input class="input" id="sp-name" name="sponsor_name" type="text" value="<?php echo esc_attr( $hub_ac['name'] ); ?>" required>
           </div>
           <div class="field">
-            <span class="field__label" id="sp-logo-label">Logo</span>
+            <span class="field__label" id="sp-logo-label"><?php echo $hub_e( 'advertise_logo_label' ); ?></span>
             <label class="dropzone" for="sp-logo">
               <svg class="ho-icon"><use href="#i-upload"/></svg>
-              <strong>Upload your logo</strong>
-              <p>PNG or JPG, up to 1MB. Square logos work best, at least 200 by 200 pixels.</p>
+              <strong><?php echo $hub_e( 'advertise_logo_title' ); ?></strong>
+              <p><?php echo $hub_e( 'advertise_logo_text' ); ?></p>
             </label>
             <input class="ho-sr" id="sp-logo" name="logo" type="file" accept="image/png,image/jpeg" aria-labelledby="sp-logo-label" required>
           </div>
           <div class="field">
-            <label for="sp-msg">Message <span class="opt">(up to 140 characters)</span></label>
-            <textarea class="textarea" id="sp-msg" name="message" maxlength="140" rows="3" data-counter required>Sunday roasts are back. Book a table for four and the first bottle of wine is on us.</textarea>
-            <p class="help">Plain text only. No prices that might change, and no ALL CAPS.</p>
+            <label for="sp-msg"><?php echo $hub_e( 'advertise_message_label' ); ?> <span class="opt"><?php echo $hub_e( 'advertise_message_limit' ); ?></span></label>
+            <textarea class="textarea" id="sp-msg" name="message" maxlength="140" rows="3" data-counter required></textarea>
+            <p class="help"><?php echo $hub_e( 'advertise_message_help' ); ?></p>
           </div>
           <div class="field">
-            <label for="sp-url">Link</label>
-            <input class="input" id="sp-url" name="link" type="url" value="https://www.hillstreetkitchen.example/book" placeholder="https://" required>
-            <p class="help">Where readers go when they click. We add tracking tags so you can see the visits in your own analytics.</p>
+            <label for="sp-url"><?php echo $hub_e( 'advertise_link_label' ); ?></label>
+            <input class="input" id="sp-url" name="link" type="url" value="<?php echo esc_attr( $hub_ac['website'] ); ?>" placeholder="https://" required>
+            <p class="help"><?php echo $hub_e( 'advertise_link_help' ); ?></p>
           </div>
         </div>
       </section>
@@ -232,58 +193,58 @@ get_header();
 
     <aside class="sticky stack" aria-label="Preview and order summary">
       <div>
-        <p class="eyebrow mb-2">Preview</p>
+        <p class="eyebrow mb-2"><?php echo $hub_e( 'advertise_preview_label' ); ?></p>
         <div class="nl-preview" aria-label="How your advert looks in the newsletter">
-          <div class="nl-preview__mast"><span>Harrow Online</span><small>Tuesday 24 November</small></div>
+          <div class="nl-preview__mast"><span><?php echo $hub_e( 'advertise_preview_mast' ); ?></span><small><?php echo esc_html( $hub_a['preview_date'] ); ?></small></div>
           <div class="nl-preview__body">
             <div class="nl-preview__sponsor">
-              <div class="ph"><svg class="ho-icon"><use href="#i-food"/></svg></div>
-              <div><strong>Hill Street Kitchen</strong> &middot; <a href="#sp-url">Sunday roasts are back. Book a table for four and the first bottle of wine is on us. &rarr;</a></div>
-              <span class="nl-preview__tag">Advert</span>
+              <div class="ph"><svg class="ho-icon"><use href="#i-<?php echo esc_attr( sanitize_key( $hub_ac['icon'] ) ); ?>"/></svg></div>
+              <div><strong><?php echo esc_html( '' !== $hub_ac['name'] ? $hub_ac['name'] : $hub_t['advertise_preview_name'] ); ?></strong> &middot; <a href="#sp-url"><?php echo $hub_e( 'advertise_preview_message' ); ?> &rarr;</a></div>
+              <span class="nl-preview__tag"><?php echo $hub_e( 'advertise_preview_tag' ); ?></span>
             </div>
-            <p class="nl-preview__hello">Good morning, Harrow.</p>
+            <p class="nl-preview__hello"><?php echo $hub_e( 'advertise_preview_hello' ); ?></p>
             <div aria-hidden="true"><div class="nl-preview__line"></div><div class="nl-preview__line"></div><div class="nl-preview__line"></div><div class="nl-preview__line"></div></div>
           </div>
         </div>
-        <p class="help mt-2">The preview shows your saved message. Your logo appears once uploaded.</p>
+        <p class="help mt-2"><?php echo $hub_e( 'advertise_preview_help' ); ?></p>
       </div>
 
       <div class="add-biz__panel sp-order">
-        <h2 class="form-step__title sp-title"><span>3</span>Your order</h2>
+        <h2 class="form-step__title sp-title"><span>3</span><?php echo $hub_e( 'advertise_s3_title' ); ?></h2>
         <ul class="summary">
-          <li><span>Edition</span><strong>Daily News</strong></li>
-          <li><span>Dates selected</span><strong><span data-slot-count>2</span></strong></li>
-          <li><span>Price each</span><span>&pound;45.00</span></li>
-          <li class="total"><span>Total</span><span data-slot-total>&pound;90.00</span></li>
+          <li><span><?php echo $hub_e( 'advertise_sum_edition' ); ?></span><strong><?php echo $hub_e( 'advertise_daily_name' ); ?></strong></li>
+          <li><span><?php echo $hub_e( 'advertise_sum_dates' ); ?></span><strong><span data-slot-count>0</span></strong></li>
+          <li><span><?php echo $hub_e( 'advertise_sum_each' ); ?></span><span><?php echo esc_html( $hub_pr['day']['each'] ); ?></span></li>
+          <li class="total"><span><?php echo $hub_e( 'advertise_sum_total' ); ?></span><span data-slot-total>£0.00</span></li>
         </ul>
-        <p class="help mt-2">VAT shown at checkout if it applies.</p>
-        <p class="sp-tip"><svg class="ho-icon ho-icon--sm"><use href="#i-star"/></svg><span><strong>Local Partner members get an included advert:</strong> one Daily News advert a month at no charge. Pick your date and it&rsquo;s free at checkout, or ask our team to place it for you.</span></p>
-        <button class="ho-btn ho-btn--primary ho-btn--block mt-4" type="submit"><svg class="ho-icon"><use href="#i-lock"/></svg>Pay with Stripe</button>
+        <p class="help mt-2"><?php echo $hub_e( 'advertise_vat' ); ?></p>
+        <p class="sp-tip"><svg class="ho-icon ho-icon--sm"><use href="#i-star"/></svg><span><strong><?php echo $hub_e( 'advertise_partner_title' ); ?></strong> <?php echo $hub_e( 'advertise_partner_text' ); ?></span></p>
+        <button class="ho-btn ho-btn--primary ho-btn--block mt-4" type="submit"><svg class="ho-icon"><use href="#i-lock"/></svg><?php echo $hub_e( 'advertise_pay' ); ?></button>
         <ul class="ticks small mt-5 mb-0">
-          <li>We hold your dates for 30 minutes while you pay.</li>
-          <li>Our team checks your logo and message before it goes out. If we can&rsquo;t run it, we refund you in full.</li>
-          <li>You get a confirmation email with your dates and a receipt.</li>
+<?php foreach ( $hub_t['advertise_ticks'] as $hub_line ) : ?>
+          <li><?php echo esc_html( $hub_line ); ?></li>
+<?php endforeach; ?>
         </ul>
       </div>
-      <p class="small muted">Questions about advertising? <a href="<?php echo esc_url( hub_url( 'news-site/advertise/' ) ); ?>">Contact our advertising team</a>.</p>
+      <p class="small muted"><?php echo $hub_e( 'advertise_questions' ); ?> <a href="<?php echo $hub_u( 'advertise_questions_link' ); ?>"><?php echo $hub_e( 'advertise_questions_label' ); ?></a>.</p>
     </aside>
   </form>
 </div>
 
-<!-- Main newsletter sponsor (client, Nov 2026): one business at a time, set up by hand for an agreed period. For now
-     it links to the Harrow Online advertising page (the client will redo that page after launch; no form on the Hub). -->
+<?php if ( ! $hub_t['advertise_sponsor_hide'] ) : ?>
 <section class="section section--soft" id="main-sponsor" aria-labelledby="ms-title">
   <div class="ho-container">
     <div class="cta-band">
       <div>
-        <p class="eyebrow">Main newsletter sponsor</p>
-        <h2 id="ms-title">Become our main newsletter sponsor</h2>
-        <p>Your logo, &ldquo;Supported by&rdquo; your business name and a link to your website at the top of every Daily News issue, for the period we agree. Individual adverts can still run alongside it.</p>
+        <p class="eyebrow"><?php echo $hub_e( 'advertise_sponsor_eyebrow' ); ?></p>
+        <h2 id="ms-title"><?php echo $hub_e( 'advertise_sponsor_title' ); ?></h2>
+        <p><?php echo $hub_e( 'advertise_sponsor_text' ); ?></p>
       </div>
       <div class="cta-band__actions">
-        <a class="ho-btn ho-btn--primary" href="https://harrowonline.org/advertise/">Contact us for pricing</a>
+        <a class="ho-btn ho-btn--primary" href="<?php echo $hub_u( 'advertise_sponsor_button_link' ); ?>"><?php echo $hub_e( 'advertise_sponsor_button' ); ?></a>
       </div>
     </div>
   </div>
 </section>
+<?php endif; ?>
 <?php get_footer();

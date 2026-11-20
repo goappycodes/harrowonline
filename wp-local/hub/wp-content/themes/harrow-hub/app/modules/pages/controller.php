@@ -1,7 +1,7 @@
 <?php
 /**
  * Page text: the editable wording of the Hub's pages (What's On, Classes and activities, Local Offers, Pricing, Privacy,
- * Terms; see rules.php to add one).
+ * Terms, Data sources, Advertise in the newsletter; see rules.php to add one).
  */
 defined( 'ABSPATH' ) || exit;
 
@@ -102,4 +102,79 @@ function hub_pages_setup_bodies() {
 			hub_pages_db_set_body( $id, hub_pages_rule_default_body( $page ) );
 		}
 	}
+}
+
+/**
+ * Advertise in the newsletter: the page's text with the prices filled in (billing module), the signed-in account
+ * (account module) and the booking calendars from today's date.
+ * @return array|WP_REST_Response { text, prices: { day, week, weekend, business: { label "£45", number "45", each "£45.00" }, save },
+ *         account: { signed_in, name, plan_label, icon, website }, calendars: { days, weeks, weekend, business }, days_from, days_to, preview_date }
+ */
+function hub_pages_advert( $mode = HUB_WEB ) {
+	$t     = hub_pages_text( 'advertise' );
+	$items = array();
+	foreach ( hub_billing_catalogue()['items'] as $i ) {   // billing module
+		$items[ $i['key'] ] = $i;
+	}
+	$amount = function ( $key ) {
+		return isset( HUB_BILLING_ITEMS[ $key ] ) ? (int) HUB_BILLING_ITEMS[ $key ]['amount'] : 0;
+	};
+	$price  = function ( $key ) use ( $amount ) {
+		$p = $amount( $key );
+		return array( 'label' => hub_billing_rule_money( $p ), 'number' => rtrim( rtrim( number_format( $p / 100, 2, '.', '' ), '0' ), '.' ), 'each' => '£' . number_format( $p / 100, 2 ) );
+	};
+	$prices = array(
+		'day'      => $price( 'sponsor_daily_day' ),
+		'week'     => $price( 'sponsor_daily_week' ),
+		'weekend'  => $price( 'sponsor_weekend' ),
+		'business' => $price( 'sponsor_business' ),
+		'save'     => hub_billing_rule_money( max( 0, 5 * $amount( 'sponsor_daily_day' ) - $amount( 'sponsor_daily_week' ) ) ),
+	);
+	$t = hub_pages_rule_fill( $t, array( '{day}' => $prices['day']['label'], '{week}' => $prices['week']['label'], '{save}' => $prices['save'], '{weekend}' => $prices['weekend']['label'], '{business}' => $prices['business']['label'] ) );
+
+	$no_issue = array( 'daily' => array(), 'weekend' => array(), 'business' => array() );
+	foreach ( $t['advertise_no_issue'] as $row ) {
+		$ed = strtolower( trim( $row['edition'] ) );
+		if ( isset( $no_issue[ $ed ] ) && preg_match( '/^\d{4}-\d{2}-\d{2}$/', trim( $row['date'] ) ) ) {
+			$no_issue[ $ed ][ trim( $row['date'] ) ] = true;
+		}
+	}
+	$earliest  = hub_pages_rule_advert_earliest( hub_today() );
+	$calendars = array(
+		'days'     => hub_pages_rule_advert_slots( $earliest, 'days', $no_issue['daily'] ),
+		'weeks'    => hub_pages_rule_advert_slots( $earliest, 'weeks', $no_issue['daily'] ),
+		'weekend'  => hub_pages_rule_advert_slots( $earliest, 'weekend', $no_issue['weekend'] ),
+		'business' => hub_pages_rule_advert_slots( $earliest, 'business', $no_issue['business'] ),
+	);
+	$first = reset( $calendars['days'] );
+	$last  = end( $calendars['days'] );
+	$from  = date_create_immutable( $first['date'] );
+	$to    = date_create_immutable( $last['date'] );
+	$t['advertise_days_heading'] = strtr( $t['advertise_days_heading'], array(
+		'{from}' => $from->format( 'Y' ) === $to->format( 'Y' ) ? $from->format( 'j F' ) : $from->format( 'j F Y' ),
+		'{to}'   => $to->format( 'j F Y' ),
+	) );
+	$preview = $earliest;
+	foreach ( $calendars['days'] as $d ) {
+		if ( 'open' === $d['state'] ) {
+			$preview = date_create_immutable( $d['date'] );
+			break;
+		}
+	}
+
+	$acc      = hub_account_current();   // account module
+	$business = ! empty( $acc['business'] ) ? $acc['business'] : null;
+	return hub_respond( array(
+		'text'         => $t,
+		'prices'       => $prices,
+		'account'      => array(
+			'signed_in'  => ! empty( $acc['signed_in'] ),
+			'name'       => $business ? $business['name'] : ( isset( $acc['name'] ) ? $acc['name'] : '' ),
+			'plan_label' => isset( $acc['plan_label'] ) ? $acc['plan_label'] : '',
+			'icon'       => $business && ! empty( $business['icon'] ) ? $business['icon'] : 'store',
+			'website'    => $business && ! empty( $business['website'] ) ? $business['website'] : '',
+		),
+		'calendars'    => $calendars,
+		'preview_date' => $preview->format( 'l j F' ),
+	), $mode );
 }

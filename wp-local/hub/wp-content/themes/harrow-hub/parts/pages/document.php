@@ -1,7 +1,7 @@
 <?php
 /**
- * A document page (privacy, terms): breadcrumb, header, the "On this page" card and the text from the page's editor.
- * $args: page ("privacy" | "terms").
+ * A document page (privacy, terms, sources): breadcrumb, header, the "On this page" card and the text from the page's
+ * editor; a draft note and an attribution box when the page has them. $args: page ("privacy" | "terms" | "sources").
  */
 defined( 'ABSPATH' ) || exit;
 
@@ -9,7 +9,7 @@ $page = $args['page'];
 $t    = hub_pages_text( $page );
 $doc  = hub_pages_document( $page );
 $k    = function ( $field ) use ( $t, $page ) {
-	return $t[ $page . '_' . $field ];
+	return isset( $t[ $page . '_' . $field ] ) ? $t[ $page . '_' . $field ] : '';
 };
 ?>
 <nav class="crumbs ho-container" aria-label="Breadcrumb">
@@ -43,10 +43,16 @@ $k    = function ( $field ) use ( $t, $page ) {
   <div class="legal__main">
     <div class="legal__meta">
       <p class="legal__updated"><svg class="ho-icon ho-icon--sm" aria-hidden="true"><use href="#i-calendar"/></svg><?php echo esc_html( $k( 'updated' ) ); ?></p>
-<?php if ( ! $k( 'draft_hide' ) ) : ?>
+<?php if ( '' !== $k( 'draft_title' ) && ! $k( 'draft_hide' ) ) : ?>
       <p class="legal__draft"><svg class="ho-icon ho-icon--sm" aria-hidden="true"><use href="#i-alert"/></svg><span><strong><?php echo esc_html( $k( 'draft_title' ) ); ?></strong> <?php echo esc_html( $k( 'draft_text' ) ); ?></span></p>
 <?php endif; ?>
     </div>
+<?php if ( '' !== $k( 'attrib_text' ) && ! $k( 'attrib_hide' ) ) : ?>
+    <div class="legal__attrib">
+      <p class="legal__attrib-label"><?php echo esc_html( $k( 'attrib_label' ) ); ?></p>
+      <p class="mb-0"><?php echo wp_kses( hub_html_links( $k( 'attrib_text' ) ), array( 'a' => array( 'href' => true, 'rel' => true, 'target' => true ), 'strong' => array(), 'em' => array(), 'br' => array() ) ); ?></p>
+    </div>
+<?php endif; ?>
     <div class="prose legal__prose">
 <?php echo $doc['html']; // phpcs:ignore WordPress.Security.EscapeOutput -- the page's own content, through the_content ?>
   </div>

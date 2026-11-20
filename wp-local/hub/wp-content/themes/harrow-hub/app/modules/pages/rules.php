@@ -16,10 +16,12 @@ const HUB_PAGES = array(
 	'pricing' => 'pricing',          // Plans and prices (page-templates/pricing.php); the prices come from billing
 	'privacy' => 'privacy',          // Privacy notice: its text is the page's own editor (HUB_PAGES_DOCUMENTS)
 	'terms'   => 'terms',            // Terms of use: the same
+	'sources' => 'data-sources',     // Data sources: the same
+	'advertise' => 'advertise/newsletter',   // Advertise in the newsletter (page-templates/advertise-newsletter.php)
 );
 
 /** Pages whose main text is the WordPress editor's (with an "On this page" list from its headings). */
-const HUB_PAGES_DOCUMENTS = array( 'privacy', 'terms' );
+const HUB_PAGES_DOCUMENTS = array( 'privacy', 'terms', 'sources' );
 
 /** Every field of a page with its default: text, '' for the "…_hide" switches, rows for lists. */
 function hub_pages_rule_defaults( $page ) {
@@ -288,9 +290,201 @@ function hub_pages_rule_defaults_terms() {
 	);
 }
 
-/** The starting text of a document page (privacy, terms): content/{page}.html. */
+/** Data sources (/data-sources/): today's wording. The text itself is the page's editor (content/data-sources.html to start). */
+function hub_pages_rule_defaults_sources() {
+	return array(
+		'sources_crumb'        => 'Data sources',
+		'sources_title'        => 'Data sources',
+		'sources_lead'         => 'Where our business listings come from, the licences we use them under, and how to fix or remove a listing.',
+		'sources_toc_title'    => 'On this page',
+		'sources_updated'      => 'Last updated: 11 November 2026',
+		'sources_attrib_hide'  => '',
+		'sources_attrib_label' => 'Attribution',
+		'sources_attrib_text'  => '<strong>Business data © Overture Maps Foundation and its sources</strong> (BrightQuery, Meta, Microsoft, Uberall, DAC, PinMeTo), used under the <a href="https://cdla.dev/permissive-2-0/" rel="noopener">Community Data License Agreement, Permissive, Version 2.0</a> and, where applicable, the <a href="https://opendatacommons.org/licenses/odbl/" rel="noopener">Open Database License (ODbL)</a>.',
+	);
+}
+
+/**
+ * Advertise in the newsletter (/advertise/newsletter/): today's wording. The prices come from the billing module
+ * ({day}, {week}, {save} in any text) and the issue dates from today's date (hub_pages_rule_advert_slots()).
+ */
+function hub_pages_rule_defaults_advertise() {
+	return array(
+		'advertise_crumb_parent' => 'Advertise',
+		'advertise_crumb_parent_link' => 'news-site/advertise/',
+		'advertise_crumb' => 'Newsletter advertising',
+		'advertise_title' => 'Advertise in the newsletter',
+		'advertise_lead' => 'Put your business in front of Harrow Online newsletter readers with an advert: your logo, a short message and a link. One advert per issue. Book a day or a week and pay online.',
+		'advertise_facts' => array(
+			array( 'icon' => 'star', 'title' => 'One advert per issue', 'text' => 'No other advert in that issue' ),
+			array( 'icon' => 'calendar', 'title' => 'A day or a week', 'text' => 'Daily News, The Weekend or Harrow Business' ),
+			array( 'icon' => 'mail', 'title' => 'Logo, message and link', 'text' => 'Checked by our team before it goes out' ),
+		),
+		'advertise_signed_in' => 'Signed in as',
+		'advertise_account_label' => 'My account',
+		'advertise_signed_out_title' => 'Sign in to book an advert.',
+		'advertise_signed_out_text' => 'You need a free Hub account so we can send your confirmation and invoice.',
+		'advertise_sign_in_label' => 'Sign in',
+		'advertise_register_label' => 'create a free account',
+		'advertise_sponsor_label' => 'Become our main newsletter sponsor',
+		'advertise_sponsor_link' => 'https://harrowonline.org/advertise/',
+		'advertise_other_label' => 'Other ways to advertise',
+		'advertise_other_link' => 'news-site/advertise/',
+		'advertise_step1' => 'Edition and dates',
+		'advertise_step2' => 'Your advert',
+		'advertise_step3' => 'Pay',
+		'advertise_s1_title' => 'Choose an edition and dates',
+		'advertise_s1_help' => 'Prices include placement in every copy of that issue. Book at least two working days ahead so we can check your message.',
+		'advertise_edition_legend' => 'Edition',
+		'advertise_daily_name' => 'Daily News',
+		'advertise_daily_text' => 'Monday to Friday, every morning.',
+		'advertise_weekend_name' => 'The Weekend',
+		'advertise_weekend_text' => 'Thursdays: what’s on in Harrow that weekend.',
+		'advertise_business_name' => 'Harrow Business',
+		'advertise_business_text' => 'Mondays: local business news and openings.',
+		'advertise_a_day' => 'a day',
+		'advertise_a_week' => 'a week',
+		'advertise_an_issue' => 'an issue',
+		'advertise_key_open' => 'Available',
+		'advertise_key_selected' => 'Selected',
+		'advertise_key_booked' => 'Booked',
+		'advertise_key_held' => 'On hold (someone is paying)',
+		'advertise_label_closed' => 'Closed',
+		'advertise_label_no_issue' => 'No issue',
+		'advertise_weekend_heading' => 'The Weekend: Thursday issues',
+		'advertise_weekend_note' => 'No Weekend issue on Christmas Eve or New Year’s Eve.',
+		'advertise_business_heading' => 'Harrow Business: Monday issues',
+		'advertise_business_note' => 'No Business issue on 28 December.',
+		'advertise_no_issue' => array(   // dates with no issue: YYYY-MM-DD and daily | weekend | business
+			array( 'date' => '2026-12-24', 'edition' => 'weekend' ),
+			array( 'date' => '2026-12-31', 'edition' => 'weekend' ),
+			array( 'date' => '2026-12-28', 'edition' => 'business' ),
+			array( 'date' => '2026-12-28', 'edition' => 'daily' ),
+			array( 'date' => '2026-12-29', 'edition' => 'daily' ),
+			array( 'date' => '2026-12-30', 'edition' => 'daily' ),
+			array( 'date' => '2026-12-31', 'edition' => 'daily' ),
+			array( 'date' => '2027-01-01', 'edition' => 'daily' ),
+		),
+		'advertise_days_title' => 'Single days',
+		'advertise_days_text' => '{day} a day. Pick as many as you like.',
+		'advertise_week_title' => 'Full week',
+		'advertise_week_badge' => 'Save {save}',
+		'advertise_week_text' => '{week} for Monday to Friday.',
+		'advertise_weeks_heading' => 'Daily News: full weeks',
+		'advertise_weeks_note' => 'A week can only be booked when all five days are free.',
+		'advertise_days_heading' => 'Daily News: {from} to {to}',
+		'advertise_days_note' => 'Daily News goes out Monday to Friday. Later dates open as each month is published.',
+		'advertise_s2_title' => 'Your advert',
+		'advertise_s2_help' => 'This is what readers see at the top of the newsletter. Keep it short and friendly.',
+		'advertise_name_label' => 'Business name',
+		'advertise_logo_label' => 'Logo',
+		'advertise_logo_title' => 'Upload your logo',
+		'advertise_logo_text' => 'PNG or JPG, up to 1MB. Square logos work best, at least 200 by 200 pixels.',
+		'advertise_message_label' => 'Message',
+		'advertise_message_limit' => '(up to 140 characters)',
+		'advertise_message_help' => 'Plain text only. No prices that might change, and no ALL CAPS.',
+		'advertise_link_label' => 'Link',
+		'advertise_link_help' => 'Where readers go when they click. We add tracking tags so you can see the visits in your own analytics.',
+		'advertise_preview_label' => 'Preview',
+		'advertise_preview_mast' => 'Harrow Online',
+		'advertise_preview_name' => 'Your business',
+		'advertise_preview_message' => 'Your message appears here. Keep it short and friendly.',
+		'advertise_preview_tag' => 'Advert',
+		'advertise_preview_hello' => 'Good morning, Harrow.',
+		'advertise_preview_help' => 'The preview shows your saved message. Your logo appears once uploaded.',
+		'advertise_s3_title' => 'Your order',
+		'advertise_sum_edition' => 'Edition',
+		'advertise_sum_dates' => 'Dates selected',
+		'advertise_sum_each' => 'Price each',
+		'advertise_sum_total' => 'Total',
+		'advertise_vat' => 'VAT shown at checkout if it applies.',
+		'advertise_partner_title' => 'Local Partner members get an included advert:',
+		'advertise_partner_text' => 'one Daily News advert a month at no charge. Pick your date and it’s free at checkout, or ask our team to place it for you.',
+		'advertise_pay' => 'Pay with Stripe',
+		'advertise_ticks' => array( 'We hold your dates for 30 minutes while you pay.', 'Our team checks your logo and message before it goes out. If we can’t run it, we refund you in full.', 'You get a confirmation email with your dates and a receipt.' ),
+		'advertise_questions' => 'Questions about advertising?',
+		'advertise_questions_label' => 'Contact our advertising team',
+		'advertise_questions_link' => 'news-site/advertise/',
+		'advertise_sponsor_hide' => '',
+		'advertise_sponsor_eyebrow' => 'Main newsletter sponsor',
+		'advertise_sponsor_title' => 'Become our main newsletter sponsor',
+		'advertise_sponsor_text' => 'Your logo, “Supported by” your business name and a link to your website at the top of every Daily News issue, for the period we agree. Individual adverts can still run alongside it.',
+		'advertise_sponsor_button' => 'Contact us for pricing',
+		'advertise_sponsor_button_link' => 'https://harrowonline.org/advertise/',
+	);
+}
+
+/** How far ahead the booking calendars go. */
+const HUB_PAGES_ADVERT_ISSUES      = 7;   // The Weekend, Harrow Business, Daily News full weeks
+const HUB_PAGES_ADVERT_DAILY_WEEKS = 5;   // Daily News single days: five weeks of weekdays
+const HUB_PAGES_ADVERT_LEAD_DAYS   = 2;   // book at least two working days ahead
+
+/** The first date an advert can be booked for: $today plus the lead time in working days (Monday to Friday). */
+function hub_pages_rule_advert_earliest( DateTimeImmutable $today ) {
+	$d = $today;
+	for ( $n = 0; $n < HUB_PAGES_ADVERT_LEAD_DAYS; ) {
+		$d = $d->modify( '+1 day' );
+		if ( (int) $d->format( 'N' ) <= 5 ) {
+			$n++;
+		}
+	}
+	return $d;
+}
+
+/**
+ * The dates to show for one calendar. $kind: "days" (Daily News weekdays), "weeks" (Daily News full weeks), "weekend"
+ * (Thursdays) or "business" (Mondays). $no_issue: [ 'Y-m-d' => true ] for that edition. Each slot:
+ * { date, state: open | closed (too soon) | no_issue, mon ("Nov"), day ("19"), label ("Thursday 19 November"), week: bool }
+ */
+function hub_pages_rule_advert_slots( DateTimeImmutable $earliest, $kind, array $no_issue ) {
+	$monday = $earliest->modify( 'monday this week' );
+	$dates  = array();
+	if ( 'days' === $kind ) {
+		for ( $w = 0; $w < HUB_PAGES_ADVERT_DAILY_WEEKS; $w++ ) {
+			for ( $i = 0; $i < 5; $i++ ) {
+				$dates[] = $monday->modify( '+' . ( 7 * $w + $i ) . ' days' );
+			}
+		}
+	} elseif ( 'weeks' === $kind ) {
+		for ( $w = 0; $w < HUB_PAGES_ADVERT_ISSUES; $w++ ) {
+			$dates[] = $monday->modify( '+' . ( 7 * $w ) . ' days' );
+		}
+	} else {
+		$first = 'weekend' === $kind ? $monday->modify( '+3 days' ) : $monday;   // Thursday or Monday
+		if ( $first < $earliest ) {
+			$first = $first->modify( '+7 days' );
+		}
+		for ( $w = 0; $w < HUB_PAGES_ADVERT_ISSUES; $w++ ) {
+			$dates[] = $first->modify( '+' . ( 7 * $w ) . ' days' );
+		}
+	}
+	$out = array();
+	foreach ( $dates as $d ) {
+		$days  = 'weeks' === $kind ? array_map( function ( $i ) use ( $d ) { return $d->modify( '+' . $i . ' days' ); }, range( 0, 4 ) ) : array( $d );
+		$state = 'open';
+		foreach ( $days as $x ) {
+			if ( isset( $no_issue[ $x->format( 'Y-m-d' ) ] ) ) {
+				$state = 'no_issue';
+			}
+		}
+		if ( 'open' === $state && $days[0] < $earliest ) {
+			$state = 'closed';
+		}
+		$out[] = array(
+			'date'  => $d->format( 'Y-m-d' ),
+			'state' => $state,
+			'mon'   => $d->format( 'M' ),
+			'day'   => $d->format( 'j' ),
+			'label' => ( 'weeks' === $kind ? 'Week commencing ' : '' ) . $d->format( 'l j F' ),
+			'week'  => 'weeks' === $kind,
+		);
+	}
+	return $out;
+}
+
+/** The starting text of a document page (privacy, terms, sources): content/{its path}.html. */
 function hub_pages_rule_default_body( $page ) {
-	$file = get_template_directory() . '/content/' . sanitize_key( $page ) . '.html';
+	$file = get_template_directory() . '/content/' . sanitize_key( isset( HUB_PAGES[ $page ] ) ? HUB_PAGES[ $page ] : $page ) . '.html';
 	return is_readable( $file ) ? (string) file_get_contents( $file ) : '';
 }
 
