@@ -1,0 +1,82 @@
+# Deploy the Hub's code to the SiteGround test site (https://hub.harrowonline.org/hub/) on every push to main.
+#
+# Code only: the site's own database, uploads, mail log, private claim files, debug log and server .htaccess are
+# never overwritten or deleted, so accounts, sign-ups and payments made on the test site survive deploys.
+# (The Forge dev site deploys separately, with the committed database: wp-local/forge/deploy.sh.)
+#
+# Secrets (GitHub > Settings > Secrets and variables > Actions):
+#   SITEGROUND_SSH_KEY      private key whose public half is in SiteGround Site Tools > Devs > SSH Keys Manager
+#   SITEGROUND_SSH_HOST     e.g. ssh.harrowonline.org
+#   SITEGROUND_SSH_USER     the SiteGround SSH username
+#   SITEGROUND_SSH_PORT     18765
+#   SITEGROUND_KNOWN_HOSTS  the server's host key line (ssh-keyscan -p 18765 -t ed25519 HOST)
+name: Deploy to SiteGround test site
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'wp-local/hub/**'
+      - '.github/workflows/deploy-siteground.yml'
+  workflow_dispatch:
+
+concurrency:
+  group: deploy-siteground
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      TARGET: www/hub.harrowonline.org/public_html/hub
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: SSH key and known host
+        run: |
+          install -m 700 -d ~/.ssh
+          printf '%s\n' "${{ secrets.SITEGROUND_SSH_KEY }}" > ~/.ssh/deploy_key
+          chmod 600 ~/.ssh/deploy_key
+          printf '%s\n' "${{ secrets.SITEGROUND_KNOWN_HOSTS }}" > ~/.ssh/known_hosts
+          chmod 644 ~/.ssh/known_hosts
+
+      - name: Copy the code (not the database or anything the site writes)
+        run: |
+          rsync -rlptz --delete --omit-dir-times \
+            -e "ssh -i ~/.ssh/deploy_key -o IdentitiesOnly=yes -o StrictHostKeyChecking=yes -p ${{ secrets.SITEGROUND_SSH_PORT }}" \
+            --exclude '/.htaccess' \
+            --exclude '/.user.ini' \
+            --exclude '/LOCAL-ADMIN.txt' \
+            --exclude '/wp-content/database/' \
+            --exclude '/wp-content/uploads/' \
+            --exclude '/wp-content/mail-log/' \
+            --exclude '/wp-content/hub-private/' \
+            --exclude '/wp-content/debug.log' \
+            --exclude '/wp-content/upgrade/' \
+            --exclude '/wp-content/cache/' \
+            --exclude '/wp_auto_login_*.php' \
+            wp-local/hub/ "${{ secrets.SITEGROUND_SSH_USER }}@${{ secrets.SITEGROUND_SSH_HOST }}:${TARGET}/"
+
+      - name: Add new committed uploads (never delete the site's own)
+        run: |
+          rsync -rlptz --ignore-existing --omit-dir-times \
+            -e "ssh -i ~/.ssh/deploy_key -o IdentitiesOnly=yes -o StrictHostKeyChecking=yes -p ${{ secrets.SITEGROUND_SSH_PORT }}" \
+            wp-local/hub/wp-content/uploads/ "${{ secrets.SITEGROUND_SSH_USER }}@${{ secrets.SITEGROUND_SSH_HOST }}:${TARGET}/wp-content/uploads/"
+
+      - name: Check the site answers
+        run: |
+          sleep 5
+          code=$(curl -s -o /dev/null -w '%{http_code}' --max-time 60 https://hub.harrowonline.org/hub/)
+          echo "https://hub.harrowonline.org/hub/ answered ${code}"
+          test "${code}" = "200"
+          db=$(curl -s -o /dev/null -w '%{http_code}' --max-time 30 https://hub.harrowonline.org/hub/wp-content/database/hub.sqlite)
+          echo "database file answered ${db} (must not be 200)"
+          test "${db}" != "200"
+
+      - name: Remove the key
+        if: always()
+        run: rm -f ~/.ssh/deploy_key
