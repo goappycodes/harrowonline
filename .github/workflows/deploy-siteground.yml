@@ -68,14 +68,20 @@ jobs:
             wp-local/hub/wp-content/uploads/ "${{ secrets.SITEGROUND_SSH_USER }}@${{ secrets.SITEGROUND_SSH_HOST }}:${TARGET}/wp-content/uploads/"
 
       - name: Check the site answers
+        # Run on the server: SiteGround's bot check answers GitHub's machines with 202, not the real page
         run: |
-          sleep 5
-          code=$(curl -s -o /dev/null -w '%{http_code}' --max-time 60 https://hub.harrowonline.org/hub/)
-          echo "https://hub.harrowonline.org/hub/ answered ${code}"
-          test "${code}" = "200"
-          db=$(curl -s -o /dev/null -w '%{http_code}' --max-time 30 https://hub.harrowonline.org/hub/wp-content/database/hub.sqlite)
-          echo "database file answered ${db} (must not be 200)"
-          test "${db}" != "200"
+          ssh -i ~/.ssh/deploy_key -o IdentitiesOnly=yes -o StrictHostKeyChecking=yes -p ${{ secrets.SITEGROUND_SSH_PORT }}             "${{ secrets.SITEGROUND_SSH_USER }}@${{ secrets.SITEGROUND_SSH_HOST }}" '
+            set -e
+            cd "$HOME/'"${TARGET}"'"
+            wp eval "echo \"WordPress loads: \", home_url(), PHP_EOL;"
+            code=$(curl -s -o /dev/null -w "%{http_code}" --max-time 60 https://hub.harrowonline.org/hub/)
+            echo "https://hub.harrowonline.org/hub/ answered ${code}"
+            test "${code}" = "200"
+            db=$(curl -s -o /dev/null -w "%{http_code}" --max-time 30 https://hub.harrowonline.org/hub/wp-content/database/hub.sqlite)
+            echo "database file answered ${db} (must not be 200)"
+            test "${db}" != "200"
+            test ! -e LOCAL-ADMIN.txt
+          '
 
       - name: Remove the key
         if: always()
