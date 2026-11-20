@@ -39,6 +39,44 @@ function hub_account_profile( $user_id ) {
 	);
 }
 
+/**
+ * For staff screens (wp-admin > Users): what an account told us at sign-up.
+ *   { organisation, area (slug), area_name, editions[], edition_labels[], signup_source }
+ */
+function hub_account_admin_details( $user_id ) {
+	$p    = hub_account_profile( $user_id );
+	$area = '' !== $p['area'] ? hub_area_get( $p['area'] ) : null;   // areas module
+	$eds  = hub_account_db_editions( $user_id );
+	return array(
+		'organisation'   => $p['organisation'],
+		'area'           => $p['area'],
+		'area_name'      => $area ? $area['name'] : '',
+		'editions'       => $eds,
+		'edition_labels' => array_values( array_intersect_key( HUB_ACCOUNT_EDITIONS, array_flip( $eds ) ) ),
+		'signup_source'  => (string) get_user_meta( (int) $user_id, 'hub_signup_source', true ),
+	);
+}
+
+/**
+ * Staff change an account's organisation, area and newsletter editions (wp-admin > Users > the user).
+ *
+ * @param array $params { organisation, area (slug or ''), editions[] }
+ */
+function hub_account_admin_update_details( $user_id, array $params, $mode = HUB_WEB ) {
+	if ( ! current_user_can( 'edit_users' ) ) {
+		return hub_respond_error( 'forbidden', 'Only admins can change accounts.', $mode, 403 );
+	}
+	$area  = hub_param_slug( $params, 'area' );
+	$areas = wp_list_pluck( hub_areas_list()['items'], 'slug' );   // areas module
+	$org   = isset( $params['organisation'] ) && is_scalar( $params['organisation'] ) ? sanitize_text_field( wp_unslash( (string) $params['organisation'] ) ) : '';
+	hub_account_db_save_profile( $user_id, $org, in_array( $area, $areas, true ) ? $area : '' );
+	$eds = isset( $params['editions'] ) && is_array( $params['editions'] ) ? array_intersect( array_map( 'strval', wp_unslash( $params['editions'] ) ), array_keys( HUB_ACCOUNT_EDITIONS ) ) : array();
+	if ( $eds !== hub_account_db_editions( $user_id ) ) {
+		hub_account_db_save_editions( $user_id, $eds );
+	}
+	return hub_respond( hub_account_admin_details( $user_id ), $mode );
+}
+
 /** Does this account want this kind of email? ('approved' | 'rejected' | 'ended', from the settings page) */
 function hub_account_wants_email( $user_id, $kind ) {
 	$n = hub_account_db_notify( (int) $user_id );
