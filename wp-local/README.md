@@ -235,17 +235,18 @@ https://hub.harrowonline.org/hub/ is the launch test site, on SiteGround (the sa
 `~/www/hub.harrowonline.org/` belongs to the Hub).
 
 - **Deploys:** every push to `main` that changes `wp-local/hub/` runs `.github/workflows/deploy-siteground.yml`,
-  which copies the **code only** over SSH (rsync). The site's own SQLite database, uploads, mail log, private claim
-  files, debug log and `.htaccess` are never overwritten or deleted, so accounts and test data made on the site
-  survive deploys. `LOCAL-ADMIN.txt` is never uploaded. Run it by hand from GitHub > Actions > "Deploy to SiteGround
-  test site" > Run workflow.
+  which makes the site match git `main` over SSH (rsync): the code, the **committed SQLite database** and the
+  uploads. Accounts, sign-ups and payments made only on the test site are replaced on the next deploy, so put
+  anything that should stay (users, settings, content) into the committed database. Kept on the server: its
+  `.htaccess`, private claim files, the mail log and debug log. `LOCAL-ADMIN.txt` is never uploaded. Run it by hand
+  from GitHub > Actions > "Deploy to SiteGround test site" > Run workflow.
 - **Secrets** (GitHub > Settings > Secrets and variables > Actions): `SITEGROUND_SSH_KEY` (its public half is the
   "github-actions-hub-deploy" key in Site Tools > Devs > SSH Keys Manager), `SITEGROUND_SSH_HOST`,
   `SITEGROUND_SSH_USER`, `SITEGROUND_SSH_PORT`, `SITEGROUND_KNOWN_HOSTS`.
 - **Settings:** `~/www/hub.harrowonline.org/.env` (outside `public_html`), read by `wp-config.php` like the Forge
   site's. Access rules: `public_html/hub/.htaccess` (the nginx rules of `forge/nginx-hub.conf`, for Apache).
-- **Database:** the deploy never changes it. To put the committed database there (losing the site's own accounts
-  and test data), copy `wp-local/hub/wp-content/database/hub.sqlite` over SSH on purpose.
+- **Database:** the committed `wp-local/hub/wp-content/database/hub.sqlite`, copied on every deploy (the old one is
+  replaced, and SQLite's journal files are cleared).
 - **Cache:** SiteGround's Dynamic Cache only caches sites with its Speed Optimizer plugin, which the Hub doesn't
   have. If an old page ever shows, flush it in Site Tools > Speed > Caching > Dynamic Cache.
 
