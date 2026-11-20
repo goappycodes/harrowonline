@@ -142,6 +142,16 @@ function hub_billing_db_payment( $post_id ) {
 	return is_array( $p ) ? $p : null;
 }
 
+/** Prices staff saved in wp-admin > Hub settings > Prices: { plans: { key: { monthly, annual } }, items: { key: amount } } (pence). */
+function hub_billing_db_saved_prices() {
+	$p = get_option( 'hub_billing_prices', array() );
+	return is_array( $p ) ? $p : array();
+}
+
+function hub_billing_db_save_prices( array $prices ) {
+	update_option( 'hub_billing_prices', $prices, false );
+}
+
 /** True when this webhook event was already handled (Stripe can send an event more than once). */
 function hub_billing_db_seen_event( $event_id ) {
 	$key = 'hub_stripe_evt_' . md5( $event_id );

@@ -117,7 +117,8 @@ function hub_pages_advert( $mode = HUB_WEB ) {
 		$items[ $i['key'] ] = $i;
 	}
 	$amount = function ( $key ) {
-		return isset( HUB_BILLING_ITEMS[ $key ] ) ? (int) HUB_BILLING_ITEMS[ $key ]['amount'] : 0;
+		$items = hub_billing_items();   // billing module: the prices in force
+		return isset( $items[ $key ] ) ? (int) $items[ $key ]['amount'] : 0;
 	};
 	$price  = function ( $key ) use ( $amount ) {
 		$p = $amount( $key );

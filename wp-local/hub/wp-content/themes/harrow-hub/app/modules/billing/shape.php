@@ -17,7 +17,8 @@ function hub_billing_shape( $configured, $mode, $plan, array $sub, $has_customer
 	$names    = array( 'basic' => 'Basic', 'enhanced' => 'Featured', 'premium' => 'Featured', 'partner' => 'Local Partner' );
 	$key      = isset( $sub['plan_key'] ) ? $sub['plan_key'] : null;
 	$interval = isset( $sub['interval'] ) ? $sub['interval'] : null;
-	$prices   = ( $key && isset( HUB_BILLING_PLANS[ $key ] ) ) ? HUB_BILLING_PLANS[ $key ]['prices'] : null;
+	$plans    = hub_billing_plans();   // the prices in force (controller)
+	$prices   = ( $key && isset( $plans[ $key ] ) ) ? $plans[ $key ]['prices'] : null;
 	$status   = isset( $sub['status'] ) ? $sub['status'] : null;
 	$labels   = array( 'active' => 'Active', 'trialing' => 'Trial', 'past_due' => 'Payment failed', 'canceled' => 'Cancelled', 'unpaid' => 'Unpaid', 'incomplete' => 'Waiting for payment', 'incomplete_expired' => 'Not completed' );
 	return array(

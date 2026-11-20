@@ -15,7 +15,11 @@ const HUB_BILLING_CURRENCY = 'gbp';
  */
 const HUB_BILLING_MANAGED_PAYMENTS = false;
 
-/** Plans (subscriptions): key => { plan (the business's biz_plan), name, prices: { monthly, annual } } */
+/**
+ * Plans (subscriptions): key => { plan (the business's biz_plan), name, prices: { monthly, annual } } in pence.
+ * These are the defaults: staff set the prices in wp-admin > Hub settings > Prices (inc/admin/prices-page.php), and
+ * the code reads them through hub_billing_plans() / hub_billing_items(), never from these constants directly.
+ */
 const HUB_BILLING_PLANS = array(
 	'featured' => array( 'plan' => 'premium', 'name' => 'Featured', 'prices' => array( 'monthly' => 2900, 'annual' => 29000 ) ),
 	'partner'  => array( 'plan' => 'partner', 'name' => 'Local Partner', 'prices' => array( 'monthly' => 7900, 'annual' => 79000 ) ),
@@ -39,7 +43,7 @@ function hub_billing_rule_is_newsletter_advert( $item ) {
 	return 0 === strpos( (string) $item, 'sponsor_' );
 }
 
-/** One-off purchases: key => { name, amount, what (shown at checkout) } */
+/** One-off purchases: key => { name, amount (pence; default, see above), what (shown at checkout) } */
 // Newsletter adverts keep their sponsor_* keys: they're the Stripe price lookup keys (hub_sponsor_daily_day_once...).
 const HUB_BILLING_ITEMS = array(
 	'event_listing'      => array( 'name' => 'One-off event listing', 'amount' => 1500, 'what' => 'One event on What&rsquo;s On until its date, no plan needed' ),
@@ -109,6 +113,36 @@ function hub_billing_rule_invoice_for( $reason, array $lines ) {
 		$t .= ' and ' . ( count( $texts ) - 1 ) . ' more';
 	}
 	return '' !== trim( $t ) ? trim( $t ) : 'Harrow Online Hub';
+}
+
+/**
+ * The prices in force: the defaults above with the saved ones on top (pence). $saved: { plans: { featured: { monthly,
+ * annual } }, items: { event_listing: amount } }. Returns [ plans, items ] in the constants' shapes.
+ */
+function hub_billing_rule_apply_prices( array $plans, array $items, array $saved ) {
+	foreach ( $plans as $key => $p ) {
+		foreach ( array( 'monthly', 'annual' ) as $per ) {
+			if ( isset( $saved['plans'][ $key ][ $per ] ) && (int) $saved['plans'][ $key ][ $per ] > 0 ) {
+				$plans[ $key ]['prices'][ $per ] = (int) $saved['plans'][ $key ][ $per ];
+			}
+		}
+	}
+	foreach ( $items as $key => $i ) {
+		if ( isset( $saved['items'][ $key ] ) && (int) $saved['items'][ $key ] > 0 ) {
+			$items[ $key ]['amount'] = (int) $saved['items'][ $key ];
+		}
+	}
+	return array( $plans, $items );
+}
+
+/** Pence from what staff type: "29", "29.5", "£29.00", "1,200". Null when it isn't a price Stripe takes (30p to £99,999.99). */
+function hub_billing_rule_pence( $text ) {
+	$t = str_replace( array( '£', ',', ' ' ), '', trim( (string) $text ) );
+	if ( ! preg_match( '/^\d{1,5}(\.\d{1,2})?$/', $t ) ) {
+		return null;
+	}
+	$p = (int) round( (float) $t * 100 );
+	return ( $p >= 30 && $p <= 9999999 ) ? $p : null;
 }
 
 /** "£29", "£290", "£7.99" */

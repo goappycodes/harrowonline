@@ -305,7 +305,7 @@ add_action( 'manage_hub_event_posts_custom_column', function ( $col, $post_id ) 
 		case 'hub_state':
 			$pay = '';
 			if ( get_post_meta( $post_id, '_hub_needs_pay', true ) ) {
-				$pay = get_post_meta( $post_id, '_hub_paid', true ) ? hub_admin_pill( '£15 paid', 'green' ) : hub_admin_pill( '£15 not paid', 'red', 'Basic plan: one-off event listing' );
+				$pay = get_post_meta( $post_id, '_hub_paid', true ) ? hub_admin_pill( 'Fee paid', 'green' ) : hub_admin_pill( 'Fee not paid', 'red', 'Basic plan: one-off event listing fee' );
 			}
 			echo '<span class="hub-cell-row">' . hub_admin_status_pill( $post ) . $pay . '</span>'; // phpcs:ignore WordPress.Security.EscapeOutput
 			echo hub_admin_sent_by( $post_id ); // phpcs:ignore WordPress.Security.EscapeOutput
@@ -720,7 +720,7 @@ add_action( 'restrict_manage_posts', function ( $post_type ) {
 	$states = array(
 		'hub_claim'   => array( '' => 'All statuses' ) + HUB_CLAIMS_STATUSES,
 		'hub_payment' => array( '' => 'Paid and failed', 'paid' => 'Paid', 'failed' => 'Payment failed' ),
-		'hub_event'   => array( '' => 'Paid and unpaid', 'unpaid' => '£15 not paid' ),
+		'hub_event'   => array( '' => 'Paid and unpaid', 'unpaid' => 'Listing fee not paid' ),
 	);
 	if ( isset( $states[ $post_type ] ) ) {
 		$state = isset( $_GET['hub_state'] ) ? sanitize_key( $_GET['hub_state'] ) : ''; // phpcs:ignore WordPress.Security.NonceVerification

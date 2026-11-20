@@ -70,10 +70,8 @@ function hub_admin_newsletter_page() {
 	<div class="wrap hub-settings">
 		<header class="hub-settings__head">
 			<h1>Hub settings</h1>
-			<p class="hub-settings__lead">The newsletter sign-up band, shown above the footer on every Hub page.</p>
-			<nav class="hub-settings__tabs" aria-label="Hub settings">
-				<span class="hub-settings__tab is-active" aria-current="page"><span class="dashicons dashicons-email-alt" aria-hidden="true"></span>Newsletter sign-up</span>
-			</nav>
+			<p class="hub-settings__lead">The newsletter sign-up band, shown above the footer on every Hub page, and what businesses pay.</p>
+			<?php hub_admin_settings_tabs( 'hub-settings' ); // inc/admin/prices-page.php ?>
 		</header>
 		<?php if ( isset( $_GET['updated'] ) ) : // phpcs:ignore WordPress.Security.NonceVerification ?>
 			<div class="notice notice-success is-dismissible"><p><strong>Saved.</strong> Every Hub page now shows the band like this.</p></div>

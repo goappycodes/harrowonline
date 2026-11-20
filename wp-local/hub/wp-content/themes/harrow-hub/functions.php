@@ -35,6 +35,7 @@ require_once get_template_directory() . '/inc/admin/link-box.php';
 require_once get_template_directory() . '/inc/admin/listing-boxes.php';
 require_once get_template_directory() . '/inc/admin/category-fields.php';   // Businesses > Categories: Icon and Intro
 require_once get_template_directory() . '/inc/admin/newsletter-page.php';
+require_once get_template_directory() . '/inc/admin/prices-page.php';   // Hub settings > Prices: what businesses pay, sent to Stripe
 require_once get_template_directory() . '/inc/admin/home-box.php';       // Pages > Home: the homepage's text, links and sections
 require_once get_template_directory() . '/inc/admin/page-text-box.php';  // Pages > What's On (and others): the page's text and panels
 require_once get_template_directory() . '/inc/admin/list-screens.php';   // wp-admin lists: Businesses, Offers, Events, Classes, Pages, Payments, Claims, Users, Categories, Areas
