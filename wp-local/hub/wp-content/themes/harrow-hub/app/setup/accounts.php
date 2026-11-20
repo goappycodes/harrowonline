@@ -228,28 +228,7 @@ function hub_account_admin_save( $user_id ) {
 add_action( 'personal_options_update', 'hub_account_admin_save' );
 add_action( 'edit_user_profile_update', 'hub_account_admin_save' );
 
-/** Users list: Hub account type and plan columns. */
-add_filter( 'manage_users_columns', function ( $cols ) {
-	$cols['hub_account'] = 'Hub account';
-	$cols['hub_plan']    = 'Plan';
-	return $cols;
-} );
-add_filter( 'manage_users_custom_column', function ( $out, $col, $user_id ) {
-	if ( 'hub_account' === $col ) {
-		if ( ! hub_account_is_member( $user_id ) ) {
-			return '&ndash;';
-		}
-		$a   = hub_account_for_user( $user_id );
-		$out = esc_html( HUB_ACCOUNT_TYPES[ $a['type'] ] );
-		$biz = hub_account_business_id( $user_id );
-		return $biz ? $out . '<br><a href="' . esc_url( get_edit_post_link( $biz ) ) . '">' . esc_html( get_the_title( $biz ) ) . '</a>' : $out;
-	}
-	if ( 'hub_plan' === $col ) {
-		$plan = (string) get_user_meta( $user_id, 'hub_plan', true );
-		return isset( HUB_ACCOUNT_PLANS[ $plan ] ) ? esc_html( HUB_ACCOUNT_PLANS[ $plan ] ) : '&ndash;';
-	}
-	return $out;
-}, 10, 3 );
+// The Users list's columns are in inc/admin/list-screens.php
 
 /** Users list: filter by plan (Users > ?hub_plan=featured), with links above the table. */
 add_filter( 'views_users', function ( $views ) {

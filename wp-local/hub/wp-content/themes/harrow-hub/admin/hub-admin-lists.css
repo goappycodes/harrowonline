@@ -1,0 +1,212 @@
+/*
+ * wp-admin list screens (Posts, Pages, Businesses, Offers, Events, Classes): inc/admin/list-screens.php.
+ * WordPress admin greys, with soft coloured pills for plans and statuses.
+ */
+
+/* ------------------------------------------------------------------ the table */
+.wp-list-table {
+	border-radius: 8px;
+	overflow: hidden;
+	border-color: #dcdcde;
+	box-shadow: 0 1px 2px rgba(0, 0, 0, .04);
+}
+/* .widefat in the selector: WordPress 7's ".widefat th:not(tbody th)" sets 14px and would win otherwise */
+.wp-list-table.widefat thead th,
+.wp-list-table.widefat thead td,
+.wp-list-table.widefat tfoot th,
+.wp-list-table.widefat tfoot td {
+	background: #f6f7f7;
+	font-weight: 600;
+	color: #50575e;
+	font-size: 11px;
+	line-height: 1.4;
+	text-transform: uppercase;
+	letter-spacing: .05em;
+}
+.wp-list-table thead th a,
+.wp-list-table tfoot th a { color: #50575e; }
+/* the label and its sort arrows stay together */
+.wp-list-table th.sortable a,
+.wp-list-table th.sorted a { display: inline-flex; align-items: center; white-space: nowrap; }
+.wp-list-table thead th a:hover,
+.wp-list-table tfoot th a:hover { color: #B8161D; }
+.wp-list-table thead th.sorted a,
+.wp-list-table tfoot th.sorted a { color: #141414; }
+.wp-list-table tbody tr { transition: background-color .12s ease; }
+.wp-list-table tbody tr:hover { background: #FDF5F5; }
+.wp-list-table tbody td,
+.wp-list-table tbody th { padding-top: 14px; padding-bottom: 14px; vertical-align: top; }
+/* room between columns, so a cell never runs into the next */
+.wp-list-table tbody td,
+.wp-list-table thead th,
+.wp-list-table tfoot th { padding-right: 18px; }
+.wp-list-table .row-title { font-size: 14px; }
+.wp-list-table .post-state { color: #8a4b00; }
+
+/* column widths */
+.wp-list-table .column-hub_featured { width: 36px; text-align: center; }
+.wp-list-table .column-hub_plan,
+.wp-list-table .column-hub_bstatus,
+.wp-list-table .column-hub_state { width: 150px; }
+.wp-list-table .column-hub_when,
+.wp-list-table .column-hub_cwhen,
+.wp-list-table .column-hub_runs { width: 150px; }
+.wp-list-table .column-hub_ecat,
+.wp-list-table .column-hub_ctype { width: 140px; }
+.wp-list-table .column-hub_price { width: 140px; }
+.wp-list-table .column-hub_template,
+.wp-list-table .column-hub_text { width: 170px; }
+.wp-list-table .column-date { width: 130px; }
+/* Users: shares of the width, so it fits any screen */
+.users .column-username { width: 19%; overflow-wrap: anywhere; }
+.users .column-hub_email { width: 23%; overflow-wrap: anywhere; }
+.users .column-hub_account { width: 18%; }
+.users .column-hub_plan { width: 14%; }
+.users .column-hub_signup { width: 15%; }
+.users .column-hub_joined { width: 11%; }
+.hub-cell-name { display: block; margin-bottom: 3px; color: #141414; font-weight: 600; }
+.hub-nowrap { white-space: nowrap; }
+.users .column-username img { border-radius: 50%; }
+.hub-cell-sub .dashicons { font-size: 15px; width: 15px; height: 15px; margin-right: 3px; vertical-align: -3px; color: #8c8f94; }
+/* Categories and Areas */
+/* the table sits beside the Add form, so shares of the width rather than pixels */
+.tags .column-name { width: 28%; }
+.tags .column-posts { width: 16%; text-align: left; }
+.tags .column-hub_claimed,
+.tags .column-hub_paying,
+.tags .column-hub_people { width: 13%; text-align: left; }
+.wp-list-table thead th,
+.wp-list-table tfoot th { overflow-wrap: normal; word-break: normal; hyphens: none; }
+.tags .column-slug { width: 20%; overflow-wrap: anywhere; }
+.wp-list-table .column-hub_amount,
+.wp-list-table .column-hub_pstatus,
+.wp-list-table .column-hub_cstatus { width: 170px; }
+.hub-amount { font-size: 14px; }
+/* Classes and Events have many columns: share the width evenly, so none is squeezed */
+.post-type-hub_class .wp-list-table .column-hub_cwhen,
+.post-type-hub_class .wp-list-table .column-hub_ctype,
+.post-type-hub_class .wp-list-table .column-hub_price,
+.post-type-hub_class .wp-list-table .column-hub_state,
+.post-type-hub_event .wp-list-table .column-hub_when,
+.post-type-hub_event .wp-list-table .column-hub_ecat,
+.post-type-hub_event .wp-list-table .column-hub_price,
+.post-type-hub_event .wp-list-table .column-hub_state { width: auto; }
+.post-type-hub_class .wp-list-table .column-hub_state,
+.post-type-hub_event .wp-list-table .column-hub_state { overflow-wrap: anywhere; }
+
+/* ------------------------------------------------------------------ cells */
+.hub-cell-sub {
+	display: block;
+	margin-top: 5px;
+	color: #646970;
+	font-size: 12px;
+	line-height: 1.45;
+}
+.hub-cell-sub.hub-inline { display: inline; margin: 0; }
+.hub-cell-sub a { color: #B8161D; }
+.hub-cell-none { color: #a7aaad; }
+/* a row of chips (code, pills): one even gap, wraps cleanly */
+.hub-cell-row {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	gap: 8px;
+	margin: 0 0 8px;
+}
+.hub-cell-row:last-child { margin-bottom: 0; }
+* + .hub-cell-row { margin-top: 6px; }
+/* a bold first line (a date, a name) with its detail tight underneath */
+.wp-list-table td > strong { display: block; line-height: 1.35; }
+.wp-list-table td > strong + .hub-cell-sub { margin-top: 1px; }
+.hub-cell-row + .hub-cell-sub { margin-top: 4px; }
+/* a pill straight in a cell (not in a row): its own line, clear of the text above and below */
+.wp-list-table td > .hub-pill { display: table; margin: 6px 0; }
+.wp-list-table td > .hub-pill:first-child { margin-top: 0; }
+.wp-list-table td > .hub-pill:last-child { margin-bottom: 0; }
+.hub-cell-main { display: block; margin-bottom: 8px; line-height: 1.45; }
+.hub-cell-main:last-child { margin-bottom: 0; }
+.hub-cell-quiet { color: #646970; font-size: 13px; }
+.hub-cell-row .hub-pill { margin: 0; }
+.hub-cell-line { display: block; line-height: 1.8; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100%; }
+.hub-cell-line .dashicons,
+.hub-cell-where .dashicons {
+	font-size: 15px;
+	width: 15px;
+	height: 15px;
+	margin-right: 4px;
+	vertical-align: -2px;
+	color: #8c8f94;
+}
+.hub-cell-where { display: flex; align-items: flex-start; gap: 2px; }
+.hub-cell-where .dashicons { flex: none; margin-top: 1px; }
+
+/* pills */
+.hub-pill {
+	display: inline-block;
+	padding: 2px 9px;
+	border-radius: 999px;
+	font-size: 11.5px;
+	font-weight: 600;
+	line-height: 18px;
+	max-width: 100%;
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	vertical-align: middle;
+	border: 1px solid transparent;
+	margin: 1px 0;
+}
+.hub-pill--green  { background: #e7f6ec; color: #00663f; border-color: #b8e6c8; }
+.hub-pill--amber  { background: #fcf3e3; color: #8a4b00; border-color: #f2d49b; }
+.hub-pill--grey   { background: #f0f0f1; color: #50575e; border-color: #dcdcde; }
+.hub-pill--blue   { background: #eaf3fb; color: #135e96; border-color: #c5dcf0; }
+.hub-pill--purple { background: #f3edfc; color: #5b2a9e; border-color: #ddcdf5; }
+.hub-pill--red    { background: #fcf0f1; color: #b32d2e; border-color: #f2c3c4; }
+.hub-pill--gold   { background: #fdf6dd; color: #7a5600; border-color: #efd98b; }
+
+.hub-star { color: #dba617; }
+.hub-code {
+	display: inline-block;
+	padding: 1px 7px;
+	border-radius: 4px;
+	background: #1d2327;
+	color: #fff;
+	font-size: 12px;
+	letter-spacing: .04em;
+}
+.hub-code--quiet { background: #f0f0f1; color: #3c434a; letter-spacing: 0; }
+.hub-path { font-family: Consolas, Monaco, monospace; font-size: 12.5px; }
+
+/* filters above the table */
+.tablenav .actions select { max-width: 190px; }
+.hub-filter-note { display: inline-block; margin: 5px 8px 0 4px; color: #50575e; }
+
+/* the note on Posts */
+.hub-posts-note { border-left-color: #DF2028; }
+
+/* ------------------------------------------------------------------ Dashboard: Needs attention (inc/admin/attention.php) */
+#hub_attention .inside { margin: 0; padding: 0; }
+.hub-attn { margin: 0; }
+.hub-attn li { margin: 0; border-top: 1px solid #f0f0f1; }
+.hub-attn li:first-child { border-top: 0; }
+.hub-attn a { display: flex; align-items: center; gap: 12px; padding: 12px 14px; color: #141414; text-decoration: none; }
+.hub-attn a:hover,
+.hub-attn a:focus { background: #FDF5F5; color: #141414; box-shadow: none; }
+.hub-attn-icon { flex: none; display: inline-flex; align-items: center; justify-content: center; width: 34px; height: 34px; border-radius: 8px; }
+.hub-attn-icon--amber { background: #fcf3e3; color: #8a4b00; }
+.hub-attn-icon--red   { background: #FDECED; color: #B8161D; }
+.hub-attn-text { flex: 1; min-width: 0; }
+.hub-attn-label { display: block; font-weight: 600; font-size: 14px; }
+.hub-attn-age { display: block; margin-top: 2px; color: #646970; font-size: 12px; }
+.hub-attn-count { flex: none; min-width: 28px; padding: 3px 9px; border-radius: 999px; background: #DF2028; color: #fff; font-weight: 600; text-align: center; box-sizing: border-box; }
+.hub-attn-none { margin: 0; padding: 10px 14px 12px; border-top: 1px solid #f0f0f1; color: #646970; font-size: 12px; }
+.hub-attn-clear { margin: 0; padding: 16px 14px; color: #00663f; font-weight: 600; }
+.hub-attn-clear .dashicons { color: #00a32a; }
+
+/* ------------------------------------------------------------------ small screens: WordPress stacks the columns */
+@media screen and (max-width: 782px) {
+	.wp-list-table .row-title { overflow-wrap: anywhere; }
+	.wp-list-table thead th.column-primary,
+	.wp-list-table tfoot th.column-primary { padding-left: 14px; }
+	.hub-cell-line { max-width: none; white-space: normal; }
+}
