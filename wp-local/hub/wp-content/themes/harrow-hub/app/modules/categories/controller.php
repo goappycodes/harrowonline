@@ -4,6 +4,7 @@
  *
  *   hub_categories_list()            every category, A to Z
  *   hub_category_get( 'restaurants' ) one category by slug
+ *   hub_category_fields( 12 ) / hub_category_save_fields( 12, [ icon, intro ] )   wp-admin's category screen
  */
 defined( 'ABSPATH' ) || exit;
 
@@ -29,4 +30,19 @@ function hub_category_get( $slug, $mode = HUB_WEB ) {
 		}
 	}
 	return hub_respond_error( 'hub_category_not_found', 'No category with that slug.', $mode );
+}
+
+/** A category's editable fields for wp-admin: { icon, intro } ('' when not set). */
+function hub_category_fields( $term_id ) {
+	$term = get_term( (int) $term_id, 'hub_category' );
+	if ( ! $term instanceof WP_Term ) {
+		return array( 'icon' => '', 'intro' => '' );
+	}
+	$meta = hub_categories_db_meta( $term );
+	return array( 'icon' => $meta['icon'], 'intro' => $meta['intro'] );
+}
+
+/** Save a category's fields (already cleaned by wp-admin). */
+function hub_category_save_fields( $term_id, array $values ) {
+	hub_categories_db_save_meta( (int) $term_id, array_intersect_key( $values, array( 'icon' => 1, 'intro' => 1 ) ) );
 }
