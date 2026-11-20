@@ -8,16 +8,16 @@ defined( 'ABSPATH' ) || exit;
 function hub_admin_newsletter_fields() {
 	$d = hub_newsletter_defaults();
 	return array(
-		array( 'key' => 'show', 'label' => 'Show the band', 'type' => 'toggle', 'help' => 'Turn off to hide the band on every page.' ),
-		array( 'key' => 'title', 'label' => 'Heading', 'type' => 'text', 'placeholder' => $d['title'] ),
+		array( 'key' => 'show', 'label' => 'Show', 'type' => 'toggle', 'help' => 'Off hides the band on every page.' ),
+		array( 'key' => 'title', 'label' => 'Title', 'type' => 'text', 'placeholder' => $d['title'] ),
 		array( 'key' => 'text', 'label' => 'Text', 'type' => 'textarea', 'placeholder' => $d['text'] ),
-		array( 'key' => 'editions', 'label' => 'Newsletters to choose from', 'type' => 'list', 'add' => 'Add newsletter',
-			'help' => 'One tick box each. <strong>Value</strong> is what the sign-up form sends (daily, weekend, business). <strong>Ticked</strong> ones start ticked.',
-			'cols' => array( 0 => array( 'Value' ), 1 => array( 'Name' ), 2 => array( 'Short description' ), 3 => array( 'Ticked', 'check' ) ) ),
-		array( 'key' => 'placeholder', 'label' => 'Email box placeholder', 'type' => 'text', 'width' => 50, 'placeholder' => $d['placeholder'] ),
-		array( 'key' => 'button', 'label' => 'Button', 'type' => 'text', 'width' => 50, 'placeholder' => $d['button'] ),
-		array( 'key' => 'action', 'label' => 'Form sends to', 'type' => 'url', 'width' => 70, 'placeholder' => $d['action'] ),
-		array( 'key' => 'source', 'label' => 'Sign-up source', 'type' => 'text', 'width' => 30, 'placeholder' => $d['source'], 'help' => 'Sent with each sign-up so you can see where it came from.' ),
+		array( 'key' => 'editions', 'label' => 'Newsletters', 'type' => 'list', 'add' => 'Add newsletter',
+			'help' => 'One tick box each. <strong>Value</strong> is sent with the form (daily, weekend, business); <strong>Ticked</strong> ones start ticked.',
+			'cols' => array( 0 => array( 'Value' ), 1 => array( 'Name' ), 2 => array( 'Description' ), 3 => array( 'Ticked', 'check' ) ) ),
+		array( 'key' => 'placeholder', 'label' => 'Email placeholder', 'type' => 'text', 'width' => 50, 'placeholder' => $d['placeholder'] ),
+		array( 'key' => 'button', 'label' => 'Button text', 'type' => 'text', 'width' => 50, 'placeholder' => $d['button'] ),
+		array( 'key' => 'action', 'label' => 'Form URL', 'type' => 'url', 'width' => 70, 'placeholder' => $d['action'] ),
+		array( 'key' => 'source', 'label' => 'Source', 'type' => 'text', 'width' => 30, 'placeholder' => $d['source'], 'help' => 'Sent with each sign-up, to see where it came from.' ),
 	);
 }
 

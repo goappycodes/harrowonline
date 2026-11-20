@@ -1,272 +1,220 @@
 <?php
 /**
- * Plans and prices for Harrow businesses (converted from src/pages/pricing.html).
- * URL: /pricing/
+ * Plans and prices for Harrow businesses. URL: /pricing/
+ * Every text is the page's "Page text" box (Pages > Pricing); the £ amounts come from the billing module, so they
+ * always match checkout. Data: hub_pages_pricing() (app/modules/pages).
  */
 defined( 'ABSPATH' ) || exit;
 hub_set_page( array(
 	'body' => 'page-pricing',
 	'description' => 'Claim your Harrow Online Hub listing free, or choose Featured or Local Partner for priority placement, Local Offers, events and newsletter features. Monthly or annual billing.',
 	'hubnav' => 'pricing',
-	'title' => 'Plans and prices for Harrow businesses',
+	'title' => 'Plans and prices for Harrow businesses',   // page title and description: Yoast SEO box, else these
 ) );
 get_header();
+
+$hub_p = hub_pages_pricing();
+$hub_t = $hub_p['text'];
+$hub_e = function ( $k ) use ( $hub_t ) { return esc_html( $hub_t[ $k ] ); };   // a text field, escaped
+$hub_h = function ( $html ) { return wp_kses( hub_html_links( $html ), array( 'a' => array( 'href' => true, 'target' => true, 'rel' => true ), 'strong' => array(), 'em' => array(), 'br' => array() ) ); };   // a little HTML (links)
+$hub_paid = function ( $key, $btn_class ) use ( $hub_p, $hub_t ) {   // a paid plan's price, note and buttons
+	$pl = $hub_p['plans'][ $key ];
+	echo '<p class="plan__price"><span class="price-monthly">' . esc_html( $pl['monthly'] ) . '<small>' . esc_html( $hub_t['pricing_per_month'] ) . '</small></span><span class="price-annual">' . esc_html( $pl['annual'] ) . '<small>' . esc_html( $hub_t['pricing_per_year'] ) . "</small></span></p>\n";
+	echo '        <p class="plan__note"><span class="price-monthly">' . esc_html( $pl['note_monthly'] ) . '</span><span class="price-annual">' . esc_html( $pl['note_annual'] ) . "</span></p>\n";
+	foreach ( array( 'monthly', 'annual' ) as $per ) {
+		echo '        <a class="ho-btn ' . $btn_class . ' ho-btn--block price-' . $per . '" href="' . esc_url( hub_url( 'billing/checkout/?plan=' . $key . '&amp;billing=' . $per ) ) . '">' . esc_html( $hub_t[ 'pricing_' . $key . '_button' ] ) . "</a>\n";
+	}
+};
+$hub_ticks = function ( $lead, array $items ) {
+	echo '<ul class="ticks">' . ( '' !== $lead ? '<li class="ticks__lead">' . esc_html( $lead ) . '</li>' : '' );
+	foreach ( $items as $i ) {
+		echo '<li>' . esc_html( $i ) . '</li>';
+	}
+	echo "</ul>\n";
+};
 ?>
-<!-- PLAN COPY: every price, limit and benefit on this page is editable in WordPress admin (brief 01, 6.5).
-     Three plans (client feedback, Nov 2026): Basic (free), Featured (£29/month), Local Partner (£79/month, changed from £149 on 18 Nov 2026).
-     The old £19 Enhanced / £49 Premium split is removed.
-     CLIENT TO CONFIRM: annual prices (shown as 10 x monthly, "2 months free"). -->
 <header class="page-head page-head--center ho-container">
-  <p class="eyebrow">For Harrow businesses</p>
-  <h1 class="page-head__title">Get found by Harrow</h1>
-  <p class="page-head__lead">Claiming your listing is free. Upgrade when you want more visibility, Local Offers, events and a place in the Harrow Online Newsletter.</p>
+  <p class="eyebrow"><?php echo $hub_e( 'pricing_eyebrow' ); ?></p>
+  <h1 class="page-head__title"><?php echo $hub_e( 'pricing_title' ); ?></h1>
+  <p class="page-head__lead"><?php echo $hub_e( 'pricing_lead' ); ?></p>
 </header>
 
 <div data-billing="monthly">
   <div class="ho-container">
     <div class="center mb-6">
       <div class="billing-toggle" role="group" aria-label="Billing period">
-        <button type="button" data-billing-set="monthly" aria-pressed="true">Monthly</button>
-        <button type="button" data-billing-set="annual" aria-pressed="false">Annual <span class="save">2 months free</span></button>
+        <button type="button" data-billing-set="monthly" aria-pressed="true"><?php echo $hub_e( 'pricing_monthly_label' ); ?></button>
+        <button type="button" data-billing-set="annual" aria-pressed="false"><?php echo $hub_e( 'pricing_annual_label' ); ?> <span class="save"><?php echo $hub_e( 'pricing_annual_save' ); ?></span></button>
       </div>
     </div>
 
     <div class="plans">
       <section class="plan" aria-labelledby="plan-basic">
-        <h2 class="plan__name" id="plan-basic">Basic</h2>
-        <p class="plan__for">For any Harrow business. Claim your listing and keep it up to date.</p>
-        <p class="plan__price">&pound;0<small>free forever</small></p>
-        <p class="plan__note">No card needed</p>
-        <a class="ho-btn ho-btn--outline ho-btn--block" href="<?php echo esc_url( hub_url( 'search/' ) ); ?>">Find and claim your business</a>
-        <ul class="ticks">
-          <li>Verified business listing</li>
-          <li>Business details and opening hours</li>
-          <li>One photograph</li>
-          <li>Ability to keep the listing updated</li>
-        </ul>
+        <h2 class="plan__name" id="plan-basic"><?php echo $hub_e( 'pricing_basic_name' ); ?></h2>
+        <p class="plan__for"><?php echo $hub_e( 'pricing_basic_for' ); ?></p>
+        <p class="plan__price"><?php echo $hub_e( 'pricing_basic_price' ); ?><small><?php echo $hub_e( 'pricing_basic_price_small' ); ?></small></p>
+        <p class="plan__note"><?php echo $hub_e( 'pricing_basic_note' ); ?></p>
+        <a class="ho-btn ho-btn--outline ho-btn--block" href="<?php echo esc_url( $hub_t['pricing_basic_link'] ); ?>"><?php echo $hub_e( 'pricing_basic_button' ); ?></a>
+        <?php $hub_ticks( '', $hub_t['pricing_basic_features'] ); ?>
       </section>
 
       <section class="plan plan--popular" aria-labelledby="plan-featured">
-        <span class="plan__flag">Most popular</span>
-        <h2 class="plan__name" id="plan-featured">Featured</h2>
-        <p class="plan__for">For businesses that want to be seen first and keep customers coming back.</p>
-        <p class="plan__price"><span class="price-monthly">&pound;29<small>/month</small></span><span class="price-annual">&pound;290<small>/year</small></span></p>
-        <p class="plan__note"><span class="price-monthly">Or &pound;290 a year</span><span class="price-annual">Works out at &pound;24.17 a month</span></p>
-        <a class="ho-btn ho-btn--primary ho-btn--block price-monthly" href="<?php echo esc_url( hub_url( 'billing/checkout/?plan=featured&amp;billing=monthly' ) ); ?>">Choose Featured</a>
-        <a class="ho-btn ho-btn--primary ho-btn--block price-annual" href="<?php echo esc_url( hub_url( 'billing/checkout/?plan=featured&amp;billing=annual' ) ); ?>">Choose Featured</a>
-        <ul class="ticks">
-          <li class="ticks__lead">Everything in Basic, plus:</li>
-          <li>Priority placement</li>
-          <li>Social media links</li>
-          <li>Additional photographs</li>
-          <li>Ability to publish Local Offers</li>
-          <li>Ability to add events and classes</li>
-          <li>Featured positions within the Hub</li>
-        </ul>
+<?php if ( ! $hub_t['pricing_featured_flag_hide'] ) : ?>
+        <span class="plan__flag"><?php echo $hub_e( 'pricing_featured_flag' ); ?></span>
+<?php endif; ?>
+        <h2 class="plan__name" id="plan-featured"><?php echo $hub_e( 'pricing_featured_name' ); ?></h2>
+        <p class="plan__for"><?php echo $hub_e( 'pricing_featured_for' ); ?></p>
+        <?php $hub_paid( 'featured', 'ho-btn--primary' ); ?>
+        <?php $hub_ticks( $hub_t['pricing_featured_lead'], $hub_t['pricing_featured_features'] ); ?>
       </section>
 
       <section class="plan plan--partner" aria-labelledby="plan-partner">
-        <h2 class="plan__name" id="plan-partner">Local Partner</h2>
-        <p class="plan__for">Featured on the Hub, plus a monthly Daily News advert and Facebook Group post.</p>
-        <p class="plan__price"><span class="price-monthly">&pound;79<small>/month</small></span><span class="price-annual">&pound;790<small>/year</small></span></p>
-        <p class="plan__note"><span class="price-monthly">Or &pound;790 a year</span><span class="price-annual">Works out at &pound;65.83 a month</span></p>
-        <a class="ho-btn ho-btn--outline ho-btn--block price-monthly" href="<?php echo esc_url( hub_url( 'billing/checkout/?plan=partner&amp;billing=monthly' ) ); ?>">Become a Local Partner</a>
-        <a class="ho-btn ho-btn--outline ho-btn--block price-annual" href="<?php echo esc_url( hub_url( 'billing/checkout/?plan=partner&amp;billing=annual' ) ); ?>">Become a Local Partner</a>
-        <ul class="ticks">
-          <li class="ticks__lead">Everything in Featured, plus:</li>
-          <li>One advert each month in the Daily News newsletter</li>
-          <li>One Harrow Online Facebook Group post each month</li>
-        </ul>
+        <h2 class="plan__name" id="plan-partner"><?php echo $hub_e( 'pricing_partner_name' ); ?></h2>
+        <p class="plan__for"><?php echo $hub_e( 'pricing_partner_for' ); ?></p>
+        <?php $hub_paid( 'partner', 'ho-btn--outline' ); ?>
+        <?php $hub_ticks( $hub_t['pricing_partner_lead'], $hub_t['pricing_partner_features'] ); ?>
       </section>
     </div>
 
-    <!-- One-off event listing (client, 18 Nov 2026): £15 per event, no plan. Events only; classes stay on the plans.
-         WP: one-off Stripe Checkout Session "Event listing" when a business without Featured / Local Partner submits an event. -->
+<?php if ( ! $hub_t['pricing_oneoff_hide'] ) : ?>
     <section class="oneoff" aria-labelledby="oneoff-title">
       <span class="oneoff__icon" aria-hidden="true"><svg class="ho-icon"><use href="#i-calendar"/></svg></span>
       <div class="oneoff__main">
-        <p class="oneoff__eyebrow">No plan needed</p>
-        <h2 class="oneoff__title" id="oneoff-title">Just one event? List it for &pound;15</h2>
-        <p class="oneoff__text">Pay when you submit it, our team checks it, and it stays on What&rsquo;s On until the event date. Weekly classes need Featured or Local Partner.</p>
+        <p class="oneoff__eyebrow"><?php echo $hub_e( 'pricing_oneoff_eyebrow' ); ?></p>
+        <h2 class="oneoff__title" id="oneoff-title"><?php echo $hub_e( 'pricing_oneoff_title' ); ?></h2>
+        <p class="oneoff__text"><?php echo $hub_e( 'pricing_oneoff_text' ); ?></p>
       </div>
       <div class="oneoff__side">
-        <p class="oneoff__price">&pound;15<small>/event</small></p>
-        <a class="ho-btn ho-btn--dark oneoff__btn" href="<?php echo esc_url( hub_url( 'register/' ) ); ?>"><svg class="ho-icon"><use href="#i-plus"/></svg>Add a one-off event</a>
+        <p class="oneoff__price"><?php echo esc_html( $hub_p['event_price'] ); ?><small><?php echo $hub_e( 'pricing_oneoff_per' ); ?></small></p>
+        <a class="ho-btn ho-btn--dark oneoff__btn" href="<?php echo esc_url( $hub_t['pricing_oneoff_link'] ); ?>"><svg class="ho-icon"><use href="#i-plus"/></svg><?php echo $hub_e( 'pricing_oneoff_button' ); ?></a>
       </div>
     </section>
+<?php endif; ?>
 
+<?php if ( ! $hub_t['pricing_info_hide'] ) : ?>
     <div class="price-note">
       <svg class="ho-icon ho-icon--sm"><use href="#i-info"/></svg>
-      <p><strong>Not claimed yet?</strong> Unclaimed listings show only the basics we imported from open map data (name, address, phone and website) with a Claim button, and they stay out of search engines until someone claims them and fills them in. <a href="<?php echo esc_url( hub_url( 'data-sources/' ) ); ?>">About our data</a>.</p>
+      <p><strong><?php echo $hub_e( 'pricing_info_title' ); ?></strong> <?php echo $hub_e( 'pricing_info_text' ); ?> <a href="<?php echo esc_url( $hub_t['pricing_info_link'] ); ?>"><?php echo $hub_e( 'pricing_info_link_label' ); ?></a>.</p>
     </div>
+<?php endif; ?>
   </div>
 
-<!-- What the labels mean (moved from the For businesses page, Nov 2026) -->
+<?php if ( ! $hub_t['pricing_labels_hide'] ) : ?>
   <section class="section section--tight" aria-labelledby="fb-labels">
     <div class="ho-container">
-    <h2 class="sec-title mb-2" id="fb-labels">What the labels mean</h2>
-    <p class="sec-sub mb-0">Every business page shows where its details come from, with one of these icons next to its name. In lists and search results only verified and checked businesses carry an icon. Hover or tap an icon to see what it means.</p>
+    <h2 class="sec-title mb-2" id="fb-labels"><?php echo $hub_e( 'pricing_labels_title' ); ?></h2>
+    <p class="sec-sub mb-0"><?php echo $hub_e( 'pricing_labels_sub' ); ?></p>
     <ul class="status-key">
-      <li><span class="status-key__name"><span class="card__tick card__tick--verified" aria-hidden="true"><svg class="ho-icon"><use href="#i-verified"/></svg></span>Verified by the business</span><p>The owner has claimed the listing and keeps the details up to date.</p></li>
-      <li><span class="status-key__name"><span class="card__tick card__tick--checked" aria-hidden="true"><svg class="ho-icon"><use href="#i-check"/></svg></span>Checked by Harrow Online</span><p>Our team has checked the details with the business. The owner hasn&rsquo;t claimed it yet.</p></li>
-      <li><span class="status-key__name"><span class="card__tick card__tick--imported" aria-hidden="true"><svg class="ho-icon"><use href="#i-globe"/></svg></span>Information imported from public data</span><p>Taken from public sources and not checked yet. If it&rsquo;s your business, claim it free to update it.</p></li>
+<?php foreach ( array( 'verified' => 'verified', 'checked' => 'check', 'imported' => 'globe' ) as $hub_k => $hub_icon ) : ?>
+      <li><span class="status-key__name"><span class="card__tick card__tick--<?php echo esc_attr( $hub_k ); ?>" aria-hidden="true"><svg class="ho-icon"><use href="#i-<?php echo esc_attr( $hub_icon ); ?>"/></svg></span><?php echo $hub_e( 'pricing_label_' . $hub_k ); ?></span><p><?php echo $hub_e( 'pricing_label_' . $hub_k . '_text' ); ?></p></li>
+<?php endforeach; ?>
     </ul>
-    <p class="help mt-4">Only verified or checked businesses appear in homepage features, recommendations and paid spots. Imported listings stay searchable and can be claimed.</p>
+    <p class="help mt-4"><?php echo $hub_e( 'pricing_labels_help' ); ?></p>
     </div>
   </section>
+<?php endif; ?>
 
+<?php if ( ! $hub_t['pricing_compare_hide'] ) : ?>
   <section class="section section--tight" aria-labelledby="compare-title">
     <div class="ho-container">
       <details class="compare-fold">
-        <summary><span><span class="compare-fold__title" id="compare-title">Compare every plan</span><span class="compare-fold__sub">Prices shown <span class="price-monthly">monthly</span><span class="price-annual">for a year</span>. Switch at the top of the page.</span></span><span class="compare-fold__btn">Show the full comparison</span></summary>
+        <summary><span><span class="compare-fold__title" id="compare-title"><?php echo $hub_e( 'pricing_compare_title' ); ?></span><span class="compare-fold__sub"><?php
+		echo str_replace( '{period}', '<span class="price-monthly">' . $hub_e( 'pricing_period_monthly' ) . '</span><span class="price-annual">' . $hub_e( 'pricing_period_annual' ) . '</span>', $hub_e( 'pricing_compare_sub' ) ); // phpcs:ignore WordPress.Security.EscapeOutput -- escaped parts
+		?></span></span><span class="compare-fold__btn"><?php echo $hub_e( 'pricing_compare_button' ); ?></span></summary>
       <div class="compare-wrap">
         <table class="compare">
-          <caption class="ho-sr">Features included in each Harrow Online Hub plan</caption>
+          <caption class="ho-sr"><?php echo $hub_e( 'pricing_compare_caption' ); ?></caption>
           <thead>
             <tr>
-              <th scope="col">Feature</th>
-              <th scope="col">Unclaimed</th>
-              <th scope="col">Basic</th>
-              <th scope="col" class="col-pop">Featured</th>
-              <th scope="col">Local Partner</th>
+              <th scope="col"><?php echo $hub_e( 'pricing_col_feature' ); ?></th>
+              <th scope="col"><?php echo $hub_e( 'pricing_col_unclaimed' ); ?></th>
+              <th scope="col"><?php echo $hub_e( 'pricing_col_basic' ); ?></th>
+              <th scope="col" class="col-pop"><?php echo $hub_e( 'pricing_col_featured' ); ?></th>
+              <th scope="col"><?php echo $hub_e( 'pricing_col_partner' ); ?></th>
             </tr>
           </thead>
           <tbody>
             <tr>
-              <th scope="row">Price</th>
-              <td>Free</td>
-              <td>Free</td>
-              <td class="col-pop"><span class="price-monthly">&pound;29/month</span><span class="price-annual">&pound;290/year</span></td>
-              <td><span class="price-monthly">&pound;79/month</span><span class="price-annual">&pound;790/year</span></td>
+              <th scope="row"><?php echo $hub_e( 'pricing_compare_price_label' ); ?></th>
+              <td><?php echo $hub_e( 'pricing_compare_free' ); ?></td>
+              <td><?php echo $hub_e( 'pricing_compare_free' ); ?></td>
+<?php foreach ( array( 'featured' => ' class="col-pop"', 'partner' => '' ) as $hub_k => $hub_cls ) : $hub_pl = $hub_p['plans'][ $hub_k ]; ?>
+              <td<?php echo $hub_cls; // phpcs:ignore ?>><span class="price-monthly"><?php echo esc_html( $hub_pl['monthly'] . $hub_t['pricing_per_month'] ); ?></span><span class="price-annual"><?php echo esc_html( $hub_pl['annual'] . $hub_t['pricing_per_year'] ); ?></span></td>
+<?php endforeach; ?>
             </tr>
-
-            <tr class="grp"><th scope="colgroup" colspan="5">Listing</th></tr>
-            <tr><th scope="row">Name, address, phone and website</th><td class="yes"><svg class="ho-icon"><use href="#i-check"/></svg><span class="ho-sr">Included</span></td><td class="yes"><svg class="ho-icon"><use href="#i-check"/></svg><span class="ho-sr">Included</span></td><td class="yes col-pop"><svg class="ho-icon"><use href="#i-check"/></svg><span class="ho-sr">Included</span></td><td class="yes"><svg class="ho-icon"><use href="#i-check"/></svg><span class="ho-sr">Included</span></td></tr>
-            <tr><th scope="row">Verified business listing</th><td class="no">&ndash;<span class="ho-sr">Not included</span></td><td class="yes"><svg class="ho-icon"><use href="#i-check"/></svg><span class="ho-sr">Included</span></td><td class="yes col-pop"><svg class="ho-icon"><use href="#i-check"/></svg><span class="ho-sr">Included</span></td><td class="yes"><svg class="ho-icon"><use href="#i-check"/></svg><span class="ho-sr">Included</span></td></tr>
-            <tr><th scope="row">Business details and opening hours</th><td class="no">&ndash;<span class="ho-sr">Not included</span></td><td class="yes"><svg class="ho-icon"><use href="#i-check"/></svg><span class="ho-sr">Included</span></td><td class="yes col-pop"><svg class="ho-icon"><use href="#i-check"/></svg><span class="ho-sr">Included</span></td><td class="yes"><svg class="ho-icon"><use href="#i-check"/></svg><span class="ho-sr">Included</span></td></tr>
-            <tr><th scope="row">Keep the listing updated yourself</th><td class="no">&ndash;<span class="ho-sr">Not included</span></td><td class="yes"><svg class="ho-icon"><use href="#i-check"/></svg><span class="ho-sr">Included</span></td><td class="yes col-pop"><svg class="ho-icon"><use href="#i-check"/></svg><span class="ho-sr">Included</span></td><td class="yes"><svg class="ho-icon"><use href="#i-check"/></svg><span class="ho-sr">Included</span></td></tr>
-            <tr><th scope="row">Photographs</th><td class="no">&ndash;<span class="ho-sr">None</span></td><td>One</td><td class="col-pop">Additional photographs</td><td>Additional photographs</td></tr>
-            <tr><th scope="row">Social media links</th><td class="no">&ndash;<span class="ho-sr">Not included</span></td><td class="no">&ndash;<span class="ho-sr">Not included</span></td><td class="yes col-pop"><svg class="ho-icon"><use href="#i-check"/></svg><span class="ho-sr">Included</span></td><td class="yes"><svg class="ho-icon"><use href="#i-check"/></svg><span class="ho-sr">Included</span></td></tr>
-            <tr><th scope="row">Shown in Google and other search engines</th><td class="no">&ndash;<span class="ho-sr">Not included</span></td><td class="yes"><svg class="ho-icon"><use href="#i-check"/></svg><span class="ho-sr">Included</span></td><td class="yes col-pop"><svg class="ho-icon"><use href="#i-check"/></svg><span class="ho-sr">Included</span></td><td class="yes"><svg class="ho-icon"><use href="#i-check"/></svg><span class="ho-sr">Included</span></td></tr>
-
-            <tr class="grp"><th scope="colgroup" colspan="5">Visibility</th></tr>
-            <tr><th scope="row">Place in category and search results</th><td>Last</td><td>Above unclaimed</td><td class="col-pop">Priority placement</td><td>Priority placement</td></tr>
-            <tr><th scope="row">Featured positions within the Hub</th><td class="no">&ndash;<span class="ho-sr">Not included</span></td><td class="no">&ndash;<span class="ho-sr">Not included</span></td><td class="yes col-pop"><svg class="ho-icon"><use href="#i-check"/></svg><span class="ho-sr">Included</span></td><td class="yes"><svg class="ho-icon"><use href="#i-check"/></svg><span class="ho-sr">Included</span></td></tr>
-
-            <tr class="grp"><th scope="colgroup" colspan="5">Offers and events</th></tr>
-            <tr><th scope="row">Publish Local Offers</th><td class="no">&ndash;<span class="ho-sr">Not included</span></td><td class="no">&ndash;<span class="ho-sr">Not included</span></td><td class="yes col-pop"><svg class="ho-icon"><use href="#i-check"/></svg><span class="ho-sr">Included</span></td><td class="yes"><svg class="ho-icon"><use href="#i-check"/></svg><span class="ho-sr">Included</span></td></tr>
-            <tr><th scope="row">Add events and classes to What&rsquo;s On</th><td class="no">&ndash;<span class="ho-sr">Not included</span></td><td class="no">&ndash;<span class="ho-sr">Not included</span></td><td class="yes col-pop"><svg class="ho-icon"><use href="#i-check"/></svg><span class="ho-sr">Included</span></td><td class="yes"><svg class="ho-icon"><use href="#i-check"/></svg><span class="ho-sr">Included</span></td></tr>
-
-            <tr><th scope="row">Single event without a plan</th><td colspan="4">&pound;15 per event, listed until the event date</td></tr>
-
-            <tr class="grp"><th scope="colgroup" colspan="5">Newsletter and marketing</th></tr>
-            <tr><th scope="row">Daily News advert each month</th><td class="no">&ndash;<span class="ho-sr">Not included</span></td><td class="no">&ndash;<span class="ho-sr">Not included</span></td><td class="no col-pop">&ndash;<span class="ho-sr">Not included</span></td><td class="yes"><svg class="ho-icon"><use href="#i-check"/></svg><span class="ho-sr">Included</span></td></tr>
-            <tr><th scope="row">Harrow Online Facebook Group post each month</th><td class="no">&ndash;<span class="ho-sr">Not included</span></td><td class="no">&ndash;<span class="ho-sr">Not included</span></td><td class="no col-pop">&ndash;<span class="ho-sr">Not included</span></td><td class="yes"><svg class="ho-icon"><use href="#i-check"/></svg><span class="ho-sr">Included</span></td></tr>
-            <tr><th scope="row">Newsletter adverts</th><td colspan="4"><a href="<?php echo esc_url( hub_url( 'advertise/newsletter/' ) ); ?>">Book separately</a>, on any plan</td></tr>
-
-            <tr class="grp"><th scope="colgroup" colspan="5">Billing</th></tr>
-            <tr><th scope="row">Pay monthly or annually</th><td class="no">&ndash;<span class="ho-sr">Not applicable</span></td><td class="no">&ndash;<span class="ho-sr">Not applicable</span></td><td class="yes col-pop"><svg class="ho-icon"><use href="#i-check"/></svg><span class="ho-sr">Included</span></td><td class="yes"><svg class="ho-icon"><use href="#i-check"/></svg><span class="ho-sr">Included</span></td></tr>
-            <tr><th scope="row">Upgrade, downgrade or cancel any time</th><td class="no">&ndash;<span class="ho-sr">Not applicable</span></td><td class="no">&ndash;<span class="ho-sr">Not applicable</span></td><td class="yes col-pop"><svg class="ho-icon"><use href="#i-check"/></svg><span class="ho-sr">Included</span></td><td class="yes"><svg class="ho-icon"><use href="#i-check"/></svg><span class="ho-sr">Included</span></td></tr>
-            <tr><th scope="row">Receipts and PDF invoices</th><td class="no">&ndash;<span class="ho-sr">Not applicable</span></td><td class="no">&ndash;<span class="ho-sr">Not applicable</span></td><td class="yes col-pop"><svg class="ho-icon"><use href="#i-check"/></svg><span class="ho-sr">Included</span></td><td class="yes"><svg class="ho-icon"><use href="#i-check"/></svg><span class="ho-sr">Included</span></td></tr>
+<?php
+foreach ( $hub_p['compare'] as $hub_row ) {
+	if ( $hub_row['heading'] ) {
+		echo '            <tr class="grp"><th scope="colgroup" colspan="5">' . esc_html( $hub_row['feature'] ) . "</th></tr>\n";
+		continue;
+	}
+	echo '            <tr><th scope="row">' . esc_html( $hub_row['feature'] ) . '</th>';
+	foreach ( $hub_row['cells'] as $hub_i => $hub_c ) {
+		$hub_pop = ! $hub_row['span'] && 2 === $hub_i;   // the Featured column
+		$hub_cls = trim( ( 'text' === $hub_c['kind'] ? '' : $hub_c['kind'] ) . ( $hub_pop ? ' col-pop' : '' ) );
+		echo '<td' . ( $hub_row['span'] ? ' colspan="4"' : '' ) . ( '' !== $hub_cls ? ' class="' . esc_attr( $hub_cls ) . '"' : '' ) . '>';
+		if ( 'yes' === $hub_c['kind'] ) {
+			echo '<svg class="ho-icon"><use href="#i-check"/></svg><span class="ho-sr">' . esc_html( $hub_c['sr'] ) . '</span>';
+		} elseif ( 'no' === $hub_c['kind'] ) {
+			echo '&ndash;<span class="ho-sr">' . esc_html( $hub_c['sr'] ) . '</span>';
+		} else {
+			echo $hub_h( $hub_c['html'] ); // phpcs:ignore WordPress.Security.EscapeOutput -- wp_kses
+		}
+		echo '</td>';
+	}
+	echo "</tr>\n";
+}
+?>
           </tbody>
         </table>
       </div>
       </details>
     </div>
   </section>
+<?php endif; ?>
 </div>
 
+<?php if ( ! $hub_t['pricing_billing_hide'] ) : ?>
 <section class="section section--soft" aria-labelledby="billing-title">
   <div class="ho-container">
-    <div class="sec-head"><div><h2 class="sec-title" id="billing-title">Simple, safe billing</h2><p class="sec-sub">Payments run through Stripe. You stay in control of your plan.</p></div></div>
+    <div class="sec-head"><div><h2 class="sec-title" id="billing-title"><?php echo $hub_e( 'pricing_billing_title' ); ?></h2><p class="sec-sub"><?php echo $hub_e( 'pricing_billing_sub' ); ?></p></div></div>
     <div class="grid grid-3">
+<?php foreach ( $hub_t['pricing_billing_panels'] as $hub_b ) : ?>
       <div class="panel mt-0">
-        <span class="tile__icon mb-4" aria-hidden="true"><svg class="ho-icon"><use href="#i-lock"/></svg></span>
-        <h3 class="panel__title">Secure checkout</h3>
-        <p class="small mb-0">Pay by card on Stripe Checkout. Your card details go straight to Stripe and never touch our site.</p>
+        <span class="tile__icon mb-4" aria-hidden="true"><svg class="ho-icon"><use href="#i-<?php echo esc_attr( sanitize_key( $hub_b['icon'] ) ); ?>"/></svg></span>
+        <h3 class="panel__title"><?php echo esc_html( $hub_b['title'] ); ?></h3>
+        <p class="small mb-0"><?php echo $hub_h( $hub_b['text'] ); // phpcs:ignore ?></p>
       </div>
-      <div class="panel mt-0">
-        <span class="tile__icon mb-4" aria-hidden="true"><svg class="ho-icon"><use href="#i-check"/></svg></span>
-        <h3 class="panel__title">Live straight away</h3>
-        <p class="small mb-0">Paid features switch on as soon as your payment succeeds. No waiting for approval.</p>
-      </div>
-      <div class="panel mt-0">
-        <span class="tile__icon mb-4" aria-hidden="true"><svg class="ho-icon"><use href="#i-settings"/></svg></span>
-        <h3 class="panel__title">Change or cancel any time</h3>
-        <p class="small mb-0">Upgrade, downgrade, switch between monthly and annual, update your card or cancel in the Stripe customer portal.</p>
-      </div>
-      <div class="panel mt-0">
-        <span class="tile__icon mb-4" aria-hidden="true"><svg class="ho-icon"><use href="#i-pound"/></svg></span>
-        <h3 class="panel__title">Fair proration</h3>
-        <p class="small mb-0">Change plan mid-month and you only pay the difference. Downgrades are credited to your next bill.</p>
-      </div>
-      <div class="panel mt-0">
-        <span class="tile__icon mb-4" aria-hidden="true"><svg class="ho-icon"><use href="#i-download"/></svg></span>
-        <h3 class="panel__title">Receipts and invoices</h3>
-        <p class="small mb-0">Stripe emails a receipt for every payment, and you can download PDF invoices from your account.</p>
-      </div>
-      <div class="panel mt-0">
-        <span class="tile__icon mb-4" aria-hidden="true"><svg class="ho-icon"><use href="#i-heart"/></svg></span>
-        <h3 class="panel__title">Nothing is deleted</h3>
-        <p class="small mb-0">If you downgrade or cancel, your listing drops to Basic. Extra photos, offers and links are hidden, not deleted, and come back if you upgrade.</p>
-      </div>
+<?php endforeach; ?>
     </div>
   </div>
 </section>
+<?php endif; ?>
 
+<?php if ( ! $hub_t['pricing_faq_hide'] ) : ?>
 <section class="section" aria-labelledby="faq-title">
   <div class="ho-container">
-    <h2 class="sec-title mb-5" id="faq-title">Questions</h2>
+    <h2 class="sec-title mb-5" id="faq-title"><?php echo $hub_e( 'pricing_faq_title' ); ?></h2>
     <div class="faq faq--2col">
+<?php foreach ( $hub_t['pricing_faq'] as $hub_q ) : ?>
       <details>
-        <summary>Is claiming really free?</summary>
-        <div><p>Yes. Claiming puts you on the Basic plan, which is free for as long as you like. You get a verified listing, your business details and opening hours, one photograph, and you can keep the listing up to date yourself.</p></div>
+        <summary><?php echo esc_html( $hub_q['question'] ); ?></summary>
+        <div><p><?php echo $hub_h( $hub_q['answer'] ); // phpcs:ignore ?></p></div>
       </details>
-      <details>
-        <summary>What&rsquo;s the difference between Basic and Featured?</summary>
-        <div><p>Basic gets your business listed and verified. Featured puts you ahead of other businesses in your category and in search, gives you featured positions around the Hub, and lets you add more photographs, social media links, Local Offers, and events and classes.</p></div>
-      </details>
-      <details>
-        <summary>How long does it take to go live?</summary>
-        <div><p>Claims are checked by our team, usually within 2 working days, and we email you either way. That&rsquo;s the only approval step. Once your listing is yours, paid upgrades go live the moment your payment succeeds. Offers and events are checked before they appear.</p></div>
-      </details>
-      <details>
-        <summary>Can I switch between monthly and annual?</summary>
-        <div><p>Yes. Switch in the Stripe customer portal, linked from your account. Annual plans cost the same as 10 months, so you get 2 months free. Any change is prorated, so you only pay for what you use.</p></div>
-      </details>
-      <details>
-        <summary>What happens if I downgrade or cancel?</summary>
-        <div><p>Your plan runs to the end of the period you&rsquo;ve paid for, then your listing drops to Basic. We keep all your data. Extra photos, social media links, offers and featured spots are hidden, not deleted, so everything comes back if you upgrade again.</p></div>
-      </details>
-      <details>
-        <summary>What if a payment fails?</summary>
-        <div><p>Stripe tries again over the following days and emails you so you can update your card. If the last try fails, your listing drops to Basic with all your data kept.</p></div>
-      </details>
-      <details>
-        <summary>Do you take discount codes?</summary>
-        <div><p>Yes. If we&rsquo;ve given you a code, enter it on the Stripe Checkout page. Codes work on Hub plans only.</p></div>
-      </details>
-      <details>
-        <summary>What does a Local Partner get?</summary>
-        <div><p>Everything in Featured, plus one Daily News advert each month and one Harrow Online Facebook Group post each month. Our team writes and schedules them with you.</p></div>
-      </details>
-      <details>
-        <summary>Can I list an event without a paid plan?</summary>
-        <div><p>Yes. Any business can list a single event for &pound;15, with no plan or subscription. You pay when you submit it, we check it, and it stays on What&rsquo;s On until the event date. Featured and Local Partner include unlimited events and classes, so they&rsquo;re better value if you run more than one event a month. Schools, clubs, charities and community groups can open a free organiser account and add events and classes without paying. <a href="<?php echo esc_url( hub_url( 'register/' ) ); ?>">Create a free account</a>.</p></div>
-      </details>
-      <details><summary>What is the difference between an event and a class?</summary><div><p>An event happens on a set date, like a quiz night or a market, and leaves What&rsquo;s On once it&rsquo;s over. A class runs every week, like a dance class or a football session, and keeps the same page for as long as it runs.</p></div></details>
-      <details><summary>Can I manage more than one business?</summary><div><p>For now, each account manages one business listing. If you run more than one business, <a href="https://harrowonline.org/contact-us/">contact us</a> and we&rsquo;ll help.</p></div></details>
+<?php endforeach; ?>
     </div>
   </div>
 </section>
+<?php endif; ?>
 
+<?php if ( ! $hub_t['pricing_cta_hide'] ) : ?>
 <div class="ho-container">
   <div class="cta-band">
-    <div><h2>Want to reach more of Harrow?</h2><p>Advertise in Harrow Online news articles, or advertise in the newsletter on the dates you choose.</p></div>
+    <div><h2><?php echo $hub_e( 'pricing_cta_title' ); ?></h2><p><?php echo $hub_e( 'pricing_cta_text' ); ?></p></div>
     <div class="cta-band__actions">
-      <a class="ho-btn ho-btn--primary" href="<?php echo esc_url( hub_url( 'advertise/newsletter/' ) ); ?>">Advertise in the newsletter</a>
-      <a class="ho-btn ho-btn--outline" href="<?php echo esc_url( hub_url( 'news-site/advertise/' ) ); ?>">Other advertising</a>
+<?php echo hub_view_cta_buttons( $hub_t['pricing_cta_buttons'], false ); // phpcs:ignore WordPress.Security.EscapeOutput -- escaped in the helper ?>
     </div>
   </div>
 </div>
+<?php endif; ?>
 <?php get_footer();

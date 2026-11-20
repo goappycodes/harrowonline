@@ -29,3 +29,16 @@ function hub_pages_db_save_fields( $page_id, array $keys, array $values ) {
 		hub_db_save_meta( $page_id, $keys, $values );
 	}
 }
+
+/** A page's own text (the WordPress editor), as stored. */
+function hub_pages_db_body( $page_id ) {
+	$post = $page_id ? get_post( $page_id ) : null;
+	return $post ? (string) $post->post_content : '';
+}
+
+/** Set a page's own text (the starting text of a document page). */
+function hub_pages_db_set_body( $page_id, $html ) {
+	if ( $page_id ) {
+		wp_update_post( array( 'ID' => (int) $page_id, 'post_content' => (string) $html ) );
+	}
+}

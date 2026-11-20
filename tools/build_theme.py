@@ -85,6 +85,10 @@ def check(name, html):
 
 # ---------------------------------------------------------------- header.php / footer.php
 def write_chrome():
+    # header.php and footer.php are edited by hand since the menus (Appearance > Menus) and footer widgets (Appearance >
+    # Widgets) came in: inc/menus.php and inc/widgets.php. Change them in the theme, not here.
+    print("header.php and footer.php are edited by hand (menus and widgets): not regenerated")
+    return
     head = build.partial("head")
     head = head.replace('<html lang="en-GB">', "<html <?php language_attributes(); ?><?php hub_html_attrs(); ?>>")
     head = head.replace("<title>{{title}}</title>\n", "")

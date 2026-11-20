@@ -21,10 +21,10 @@ $hub_u     = function ( $k ) use ( $hub_t ) { return esc_url( $hub_t[ $k ] ); };
 
 hub_set_page( array(
 	'body' => 'page-events',
-	'description' => $hub_t['events_seo_description'],
+	'description' => 'Events, things to do and classes across Harrow this week and weekend: family days out, live music, markets and community events.',
 	'hubnav' => 'events',
 	'nav' => 'events',
-	'title' => $hub_t['events_seo_title'],
+	'title' => 'What\'s On in Harrow: events this week and weekend',   // page title and description: Yoast SEO box, else these
 ) );
 get_header();
 ?>

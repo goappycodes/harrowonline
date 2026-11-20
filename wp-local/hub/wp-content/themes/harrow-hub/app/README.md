@@ -49,7 +49,7 @@ app/
     ├── submissions/       offers, events and classes from the account pages: who may, drafts, Pending Review
     ├── home/              the front page: its fields (Homepage box) with the weekend, offers, numbers, featured
     │                      businesses, categories and areas from the other modules
-    └── pages/             page text of the listing pages (Page text box): What's On, Classes, Offers; more in HUB_PAGES
+    └── pages/             page text of the listing pages (Page text box): What's On, Classes, Offers, Pricing, Privacy, Terms
 parts/                     display only: each part gets arrays in $args and prints them
 ├── account/               settings (the settings page's forms)
 ├── businesses/            row, card, ticker, event-row, profile, profile-imported, directory

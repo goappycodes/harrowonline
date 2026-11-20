@@ -53,6 +53,7 @@ function hub_billing_catalogue( $mode = HUB_WEB ) {
 			'monthly'       => hub_billing_rule_money( $p['prices']['monthly'] ),
 			'annual'        => hub_billing_rule_money( $p['prices']['annual'] ),
 			'annual_saving' => hub_billing_rule_money( 12 * $p['prices']['monthly'] - $p['prices']['annual'] ),
+			'annual_per_month' => hub_billing_rule_money( (int) round( $p['prices']['annual'] / 12 ) ),
 		);
 	}
 	foreach ( HUB_BILLING_ITEMS as $key => $i ) {

@@ -2,7 +2,7 @@
 /**
  * Page text: the shape a template (and the app) gets. Every field of the page, with the default for anything not saved.
  * Text is plain (templates escape it); "…_link" fields and the "link" of list rows are full URLs; "…_hide" switches
- * are booleans; lists are rows of plain values with the columns of their default rows.
+ * are booleans; lists are rows of plain values with the columns of their default rows (or plain lines).
  */
 defined( 'ABSPATH' ) || exit;
 
@@ -12,6 +12,9 @@ function hub_pages_shape( $page, array $saved ) {
 		$v = isset( $saved[ $k ] ) ? $saved[ $k ] : '';
 		if ( '_hide' === substr( $k, -5 ) ) {
 			$out[ $k ] = '1' === (string) $v;
+		} elseif ( is_array( $default ) && $default && ! is_array( reset( $default ) ) ) {   // a list of plain lines
+			$rows      = is_array( $v ) && $v ? $v : $default;
+			$out[ $k ] = array_values( array_filter( array_map( 'strval', $rows ), 'strlen' ) );
 		} elseif ( is_array( $default ) ) {
 			$cols      = array_keys( $default[0] );
 			$rows      = is_array( $v ) && $v ? $v : $default;

@@ -23,9 +23,14 @@ local only). In the Claude desktop app, start the **wp-local** preview instead.
 | Theme (all Hub markup, styles and scripts) | `hub/wp-content/themes/harrow-hub/` |
 | **Data layer: controllers for pages and the API** (read `app/README.md` first) | `harrow-hub/app/` |
 | Display pieces that print controller data (business rows and profiles, events and classes, offers) | `harrow-hub/parts/` |
-| Hub API (same data as the pages, JSON) | `/hub/wp-json/hub/v1/` (e.g. `/home`, `/pages/events`, `/pages/classes`, `/pages/offers`, `/businesses`, `/events/whats-on`, `/classes`, `/offers`, `/categories`, `/areas`) |
+| Hub API (same data as the pages, JSON) | `/hub/wp-json/hub/v1/` (e.g. `/home`, `/pages/events`, `/pages/classes`, `/pages/offers`, `/pages/pricing`, `/businesses`, `/events/whats-on`, `/classes`, `/offers`, `/categories`, `/areas`) |
 | Page templates (one per prototype page) | `harrow-hub/page-templates/` |
-| Header, footer | `harrow-hub/header.php`, `footer.php` |
+| Header, footer (edited by hand; `build_theme.py` no longer regenerates them) | `harrow-hub/header.php`, `footer.php` |
+| Privacy notice and Terms of use: the text is each Page's own editor (“On this page” is made from its Heading 2s); the title, intro, updated line and draft note are its Page text box. Starting text: `harrow-hub/content/*.html` | `harrow-hub/parts/pages/document.php`, `app/modules/pages/` |
+| wp-admin colours: the **Harrow Hub** admin colour scheme (WordPress's Default with the Hub red; everyone's unless they pick another in Users > Profile). After a WordPress update: `python tools/build_admin_colors.py` | `harrow-hub/inc/admin/admin-colors.php`, `harrow-hub/admin/hub-admin-colors.css` |
+| Main menu and social icons: **Appearance > Menus** (locations “Main menu” and “Social links”; an item's CSS class `icon-plus`, `icon-star`… adds that icon) | `harrow-hub/inc/menus.php` |
+| Footer: **Appearance > Widgets** (classic screen): under the logo, link columns, newsletter, topics row, badges, legal text. An empty area shows today's content | `harrow-hub/inc/widgets.php` |
+| Today's menus and footer widgets, created once (`php -r` with `hub_setup_menus_widgets()`, or on switching the theme on); nothing is overwritten | `harrow-hub/inc/menus-setup.php` |
 | Page settings and helpers (`hub_url`, `hub_asset`, current menu item, title) | `harrow-hub/inc/page.php` |
 | Which template each WordPress Page uses | `harrow-hub/inc/page-map.php` |
 | Database | `hub/wp-content/database/hub.sqlite` |
@@ -33,15 +38,16 @@ local only). In the Claude desktop app, start the **wp-local** preview instead.
 | Templates for each content type | `harrow-hub/single-hub_*.php`, `taxonomy-hub_*.php` |
 | wp-admin boxes (native meta boxes, no plugin): Business, Offer, Event and Class details, an offer's or class's Business, Hub settings > Newsletter | `harrow-hub/inc/admin/` (script and styles in `harrow-hub/admin/`) |
 | Homepage text, links, tiles and section switches (the Homepage box on the Home page, Pages > Home; empty fields use today's wording) | `harrow-hub/inc/admin/home-box.php`, `harrow-hub/app/modules/home/` |
-| Page text of the listing pages: What's On, Classes and activities and Local Offers, their text, links and panels (the Page text box on each of those Pages; empty fields use today's wording). To add a page, see `app/modules/pages/rules.php` | `harrow-hub/inc/admin/page-text-box.php`, `harrow-hub/app/modules/pages/` |
+| Page text: What's On, Classes and activities, Local Offers and Pricing, their text, links and panels (the Page text box on each of those Pages; Pricing's £ amounts come from `app/modules/billing/rules.php`; empty fields use today's wording). To add a page, see `app/modules/pages/rules.php` | `harrow-hub/inc/admin/page-text-box.php`, `harrow-hub/app/modules/pages/` |
 | How pages read those fields | `harrow-hub/app/modules/*/data.php` |
 | Fill the business, offer, event and class fields from the imported data (`php wp-local/hub/fields-migrate-local.php`; `import-local.php` runs it too) | `harrow-hub/inc/fields-migrate.php` |
 | Newsletter band (option `hub_newsletter`) | `harrow-hub/inc/newsletter.php` |
+| Page titles and descriptions for search engines and shared links: the **Yoast SEO** plugin's box on each page, business, offer, event and class. Empty Yoast fields use the template's own title and description, so nothing changes until someone fills them in | `hub/wp-content/plugins/wordpress-seo/` (committed, active in `hub.sqlite`), `harrow-hub/inc/seo.php` |
 
 ## Working on it
 
-- **Theme from the prototype:** `python tools/build_theme.py` regenerates the header, footer and page templates
-  from `src/` (the static prototype). After adding a page, run `php wp-local/hub/setup-local.php` to create its
+- **Theme from the prototype:** `python tools/build_theme.py` regenerates the page templates (not the hand-edited ones)
+  from `src/` (the static prototype). The header and footer are edited by hand since the menus and widgets. After adding a page, run `php wp-local/hub/setup-local.php` to create its
   WordPress Page, then commit the theme and `hub.sqlite`.
 - **Hub content (businesses, offers, events, classes):** `python tools/export_wp_data.py` writes
   `data/wp-hub-data.json` from the prototype's data, then `php wp-local/hub/import-local.php` replaces all Hub

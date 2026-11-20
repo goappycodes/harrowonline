@@ -1,58 +1,96 @@
-/* wp-admin: the Hub's own field boxes (inc/admin/). Plain WordPress admin look. */
-.hub-box { margin: -6px -12px -12px; }
-.hub-box--page { margin: 16px 0 0; max-width: 980px; background: #fff; border: 1px solid #c3c4c7; padding: 4px 16px 8px; }
-.hub-tabs { display: flex; flex-wrap: wrap; gap: 4px; padding: 10px 12px 0; border-bottom: 1px solid #c3c4c7; background: #f6f7f7; }
-.hub-tabs__tab { margin-bottom: -1px; padding: 8px 14px; border: 1px solid #c3c4c7; border-bottom: 0; background: #f0f0f1; color: #50575e; font-size: 13px; font-weight: 600; cursor: pointer; }
-.hub-tabs__tab:hover { background: #fff; color: #1d2327; }
-.hub-tabs__tab.is-active { background: #fff; color: #1d2327; border-bottom: 1px solid #fff; }
-.hub-panel { padding: 4px 12px 12px; }
-.hub-grid { display: flex; flex-wrap: wrap; margin: 0 -8px; }
-.hub-f { box-sizing: border-box; flex: 0 0 var(--w, 100%); max-width: var(--w, 100%); padding: 12px 8px 4px; }
-.hub-f__label { display: block; margin-bottom: 4px; font-weight: 600; color: #1d2327; }
-.hub-f__help { margin: 0 0 6px; color: #646970; font-size: 12px; }
-.hub-f input[type=text], .hub-f input[type=url], .hub-f input[type=email], .hub-f input[type=number], .hub-f input[type=search], .hub-f select, .hub-f textarea { width: 100%; max-width: 100%; }
-.hub-f--note p { margin: 0; padding: 10px 12px; border-left: 4px solid #72aee6; background: #f0f6fc; }
+/* wp-admin: the Hub's own field boxes (inc/admin/). The admin colour scheme's colour (--wp-admin-theme-color), a calmer layout: underlined tabs,
+   labels above, help under each field, on/off switches, section headings. */
+.hub-box { margin: -6px -12px -12px; background: #fff; }
+.hub-box--page { margin: 16px 0 0; max-width: 980px; border: 1px solid #c3c4c7; border-radius: 4px; padding: 4px 16px 20px; }
+
+/* Tabs */
+.hub-tabs { display: flex; flex-wrap: wrap; gap: 2px; padding: 0 14px; border-bottom: 1px solid #dcdcde; background: #fff; }
+.hub-tabs__tab { margin: 0 0 -1px; padding: 13px 12px 11px; border: 0; border-bottom: 3px solid transparent; background: none; color: #50575e; font-size: 13px; font-weight: 600; line-height: 1.3; cursor: pointer; }
+.hub-tabs__tab:hover { color: var(--wp-admin-theme-color, #2271b1); }
+.hub-tabs__tab.is-active { border-bottom-color: var(--wp-admin-theme-color, #2271b1); color: #1d2327; }
+.hub-tabs__tab:focus-visible { outline: 2px solid var(--wp-admin-theme-color, #2271b1); outline-offset: -2px; border-radius: 2px; }
+.hub-panel { padding: 6px 16px 22px; }
+
+/* Fields: label, control, help */
+.hub-grid { display: flex; flex-wrap: wrap; margin: 0 -10px; }
+.hub-f { box-sizing: border-box; flex: 0 0 var(--w, 100%); max-width: var(--w, 100%); padding: 16px 10px 0; }
+.hub-f__label { display: block; margin: 0 0 6px; color: #1d2327; font-size: 13px; font-weight: 600; line-height: 1.4; }
+.hub-f__help { margin: 6px 0 0; color: #646970; font-size: 12px; line-height: 1.5; }
+.hub-f__hint { margin-left: 6px; color: #646970; font-size: 12px; }
+.hub-f input[type=text], .hub-f input[type=url], .hub-f input[type=email], .hub-f input[type=number], .hub-f input[type=date], .hub-f input[type=time],
+.hub-f input[type=search], .hub-f select, .hub-f textarea {
+	box-sizing: border-box; width: 100%; max-width: 100%; min-height: 36px; margin: 0; padding: 0 10px;
+	border: 1px solid #8c8f94; border-radius: 4px; background-color: #fff; box-shadow: none; font-size: 14px; line-height: 2;
+}
+.hub-f select { padding-right: 28px; }
+.hub-f textarea { min-height: 64px; padding: 7px 10px; line-height: 1.5; }
+.hub-f input:focus, .hub-f select:focus, .hub-f textarea:focus { border-color: var(--wp-admin-theme-color, #2271b1); box-shadow: 0 0 0 1px var(--wp-admin-theme-color, #2271b1); outline: 0; }
+.hub-f ::placeholder { color: #8c8f94; }
 @media (max-width: 782px) { .hub-f { flex-basis: 100%; max-width: 100%; } }
 
-/* Claimed-only fields hide while "Claimed by the business" is off; their notes show instead */
+/* Section heading and info line */
+.hub-f--heading { padding-top: 26px; }
+.hub-f--heading h4 { margin: 0; padding: 0 0 8px; border-bottom: 1px solid #f0f0f1; color: #1d2327; font-size: 14px; font-weight: 600; }
+.hub-f--heading .hub-f__help { margin-top: 8px; }
+.hub-f--note p { display: flex; gap: 8px; align-items: flex-start; margin: 0; padding: 10px 12px; border: 1px solid rgba(var(--wp-admin-theme-color--rgb, 34, 113, 177), .25); border-left: 4px solid var(--wp-admin-theme-color, #2271b1); border-radius: 4px; background: rgba(var(--wp-admin-theme-color--rgb, 34, 113, 177), .05); color: #1d2327; font-size: 13px; line-height: 1.5; }
+.hub-f--note p::before { content: "\f348"; flex: none; color: var(--wp-admin-theme-color, #2271b1); font: 18px/1 dashicons; }
+
+/* On/off switch (a checkbox underneath) */
+.hub-switch { position: relative; display: inline-flex; align-items: center; gap: 10px; min-height: 36px; }
+.hub-switch input[type=checkbox] { position: absolute; top: 8px; left: 0; z-index: 1; width: 40px; height: 22px; margin: 0; opacity: 0; cursor: pointer; }
+.hub-switch__track { position: relative; flex: none; width: 40px; height: 22px; border-radius: 11px; background: #8c8f94; transition: background-color .15s; }
+.hub-switch__track::after { content: ""; position: absolute; top: 3px; left: 3px; width: 16px; height: 16px; border-radius: 50%; background: #fff; box-shadow: 0 1px 2px rgba(0, 0, 0, .25); transition: transform .15s; }
+.hub-switch input:checked + .hub-switch__track { background: var(--wp-admin-theme-color, #2271b1); }
+.hub-switch input:checked + .hub-switch__track::after { transform: translateX(18px); }
+.hub-switch input:focus-visible + .hub-switch__track { box-shadow: 0 0 0 2px #fff, 0 0 0 4px var(--wp-admin-theme-color, #2271b1); }
+.hub-switch__state::after { content: "Off"; color: #646970; font-size: 13px; }
+.hub-switch input:checked ~ .hub-switch__state::after { content: "On"; color: #1d2327; font-weight: 600; }
+
+/* Claimed-only fields hide while "Claimed" is off; their notes show instead */
 [data-claimed="0"] [data-claimed-only], [data-claimed="1"] [data-unclaimed-only] { display: none; }
 
-.hub-toggle { display: inline-flex; align-items: center; gap: 6px; font-weight: 400; }
+/* Opening hours: one box per day */
+.hub-hours { display: grid; grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); gap: 10px 14px; }
+.hub-hours label { display: grid; gap: 4px; color: #50575e; font-size: 12px; font-weight: 600; }
 
-.hub-hours { display: grid; grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); gap: 8px 12px; }
-.hub-hours label { display: grid; gap: 2px; font-size: 12px; color: #50575e; }
-
-.hub-list table { margin-bottom: 6px; }
-.hub-list th { font-weight: 600; }
-.hub-list td { padding: 4px 6px; }
-.hub-list td input[type=text], .hub-list td input[type=url] { width: 100%; }
-.hub-list__x { width: 28px; text-align: center; }
+/* Lists (rows you can add and remove) */
+.hub-list table { margin: 0 0 8px; border: 1px solid #dcdcde; border-radius: 4px; border-collapse: separate; border-spacing: 0; overflow: hidden; }
+.hub-list thead th { padding: 8px 8px; border-bottom: 1px solid #dcdcde; background: #f6f7f7; color: #50575e; font-size: 12px; font-weight: 600; }
+.hub-list td { padding: 6px 8px; vertical-align: middle; }
+.hub-list td input[type=text], .hub-list td input[type=url] { width: 100%; min-height: 32px; border-radius: 4px; }
+.hub-list td textarea { width: 100%; min-width: 110px; min-height: 54px; border-radius: 4px; font-size: 13px; line-height: 1.4; }
+.hub-list { overflow-x: auto; }
+.hub-list td input[type=text] { min-width: 170px; }
+.hub-list__x { width: 32px; text-align: center; }
 .hub-list__check { width: 70px; text-align: center; }
-.hub-list__remove { font-size: 18px; color: #b32d2e; text-decoration: none; }
+.hub-list__remove { color: #b32d2e; font-size: 18px; text-decoration: none; }
+.hub-list__remove:hover { color: #8a2424; }
 
-.hub-image__preview img { display: block; max-width: 150px; max-height: 150px; margin-bottom: 6px; border: 1px solid #dcdcde; background: #f6f7f7; }
-.hub-image__remove { color: #b32d2e; }
-
+/* One image, gallery */
+.hub-image__preview img { display: block; max-width: 150px; max-height: 150px; margin-bottom: 8px; border: 1px solid #dcdcde; border-radius: 4px; background: #f6f7f7; }
+.hub-image__remove { margin-left: 6px; color: #b32d2e; }
 .hub-gallery__list { display: flex; flex-wrap: wrap; gap: 8px; margin: 0 0 8px; }
 .hub-gallery__list li { position: relative; margin: 0; cursor: move; }
-.hub-gallery__list img { display: block; width: 110px; height: 110px; object-fit: cover; border: 1px solid #dcdcde; }
-.hub-gallery__remove { position: absolute; top: 2px; right: 2px; width: 22px; height: 22px; border: 0; border-radius: 50%; background: rgba(0, 0, 0, .65); color: #fff; line-height: 20px; cursor: pointer; }
+.hub-gallery__list img { display: block; width: 110px; height: 110px; object-fit: cover; border: 1px solid #dcdcde; border-radius: 4px; }
+.hub-gallery__remove { position: absolute; top: 4px; right: 4px; width: 22px; height: 22px; border: 0; border-radius: 50%; background: rgba(0, 0, 0, .65); color: #fff; line-height: 20px; cursor: pointer; }
 
-.hub-links__search { width: 100%; max-width: 420px; margin-bottom: 6px; }
-.hub-links { max-height: 260px; overflow: auto; margin: 0; padding: 6px 10px; border: 1px solid #dcdcde; background: #fff; }
-.hub-links li { margin: 4px 0; }
+/* Offers and classes tick lists (business), business picker */
+.hub-links__search { width: 100%; max-width: 420px; min-height: 36px; margin-bottom: 8px; border-radius: 4px; }
+.hub-links { max-height: 280px; overflow: auto; margin: 0; padding: 6px 12px; border: 1px solid #dcdcde; border-radius: 4px; background: #fff; }
+.hub-links li { margin: 6px 0; }
 .hub-links__other { color: #8a4b00; font-size: 12px; }
 .hub-links__edit { margin-left: 6px; font-size: 12px; }
-
 .hub-pick__current { margin: 0 0 8px; }
-.hub-pick__results { max-height: 220px; overflow: auto; margin: 4px 0 0; border: 1px solid #dcdcde; background: #fff; }
-.hub-pick__results li { margin: 0; padding: 6px 8px; border-bottom: 1px solid #f0f0f1; }
+.hub-pick__results { max-height: 220px; overflow: auto; margin: 4px 0 0; border: 1px solid #dcdcde; border-radius: 4px; background: #fff; }
+.hub-pick__results li { margin: 0; padding: 6px 10px; border-bottom: 1px solid #f0f0f1; }
 .hub-pick__results .button-link { text-align: left; }
 .hub-pick__none { color: #646970; }
 
 /* Tick list (e.g. the homepage's categories) and several picked businesses */
-.hub-checks { display: grid; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); gap: 2px 16px; max-height: 260px; overflow: auto; margin: 0; padding: 8px 10px; border: 1px solid #dcdcde; background: #fff; }
-.hub-checks li { margin: 2px 0; }
-.hub-picked { margin: 0 0 8px 1.4em; }
-.hub-picked li { margin: 0 0 4px; cursor: move; }
-.hub-picked__remove { color: #b32d2e; text-decoration: none; font-size: 16px; }
+.hub-checks { display: grid; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); gap: 2px 16px; max-height: 260px; overflow: auto; margin: 0; padding: 8px 12px; border: 1px solid #dcdcde; border-radius: 4px; background: #fff; }
+.hub-checks li { margin: 3px 0; }
+.hub-picked { margin: 0 0 8px; padding: 0; list-style: none; counter-reset: pick; }
+.hub-picked li { display: flex; align-items: center; gap: 8px; margin: 0 0 6px; padding: 6px 10px; border: 1px solid #dcdcde; border-radius: 4px; background: #f6f7f7; cursor: move; counter-increment: pick; }
+.hub-picked li::before { content: counter(pick); color: #646970; font-size: 12px; font-weight: 600; }
+.hub-picked li span { flex: 1; }
+.hub-picked__remove { color: #b32d2e; font-size: 18px; text-decoration: none; }

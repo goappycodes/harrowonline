@@ -30,3 +30,10 @@ function hub_link( $link ) {
 	}
 	return hub_url( $path );
 }
+
+/** Links typed as Hub paths in HTML (href="/hub/privacy/") as full addresses for this server. */
+function hub_html_links( $html ) {
+	return preg_replace_callback( '/href="(\/[^"]*)"/', function ( $m ) {
+		return 'href="' . esc_url( hub_link( html_entity_decode( $m[1] ) ) ) . '"';
+	}, (string) $html );
+}

@@ -9,116 +9,112 @@ defined( 'ABSPATH' ) || exit;
 /** The homepage fields, by tab. */
 function hub_admin_home_fields() {
 	$c     = hub_home_choices();
-	$link  = 'A Hub page such as events/classes/ or a full web address.';
+	$link  = 'A Hub path (events/classes/) or a full URL.';
 	$hide  = function ( $key, $what ) {
 		return array( 'key' => $key, 'label' => 'Hide ' . $what, 'type' => 'toggle', 'width' => 100 );
 	};
 	$head  = function ( $p, $title, $sub = true, $link_label = true ) use ( $link ) {
-		$out = array( array( 'key' => "home_{$p}_title", 'label' => 'Heading', 'type' => 'text', 'width' => $sub ? 40 : 100 ) );
+		$out = array( array( 'key' => "home_{$p}_title", 'label' => 'Title', 'type' => 'text', 'width' => $sub ? 40 : 100 ) );
 		if ( $sub ) {
-			$out[] = array( 'key' => "home_{$p}_sub", 'label' => 'Text under the heading', 'type' => 'text', 'width' => 60 );
+			$out[] = array( 'key' => "home_{$p}_sub", 'label' => 'Subtitle', 'type' => 'text', 'width' => 60 );
 		}
 		if ( $link_label ) {
-			$out[] = array( 'key' => "home_{$p}_link_label", 'label' => 'Link text (top right)', 'type' => 'text', 'width' => 40 );
-			$out[] = array( 'key' => "home_{$p}_link", 'label' => 'Link goes to', 'type' => 'text', 'width' => 60, 'help' => $link );
+			$out[] = array( 'key' => "home_{$p}_link_label", 'label' => 'Link text', 'type' => 'text', 'width' => 40 );
+			$out[] = array( 'key' => "home_{$p}_link", 'label' => 'Link URL', 'type' => 'text', 'width' => 60, 'help' => $link );
 		}
 		return $out;
 	};
 	return array(
-		'hero' => array( 'First screen', array(
-			array( 'key' => 'home_hero_eyebrow', 'label' => 'Small line above the heading', 'type' => 'text', 'width' => 34 ),
-			array( 'key' => 'home_hero_title', 'label' => 'Heading', 'type' => 'text', 'width' => 33 ),
-			array( 'key' => 'home_hero_title_em', 'label' => 'End of the heading (in red)', 'type' => 'text', 'width' => 33 ),
-			array( 'key' => 'home_hero_lead', 'label' => 'Text under the heading', 'type' => 'textarea' ),
-			array( 'key' => 'home_search_placeholder', 'label' => 'Search box placeholder', 'type' => 'text', 'width' => 50 ),
+		'hero' => array( 'Hero', array(
+			array( 'key' => 'home_hero_eyebrow', 'label' => 'Label', 'type' => 'text', 'width' => 34 ),
+			array( 'key' => 'home_hero_title', 'label' => 'Title', 'type' => 'text', 'width' => 33 ),
+			array( 'key' => 'home_hero_title_em', 'label' => 'Title end (red)', 'type' => 'text', 'width' => 33 ),
+			array( 'key' => 'home_hero_lead', 'label' => 'Intro', 'type' => 'textarea' ),
+			array( 'key' => 'home_search_placeholder', 'label' => 'Search placeholder', 'type' => 'text', 'width' => 50 ),
 			array( 'key' => 'home_search_button', 'label' => 'Search button', 'type' => 'text', 'width' => 50 ),
-			array( 'key' => 'home_popular_label', 'label' => '“Popular” label', 'type' => 'text', 'width' => 34 ),
-			array( 'key' => 'home_popular', 'label' => 'Popular links (under the search)', 'type' => 'list', 'add' => 'Add a link', 'help' => 'On phones only the first two fit. Links: ' . $link,
-				'cols' => array( 'label' => array( 'Text' ), 'link' => array( 'Goes to' ) ) ),
-			array( 'key' => 'home_tiles', 'label' => 'The big choices (right of the search)', 'type' => 'list', 'add' => 'Add a choice',
-				'help' => 'Four fit best. Icon: store, calendar, repeat, tag, food, people, star, gift… Links: ' . $link,
-				'cols' => array( 'icon' => array( 'Icon' ), 'title' => array( 'Title' ), 'text' => array( 'Short text' ), 'link' => array( 'Goes to' ) ) ),
-			array( 'key' => 'home_add_buttons', 'label' => 'Buttons under the choices', 'type' => 'list', 'add' => 'Add a button',
-				'cols' => array( 'label' => array( 'Text' ), 'link' => array( 'Goes to' ) ) ),
-			$hide( 'home_ticker_hide', 'the “Just joined” strip' ),
+			array( 'key' => 'home_popular_label', 'label' => 'Popular label', 'type' => 'text', 'width' => 34 ),
+			array( 'key' => 'home_popular', 'label' => 'Popular links', 'type' => 'list', 'add' => 'Add a link', 'help' => 'Phones show the first two. Links: ' . $link,
+				'cols' => array( 'label' => array( 'Text' ), 'link' => array( 'URL' ) ) ),
+			array( 'key' => 'home_tiles', 'label' => 'Tiles', 'type' => 'list', 'add' => 'Add a choice',
+				'help' => 'Four fit best. Icons: store, calendar, repeat, tag, food… Links: ' . $link,
+				'cols' => array( 'icon' => array( 'Icon' ), 'title' => array( 'Title' ), 'text' => array( 'Text' ), 'link' => array( 'URL' ) ) ),
+			array( 'key' => 'home_add_buttons', 'label' => 'Buttons', 'type' => 'list', 'add' => 'Add a button',
+				'cols' => array( 'label' => array( 'Text' ), 'link' => array( 'URL' ) ) ),
+			$hide( 'home_ticker_hide', '“Just joined”' ),
 		) ),
-		'weekend' => array( 'This weekend', array_merge(
-			array( $hide( 'home_weekend_hide', 'this section' ) ),
+		'weekend' => array( 'Weekend', array_merge(
+			array( $hide( 'home_weekend_hide', 'section' ) ),
 			$head( 'weekend', '', false ),
 			array(
-				array( 'key' => 'home_weekend_offer', 'label' => 'Offer shown here', 'type' => 'select', 'choices' => array( '' => '— Automatic: the first live offer —' ) + $c['offers'],
-					'help' => 'If the picked offer ends, the first live offer shows instead. The two events are this weekend’s, featured ones first.' ),
-				array( 'key' => 'note', 'type' => 'note', 'label' => '<strong>Newsletter card</strong> (beside the events)' ),
-				$hide( 'home_nl_hide', 'the newsletter card' ),
-				array( 'key' => 'home_nl_title', 'label' => 'Card heading', 'type' => 'text', 'width' => 60 ),
-				array( 'key' => 'home_nl_text', 'label' => 'Card text', 'type' => 'text', 'width' => 40 ),
-				array( 'key' => 'home_nl_editions', 'label' => 'Newsletters to tick', 'type' => 'list', 'add' => 'Add a newsletter',
-					'help' => '<strong>Value</strong> is what the sign-up form sends (daily, weekend, business).',
-					'cols' => array( 'value' => array( 'Value' ), 'label' => array( 'Name' ), 'note' => array( 'Small note' ), 'checked' => array( 'Ticked', 'check' ) ) ),
-				array( 'key' => 'home_nl_placeholder', 'label' => 'Email box placeholder', 'type' => 'text', 'width' => 50 ),
-				array( 'key' => 'home_nl_button', 'label' => 'Button', 'type' => 'text', 'width' => 50 ),
+				array( 'key' => 'home_weekend_offer', 'label' => 'Offer', 'type' => 'select', 'choices' => array( '' => '— Automatic —' ) + $c['offers'],
+					'help' => 'If it ends, the first live offer shows. The events are this weekend’s, featured first.' ),
+				array( 'key' => 'note', 'type' => 'heading', 'label' => 'Newsletter card' ),
+				$hide( 'home_nl_hide', 'card' ),
+				array( 'key' => 'home_nl_title', 'label' => 'Title', 'type' => 'text', 'width' => 60 ),
+				array( 'key' => 'home_nl_text', 'label' => 'Text', 'type' => 'text', 'width' => 40 ),
+				array( 'key' => 'home_nl_editions', 'label' => 'Newsletters', 'type' => 'list', 'add' => 'Add a newsletter',
+					'help' => '<strong>Value</strong> is sent with the form: daily, weekend or business.',
+					'cols' => array( 'value' => array( 'Value' ), 'label' => array( 'Name' ), 'note' => array( 'Note' ), 'checked' => array( 'Ticked', 'check' ) ) ),
+				array( 'key' => 'home_nl_placeholder', 'label' => 'Email placeholder', 'type' => 'text', 'width' => 50 ),
+				array( 'key' => 'home_nl_button', 'label' => 'Button text', 'type' => 'text', 'width' => 50 ),
 			)
 		) ),
-		'offers' => array( 'Offers and numbers', array_merge(
-			array( array( 'key' => 'note', 'type' => 'note', 'label' => '<strong>More Local Offers</strong>: the next six live offers (not the one in This weekend).' ), $hide( 'home_offers_hide', 'More Local Offers' ) ),
+		'offers' => array( 'Offers &amp; stats', array_merge(
+			array( array( 'key' => 'note', 'type' => 'heading', 'label' => 'More Local Offers', 'help' => 'The next six live offers, not the weekend one.' ), $hide( 'home_offers_hide', 'section' ) ),
 			$head( 'offers', '' ),
 			array(
-				array( 'key' => 'note', 'type' => 'note', 'label' => '<strong>The numbers</strong>: the counts are worked out from the listings. Use {areas} for the number of areas.' ),
-				$hide( 'home_stats_hide', 'the numbers' ),
-				array( 'key' => 'home_stat_offers_label', 'label' => 'Offers: label', 'type' => 'text', 'width' => 25 ),
-				array( 'key' => 'home_stat_offers_note', 'label' => 'Offers: note', 'type' => 'text', 'width' => 25 ),
-				array( 'key' => 'home_stat_events_label', 'label' => 'Events: label', 'type' => 'text', 'width' => 25 ),
-				array( 'key' => 'home_stat_events_note', 'label' => 'Events: note', 'type' => 'text', 'width' => 25 ),
-				array( 'key' => 'home_stat_classes_label', 'label' => 'Classes: label', 'type' => 'text', 'width' => 25 ),
-				array( 'key' => 'home_stat_classes_note', 'label' => 'Classes: note', 'type' => 'text', 'width' => 25 ),
-				array( 'key' => 'home_stat_biz_label', 'label' => 'Businesses: label', 'type' => 'text', 'width' => 25 ),
-				array( 'key' => 'home_stat_biz_note', 'label' => 'Businesses: note', 'type' => 'text', 'width' => 25 ),
+				array( 'key' => 'note', 'type' => 'heading', 'label' => 'Stats', 'help' => 'Counts come from the listings. {areas} = the number of areas.' ),
+				$hide( 'home_stats_hide', 'stats' ),
+				array( 'key' => 'home_stat_offers_label', 'label' => 'Offers label', 'type' => 'text', 'width' => 25 ),
+				array( 'key' => 'home_stat_offers_note', 'label' => 'Offers note', 'type' => 'text', 'width' => 25 ),
+				array( 'key' => 'home_stat_events_label', 'label' => 'Events label', 'type' => 'text', 'width' => 25 ),
+				array( 'key' => 'home_stat_events_note', 'label' => 'Events note', 'type' => 'text', 'width' => 25 ),
+				array( 'key' => 'home_stat_classes_label', 'label' => 'Classes label', 'type' => 'text', 'width' => 25 ),
+				array( 'key' => 'home_stat_classes_note', 'label' => 'Classes note', 'type' => 'text', 'width' => 25 ),
+				array( 'key' => 'home_stat_biz_label', 'label' => 'Businesses label', 'type' => 'text', 'width' => 25 ),
+				array( 'key' => 'home_stat_biz_note', 'label' => 'Businesses note', 'type' => 'text', 'width' => 25 ),
 			)
 		) ),
-		'businesses' => array( 'Featured and categories', array_merge(
-			array( $hide( 'home_featured_hide', 'Featured local businesses' ) ),
+		'businesses' => array( 'Businesses', array_merge(
+			array( array( 'key' => 'note', 'type' => 'heading', 'label' => 'Featured businesses' ), $hide( 'home_featured_hide', 'section' ) ),
 			$head( 'featured', '' ),
 			array(
-				array( 'key' => 'home_featured_pick', 'label' => 'Businesses to feature (up to 4)', 'type' => 'businesses', 'max' => HUB_HOME_FEATURED,
-					'help' => 'Leave empty for the automatic choice: businesses on the Featured and Local Partner plans, one per category. Drag to change the order.' ),
-				array( 'key' => 'note', 'type' => 'note', 'label' => '<strong>Popular categories</strong>: the 6 categories with the most businesses, worked out from the listings, so they change as businesses are added.' ),
-				$hide( 'home_cats_hide', 'Popular categories' ),
+				array( 'key' => 'home_featured_pick', 'label' => 'Businesses', 'type' => 'businesses', 'max' => HUB_HOME_FEATURED,
+					'help' => 'Up to 4. Empty: Featured and Local Partner businesses, one per category. Drag to reorder.' ),
+				array( 'key' => 'note', 'type' => 'heading', 'label' => 'Popular categories', 'help' => 'The 6 with the most businesses, unless you tick some below.' ),
+				$hide( 'home_cats_hide', 'section' ),
 			),
 			$head( 'cats', '' ),
 			array(
-				array( 'key' => 'home_cats_pick', 'label' => 'Choose the categories yourself (optional)', 'type' => 'checks', 'choices' => $c['categories'],
-					'help' => 'Leave all unticked to show the 6 with the most businesses. Tick some to show those instead (up to 6, most businesses first).' ),
+				array( 'key' => 'home_cats_pick', 'label' => 'Categories', 'type' => 'checks', 'choices' => $c['categories'],
+					'help' => 'Optional. Up to 6, most businesses first.' ),
 			)
 		) ),
 		'areas' => array( 'Areas', array_merge(
-			array( array( 'key' => 'note', 'type' => 'note', 'label' => '<strong>Browse by area</strong>: every area, with its business count and bar worked out from the listings.' ), $hide( 'home_areas_hide', 'Browse by area' ) ),
+			array( array( 'key' => 'note', 'type' => 'heading', 'label' => 'Browse by area', 'help' => 'Every area, with counts from the listings.' ), $hide( 'home_areas_hide', 'section' ) ),
 			$head( 'areas', '', true, false ),
 			array(
-				array( 'key' => 'note', 'type' => 'note', 'label' => '<strong>“Know a hidden gem?”</strong> box' ),
-				$hide( 'home_gem_hide', 'the hidden gem box' ),
-				array( 'key' => 'home_gem_eyebrow', 'label' => 'Small line', 'type' => 'text', 'width' => 34 ),
-				array( 'key' => 'home_gem_title', 'label' => 'Heading', 'type' => 'text', 'width' => 66 ),
+				array( 'key' => 'note', 'type' => 'heading', 'label' => '“Hidden gem” box' ),
+				$hide( 'home_gem_hide', 'box' ),
+				array( 'key' => 'home_gem_eyebrow', 'label' => 'Label', 'type' => 'text', 'width' => 34 ),
+				array( 'key' => 'home_gem_title', 'label' => 'Title', 'type' => 'text', 'width' => 66 ),
 				array( 'key' => 'home_gem_text', 'label' => 'Text', 'type' => 'textarea' ),
-				array( 'key' => 'home_gem_button', 'label' => 'Button', 'type' => 'text', 'width' => 40 ),
-				array( 'key' => 'home_gem_link', 'label' => 'Button goes to', 'type' => 'text', 'width' => 60, 'help' => $link ),
+				array( 'key' => 'home_gem_button', 'label' => 'Button text', 'type' => 'text', 'width' => 40 ),
+				array( 'key' => 'home_gem_link', 'label' => 'Button URL', 'type' => 'text', 'width' => 60, 'help' => $link ),
 			)
 		) ),
 		'biz' => array( 'For businesses', array(
-			$hide( 'home_biz_hide', 'this section' ),
-			array( 'key' => 'home_biz_eyebrow', 'label' => 'Small line', 'type' => 'text', 'width' => 34 ),
-			array( 'key' => 'home_biz_title', 'label' => 'Heading', 'type' => 'text', 'width' => 66 ),
-			array( 'key' => 'home_biz_lead', 'label' => 'Text', 'type' => 'textarea' ),
-			array( 'key' => 'home_biz_buttons', 'label' => 'Buttons (the first is red)', 'type' => 'list', 'add' => 'Add a button',
-				'cols' => array( 'label' => array( 'Text' ), 'link' => array( 'Goes to' ) ) ),
-			array( 'key' => 'home_biz_note', 'label' => 'Note under the buttons', 'type' => 'text', 'width' => 40 ),
+			$hide( 'home_biz_hide', 'section' ),
+			array( 'key' => 'home_biz_eyebrow', 'label' => 'Label', 'type' => 'text', 'width' => 34 ),
+			array( 'key' => 'home_biz_title', 'label' => 'Title', 'type' => 'text', 'width' => 66 ),
+			array( 'key' => 'home_biz_lead', 'label' => 'Intro', 'type' => 'textarea' ),
+			array( 'key' => 'home_biz_buttons', 'label' => 'Buttons', 'help' => 'The first is red.', 'type' => 'list', 'add' => 'Add a button',
+				'cols' => array( 'label' => array( 'Text' ), 'link' => array( 'URL' ) ) ),
+			array( 'key' => 'home_biz_note', 'label' => 'Note', 'type' => 'text', 'width' => 40 ),
 			array( 'key' => 'home_biz_note_link_label', 'label' => 'Note link text', 'type' => 'text', 'width' => 30 ),
-			array( 'key' => 'home_biz_note_link', 'label' => 'Note link goes to', 'type' => 'text', 'width' => 30 ),
-			array( 'key' => 'home_biz_steps', 'label' => 'Steps (numbered)', 'type' => 'list', 'add' => 'Add a step',
+			array( 'key' => 'home_biz_note_link', 'label' => 'Note link URL', 'type' => 'text', 'width' => 30 ),
+			array( 'key' => 'home_biz_steps', 'label' => 'Steps', 'type' => 'list', 'add' => 'Add a step',
 				'cols' => array( 'title' => array( 'Title' ), 'text' => array( 'Text' ) ) ),
-		) ),
-		'seo' => array( 'Search engines', array(
-			array( 'key' => 'home_seo_title', 'label' => 'Page title', 'type' => 'text', 'help' => 'Shown in the browser tab and in Google results.' ),
-			array( 'key' => 'home_seo_description', 'label' => 'Description', 'type' => 'textarea', 'help' => 'The short text under the title in Google results (about 155 characters).' ),
 		) ),
 	);
 }
@@ -139,7 +135,7 @@ add_action( 'admin_enqueue_scripts', function ( $hook ) {
 function hub_admin_home_box( WP_Post $post ) {
 	$values = hub_home_fields();
 	wp_nonce_field( 'hub_home_save', 'hub_home_nonce' );
-	echo '<p class="hub-f__help" style="margin:4px 12px 0">The front page’s text, links and sections. Empty a box to go back to the default wording. The events, offers, businesses, categories and areas come from the listings.</p>';
+	echo '<p class="hub-f__help" style="margin:4px 12px 0">Empty fields use the default text. Events, offers, businesses, categories and areas come from the listings.</p>';
 	hub_admin_tabs( hub_admin_home_fields(), $values );
 }
 

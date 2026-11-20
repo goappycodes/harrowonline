@@ -87,7 +87,7 @@ function hub_html_attrs() {
 	printf( ' data-base="%s" data-theme="%s"', esc_attr( $base ), esc_attr( untrailingslashit( get_template_directory_uri() ) ) );
 }
 
-/** <title>: page title + " | Harrow Online Hub" unless it already says Harrow Online (as build.py). */
+/** <title>: page title + " | Harrow Online Hub" unless it already says Harrow Online (as build.py). Yoast SEO, when active, uses the same (inc/seo.php). */
 add_filter( 'pre_get_document_title', function ( $title ) {
 	$t = hub_page( 'title' );
 	if ( ! $t ) {
@@ -96,10 +96,10 @@ add_filter( 'pre_get_document_title', function ( $title ) {
 	return false === strpos( $t, 'Harrow Online' ) ? $t . ' | Harrow Online Hub' : $t;
 } );
 
-/** Meta description from the page settings. */
+/** Meta description from the page settings (with Yoast SEO active, Yoast prints it: inc/seo.php). */
 add_action( 'wp_head', function () {
 	$d = hub_page( 'description' );
-	if ( $d ) {
+	if ( $d && ! defined( 'WPSEO_VERSION' ) ) {
 		printf( "<meta name=\"description\" content=\"%s\">\n", esc_attr( wp_strip_all_tags( html_entity_decode( $d ) ) ) );
 	}
 }, 1 );
