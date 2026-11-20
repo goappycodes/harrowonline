@@ -23,10 +23,10 @@ local only). In the Claude desktop app, start the **wp-local** preview instead.
 | Theme (all Hub markup, styles and scripts) | `hub/wp-content/themes/harrow-hub/` |
 | **Data layer: controllers for pages and the API** (read `app/README.md` first) | `harrow-hub/app/` |
 | Display pieces that print controller data (business rows and profiles, events and classes, offers) | `harrow-hub/parts/` |
-| Hub API (same data as the pages, JSON) | `/hub/wp-json/hub/v1/` (e.g. `/home`, `/pages/events`, `/pages/classes`, `/pages/offers`, `/pages/pricing`, `/businesses`, `/events/whats-on`, `/classes`, `/offers`, `/categories`, `/areas`) |
+| Hub API (same data as the pages, JSON) | `/hub/wp-json/hub/v1/` (e.g. `/home`, `/pages/events`, `/pages/classes`, `/pages/offers`, `/pages/pricing`, `/pages/advertise`, `/businesses`, `/events/whats-on`, `/classes`, `/offers`, `/categories`, `/areas`) |
 | Page templates (one per prototype page) | `harrow-hub/page-templates/` |
 | Header, footer (edited by hand; `build_theme.py` no longer regenerates them) | `harrow-hub/header.php`, `footer.php` |
-| Privacy notice and Terms of use: the text is each Page's own editor (“On this page” is made from its Heading 2s); the title, intro, updated line and draft note are its Page text box. Starting text: `harrow-hub/content/*.html` | `harrow-hub/parts/pages/document.php`, `app/modules/pages/` |
+| Privacy notice, Terms of use and Data sources: the text is each Page's own editor (“On this page” is made from its Heading 2s); the title, intro, updated line and draft note are its Page text box. Starting text: `harrow-hub/content/*.html` | `harrow-hub/parts/pages/document.php`, `app/modules/pages/` |
 | wp-admin colours: the **Harrow Hub** admin colour scheme (WordPress's Default with the Hub red; everyone's unless they pick another in Users > Profile). After a WordPress update: `python tools/build_admin_colors.py` | `harrow-hub/inc/admin/admin-colors.php`, `harrow-hub/admin/hub-admin-colors.css` |
 | Main menu and social icons: **Appearance > Menus** (locations “Main menu” and “Social links”; an item's CSS class `icon-plus`, `icon-star`… adds that icon) | `harrow-hub/inc/menus.php` |
 | Footer: **Appearance > Widgets** (classic screen): under the logo, link columns, newsletter, topics row, badges, legal text. An empty area shows today's content | `harrow-hub/inc/widgets.php` |
@@ -38,7 +38,7 @@ local only). In the Claude desktop app, start the **wp-local** preview instead.
 | Templates for each content type | `harrow-hub/single-hub_*.php`, `taxonomy-hub_*.php` |
 | wp-admin boxes (native meta boxes, no plugin): Business, Offer, Event and Class details, an offer's or class's Business, Hub settings > Newsletter | `harrow-hub/inc/admin/` (script and styles in `harrow-hub/admin/`) |
 | Homepage text, links, tiles and section switches (the Homepage box on the Home page, Pages > Home; empty fields use today's wording) | `harrow-hub/inc/admin/home-box.php`, `harrow-hub/app/modules/home/` |
-| Page text: What's On, Classes and activities, Local Offers and Pricing, their text, links and panels (the Page text box on each of those Pages; Pricing's £ amounts come from `app/modules/billing/rules.php`; empty fields use today's wording). To add a page, see `app/modules/pages/rules.php` | `harrow-hub/inc/admin/page-text-box.php`, `harrow-hub/app/modules/pages/` |
+| Page text: What's On, Classes and activities, Local Offers, Pricing and Advertise in the newsletter, their text, links and panels (the Page text box on each of those Pages; the £ amounts on Pricing and Advertise come from `app/modules/billing/rules.php`; Advertise's booking dates follow today's date, with a list of dates with no issue in its box; empty fields use today's wording). To add a page, see `app/modules/pages/rules.php` | `harrow-hub/inc/admin/page-text-box.php`, `harrow-hub/app/modules/pages/` |
 | A business category's Icon (homepage Popular categories cards) and Intro (under the category page's heading): Businesses > Categories | `harrow-hub/inc/admin/category-fields.php`, `app/modules/categories/` |
 | How pages read those fields | `harrow-hub/app/modules/*/data.php` |
 | Fill the business, offer, event and class fields from the imported data (`php wp-local/hub/fields-migrate-local.php`; `import-local.php` runs it too) | `harrow-hub/inc/fields-migrate.php` |

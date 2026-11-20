@@ -1,107 +1,16 @@
 <?php
 /**
- * Data sources and attribution (converted from src/pages/data-sources.html).
- * URL: /data-sources/
+ * Data sources. URL: /data-sources/
+ * The text is the page's own editor (Pages > Data sources and attribution); the title, intro, side card and the
+ * Attribution box are its "Page text" box. Data: hub_pages_document( 'sources' ), hub_pages_text( 'sources' ).
  */
 defined( 'ABSPATH' ) || exit;
 hub_set_page( array(
 	'body' => 'page-legal',
 	'description' => 'Where Harrow Online Hub business listings come from: Overture Maps Foundation open data, its sources and licences, how listings were filtered, and how to correct or remove a listing.',
 	'nav' => 'hub',
-	'title' => 'Data sources and attribution',
+	'title' => 'Data sources and attribution',   // page title and description: Yoast SEO box, else these
 ) );
 get_header();
-?>
-<nav class="crumbs ho-container" aria-label="Breadcrumb">
-  <ol><li><a href="<?php echo esc_url( hub_url( '' ) ); ?>">Hub</a></li><li><span aria-current="page">Data sources</span></li></ol>
-</nav>
-
-<header class="page-head ho-container">
-  <h1 class="page-head__title">Data sources</h1>
-  <p class="page-head__lead">Where our business listings come from, the licences we use them under, and how to fix or remove a listing.</p>
-</header>
-
-<!-- Info page (redesign, 18 Nov 2026): page width like every other page; a sticky "On this page" card with the
-     date (and the draft note) on the left, the text on the right. Same text as before. -->
-<div class="ho-container legal">
-  <aside class="legal__side" aria-label="About this page">
-    <div class="legal__card">
-      <button class="legal__toc-toggle" type="button" aria-expanded="false" aria-controls="legal-toc" data-toc-toggle>
-        <span class="legal__toc-label">On this page</span>
-        <span class="legal__toc-current" data-toc-current></span>
-        <svg class="ho-icon" aria-hidden="true"><use href="#i-chevron-down"/></svg>
-      </button>
-      <nav class="legal__toc legal__toc--first" id="legal-toc" aria-labelledby="toc-title">
-    <h2 id="toc-title">On this page</h2>
-    <ol>
-      <li><a href="#overture">Overture Maps Places data</a></li>
-      <li><a href="#licences">Licences</a></li>
-      <li><a href="#filters">How we chose which businesses to list</a></li>
-      <li><a href="#updates">What changes after import</a></li>
-      <li><a href="#indexing">Imported listings and search engines</a></li>
-      <li><a href="#correct">Correcting or removing a listing</a></li>
-    </ol>
-      </nav>
-    </div>
-  </aside>
-
-  <div class="legal__main">
-    <div class="legal__meta">
-      <p class="legal__updated"><svg class="ho-icon ho-icon--sm" aria-hidden="true"><use href="#i-calendar"/></svg>Last updated: 11 November 2026</p>
-    </div>
-    <div class="legal__attrib">
-      <p class="legal__attrib-label">Attribution</p>
-      <p class="mb-0"><strong>Business data &copy; Overture Maps Foundation and its sources</strong> (BrightQuery, Meta, Microsoft, Uberall, DAC, PinMeTo), used under the <a href="https://cdla.dev/permissive-2-0/" rel="noopener">Community Data License Agreement, Permissive, Version 2.0</a> and, where applicable, the <a href="https://opendatacommons.org/licenses/odbl/" rel="noopener">Open Database License (ODbL)</a>.</p>
-    </div>
-
-    <div class="prose legal__prose">
-    <h2 id="overture">1. Overture Maps Places data</h2>
-    <p>Most listings on Harrow Online Hub started life as open data from the <a href="https://overturemaps.org" rel="noopener">Overture Maps Foundation</a>, a project that publishes free map data, including a worldwide dataset of places such as shops, restaurants and services.</p>
-    <p>Overture combines place data from several contributors. The Harrow listings we imported come from these sources:</p>
-    <ul>
-      <li>BrightQuery</li>
-      <li>Meta</li>
-      <li>Microsoft</li>
-      <li>Uberall</li>
-      <li>DAC</li>
-      <li>PinMeTo</li>
-    </ul>
-    <p>Each imported listing keeps its Overture ID and the date we imported it (visible to our team only), so we can update it from later Overture releases without creating duplicates.</p>
-
-    <h2 id="licences">2. Licences</h2>
-    <table>
-      <thead><tr><th scope="col">Licence</th><th scope="col">Applies to</th></tr></thead>
-      <tbody>
-        <tr><td><a href="https://cdla.dev/permissive-2-0/" rel="noopener">CDLA Permissive 2.0</a></td><td>Overture Places data from the sources listed above</td></tr>
-        <tr><td><a href="https://opendatacommons.org/licenses/odbl/" rel="noopener">ODbL 1.0</a></td><td>Any Overture data derived from OpenStreetMap, where it appears. &copy; OpenStreetMap contributors.</td></tr>
-      </tbody>
-    </table>
-    <p>Information added by business owners after they claim a listing (descriptions, photos, opening hours, offers and events) belongs to them and is not part of the open data.</p>
-
-    <h2 id="filters">3. How we chose which businesses to list</h2>
-    <p>We started with every place Overture lists in Harrow and kept only the ones most likely to be real, open and useful to local people. A business is listed when it is:</p>
-    <ul>
-      <li>inside the London Borough of Harrow, with a valid HA postcode and a phone number</li>
-      <li>not marked as permanently closed</li>
-      <li>a customer-facing business: we left out business-to-business services, corporate offices, car parks, parks, schools and government buildings</li>
-      <li>a confident match in Overture&rsquo;s data (a confidence score of 0.8 or more, or 0.95 for office-type businesses)</li>
-      <li>found in more than just one less reliable source (records that came only from Foursquare or AllThePlaces were left out)</li>
-      <li>not named after a person, and not a chain (the same name at three or more locations, or the same website used by three or more names)</li>
-      <li>not a duplicate: where two records had the same name and postcode, we kept one</li>
-    </ul>
-    <p>That left about 2,600 businesses. We then matched each one to one of our local categories and to an area (such as Pinner, Stanmore or Wealdstone) using its postcode and map pin.</p>
-
-    <h2 id="updates">4. What changes after import</h2>
-    <p>Once a business claims its listing, the owner can correct and add details. We approve changes to business names. We may re-import Overture data from time to time to add new businesses and update unclaimed ones. Claimed listings are never overwritten by an import.</p>
-
-    <h2 id="indexing">5. Imported listings and search engines</h2>
-    <p>Imported listings are basic, and the details haven&rsquo;t been confirmed by the business. So we ask search engines <strong>not to index them</strong> until the business has claimed the listing and filled it in. You can still find them by searching the Hub.</p>
-
-    <h2 id="correct">6. Correcting or removing a listing</h2>
-    <p>If you spot a mistake, or you run a business and don&rsquo;t want it listed, tell us using the <a href="<?php echo esc_url( hub_url( 'report/' ) ); ?>">correction and removal form</a>. You&rsquo;ll find a &ldquo;Report a problem&rdquo; link on every listing too. We aim to act within five working days.</p>
-    <p>If you own the business, the quickest way to fix it is to <a href="<?php echo esc_url( hub_url( 'search/' ) ); ?>">find your listing</a> and claim it for free. You can then edit the details yourself.</p>
-    <p>For more on how we handle personal information in listings, see our <a href="<?php echo esc_url( hub_url( 'privacy/#listings' ) ); ?>">privacy notice</a>.</p>
-  </div>
-  </div>
-</div>
-<?php get_footer();
+get_template_part( 'parts/pages/document', null, array( 'page' => 'sources' ) );
+get_footer();

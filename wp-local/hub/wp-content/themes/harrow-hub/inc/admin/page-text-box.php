@@ -1,7 +1,7 @@
 <?php
 /**
  * wp-admin: the "Page text" box on the Hub's pages (Pages > What's On, Classes and activities, Local Offers, Pricing,
- * Privacy notice, Terms of use), a native meta box with tabs. Read and saved through the pages module (hub_pages_fields / hub_pages_save_fields); an emptied
+ * Privacy notice, Terms of use, Data sources, Advertise in the newsletter), a native meta box with tabs. Read and saved through the pages module (hub_pages_fields / hub_pages_save_fields); an emptied
  * field goes back to the default wording. The fields of each page: hub_admin_page_text_{page}().
  */
 defined( 'ABSPATH' ) || exit;
@@ -290,6 +290,143 @@ function hub_admin_page_text_terms() {
 			array( 'key' => 'terms_draft_hide', 'label' => 'Hide the draft note', 'type' => 'toggle', 'width' => 100, 'help' => 'Turn on once the text is approved.' ),
 			array( 'key' => 'terms_draft_title', 'label' => 'Bold start', 'type' => 'text', 'width' => 34 ),
 			array( 'key' => 'terms_draft_text', 'label' => 'Text', 'type' => 'text', 'width' => 66 ),
+		) ),
+	);
+}
+
+/** Data sources (/data-sources/): the header, the side card and the Attribution box. The text itself is the editor above. */
+function hub_admin_page_text_sources() {
+	return array(
+		'top' => array( 'Header', array(
+			array( 'key' => 'note', 'type' => 'note', 'label' => 'The text itself is in the editor above. Each Heading 2 makes a line in “On this page” (a number like “1.” at the start is left out).' ),
+			array( 'key' => 'sources_title', 'label' => 'Title', 'type' => 'text', 'width' => 60 ),
+			array( 'key' => 'sources_crumb', 'label' => 'Breadcrumb', 'type' => 'text', 'width' => 40 ),
+			array( 'key' => 'sources_lead', 'label' => 'Intro', 'type' => 'textarea' ),
+		) ),
+		'side' => array( 'Side card', array(
+			array( 'key' => 'sources_toc_title', 'label' => '“On this page” title', 'type' => 'text', 'width' => 50 ),
+			array( 'key' => 'sources_updated', 'label' => 'Updated line', 'type' => 'text', 'width' => 50, 'help' => 'e.g. “Last updated: 11 November 2026”.' ),
+			array( 'key' => 'note', 'type' => 'heading', 'label' => 'Attribution box' ),
+			array( 'key' => 'sources_attrib_hide', 'label' => 'Hide the box', 'type' => 'toggle', 'width' => 100 ),
+			array( 'key' => 'sources_attrib_label', 'label' => 'Label', 'type' => 'text', 'width' => 100 ),
+			array( 'key' => 'sources_attrib_text', 'label' => 'Text', 'type' => 'html', 'help' => 'Links and bold are allowed.' ),
+		) ),
+	);
+}
+
+/** Advertise in the newsletter (/advertise/newsletter/). */
+function hub_admin_page_text_advertise() {
+	$link   = 'A Hub path (events/classes/) or a full URL.';
+	$prices = array();
+	foreach ( hub_billing_catalogue()['items'] as $i ) {   // billing module
+		if ( 0 === strpos( $i['key'], 'sponsor_' ) ) {
+			$prices[] = $i['name'] . ' ' . $i['price'];
+		}
+	}
+	$price_note = 'Prices come from the billing settings (' . implode( ', ', $prices ) . '), so they always match checkout. In any text, {day}, {week}, {save}, {weekend} and {business} show them.';
+	return array(
+		'top' => array( 'Header', array(
+			array( 'key' => 'advertise_title', 'label' => 'Title', 'type' => 'text', 'width' => 60 ),
+			array( 'key' => 'advertise_crumb', 'label' => 'Breadcrumb', 'type' => 'text', 'width' => 40 ),
+			array( 'key' => 'advertise_crumb_parent', 'label' => 'Breadcrumb before it', 'type' => 'text', 'width' => 40 ),
+			array( 'key' => 'advertise_crumb_parent_link', 'label' => 'Its URL', 'type' => 'text', 'width' => 60, 'help' => $link ),
+			array( 'key' => 'advertise_lead', 'label' => 'Intro', 'type' => 'textarea' ),
+			array( 'key' => 'advertise_facts', 'label' => 'Facts beside the title', 'type' => 'list', 'help' => 'Icons: star, calendar, mail, check, tag, megaphone…', 'add' => 'Add a fact', 'cols' => array( 'icon' => array( 'Icon' ), 'title' => array( 'Title' ), 'text' => array( 'Text' ) ) ),
+			array( 'key' => 'note', 'type' => 'heading', 'label' => 'Account line' ),
+			array( 'key' => 'advertise_signed_in', 'label' => '“Signed in as”', 'type' => 'text', 'width' => 34 ),
+			array( 'key' => 'advertise_account_label', 'label' => 'Account link text', 'type' => 'text', 'width' => 33 ),
+			array( 'key' => 'advertise_signed_out_title', 'label' => 'Signed out: bold start', 'type' => 'text', 'width' => 33 ),
+			array( 'key' => 'advertise_signed_out_text', 'label' => 'Signed out: text', 'type' => 'text' ),
+			array( 'key' => 'advertise_sign_in_label', 'label' => '“Sign in” link text', 'type' => 'text', 'width' => 50 ),
+			array( 'key' => 'advertise_register_label', 'label' => '“Create an account” link text', 'type' => 'text', 'width' => 50 ),
+			array( 'key' => 'advertise_sponsor_label', 'label' => 'Main sponsor link text', 'type' => 'text', 'width' => 40 ),
+			array( 'key' => 'advertise_sponsor_link', 'label' => 'Its URL', 'type' => 'text', 'width' => 60 ),
+			array( 'key' => 'advertise_other_label', 'label' => 'Other ways link text', 'type' => 'text', 'width' => 40 ),
+			array( 'key' => 'advertise_other_link', 'label' => 'Its URL', 'type' => 'text', 'width' => 60 ),
+		) ),
+		'dates' => array( 'Editions & dates', array(
+			array( 'key' => 'note', 'type' => 'note', 'label' => $price_note ),
+			array( 'key' => 'advertise_step1', 'label' => 'Step 1 name', 'type' => 'text', 'width' => 34 ),
+			array( 'key' => 'advertise_step2', 'label' => 'Step 2 name', 'type' => 'text', 'width' => 33 ),
+			array( 'key' => 'advertise_step3', 'label' => 'Step 3 name', 'type' => 'text', 'width' => 33 ),
+			array( 'key' => 'advertise_s1_title', 'label' => 'Title', 'type' => 'text', 'width' => 40 ),
+			array( 'key' => 'advertise_s1_help', 'label' => 'Help', 'type' => 'text', 'width' => 60 ),
+			array( 'key' => 'advertise_edition_legend', 'label' => '“Edition” label', 'type' => 'text', 'width' => 100 ),
+			array( 'key' => 'advertise_daily_name', 'label' => 'Daily News: name', 'type' => 'text', 'width' => 34 ),
+			array( 'key' => 'advertise_daily_text', 'label' => 'Daily News: text', 'type' => 'text', 'width' => 66 ),
+			array( 'key' => 'advertise_weekend_name', 'label' => 'The Weekend: name', 'type' => 'text', 'width' => 34 ),
+			array( 'key' => 'advertise_weekend_text', 'label' => 'The Weekend: text', 'type' => 'text', 'width' => 66 ),
+			array( 'key' => 'advertise_business_name', 'label' => 'Harrow Business: name', 'type' => 'text', 'width' => 34 ),
+			array( 'key' => 'advertise_business_text', 'label' => 'Harrow Business: text', 'type' => 'text', 'width' => 66 ),
+			array( 'key' => 'advertise_a_day', 'label' => '“a day”', 'type' => 'text', 'width' => 34 ),
+			array( 'key' => 'advertise_a_week', 'label' => '“a week”', 'type' => 'text', 'width' => 33 ),
+			array( 'key' => 'advertise_an_issue', 'label' => '“an issue”', 'type' => 'text', 'width' => 33 ),
+			array( 'key' => 'note', 'type' => 'heading', 'label' => 'Daily News: day or week' ),
+			array( 'key' => 'advertise_days_title', 'label' => 'Single days: title', 'type' => 'text', 'width' => 34 ),
+			array( 'key' => 'advertise_days_text', 'label' => 'Single days: text', 'type' => 'text', 'width' => 66 ),
+			array( 'key' => 'advertise_week_title', 'label' => 'Full week: title', 'type' => 'text', 'width' => 34 ),
+			array( 'key' => 'advertise_week_badge', 'label' => 'Full week: badge', 'type' => 'text', 'width' => 33 ),
+			array( 'key' => 'advertise_week_text', 'label' => 'Full week: text', 'type' => 'text', 'width' => 33 ),
+			array( 'key' => 'note', 'type' => 'heading', 'label' => 'Calendars', 'help' => 'The dates follow today’s date: bookable from two working days ahead.' ),
+			array( 'key' => 'advertise_days_heading', 'label' => 'Daily days: heading', 'type' => 'text', 'width' => 50, 'help' => '{from} and {to} are the first and last dates shown.' ),
+			array( 'key' => 'advertise_days_note', 'label' => 'Daily days: note', 'type' => 'text', 'width' => 50 ),
+			array( 'key' => 'advertise_weeks_heading', 'label' => 'Daily weeks: heading', 'type' => 'text', 'width' => 50 ),
+			array( 'key' => 'advertise_weeks_note', 'label' => 'Daily weeks: note', 'type' => 'text', 'width' => 50 ),
+			array( 'key' => 'advertise_weekend_heading', 'label' => 'The Weekend: heading', 'type' => 'text', 'width' => 50 ),
+			array( 'key' => 'advertise_weekend_note', 'label' => 'The Weekend: note', 'type' => 'text', 'width' => 50 ),
+			array( 'key' => 'advertise_business_heading', 'label' => 'Harrow Business: heading', 'type' => 'text', 'width' => 50 ),
+			array( 'key' => 'advertise_business_note', 'label' => 'Harrow Business: note', 'type' => 'text', 'width' => 50 ),
+			array( 'key' => 'advertise_key_open', 'label' => 'Key: available', 'type' => 'text', 'width' => 25 ),
+			array( 'key' => 'advertise_key_selected', 'label' => 'Key: selected', 'type' => 'text', 'width' => 25 ),
+			array( 'key' => 'advertise_key_booked', 'label' => 'Key: booked', 'type' => 'text', 'width' => 25 ),
+			array( 'key' => 'advertise_key_held', 'label' => 'Key: on hold', 'type' => 'text', 'width' => 25 ),
+			array( 'key' => 'advertise_label_closed', 'label' => 'Too-soon dates show', 'type' => 'text', 'width' => 50 ),
+			array( 'key' => 'advertise_label_no_issue', 'label' => 'No-issue dates show', 'type' => 'text', 'width' => 50 ),
+			array( 'key' => 'advertise_no_issue', 'label' => 'Dates with no issue', 'type' => 'list', 'help' => 'Date as YYYY-MM-DD; edition daily, weekend or business. A Daily News week with one of these days can’t be booked.', 'add' => 'Add a date', 'cols' => array( 'date' => array( 'Date' ), 'edition' => array( 'Edition' ) ) ),
+		) ),
+		'advert' => array( 'Your advert', array(
+			array( 'key' => 'advertise_s2_title', 'label' => 'Title', 'type' => 'text', 'width' => 40 ),
+			array( 'key' => 'advertise_s2_help', 'label' => 'Help', 'type' => 'text', 'width' => 60 ),
+			array( 'key' => 'advertise_name_label', 'label' => 'Business name label', 'type' => 'text', 'width' => 34 ),
+			array( 'key' => 'advertise_logo_label', 'label' => 'Logo label', 'type' => 'text', 'width' => 33 ),
+			array( 'key' => 'advertise_logo_title', 'label' => 'Upload box title', 'type' => 'text', 'width' => 33 ),
+			array( 'key' => 'advertise_logo_text', 'label' => 'Upload box text', 'type' => 'text' ),
+			array( 'key' => 'advertise_message_label', 'label' => 'Message label', 'type' => 'text', 'width' => 34 ),
+			array( 'key' => 'advertise_message_limit', 'label' => 'Message limit note', 'type' => 'text', 'width' => 33 ),
+			array( 'key' => 'advertise_link_label', 'label' => 'Link label', 'type' => 'text', 'width' => 33 ),
+			array( 'key' => 'advertise_message_help', 'label' => 'Message help', 'type' => 'text' ),
+			array( 'key' => 'advertise_link_help', 'label' => 'Link help', 'type' => 'text' ),
+			array( 'key' => 'note', 'type' => 'heading', 'label' => 'Preview' ),
+			array( 'key' => 'advertise_preview_label', 'label' => 'Label', 'type' => 'text', 'width' => 25 ),
+			array( 'key' => 'advertise_preview_mast', 'label' => 'Newsletter name', 'type' => 'text', 'width' => 25 ),
+			array( 'key' => 'advertise_preview_tag', 'label' => 'Tag', 'type' => 'text', 'width' => 25 ),
+			array( 'key' => 'advertise_preview_name', 'label' => 'Name when signed out', 'type' => 'text', 'width' => 25 ),
+			array( 'key' => 'advertise_preview_message', 'label' => 'Sample message', 'type' => 'text', 'width' => 50 ),
+			array( 'key' => 'advertise_preview_hello', 'label' => 'Greeting', 'type' => 'text', 'width' => 50 ),
+			array( 'key' => 'advertise_preview_help', 'label' => 'Note under the preview', 'type' => 'text' ),
+		) ),
+		'order' => array( 'Order', array(
+			array( 'key' => 'advertise_s3_title', 'label' => 'Title', 'type' => 'text', 'width' => 100 ),
+			array( 'key' => 'advertise_sum_edition', 'label' => '“Edition”', 'type' => 'text', 'width' => 25 ),
+			array( 'key' => 'advertise_sum_dates', 'label' => '“Dates selected”', 'type' => 'text', 'width' => 25 ),
+			array( 'key' => 'advertise_sum_each', 'label' => '“Price each”', 'type' => 'text', 'width' => 25 ),
+			array( 'key' => 'advertise_sum_total', 'label' => '“Total”', 'type' => 'text', 'width' => 25 ),
+			array( 'key' => 'advertise_vat', 'label' => 'VAT note', 'type' => 'text' ),
+			array( 'key' => 'advertise_partner_title', 'label' => 'Local Partner tip: bold start', 'type' => 'text', 'width' => 40 ),
+			array( 'key' => 'advertise_partner_text', 'label' => 'Local Partner tip: text', 'type' => 'text', 'width' => 60 ),
+			array( 'key' => 'advertise_pay', 'label' => 'Pay button', 'type' => 'text', 'width' => 100 ),
+			array( 'key' => 'advertise_ticks', 'label' => 'Ticks under the button', 'type' => 'list', 'flat' => true, 'cols' => array( 't' => array( 'Line' ) ), 'add' => 'Add a line' ),
+			array( 'key' => 'advertise_questions', 'label' => 'Questions line', 'type' => 'text', 'width' => 34 ),
+			array( 'key' => 'advertise_questions_label', 'label' => 'Its link text', 'type' => 'text', 'width' => 33 ),
+			array( 'key' => 'advertise_questions_link', 'label' => 'Its URL', 'type' => 'text', 'width' => 33 ),
+		) ),
+		'sponsor' => array( 'Main sponsor box', array(
+			array( 'key' => 'advertise_sponsor_hide', 'label' => 'Hide the box', 'type' => 'toggle', 'width' => 100 ),
+			array( 'key' => 'advertise_sponsor_eyebrow', 'label' => 'Label', 'type' => 'text', 'width' => 34 ),
+			array( 'key' => 'advertise_sponsor_title', 'label' => 'Title', 'type' => 'text', 'width' => 66 ),
+			array( 'key' => 'advertise_sponsor_text', 'label' => 'Text', 'type' => 'textarea' ),
+			array( 'key' => 'advertise_sponsor_button', 'label' => 'Button text', 'type' => 'text', 'width' => 40 ),
+			array( 'key' => 'advertise_sponsor_button_link', 'label' => 'Button URL', 'type' => 'text', 'width' => 60, 'help' => $link ),
 		) ),
 	);
 }

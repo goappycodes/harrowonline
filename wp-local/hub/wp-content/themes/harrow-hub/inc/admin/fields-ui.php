@@ -7,7 +7,7 @@
  * A field definition: array(
  *   'key'     => 'biz_phone',            meta key / option key
  *   'label'   => 'Phone',
- *   'type'    => text | textarea | url | email | number | date | time | select | checks | toggle | image | gallery | hours |
+ *   'type'    => text | textarea | html (a text box; links and bold kept) | url | email | number | date | time | select | checks | toggle | image | gallery | hours |
  *                list | businesses (several, picked by name; 'max' => 4) | note (an info line) | heading (starts a section)
  *   'help'    => 'Shown under the field',
  *   'width'   => 50,                     % of the row (fields sit side by side until they fill 100)
@@ -50,6 +50,7 @@ function hub_admin_field( array $f, $value, $name ) {
 	echo '<label class="hub-f__label" for="' . esc_attr( $id ) . '">' . esc_html( $f['label'] ) . '</label>';
 
 	switch ( $type ) {
+		case 'html':
 		case 'textarea':
 			echo '<textarea id="' . esc_attr( $id ) . '" name="' . esc_attr( $name ) . '" rows="' . ( isset( $f['rows'] ) ? (int) $f['rows'] : 2 ) . '"' . $ph . '>' . esc_textarea( hub_admin_plain( $value ) ) . '</textarea>';
 			break;
@@ -182,6 +183,8 @@ function hub_admin_clean( array $f, $raw ) {
 	switch ( $f['type'] ) {
 		case 'textarea':
 			return sanitize_textarea_field( wp_unslash( (string) $raw ) );
+		case 'html':
+			return hub_admin_inline_html( wp_unslash( (string) $raw ) );
 		case 'url':
 			return esc_url_raw( trim( wp_unslash( (string) $raw ) ) );
 		case 'email':
