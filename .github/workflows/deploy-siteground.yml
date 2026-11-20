@@ -4,7 +4,7 @@
 # what should stay into the committed database.
 # Kept on the server: its .htaccess (access rules), .user.ini, private claim files (hub-private), the mail log and
 # debug log, and its settings file (~/www/hub.harrowonline.org/.env, outside the site folder). LOCAL-ADMIN.txt is
-# never uploaded.
+# never uploaded. After copying, the Stripe setup runs on the server so Stripe has the committed prices.
 #
 # Secrets (GitHub > Settings > Secrets and variables > Actions):
 #   SITEGROUND_SSH_KEY      private key whose public half is in SiteGround Site Tools > Devs > SSH Keys Manager
@@ -67,6 +67,14 @@ jobs:
           ssh -i ~/.ssh/deploy_key -o IdentitiesOnly=yes -o StrictHostKeyChecking=yes -p ${{ secrets.SITEGROUND_SSH_PORT }} \
             "${{ secrets.SITEGROUND_SSH_USER }}@${{ secrets.SITEGROUND_SSH_HOST }}" \
             "rm -f ${TARGET}/wp-content/database/hub.sqlite-wal ${TARGET}/wp-content/database/hub.sqlite-shm && ls -la ${TARGET}/wp-content/database/"
+
+      - name: Send the committed prices to Stripe
+        # The prices are in the committed database (Hub settings > Prices); the Stripe setup gives this server's Stripe
+        # account (test or live, from its own keys) the same prices and portal settings. Unchanged prices stay as they
+        # are. A Stripe hiccup doesn't fail the deploy: the next one tries again.
+        continue-on-error: true
+        run: |
+          ssh -i ~/.ssh/deploy_key -o IdentitiesOnly=yes -o StrictHostKeyChecking=yes -p ${{ secrets.SITEGROUND_SSH_PORT }}             "${{ secrets.SITEGROUND_SSH_USER }}@${{ secrets.SITEGROUND_SSH_HOST }}"             "cd ${TARGET} && php stripe-setup-local.php"
 
       - name: Check the site answers
         # Run on the server: SiteGround's bot check answers GitHub's machines with 202, not the real page
