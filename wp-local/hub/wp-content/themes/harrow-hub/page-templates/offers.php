@@ -17,10 +17,10 @@ $hub_e      = function ( $k ) use ( $hub_t ) { return esc_html( $hub_t[ $k ] ); 
 
 hub_set_page( array(
 	'body' => 'page-offers',
-	'description' => $hub_t['offers_seo_description'],
+	'description' => 'Discounts and deals from Harrow businesses, from restaurants and cafés to gyms and barbers. Some offers are just for Harrow Online Newsletter subscribers.',
 	'hubnav' => 'offers',
 	'nav' => 'offers',
-	'title' => $hub_t['offers_seo_title'],
+	'title' => 'Local Offers: deals from Harrow businesses',   // page title and description: Yoast SEO box, else these
 ) );
 get_header();
 ?>

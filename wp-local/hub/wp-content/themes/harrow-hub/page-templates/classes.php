@@ -20,10 +20,10 @@ $hub_e     = function ( $k ) use ( $hub_t ) { return esc_html( $hub_t[ $k ] ); }
 
 hub_set_page( array(
 	'body' => 'page-classes',
-	'description' => $hub_t['classes_seo_description'],
+	'description' => 'Weekly classes and activities across Harrow: children\'s clubs, fitness classes, dance schools, workshops and evening courses. Filter by age, area and day.',
 	'hubnav' => 'events',
 	'nav' => 'classes',
-	'title' => $hub_t['classes_seo_title'],
+	'title' => 'Classes and activities in Harrow',   // page title and description: Yoast SEO box, else these
 ) );
 get_header();
 ?>

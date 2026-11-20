@@ -8,11 +8,12 @@
  *   'key'     => 'biz_phone',            meta key / option key
  *   'label'   => 'Phone',
  *   'type'    => text | textarea | url | email | number | date | time | select | checks | toggle | image | gallery | hours |
- *                list | businesses (several, picked by name; 'max' => 4) | note
- *   'help'    => 'Shown under the label',
+ *                list | businesses (several, picked by name; 'max' => 4) | note (an info line) | heading (starts a section)
+ *   'help'    => 'Shown under the field',
  *   'width'   => 50,                     % of the row (fields sit side by side until they fill 100)
  *   'choices' => [ value => label ]      select ('other' => true keeps a saved value that is not in the list)
- *   'cols'    => [ key => [ label, type ] ]   list: one column per key ('flat' => true stores plain strings)
+ *   'cols'    => [ key => [ label, type ] ]   list: one column per key, type text | url | check | html (a small text box,
+ *                                       links and bold allowed); 'flat' => true stores plain strings
  *   'add'     => 'Add row'               list: button text
  *   'claimed' => true                    only for claimed businesses (hidden while "Claimed" is off)
  *   'unclaimed' => true                  only while "Claimed" is off (notes)
@@ -40,9 +41,13 @@ function hub_admin_field( array $f, $value, $name ) {
 		echo '<div class="hub-f hub-f--note"' . $attrs . '><p>' . wp_kses( $f['label'], array( 'strong' => array(), 'em' => array() ) ) . '</p></div>';
 		return;
 	}
+	if ( 'heading' === $type ) {
+		echo '<div class="hub-f hub-f--heading"' . $attrs . '><h4>' . esc_html( $f['label'] ) . '</h4>' . $help . '</div>';
+		return;
+	}
 
 	echo '<div class="hub-f hub-f--' . esc_attr( $type ) . '"' . $attrs . '>';
-	echo '<label class="hub-f__label" for="' . esc_attr( $id ) . '">' . esc_html( $f['label'] ) . '</label>' . $help;
+	echo '<label class="hub-f__label" for="' . esc_attr( $id ) . '">' . esc_html( $f['label'] ) . '</label>';
 
 	switch ( $type ) {
 		case 'textarea':
@@ -61,7 +66,8 @@ function hub_admin_field( array $f, $value, $name ) {
 			break;
 
 		case 'toggle':
-			echo '<label class="hub-toggle"><input type="hidden" name="' . esc_attr( $name ) . '" value=""><input id="' . esc_attr( $id ) . '" type="checkbox" name="' . esc_attr( $name ) . '" value="1"' . checked( ! empty( $value ), true, false ) . '><span>Yes</span></label>';
+			echo '<span class="hub-switch"><input type="hidden" name="' . esc_attr( $name ) . '" value=""><input id="' . esc_attr( $id ) . '" type="checkbox" role="switch" name="' . esc_attr( $name ) . '" value="1"' . checked( ! empty( $value ), true, false ) . '>'
+				. '<span class="hub-switch__track" aria-hidden="true"></span><span class="hub-switch__state" aria-hidden="true"></span></span>';
 			break;
 
 		case 'image':
@@ -82,7 +88,7 @@ function hub_admin_field( array $f, $value, $name ) {
 					echo '<li><img src="' . esc_url( $u ) . '" alt=""><input type="hidden" name="' . esc_attr( $name ) . '[]" value="' . (int) $aid . '"><button type="button" class="hub-gallery__remove" aria-label="Remove photo">&times;</button></li>';
 				}
 			}
-			echo '</ul><button type="button" class="button" data-hub-gallery-add>Add photos</button> <span class="hub-f__help">Drag to change the order.</span></div>';
+			echo '</ul><button type="button" class="button" data-hub-gallery-add>Add photos</button> <span class="hub-f__hint">Drag to reorder.</span></div>';
 			break;
 
 		case 'checks':
@@ -138,7 +144,12 @@ function hub_admin_field( array $f, $value, $name ) {
 			$step = 'number' === $t ? ' step="any"' : '';
 			echo '<input id="' . esc_attr( $id ) . '" type="' . $t . '"' . $step . ' name="' . esc_attr( $name ) . '" value="' . esc_attr( hub_admin_plain( $value ) ) . '"' . $ph . '>';
 	}
-	echo '</div>';
+	echo $help . '</div>'; // phpcs:ignore WordPress.Security.EscapeOutput -- built with wp_kses above
+}
+
+/** Notes and headings only show text: they have no value to read or save. */
+function hub_admin_is_display( array $f ) {
+	return in_array( $f['type'], array( 'note', 'heading' ), true );
 }
 
 /** One row of a list field. */
@@ -149,6 +160,10 @@ function hub_admin_list_row( array $f, $name, $i, $row ) {
 		$n    = $name . '[' . $i . ']' . ( ! empty( $f['flat'] ) ? '' : '[' . $k . ']' );
 		if ( isset( $col[1] ) && 'check' === $col[1] ) {
 			$out .= '<td class="hub-list__check"><input type="hidden" name="' . esc_attr( $n ) . '" value=""><input type="checkbox" name="' . esc_attr( $n ) . '" value="1"' . checked( ! empty( $v ), true, false ) . ' aria-label="' . esc_attr( $col[0] ) . '"></td>';
+			continue;
+		}
+		if ( isset( $col[1] ) && 'html' === $col[1] ) {
+			$out .= '<td><textarea rows="2" name="' . esc_attr( $n ) . '">' . esc_textarea( (string) $v ) . '</textarea></td>';
 			continue;
 		}
 		$type = isset( $col[1] ) && 'url' === $col[1] ? 'url' : 'text';
@@ -213,7 +228,7 @@ function hub_admin_clean( array $f, $raw ) {
 				foreach ( $f['cols'] as $k => $col ) {
 					$v    = isset( $row[ $k ] ) ? wp_unslash( (string) $row[ $k ] ) : '';
 					$kind = isset( $col[1] ) ? $col[1] : 'text';
-					$clean[ $k ] = 'url' === $kind ? esc_url_raw( trim( $v ) ) : ( 'check' === $kind ? ( '' !== $v ? '1' : '' ) : sanitize_text_field( $v ) );
+					$clean[ $k ] = 'url' === $kind ? esc_url_raw( trim( $v ) ) : ( 'check' === $kind ? ( '' !== $v ? '1' : '' ) : ( 'html' === $kind ? hub_admin_inline_html( $v ) : sanitize_text_field( $v ) ) );
 				}
 				$texts = array_diff_key( $clean, array_filter( $f['cols'], function ( $c ) { return isset( $c[1] ) && 'check' === $c[1]; } ) );
 				if ( implode( '', $texts ) !== '' ) {
@@ -230,7 +245,7 @@ function hub_admin_clean( array $f, $raw ) {
 function hub_admin_clean_all( array $fields, array $sent ) {
 	$out = array();
 	foreach ( $fields as $f ) {
-		if ( 'note' === $f['type'] ) {
+		if ( hub_admin_is_display( $f ) ) {
 			continue;
 		}
 		$out[ $f['key'] ] = hub_admin_clean( $f, isset( $sent[ $f['key'] ] ) ? $sent[ $f['key'] ] : '' );
@@ -268,8 +283,8 @@ function hub_admin_tabs( array $tabs, array $values, $prefix = 'hub' ) {
 	foreach ( $tabs as $slug => $tab ) {
 		echo '<div class="hub-panel" data-hub-panel="' . esc_attr( $slug ) . '"' . ( $first ? '' : ' hidden' ) . '><div class="hub-grid">';
 		foreach ( $tab[1] as $f ) {
-			$v = 'note' === $f['type'] || ! isset( $values[ $f['key'] ] ) ? '' : $values[ $f['key'] ];
-			if ( 'list' === $f['type'] && is_array( $v ) ) {
+			$v = hub_admin_is_display( $f ) || ! isset( $values[ $f['key'] ] ) ? '' : $values[ $f['key'] ];
+			if ( 'list' === $f['type'] && empty( $f['flat'] ) && is_array( $v ) ) {   // rows (a flat list keeps its plain lines)
 				$v = array_map( function ( $row ) { return is_array( $row ) ? $row : array(); }, $v );
 			}
 			hub_admin_field( $f, $v, $prefix . '[' . $f['key'] . ']' );
@@ -287,4 +302,9 @@ function hub_admin_tab_fields( array $tabs ) {
 		$fields = array_merge( $fields, $tab[1] );
 	}
 	return $fields;
+}
+
+/** Text with a little HTML kept (links, bold, italics, line breaks); everything else removed. */
+function hub_admin_inline_html( $v ) {
+	return trim( wp_kses( (string) $v, array( 'a' => array( 'href' => true, 'target' => true, 'rel' => true ), 'strong' => array(), 'em' => array(), 'br' => array() ) ) );
 }

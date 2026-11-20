@@ -12,8 +12,6 @@ const HUB_HOME_OFFERS     = 6;   // More Local Offers tiles
 /** The default for every field: today's homepage. Lists are rows of plain values. */
 function hub_home_rule_defaults() {
 	return array(
-		'home_seo_title'          => 'Harrow Online Hub: local businesses, offers and what\'s on in Harrow',
-		'home_seo_description'    => 'Discover what\'s happening in Harrow. Find local businesses, events, classes and exclusive offers from across the borough, from Harrow Online.',
 		'home_hero_eyebrow'       => 'Harrow Online Hub',
 		'home_hero_title'         => 'Discover what’s happening',
 		'home_hero_title_em'      => 'in Harrow',

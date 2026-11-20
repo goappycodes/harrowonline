@@ -12,7 +12,7 @@ defined( 'ABSPATH' ) || exit;
 /** The business fields, by tab. */
 function hub_admin_business_fields() {
 	$plans = array(
-		'unclaimed' => 'Not claimed (imported from public data)',
+		'unclaimed' => 'Not claimed (imported)',
 		'basic'     => 'Basic (free)',
 		'enhanced'  => 'Enhanced',
 		'premium'   => 'Featured',
@@ -20,61 +20,60 @@ function hub_admin_business_fields() {
 	);
 	$only = function ( $what ) {
 		return array( 'key' => 'note', 'type' => 'note', 'unclaimed' => true,
-			'label' => '<strong>Only for claimed businesses.</strong> ' . $what . ' show on the business page once it is claimed. To add them, turn on “Claimed by the business” in the Listing tab.' );
+			'label' => $what . ' show once the business is claimed. Turn on <strong>Claimed</strong> in the General tab to add them.' );
 	};
 	return array(
-		'listing' => array( 'Listing', array(
-			array( 'key' => 'biz_plan', 'label' => 'Plan', 'type' => 'select', 'choices' => $plans, 'width' => 34, 'help' => 'Counts once the business is claimed.' ),
-			array( 'key' => 'biz_claimed', 'label' => 'Claimed by the business', 'type' => 'toggle', 'width' => 33, 'help' => 'Shows the full profile and the “Verified by the business” tick.' ),
-			array( 'key' => 'biz_checked', 'label' => 'Checked by Harrow Online', 'type' => 'toggle', 'width' => 33, 'help' => 'Shows the “Checked by Harrow Online” tick instead.' ),
-			array( 'key' => 'biz_sub', 'label' => 'Type of business', 'type' => 'text', 'help' => 'Shown next to the category, for example “Pizza takeaway and delivery”.' ),
-			array( 'key' => 'biz_tagline', 'label' => 'One-line summary', 'type' => 'textarea', 'claimed' => true, 'help' => 'Under the name on the profile and in listing rows. The full description goes in the main text box above.' ),
-			array( 'key' => 'biz_icon', 'label' => 'Icon', 'type' => 'text', 'placeholder' => 'store', 'width' => 34, 'claimed' => true, 'help' => 'Shown when there is no photo: store, food, people, scissors, tooth, wrench…' ),
+		'listing' => array( 'General', array(
+			array( 'key' => 'biz_plan', 'label' => 'Plan', 'type' => 'select', 'choices' => $plans, 'width' => 34, 'help' => 'Applies once the business is claimed.' ),
+			array( 'key' => 'biz_claimed', 'label' => 'Claimed', 'type' => 'toggle', 'width' => 33, 'help' => 'Full profile and the “Verified” tick.' ),
+			array( 'key' => 'biz_checked', 'label' => 'Checked', 'type' => 'toggle', 'width' => 33, 'help' => 'Shows the “Checked by Harrow Online” tick.' ),
+			array( 'key' => 'biz_sub', 'label' => 'Business type', 'type' => 'text', 'help' => 'Next to the category, e.g. “Pizza takeaway”.' ),
+			array( 'key' => 'biz_tagline', 'label' => 'Summary', 'type' => 'textarea', 'claimed' => true, 'help' => 'One line under the name. The full description goes in the editor above.' ),
+			array( 'key' => 'biz_icon', 'label' => 'Icon', 'type' => 'text', 'placeholder' => 'store', 'width' => 34, 'claimed' => true, 'help' => 'When there’s no photo: store, food, people, scissors…' ),
 			array( 'key' => 'biz_claimed_since', 'label' => 'Claimed since', 'type' => 'text', 'placeholder' => 'November 2026', 'width' => 33, 'claimed' => true ),
 			array( 'key' => 'biz_botw', 'label' => 'Business of the Week', 'type' => 'toggle', 'width' => 33, 'claimed' => true ),
-			array( 'key' => 'biz_verified_note', 'label' => 'Note under the hours', 'type' => 'text', 'claimed' => true, 'help' => 'For example “Details supplied by the business and checked by Harrow Online in November 2026.”' ),
-			array( 'key' => 'biz_seo_title', 'label' => 'Page title for search engines', 'type' => 'text', 'claimed' => true, 'help' => 'Leave empty for “{Name} in {Area}”.' ),
+			array( 'key' => 'biz_verified_note', 'label' => 'Verification note', 'type' => 'text', 'claimed' => true, 'help' => 'e.g. “Details checked by Harrow Online in November 2026.”' ),
 		) ),
-		'contact' => array( 'Contact and location', array(
-			array( 'key' => 'biz_address', 'label' => 'Street address', 'type' => 'text', 'width' => 70 ),
+		'contact' => array( 'Contact', array(
+			array( 'key' => 'biz_address', 'label' => 'Address', 'type' => 'text', 'width' => 70 ),
 			array( 'key' => 'biz_postcode', 'label' => 'Postcode', 'type' => 'text', 'width' => 30 ),
-			array( 'key' => 'biz_service_area', 'label' => 'Works across (no shop or office)', 'type' => 'text', 'claimed' => true, 'help' => 'For trades that visit customers, for example “Harrow and north-west London”. Hides the street address.' ),
+			array( 'key' => 'biz_service_area', 'label' => 'Service area', 'type' => 'text', 'claimed' => true, 'help' => 'For businesses without premises. Hides the address.' ),
 			array( 'key' => 'biz_phone', 'label' => 'Phone', 'type' => 'text', 'width' => 34 ),
 			array( 'key' => 'biz_website', 'label' => 'Website', 'type' => 'url', 'width' => 33 ),
 			array( 'key' => 'biz_email', 'label' => 'Email', 'type' => 'email', 'width' => 33 ),
-			array( 'key' => 'biz_phones_extra', 'label' => 'More phone numbers', 'type' => 'list', 'flat' => true, 'cols' => array( 'phone' => array( 'Phone' ) ), 'add' => 'Add phone number' ),
-			array( 'key' => 'biz_lat', 'label' => 'Map pin: latitude', 'type' => 'number', 'width' => 50 ),
-			array( 'key' => 'biz_lng', 'label' => 'Map pin: longitude', 'type' => 'number', 'width' => 50 ),
+			array( 'key' => 'biz_phones_extra', 'label' => 'Other phones', 'type' => 'list', 'flat' => true, 'cols' => array( 'phone' => array( 'Phone' ) ), 'add' => 'Add phone' ),
+			array( 'key' => 'biz_lat', 'label' => 'Latitude', 'type' => 'number', 'width' => 50 ),
+			array( 'key' => 'biz_lng', 'label' => 'Longitude', 'type' => 'number', 'width' => 50 ),
 			array( 'key' => 'biz_other_locations', 'label' => 'Other locations', 'type' => 'list', 'claimed' => true, 'add' => 'Add location',
 				'cols' => array( 'label' => array( 'Label' ), 'name' => array( 'Place' ), 'address' => array( 'Address' ) ) ),
 		) ),
-		'hours' => array( 'Opening hours', array(
-			$only( 'Opening hours and timetables' ),
-			array( 'key' => 'biz_hours', 'label' => 'Opening hours', 'type' => 'hours', 'claimed' => true, 'help' => 'Leave all seven empty for a club or group that uses the timetable below.' ),
-			array( 'key' => 'biz_hours_note', 'label' => 'Note under the hours', 'type' => 'text', 'claimed' => true ),
-			array( 'key' => 'biz_status', 'label' => 'Status instead of “Open today”', 'type' => 'text', 'claimed' => true, 'help' => 'For example “By appointment”. Leave empty to work it out from the hours.' ),
-			array( 'key' => 'biz_schedule_title', 'label' => 'Timetable heading (instead of opening hours)', 'type' => 'text', 'placeholder' => 'When we meet', 'claimed' => true ),
+		'hours' => array( 'Hours', array(
+			$only( 'Hours and timetables' ),
+			array( 'key' => 'biz_hours', 'label' => 'Opening hours', 'type' => 'hours', 'claimed' => true, 'help' => 'Leave empty for groups that use a timetable.' ),
+			array( 'key' => 'biz_hours_note', 'label' => 'Hours note', 'type' => 'text', 'claimed' => true ),
+			array( 'key' => 'biz_status', 'label' => 'Status', 'type' => 'text', 'claimed' => true, 'help' => 'e.g. “By appointment”. Empty: worked out from the hours.' ),
+			array( 'key' => 'biz_schedule_title', 'label' => 'Timetable title', 'type' => 'text', 'placeholder' => 'When we meet', 'claimed' => true ),
 			array( 'key' => 'biz_schedule', 'label' => 'Timetable', 'type' => 'list', 'claimed' => true, 'add' => 'Add row',
 				'cols' => array( 0 => array( 'Day' ), 1 => array( 'What and when' ) ) ),
 			array( 'key' => 'biz_schedule_note', 'label' => 'Timetable note', 'type' => 'textarea', 'claimed' => true ),
 		) ),
-		'photos' => array( 'Logo and photos', array(
-			$only( 'A logo, cover photo and photos' ),
+		'photos' => array( 'Media', array(
+			$only( 'Logo, cover and gallery' ),
 			array( 'key' => 'biz_logo', 'label' => 'Logo', 'type' => 'image', 'width' => 34, 'claimed' => true ),
-			array( 'key' => 'biz_cover', 'label' => 'Cover photo (Featured and Local Partner)', 'type' => 'image', 'width' => 33, 'claimed' => true ),
-			array( 'key' => 'biz_cover_bg', 'label' => 'Cover background', 'type' => 'text', 'width' => 33, 'claimed' => true, 'help' => 'Only for a logo-style cover: a colour behind it, for example #ffffff.' ),
-			array( 'key' => 'biz_gallery', 'label' => 'Photos', 'type' => 'gallery', 'claimed' => true, 'help' => 'Up to 5 show on the profile (paid plans). Each image’s “Alternative text” in the media library is read out by screen readers.' ),
+			array( 'key' => 'biz_cover', 'label' => 'Cover', 'help' => 'Featured and Local Partner plans.', 'type' => 'image', 'width' => 33, 'claimed' => true ),
+			array( 'key' => 'biz_cover_bg', 'label' => 'Cover colour', 'type' => 'text', 'width' => 33, 'claimed' => true, 'help' => 'Behind a logo-style cover, e.g. #ffffff.' ),
+			array( 'key' => 'biz_gallery', 'label' => 'Gallery', 'type' => 'gallery', 'claimed' => true, 'help' => 'Up to 5 show (paid plans). Set alt text in the media library.' ),
 		) ),
-		'social' => array( 'Social and news', array(
-			$only( 'Social links and news articles' ),
+		'social' => array( 'Social', array(
+			$only( 'Social links and news' ),
 			array( 'key' => 'biz_facebook', 'label' => 'Facebook', 'type' => 'url', 'width' => 50, 'claimed' => true ),
 			array( 'key' => 'biz_instagram', 'label' => 'Instagram', 'type' => 'url', 'width' => 50, 'claimed' => true ),
 			array( 'key' => 'biz_tiktok', 'label' => 'TikTok', 'type' => 'url', 'width' => 34, 'claimed' => true ),
 			array( 'key' => 'biz_linkedin', 'label' => 'LinkedIn', 'type' => 'url', 'width' => 33, 'claimed' => true ),
-			array( 'key' => 'biz_x', 'label' => 'X (Twitter)', 'type' => 'url', 'width' => 33, 'claimed' => true ),
-			array( 'key' => 'biz_news', 'label' => 'In the news (Harrow Online articles)', 'type' => 'list', 'claimed' => true, 'add' => 'Add article',
-				'help' => 'Only links to harrowonline.org are shown.',
-				'cols' => array( 'title' => array( 'Headline' ), 'url' => array( 'Link', 'url' ), 'cat' => array( 'Section' ), 'date' => array( 'Date' ) ) ),
+			array( 'key' => 'biz_x', 'label' => 'X', 'type' => 'url', 'width' => 33, 'claimed' => true ),
+			array( 'key' => 'biz_news', 'label' => 'News articles', 'type' => 'list', 'claimed' => true, 'add' => 'Add article',
+				'help' => 'harrowonline.org links only.',
+				'cols' => array( 'title' => array( 'Title' ), 'url' => array( 'URL', 'url' ), 'cat' => array( 'Category' ), 'date' => array( 'Date' ) ) ),
 		) ),
 	);
 }
@@ -120,21 +119,21 @@ function hub_admin_business_box( WP_Post $post ) {
 		echo '<button type="button" role="tab" class="hub-tabs__tab' . ( $first ? ' is-active' : '' ) . '" data-hub-tab="' . esc_attr( $slug ) . '">' . esc_html( $tab[0] ) . '</button>';
 		$first = false;
 	}
-	echo '<button type="button" role="tab" class="hub-tabs__tab" data-hub-tab="links">Offers and classes</button></nav>';
+	echo '<button type="button" role="tab" class="hub-tabs__tab" data-hub-tab="links">Offers &amp; classes</button></nav>';
 
 	$first = true;
 	foreach ( $tabs as $slug => $tab ) {
 		echo '<div class="hub-panel" data-hub-panel="' . esc_attr( $slug ) . '"' . ( $first ? '' : ' hidden' ) . '><div class="hub-grid">';
 		foreach ( $tab[1] as $f ) {
-			hub_admin_field( $f, 'note' === $f['type'] ? '' : $values[ $f['key'] ], 'hub[' . $f['key'] . ']' );
+			hub_admin_field( $f, hub_admin_is_display( $f ) ? '' : $values[ $f['key'] ], 'hub[' . $f['key'] . ']' );
 		}
 		echo '</div></div>';
 		$first = false;
 	}
 
 	echo '<div class="hub-panel" data-hub-panel="links" hidden>';
-	hub_admin_business_links( $post->ID, 'offers', 'Offers', 'This business’s Local Offers. Ticking one moves it here from any other business. Offers show on paid plans only.', hub_offers_db_admin_list() );
-	hub_admin_business_links( $post->ID, 'classes', 'Weekly classes', 'Classes this business runs. They show on the profile under “Upcoming events and classes”, and the class page links back here.', hub_events_db_admin_classes() );
+	hub_admin_business_links( $post->ID, 'offers', 'Offers', 'Tick to link an offer. It moves here from any other business. Shown on paid plans only.', hub_offers_db_admin_list() );
+	hub_admin_business_links( $post->ID, 'classes', 'Weekly classes', 'Tick to link a class. Shown on the profile; the class page links back here.', hub_events_db_admin_classes() );
 	echo '</div></div>';
 }
 

@@ -21,9 +21,9 @@ $hub_u    = function ( $k ) use ( $hub_s ) {   // a link setting, escaped for an
 
 hub_set_page( array(
 	'body'        => 'page-home',
-	'description' => $hub_s['home_seo_description'],
+	'description' => 'Discover what\'s happening in Harrow. Find local businesses, events, classes and exclusive offers from across the borough, from Harrow Online.',
 	'nav'         => 'hub',
-	'title'       => $hub_s['home_seo_title'],
+	'title'       => 'Harrow Online Hub: local businesses, offers and what\'s on in Harrow',   // page title and description: Yoast SEO box, else these
 ) );
 get_header();
 ?>

@@ -9,8 +9,6 @@
 defined( 'ABSPATH' ) || exit;
 
 const HUB_HOME_FIELDS = array(
-	// Page title and description for search engines
-	'home_seo_title', 'home_seo_description',
 	// First screen
 	'home_hero_eyebrow', 'home_hero_title', 'home_hero_title_em', 'home_hero_lead', 'home_search_placeholder', 'home_search_button',
 	'home_popular_label', 'home_popular', 'home_tiles', 'home_add_buttons', 'home_ticker_hide',

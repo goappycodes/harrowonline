@@ -32,29 +32,29 @@ function hub_admin_listing_boxes() {
 		$cats[ $c ] = $c;
 	}
 	$areas = hub_admin_area_choices();
-	$icon  = 'Shown when there is no photo: calendar, music, family, food, people, star, leaf, flag…';
+	$icon  = 'When there’s no photo: calendar, music, family, food…';
 
 	return array(
 		'hub_offer' => array( 'Offer details', array(
 			'offer' => array( 'Offer', array(
-				array( 'key' => 'offer_value', 'label' => 'Headline value', 'type' => 'text', 'width' => 34, 'placeholder' => '20% OFF', 'help' => 'Big text on offer tiles. Leave empty to work it out from the title.' ),
-				array( 'key' => 'offer_end', 'label' => 'Ends on', 'type' => 'date', 'width' => 33, 'help' => 'Leave empty for no end date. The offer shows as ended the day after.' ),
-				array( 'key' => 'offer_position', 'label' => 'Position', 'type' => 'number', 'width' => 33, 'help' => 'Order among this business’s offers (0 first).' ),
-				array( 'key' => 'offer_featured', 'label' => 'Featured', 'type' => 'toggle', 'width' => 34, 'help' => 'Shown first, with a Featured badge.' ),
-				array( 'key' => 'offer_sub', 'label' => 'Subscribers only', 'type' => 'toggle', 'width' => 33, 'help' => 'The code is only shown after the reader confirms their newsletter email.' ),
-				array( 'key' => 'offer_code', 'label' => 'Code', 'type' => 'text', 'width' => 33, 'placeholder' => 'HOCUT20', 'help' => 'Leave empty if no code is needed.' ),
+				array( 'key' => 'offer_value', 'label' => 'Value', 'type' => 'text', 'width' => 34, 'placeholder' => '20% OFF', 'help' => 'Big text on tiles. Empty: taken from the title.' ),
+				array( 'key' => 'offer_end', 'label' => 'End date', 'type' => 'date', 'width' => 33, 'help' => 'Empty: no end date.' ),
+				array( 'key' => 'offer_position', 'label' => 'Order', 'type' => 'number', 'width' => 33, 'help' => 'Among this business’s offers (0 first).' ),
+				array( 'key' => 'offer_featured', 'label' => 'Featured', 'type' => 'toggle', 'width' => 34, 'help' => 'Shown first, with a badge.' ),
+				array( 'key' => 'offer_sub', 'label' => 'Subscribers only', 'type' => 'toggle', 'width' => 33, 'help' => 'The code shows after the newsletter email is confirmed.' ),
+				array( 'key' => 'offer_code', 'label' => 'Code', 'type' => 'text', 'width' => 33, 'placeholder' => 'HOCUT20', 'help' => 'Empty if no code is needed.' ),
 				array( 'key' => 'offer_redeem', 'label' => 'How to redeem', 'type' => 'text', 'placeholder' => HUB_OFFERS_DEFAULT_REDEEM ),
-				array( 'key' => 'offer_terms', 'label' => 'Terms', 'type' => 'list', 'flat' => true, 'cols' => array( 't' => array( 'Term' ) ), 'add' => 'Add a term' ),
-				array( 'key' => 'offer_icon', 'label' => 'Icon', 'type' => 'text', 'width' => 34, 'help' => 'Optional: news, food, heart, family, wrench, edit…' ),
+				array( 'key' => 'offer_terms', 'label' => 'Terms', 'type' => 'list', 'flat' => true, 'cols' => array( 't' => array( 'Term' ) ), 'add' => 'Add term' ),
+				array( 'key' => 'offer_icon', 'label' => 'Icon', 'type' => 'text', 'width' => 34, 'help' => 'Optional: news, food, heart, family…' ),
 			) ),
 		), 'hub_offers_db_fields', 'hub_offers_db_save_fields' ),
 
 		'hub_event' => array( 'Event details', array(
-			'when' => array( 'When and where', array(
+			'when' => array( 'When &amp; where', array(
 				array( 'key' => 'event_date', 'label' => 'Date', 'type' => 'date', 'width' => 34 ),
-				array( 'key' => 'event_start', 'label' => 'Starts', 'type' => 'time', 'width' => 33 ),
-				array( 'key' => 'event_end', 'label' => 'Ends', 'type' => 'time', 'width' => 33, 'help' => 'Used for “Add to calendar”. An earlier time than the start means after midnight.' ),
-				array( 'key' => 'event_time', 'label' => 'Time as shown', 'type' => 'text', 'width' => 50, 'placeholder' => '7pm to 10pm' ),
+				array( 'key' => 'event_start', 'label' => 'Start time', 'type' => 'time', 'width' => 33 ),
+				array( 'key' => 'event_end', 'label' => 'End time', 'type' => 'time', 'width' => 33, 'help' => 'For “Add to calendar”. Earlier than the start = after midnight.' ),
+				array( 'key' => 'event_time', 'label' => 'Display time', 'type' => 'text', 'width' => 50, 'placeholder' => '7pm to 10pm' ),
 				array( 'key' => 'event_note', 'label' => 'Note', 'type' => 'text', 'width' => 50, 'placeholder' => 'Lights switched on at 5pm' ),
 				array( 'key' => 'event_venue', 'label' => 'Venue', 'type' => 'text', 'width' => 50 ),
 				array( 'key' => 'event_area', 'label' => 'Area', 'type' => 'select', 'choices' => $areas, 'other' => true, 'width' => 50 ),
@@ -62,21 +62,21 @@ function hub_admin_listing_boxes() {
 			'details' => array( 'Details', array(
 				array( 'key' => 'event_cat', 'label' => 'Category', 'type' => 'select', 'choices' => $cats, 'other' => true, 'width' => 34 ),
 				array( 'key' => 'event_price', 'label' => 'Price', 'type' => 'text', 'width' => 33, 'placeholder' => 'Free, or £5' ),
-				array( 'key' => 'event_age', 'label' => 'Ages', 'type' => 'text', 'width' => 33, 'placeholder' => 'All ages', 'help' => 'For example “All ages”, “Adults”, “Ages 5 to 11” (the age filters read this).' ),
-				array( 'key' => 'event_org', 'label' => 'Organiser (business name)', 'type' => 'text', 'width' => 50, 'help' => 'Exactly as the business is named on the Hub, to show the event on its page.' ),
+				array( 'key' => 'event_age', 'label' => 'Ages', 'type' => 'text', 'width' => 33, 'placeholder' => 'All ages', 'help' => 'e.g. “All ages”, “Ages 5 to 11” (used by the age filter).' ),
+				array( 'key' => 'event_org', 'label' => 'Organiser', 'type' => 'text', 'width' => 50, 'help' => 'The business name exactly as on the Hub.' ),
 				array( 'key' => 'event_icon', 'label' => 'Icon', 'type' => 'text', 'width' => 50, 'help' => $icon ),
-				array( 'key' => 'event_image', 'label' => 'Photo', 'type' => 'image', 'width' => 34 ),
+				array( 'key' => 'event_image', 'label' => 'Image', 'type' => 'image', 'width' => 34 ),
 				array( 'key' => 'event_featured', 'label' => 'Featured', 'type' => 'toggle', 'width' => 33 ),
-				array( 'key' => 'event_sample', 'label' => 'Sample (made up for the preview)', 'type' => 'toggle', 'width' => 33 ),
+				array( 'key' => 'event_sample', 'label' => 'Sample', 'help' => 'Made up for the preview.', 'type' => 'toggle', 'width' => 33 ),
 			) ),
 		), function ( $id ) { return hub_events_db_fields( 'hub_event', $id ); }, 'hub_events_db_save_event_fields' ),
 
 		'hub_class' => array( 'Class details', array(
-			'when' => array( 'When and where', array(
+			'when' => array( 'When &amp; where', array(
 				array( 'key' => 'class_day', 'label' => 'Day', 'type' => 'select', 'choices' => $days, 'width' => 34 ),
 				array( 'key' => 'class_time', 'label' => 'Time', 'type' => 'text', 'width' => 33, 'placeholder' => '10am to 11am' ),
-				array( 'key' => 'class_sort', 'label' => 'Start hour (for sorting)', 'type' => 'number', 'width' => 33, 'placeholder' => '10', 'help' => 'Orders classes on the same day: 10 for 10am, 17.5 for 5.30pm.' ),
-				array( 'key' => 'class_page', 'label' => 'Has its own page', 'type' => 'toggle', 'width' => 34, 'help' => 'Off for listings like a club’s teams with no fixed weekly time.' ),
+				array( 'key' => 'class_sort', 'label' => 'Sort hour', 'type' => 'number', 'width' => 33, 'placeholder' => '10', 'help' => '10 for 10am, 17.5 for 5.30pm.' ),
+				array( 'key' => 'class_page', 'label' => 'Own page', 'type' => 'toggle', 'width' => 34, 'help' => 'Off for listings with no fixed weekly time.' ),
 				array( 'key' => 'class_venue', 'label' => 'Venue', 'type' => 'text', 'width' => 33 ),
 				array( 'key' => 'class_area', 'label' => 'Area', 'type' => 'select', 'choices' => $areas, 'other' => true, 'width' => 33 ),
 			) ),
@@ -84,28 +84,28 @@ function hub_admin_listing_boxes() {
 				array( 'key' => 'class_type', 'label' => 'Type', 'type' => 'select', 'choices' => $types, 'other' => true, 'width' => 34 ),
 				array( 'key' => 'class_price', 'label' => 'Price', 'type' => 'text', 'width' => 33, 'placeholder' => '£6' ),
 				array( 'key' => 'class_age', 'label' => 'Ages', 'type' => 'text', 'width' => 33, 'placeholder' => 'Ages 4 to 7' ),
-				array( 'key' => 'class_provider', 'label' => 'Run by (name shown)', 'type' => 'text', 'width' => 50, 'help' => 'The organiser’s name. Pick the business itself in the “Business” box on the right.' ),
+				array( 'key' => 'class_provider', 'label' => 'Provider', 'type' => 'text', 'width' => 50, 'help' => 'Name shown. Link the business in the Business box.' ),
 				array( 'key' => 'class_icon', 'label' => 'Icon', 'type' => 'text', 'width' => 25, 'help' => $icon ),
-				array( 'key' => 'class_order', 'label' => 'Order', 'type' => 'number', 'width' => 25, 'help' => 'Position in the classes list.' ),
+				array( 'key' => 'class_order', 'label' => 'Order', 'type' => 'number', 'width' => 25, 'help' => 'In the classes list.' ),
 				array( 'key' => 'class_featured', 'label' => 'Featured', 'type' => 'toggle', 'width' => 34 ),
-				array( 'key' => 'class_sample', 'label' => 'Sample (made up for the preview)', 'type' => 'toggle', 'width' => 66, 'help' => 'Samples have no photo or address, and say they are made up.' ),
+				array( 'key' => 'class_sample', 'label' => 'Sample', 'type' => 'toggle', 'width' => 66, 'help' => 'No photo or address; marked as made up.' ),
 			) ),
-			'real' => array( 'Photo and address', array(
-				array( 'key' => 'class_image', 'label' => 'Photo or logo', 'type' => 'image', 'width' => 34 ),
-				array( 'key' => 'class_image_fit', 'label' => 'Show it as', 'type' => 'select', 'choices' => array( 'photo' => 'A photo (fills the space)', 'logo' => 'A logo (shown whole)' ), 'width' => 33 ),
-				array( 'key' => 'class_image_alt', 'label' => 'Image description', 'type' => 'text', 'width' => 33, 'help' => 'For screen readers. Empty: the image’s own “Alternative text”.' ),
+			'real' => array( 'Image &amp; address', array(
+				array( 'key' => 'class_image', 'label' => 'Image', 'type' => 'image', 'width' => 34 ),
+				array( 'key' => 'class_image_fit', 'label' => 'Image style', 'type' => 'select', 'choices' => array( 'photo' => 'Photo (fill)', 'logo' => 'Logo (fit)' ), 'width' => 33 ),
+				array( 'key' => 'class_image_alt', 'label' => 'Alt text', 'type' => 'text', 'width' => 33, 'help' => 'Empty: the image’s own alt text.' ),
 				array( 'key' => 'class_street', 'label' => 'Street', 'type' => 'text', 'width' => 67 ),
 				array( 'key' => 'class_postcode', 'label' => 'Postcode', 'type' => 'text', 'width' => 33 ),
 				array( 'key' => 'class_note', 'label' => 'Note', 'type' => 'text', 'placeholder' => 'Details from the organiser, checked by Harrow Online.' ),
 			) ),
-			'card' => array( 'Classes page card', array(
-				array( 'key' => 'note', 'type' => 'note', 'label' => 'How this class shows on the <strong>Classes and activities</strong> page. Leave a box empty to use the class’s own details.' ),
-				array( 'key' => 'class_card_order', 'label' => 'Order on the page', 'type' => 'number', 'width' => 25 ),
-				array( 'key' => 'class_card_text', 'label' => 'Short text', 'type' => 'textarea', 'width' => 75 ),
-				array( 'key' => 'class_card_when', 'label' => 'When (as shown)', 'type' => 'text', 'width' => 50, 'placeholder' => 'Every Saturday, 10am to 11am' ),
-				array( 'key' => 'class_card_price', 'label' => 'Price (as shown)', 'type' => 'text', 'width' => 25 ),
-				array( 'key' => 'class_card_age', 'label' => 'Ages (as shown)', 'type' => 'text', 'width' => 25 ),
-				array( 'key' => 'class_card_provider', 'label' => 'Run by (as shown)', 'type' => 'text', 'width' => 50 ),
+			'card' => array( 'Card', array(
+				array( 'key' => 'note', 'type' => 'note', 'label' => 'How the class shows on the Classes and activities page. Empty fields use the class’s own details.' ),
+				array( 'key' => 'class_card_order', 'label' => 'Order', 'type' => 'number', 'width' => 25 ),
+				array( 'key' => 'class_card_text', 'label' => 'Text', 'type' => 'textarea', 'width' => 75 ),
+				array( 'key' => 'class_card_when', 'label' => 'When', 'type' => 'text', 'width' => 50, 'placeholder' => 'Every Saturday, 10am to 11am' ),
+				array( 'key' => 'class_card_price', 'label' => 'Price', 'type' => 'text', 'width' => 25 ),
+				array( 'key' => 'class_card_age', 'label' => 'Ages', 'type' => 'text', 'width' => 25 ),
+				array( 'key' => 'class_card_provider', 'label' => 'Provider', 'type' => 'text', 'width' => 50 ),
 			) ),
 		), function ( $id ) { return hub_events_db_fields( 'hub_class', $id ); }, 'hub_events_db_save_class_fields' ),
 	);
@@ -141,7 +141,7 @@ function hub_admin_listing_box( WP_Post $post ) {
 	foreach ( $box[1] as $slug => $tab ) {
 		echo '<div class="hub-panel" data-hub-panel="' . esc_attr( $slug ) . '"' . ( $first ? '' : ' hidden' ) . '><div class="hub-grid">';
 		foreach ( $tab[1] as $f ) {
-			hub_admin_field( $f, 'note' === $f['type'] ? '' : $values[ $f['key'] ], 'hub[' . $f['key'] . ']' );
+			hub_admin_field( $f, hub_admin_is_display( $f ) ? '' : $values[ $f['key'] ], 'hub[' . $f['key'] . ']' );
 		}
 		echo '</div></div>';
 		$first = false;

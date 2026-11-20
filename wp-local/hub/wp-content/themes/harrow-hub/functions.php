@@ -12,18 +12,23 @@ require_once get_template_directory() . '/app/bootstrap.php';
 
 // Theme setup and legacy page code (moving into app/modules/ and parts/ one module at a time)
 require_once get_template_directory() . '/inc/page.php';
+require_once get_template_directory() . '/inc/seo.php';          // Yoast SEO: the theme's titles and descriptions are its defaults
 require_once get_template_directory() . '/inc/assets.php';
 require_once get_template_directory() . '/inc/editor.php';
 require_once get_template_directory() . '/inc/content-types.php';
 require_once get_template_directory() . '/inc/no-comments.php';
 require_once get_template_directory() . '/inc/render-common.php';
 require_once get_template_directory() . '/inc/view.php';         // markup helpers for parts/ (work on the controllers' shapes)
+require_once get_template_directory() . '/inc/menus.php';        // Appearance > Menus: main menu, social links
+require_once get_template_directory() . '/inc/widgets.php';      // Appearance > Widgets: the footer areas
+require_once get_template_directory() . '/inc/menus-setup.php';  // creates today's menus and widgets once
 require_once get_template_directory() . '/inc/newsletter.php';       // newsletter band (Hub settings > Newsletter)
 require_once get_template_directory() . '/inc/fields-migrate.php';   // fills the business fields from the imported data (CLI)
 
 // wp-admin: native meta boxes and settings page (no plugin): business, offer, event and class details, an offer's or
 // class's business, Hub settings > Newsletter. Their script and styles are in admin/.
 require_once get_template_directory() . '/inc/admin/fields-ui.php';
+require_once get_template_directory() . '/inc/admin/admin-colors.php';   // wp-admin in the Hub red (Harrow Hub colour scheme)
 require_once get_template_directory() . '/inc/admin/business-box.php';
 require_once get_template_directory() . '/inc/admin/link-box.php';
 require_once get_template_directory() . '/inc/admin/listing-boxes.php';
