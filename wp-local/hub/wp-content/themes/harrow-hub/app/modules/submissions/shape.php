@@ -3,7 +3,8 @@
  * Submissions: emails about an offer, event or class sent from the account pages, plain text: { subject, body }.
  *
  * @param string $kind 'staff' (new one to check) | 'live' | 'declined'
- * @param array  $a    { first_name, what ('offer' | 'event' | 'class'), title, by (business or organiser), link, account_email, note }
+ * @param array  $a    { first_name, what ('offer' | 'event' | 'class'), title, by (business or organiser), link, account_email,
+ *                      note (staff: about payment; declined: what staff wrote) }
  */
 defined( 'ABSPATH' ) || exit;
 
@@ -20,7 +21,8 @@ function hub_submissions_shape_email( $kind, array $a ) {
 		return array(
 			'subject' => 'About your ' . $a['what'] . ': ' . $a['title'],
 			'body'    => $hi . 'We couldn\'t publish your ' . $a['what'] . ' "' . $a['title'] . '" on the Harrow Online Hub this time.'
-				. "\n\nReply to this email and we'll tell you what to change, or add it again from your account:\n" . $a['link'] . $sign,
+				. ( '' !== $a['note'] ? "\n\nFrom our team:\n" . $a['note'] . "\n\nYou can add it again from your account:\n" : "\n\nReply to this email and we'll tell you what to change, or add it again from your account:\n" )
+				. $a['link'] . $sign,
 		);
 	}
 	return array(

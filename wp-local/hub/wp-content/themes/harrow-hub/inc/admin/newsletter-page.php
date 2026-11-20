@@ -29,13 +29,25 @@ add_action( 'admin_menu', function () {
 add_action( 'admin_enqueue_scripts', function ( $hook ) {
 	if ( 'toplevel_page_hub-settings' === $hook ) {
 		hub_admin_enqueue();
+		$css = get_template_directory() . '/admin/hub-admin-settings.css';
+		$js  = get_template_directory() . '/admin/hub-admin-settings.js';
+		wp_enqueue_style( 'hub-admin-settings', get_template_directory_uri() . '/admin/hub-admin-settings.css', array(), (string) filemtime( $css ) );
+		wp_enqueue_script( 'hub-admin-settings', get_template_directory_uri() . '/admin/hub-admin-settings.js', array(), (string) filemtime( $js ), true );
 	}
 } );
+
+/** The page's sections: [ title, what it's for, field keys ]. */
+const HUB_ADMIN_NEWSLETTER_GROUPS = array(
+	array( 'The band', 'The heading and the line under it. Leave a box empty to use the wording shown in grey.', array( 'show', 'title', 'text' ) ),
+	array( 'Newsletters to choose from', 'One tick box each on the form. Readers can pick more than one.', array( 'editions' ) ),
+	array( 'Sign-up form', 'The email box, the button, and where sign-ups are sent.', array( 'placeholder', 'button', 'action', 'source' ) ),
+);
 
 function hub_admin_newsletter_page() {
 	$saved = get_option( 'hub_newsletter', array() );
 	$saved = is_array( $saved ) ? $saved : array();
 	$s     = hub_newsletter_settings();
+	$d     = hub_newsletter_defaults();
 	// The form shows what is saved; the defaults show as placeholders, except the list and the switch
 	$values = array(
 		'show'        => $s['show'] ? '1' : '',
@@ -47,22 +59,76 @@ function hub_admin_newsletter_page() {
 		'action'      => isset( $saved['action'] ) ? $saved['action'] : '',
 		'source'      => isset( $saved['source'] ) ? $saved['source'] : '',
 	);
+	$fields = array();
+	foreach ( hub_admin_newsletter_fields() as $f ) {
+		$fields[ $f['key'] ] = $f;
+	}
+	$plain = function ( $v ) {
+		return wp_strip_all_tags( html_entity_decode( (string) $v, ENT_QUOTES, 'UTF-8' ) );
+	};
 	?>
-	<div class="wrap">
-		<h1>Newsletter sign-up</h1>
+	<div class="wrap hub-settings">
+		<header class="hub-settings__head">
+			<h1>Hub settings</h1>
+			<p class="hub-settings__lead">The newsletter sign-up band, shown above the footer on every Hub page.</p>
+			<nav class="hub-settings__tabs" aria-label="Hub settings">
+				<span class="hub-settings__tab is-active" aria-current="page"><span class="dashicons dashicons-email-alt" aria-hidden="true"></span>Newsletter sign-up</span>
+			</nav>
+		</header>
 		<?php if ( isset( $_GET['updated'] ) ) : // phpcs:ignore WordPress.Security.NonceVerification ?>
-			<div class="notice notice-success is-dismissible"><p>Saved. The band on every Hub page now uses these settings.</p></div>
+			<div class="notice notice-success is-dismissible"><p><strong>Saved.</strong> Every Hub page now shows the band like this.</p></div>
 		<?php endif; ?>
-		<p>The dark sign-up band shown above the footer on every Hub page. Leave a box empty to use the wording shown in grey.</p>
-		<form method="post" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>" class="hub-box hub-box--page">
+
+		<form method="post" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>" class="hub-settings__layout" id="hub-nl-form">
 			<input type="hidden" name="action" value="hub_newsletter_save">
 			<?php wp_nonce_field( 'hub_newsletter_save' ); ?>
-			<div class="hub-grid">
-				<?php foreach ( hub_admin_newsletter_fields() as $f ) {
-					hub_admin_field( $f, $values[ $f['key'] ], 'hub_nl[' . $f['key'] . ']' );
-				} ?>
+
+			<div class="hub-settings__main">
+				<?php foreach ( HUB_ADMIN_NEWSLETTER_GROUPS as $i => $g ) : ?>
+					<section class="hub-settings__card">
+						<div class="hub-settings__card-head">
+							<span class="hub-settings__step"><?php echo (int) $i + 1; ?></span>
+							<div>
+								<h2><?php echo esc_html( $g[0] ); ?></h2>
+								<p><?php echo esc_html( $g[1] ); ?></p>
+							</div>
+						</div>
+						<div class="hub-box hub-grid">
+							<?php foreach ( $g[2] as $key ) {
+								hub_admin_field( $fields[ $key ], $values[ $key ], 'hub_nl[' . $key . ']' );
+							} ?>
+						</div>
+					</section>
+				<?php endforeach; ?>
 			</div>
-			<?php submit_button( 'Save' ); ?>
+
+			<aside class="hub-settings__side">
+				<div class="hub-settings__preview-wrap">
+					<div class="hub-settings__preview-label"><span class="dashicons dashicons-visibility" aria-hidden="true"></span>Preview <span>updates as you type</span></div>
+					<div class="hub-nl-preview" id="hub-nl-preview" data-off="<?php echo $s['show'] ? '' : '1'; ?>">
+						<p class="hub-nl-preview__off">Hidden on every page. Turn on <strong>Show</strong> to put it back.</p>
+						<div class="hub-nl-preview__band">
+							<h3 data-preview="title" data-default="<?php echo esc_attr( $plain( $d['title'] ) ); ?>"><?php echo esc_html( $plain( $s['title'] ) ); ?></h3>
+							<p data-preview="text" data-default="<?php echo esc_attr( $plain( $d['text'] ) ); ?>"><?php echo esc_html( $plain( $s['text'] ) ); ?></p>
+							<ul class="hub-nl-preview__eds" data-preview="editions">
+								<?php foreach ( $s['editions'] as $e ) : ?>
+									<li><span class="hub-nl-preview__box<?php echo $e[3] ? ' is-on' : ''; ?>"></span><strong><?php echo esc_html( $plain( $e[1] ) ); ?></strong><?php echo '' !== (string) $e[2] ? ' <span>' . esc_html( $plain( $e[2] ) ) . '</span>' : ''; ?></li>
+								<?php endforeach; ?>
+							</ul>
+							<div class="hub-nl-preview__form">
+								<span class="hub-nl-preview__input" data-preview="placeholder" data-default="<?php echo esc_attr( $plain( $d['placeholder'] ) ); ?>"><?php echo esc_html( $plain( $s['placeholder'] ) ); ?></span>
+								<span class="hub-nl-preview__btn" data-preview="button" data-default="<?php echo esc_attr( $plain( $d['button'] ) ); ?>"><?php echo esc_html( $plain( $s['button'] ) ); ?></span>
+							</div>
+						</div>
+					</div>
+					<p class="hub-settings__where"><span class="dashicons dashicons-admin-site-alt3" aria-hidden="true"></span>Shows on every Hub page, above the footer. <a href="<?php echo esc_url( home_url( '/' ) ); ?>" target="_blank" rel="noopener">Open the Hub &rarr;</a></p>
+				</div>
+			</aside>
+
+			<div class="hub-settings__bar">
+				<span class="hub-settings__dirty" id="hub-nl-dirty" hidden>You have changes that aren&rsquo;t saved yet.</span>
+				<?php submit_button( 'Save changes', 'primary large', 'submit', false ); ?>
+			</div>
 		</form>
 	</div>
 	<?php

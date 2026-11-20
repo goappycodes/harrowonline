@@ -219,7 +219,7 @@ add_action( 'manage_hub_offer_posts_custom_column', function ( $col, $post_id ) 
 				break;
 			}
 			$days = hub_admin_days_until( $end );
-			echo '<strong>' . esc_html( hub_admin_date( $end ) ) . '</strong><br>';
+			echo '<strong>' . esc_html( hub_admin_date( $end ) ) . '</strong>';
 			if ( null !== $days && $days < 0 ) {
 				echo hub_admin_pill( 'Ended', 'grey' ); // phpcs:ignore WordPress.Security.EscapeOutput
 			} elseif ( 0 === $days ) {
@@ -778,10 +778,15 @@ add_action( 'pre_get_posts', function ( WP_Query $q ) {
 	}
 	$when = isset( $_GET['hub_when'] ) ? sanitize_key( $_GET['hub_when'] ) : ''; // phpcs:ignore WordPress.Security.NonceVerification
 	if ( 'hub_offer' === $type && in_array( $when, array( 'current', 'past' ), true ) ) {
-		$meta[] = array( 'key' => '_hub_end', 'value' => $today, 'compare' => 'current' === $when ? '>=' : '<', 'type' => 'CHAR' );
+		$meta[] = 'past' === $when ? hub_admin_ended_query( 'hub_offer', $today ) : array(
+			'relation' => 'OR',   // running: ends today or later, or has no end date
+			array( 'key' => '_hub_end', 'value' => $today, 'compare' => '>=', 'type' => 'CHAR' ),
+			array( 'key' => '_hub_end', 'value' => '' ),
+			array( 'key' => '_hub_end', 'compare' => 'NOT EXISTS' ),
+		);
 	}
 	if ( 'hub_event' === $type && in_array( $when, array( 'current', 'past' ), true ) ) {
-		$meta[] = array( 'key' => '_hub_start', 'value' => $today, 'compare' => 'current' === $when ? '>=' : '<', 'type' => 'CHAR' );
+		$meta[] = 'past' === $when ? hub_admin_ended_query( 'hub_event', $today ) : array( 'key' => '_hub_start', 'value' => $today, 'compare' => '>=', 'type' => 'CHAR' );
 	}
 	if ( $meta ) {
 		$q->set( 'meta_query', $meta );

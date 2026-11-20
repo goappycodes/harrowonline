@@ -57,6 +57,20 @@
 .wp-list-table .column-hub_template,
 .wp-list-table .column-hub_text { width: 170px; }
 .wp-list-table .column-date { width: 130px; }
+/* Yoast's icon columns (SEO score, readability, links): room for the icon and its sort arrows */
+/* (.widefat.fixed th: Yoast's own ".fixed th.column-wpseo-score.sortable" sets 3.5em and would win otherwise) */
+.wp-list-table.widefat.fixed th.column-wpseo-score,
+.wp-list-table.widefat.fixed th.column-wpseo-score-readability,
+.wp-list-table.widefat.fixed th.column-wpseo-links,
+.wp-list-table.widefat.fixed th.column-wpseo-linked { width: 64px; text-align: center; }
+.wp-list-table td.column-wpseo-score,
+.wp-list-table td.column-wpseo-score-readability,
+.wp-list-table td.column-wpseo-links,
+.wp-list-table td.column-wpseo-linked { text-align: center; }
+.wp-list-table th.column-wpseo-score a,
+.wp-list-table th.column-wpseo-score-readability a,
+.wp-list-table th.column-wpseo-links a,
+.wp-list-table th.column-wpseo-linked a { justify-content: center; }
 /* Users: shares of the width, so it fits any screen */
 .users .column-username { width: 19%; overflow-wrap: anywhere; }
 .users .column-hub_email { width: 23%; overflow-wrap: anywhere; }
@@ -118,6 +132,7 @@
 /* a bold first line (a date, a name) with its detail tight underneath */
 .wp-list-table td > strong { display: block; line-height: 1.35; }
 .wp-list-table td > strong + .hub-cell-sub { margin-top: 1px; }
+.wp-list-table td > strong + br { display: none; }
 .hub-cell-row + .hub-cell-sub { margin-top: 4px; }
 /* a pill straight in a cell (not in a row): its own line, clear of the text above and below */
 .wp-list-table td > .hub-pill { display: table; margin: 6px 0; }
@@ -176,6 +191,14 @@
 }
 .hub-code--quiet { background: #f0f0f1; color: #3c434a; letter-spacing: 0; }
 .hub-path { font-family: Consolas, Monaco, monospace; font-size: 12.5px; }
+/* Businesses > Possible duplicates: the business and what it looks like share the room; plan and status narrower */
+.wp-list-table:has(.column-hub_dupe) .column-title { width: 15%; }
+.wp-list-table .column-hub_dupe { width: 17%; }
+.wp-list-table:has(.column-hub_dupe) .column-hub_plan,
+.wp-list-table:has(.column-hub_dupe) .column-hub_bstatus { width: 112px; }
+.wp-list-table:has(.column-hub_dupe) .column-hub_owner { width: 10%; }
+.wp-list-table:has(.column-hub_dupe) .column-hub_where { width: 15%; }
+.hub-dupe-why { display: block; margin-bottom: 3px; color: #646970; font-size: 12px; }
 
 /* filters above the table */
 .tablenav .actions select { max-width: 190px; }
@@ -195,6 +218,7 @@
 .hub-attn-icon { flex: none; display: inline-flex; align-items: center; justify-content: center; width: 34px; height: 34px; border-radius: 8px; }
 .hub-attn-icon--amber { background: #fcf3e3; color: #8a4b00; }
 .hub-attn-icon--red   { background: #FDECED; color: #B8161D; }
+.hub-attn-icon--grey  { background: #f0f0f1; color: #50575e; }
 .hub-attn-text { flex: 1; min-width: 0; }
 .hub-attn-label { display: block; font-weight: 600; font-size: 14px; }
 .hub-attn-age { display: block; margin-top: 2px; color: #646970; font-size: 12px; }
@@ -202,6 +226,19 @@
 .hub-attn-none { margin: 0; padding: 10px 14px 12px; border-top: 1px solid #f0f0f1; color: #646970; font-size: 12px; }
 .hub-attn-clear { margin: 0; padding: 16px 14px; color: #00663f; font-weight: 600; }
 .hub-attn-clear .dashicons { color: #00a32a; }
+
+/* ------------------------------------------------------------------ business screen: At a glance (inc/admin/glance-box.php) */
+#hub_glance .inside { margin: 0; padding: 4px 12px 12px; }
+.hub-glance { margin: 0; }
+.hub-glance dt { margin: 10px 0 4px; color: #646970; font-size: 11px; font-weight: 600; letter-spacing: .05em; text-transform: uppercase; }
+.hub-glance dt:first-child { margin-top: 6px; }
+.hub-glance dd { margin: 0; }
+.hub-glance .hub-cell-line { max-width: none; }
+.hub-glance-view { margin: 14px 0 0; }
+.hub-glance-view .button { width: 100%; text-align: center; }
+/* Categories and Areas tick lists: room for the long list */
+#hub_categorydiv .tabs-panel,
+#hub_areadiv .tabs-panel { max-height: 260px; }
 
 /* ------------------------------------------------------------------ small screens: WordPress stacks the columns */
 @media screen and (max-width: 782px) {

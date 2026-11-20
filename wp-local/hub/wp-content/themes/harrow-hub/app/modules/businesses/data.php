@@ -427,6 +427,20 @@ function hub_businesses_db_attach_photo( $post_id, $file_key ) {
 	return $aid;
 }
 
+/** Every live, waiting or draft business with its name, postcode and phone, for the duplicates check (wp-admin). */
+function hub_businesses_db_match_rows() {
+	global $wpdb;
+	return $wpdb->get_results(
+		"SELECT p.ID AS id, p.post_title AS name, p.post_status AS status,
+			COALESCE( pc.meta_value, '' ) AS postcode, COALESCE( ph.meta_value, '' ) AS phone
+		FROM {$wpdb->posts} p
+		LEFT JOIN {$wpdb->postmeta} pc ON pc.post_id = p.ID AND pc.meta_key = 'biz_postcode'
+		LEFT JOIN {$wpdb->postmeta} ph ON ph.post_id = p.ID AND ph.meta_key = 'biz_phone'
+		WHERE p.post_type = 'hub_business' AND p.post_status IN ( 'publish', 'pending', 'draft' )",
+		ARRAY_A
+	);
+}
+
 /** A live or waiting business with the same name and postcode, or 0. */
 function hub_businesses_db_find_same( $name, $postcode ) {
 	$key = hub_businesses_rule_name_key( $name );
@@ -457,6 +471,19 @@ function hub_businesses_db_added_info( $post_id ) {
 		return null;
 	}
 	return array( 'user' => $user, 'as' => (string) get_post_meta( (int) $post_id, '_hub_added_as', true ), 'facilities' => (array) get_post_meta( (int) $post_id, '_hub_facilities', true ) );
+}
+
+/** What staff wrote when they declined a business added from the website (sent in the email). */
+function hub_businesses_db_decline_note( $post_id ) {
+	return (string) get_post_meta( (int) $post_id, '_hub_decline_note', true );
+}
+
+function hub_businesses_db_set_decline_note( $post_id, $note ) {
+	update_post_meta( (int) $post_id, '_hub_decline_note', (string) $note );
+}
+
+function hub_businesses_db_trash( $post_id ) {
+	return (bool) wp_trash_post( (int) $post_id );
 }
 
 function hub_businesses_db_send_email( $to, $subject, $body ) {

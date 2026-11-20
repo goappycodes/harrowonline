@@ -180,6 +180,22 @@ function hub_submission_declined( $post_id ) {
 	_hub_submission_decided( $post_id, 'declined', 'rejected' );
 }
 
+/**
+ * Staff decline one waiting for review, with a note for the person (wp-admin): it goes to the Trash and the
+ * "declined" email carries the note. Returns { ok, message }.
+ */
+function hub_submission_decline( $post_id, $note, $mode = HUB_WEB ) {
+	if ( ! current_user_can( 'delete_post', (int) $post_id ) ) {
+		return hub_respond_error( 'forbidden', 'You can&rsquo;t decline this.', $mode, 403 );
+	}
+	if ( '' === _hub_submission_kind_of( $post_id ) || 'pending' !== get_post_status( $post_id ) ) {
+		return hub_respond( array( 'ok' => false, 'message' => 'Only one waiting for review can be declined.' ), $mode );
+	}
+	hub_submissions_db_set_decline_note( $post_id, sanitize_textarea_field( (string) $note ) );
+	$ok = hub_submissions_db_trash( $post_id );   // -> hub_submission_declined() at the end of the request
+	return hub_respond( array( 'ok' => $ok, 'message' => $ok ? 'Declined and moved to the Trash. They&rsquo;ll get an email with your note.' : 'Couldn&rsquo;t decline it.' ), $mode );
+}
+
 /* ------------------------------------------------------------------ internal */
 function _hub_submission_kind_of( $post_id ) {
 	foreach ( HUB_SUBMISSIONS_KINDS as $kind => $k ) {
@@ -210,7 +226,7 @@ function _hub_submission_decided( $post_id, $mail, $pref ) {
 	}
 	$post = get_post( $post_id );
 	$link = 'live' === $mail ? ( 'offer' === $kind ? hub_url( 'offers/' . $post->post_name . '/' ) : hub_url( 'events/' . $post->post_name . '/' ) ) : hub_url( HUB_SUBMISSIONS_KINDS[ $kind ][2] . 'edit/' );
-	_hub_submission_mail( $mail, $u->user_email, $u, $kind, html_entity_decode( $post->post_title, ENT_QUOTES, 'UTF-8' ), '', $link );
+	_hub_submission_mail( $mail, $u->user_email, $u, $kind, html_entity_decode( $post->post_title, ENT_QUOTES, 'UTF-8' ), '', $link, 'declined' === $mail ? hub_submissions_db_decline_note( $post_id ) : '' );
 }
 
 function _hub_submission_mail( $kind, $to, WP_User $u, $what, $title, $by, $link, $note = '' ) {

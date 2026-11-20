@@ -184,7 +184,7 @@ function hub_business_shape_imported_class_row( array $c ) {
  * Emails about a business added from the website, plain text: { subject, body }.
  *
  * @param string $kind 'received' | 'staff' | 'live' (owner) | 'live_recommend' | 'declined'
- * @param array  $a    { first_name, business, link, account_email, as_label }
+ * @param array  $a    { first_name, business, link, account_email, as_label, note (declined: what staff wrote) }
  */
 function hub_businesses_shape_added_email( $kind, array $a ) {
 	$hi   = 'Hi ' . ( '' !== $a['first_name'] ? $a['first_name'] : 'there' ) . ",\n\n";
@@ -211,8 +211,9 @@ function hub_businesses_shape_added_email( $kind, array $a ) {
 		case 'declined':
 			return array(
 				'subject' => 'About ' . $a['business'] . ' on Harrow Online Hub',
-				'body'    => $hi . 'We couldn\'t add ' . $a['business'] . ' to the Harrow Online Hub this time. It may already be listed, be outside Harrow, or we couldn\'t check the details.'
-					. "\n\nReply to this email and we'll explain or help." . $sign,
+				'body'    => $hi . 'We couldn\'t add ' . $a['business'] . ' to the Harrow Online Hub this time.'
+					. ( ! empty( $a['note'] ) ? "\n\nFrom our team:\n" . $a['note'] . "\n\nReply to this email if you have any questions."
+						: ' It may already be listed, be outside Harrow, or we couldn\'t check the details.' . "\n\nReply to this email and we'll explain or help." ) . $sign,
 			);
 	}
 	return array(

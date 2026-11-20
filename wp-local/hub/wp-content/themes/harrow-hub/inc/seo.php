@@ -57,3 +57,14 @@ add_filter( 'wpseo_schema_webpage', function ( $data, $context = null ) {
 add_filter( 'wpseo_metabox_prio', function () {
 	return 'low';
 } );
+
+/**
+ * Admin lists: Yoast's Readability score and Outgoing internal links columns start hidden (staff can still turn them
+ * on in Screen Options). Only for people who haven't chosen their own columns on that screen yet.
+ */
+add_filter( 'default_hidden_columns', function ( $hidden, $screen ) {
+	if ( $screen instanceof WP_Screen && 'edit' === $screen->base ) {
+		$hidden = array_merge( (array) $hidden, array( 'wpseo-score-readability', 'wpseo-links' ) );
+	}
+	return $hidden;
+}, 10, 2 );

@@ -55,6 +55,36 @@ function hub_submission_admin_box( $post ) {
 		echo '<p>' . ( $i['paid'] ? '&check; <strong>£15 event listing paid</strong>' : '<strong style="color:#b32d2e">£15 event listing not paid yet</strong> (Basic plan)' ) . '</p>';
 	}
 	if ( 'pending' === $post->post_status ) {
-		echo '<p class="description">Check it, then <strong>Publish</strong> to put it live, or <strong>Move to Trash</strong> to decline. They&rsquo;re emailed either way, unless they turned those emails off.</p>';
+		echo '<p class="description">Check it, then <strong>Publish</strong> to put it live, or decline it below. They&rsquo;re emailed either way, unless they turned those emails off.</p>';
+		hub_review_decline_fields( $post );
 	}
 }
+
+/**
+ * "Decline and email": a note for the person and the button, in the review boxes of offers, events, classes and
+ * businesses added from the website. The form lives outside the post form (forms can't nest); the fields point at it.
+ */
+function hub_review_decline_fields( WP_Post $post ) {
+	echo '<p class="hub-decline"><label for="hub_decline_note"><strong>Declining?</strong> Say what to change (goes in the email)</label>'
+		. '<textarea id="hub_decline_note" name="note" rows="3" class="widefat" form="hub-decline"></textarea></p>'
+		. '<p><button class="button" type="submit" form="hub-decline">Decline and email them</button></p>';
+	add_action( 'admin_footer', function () use ( $post ) {
+		echo '<form id="hub-decline" method="post" action="' . esc_url( admin_url( 'admin-post.php' ) ) . '">'
+			. '<input type="hidden" name="action" value="hub_decline"><input type="hidden" name="post" value="' . (int) $post->ID . '">'
+			. wp_nonce_field( 'hub_decline_' . $post->ID, '_wpnonce', true, false ) . '</form>';
+	} );
+}
+
+add_action( 'admin_post_hub_decline', function () {
+	$id = isset( $_POST['post'] ) ? (int) $_POST['post'] : 0;
+	check_admin_referer( 'hub_decline_' . $id );
+	$type = get_post_type( $id );
+	$note = isset( $_POST['note'] ) ? wp_unslash( $_POST['note'] ) : ''; // phpcs:ignore WordPress.Security.ValidatedSanitizedInput -- the controllers sanitise
+	$r    = 'hub_business' === $type ? hub_business_added_decline( $id, $note ) : hub_submission_decline( $id, $note );   // businesses / submissions modules
+	if ( empty( $r['ok'] ) ) {
+		wp_die( esc_html( wp_strip_all_tags( html_entity_decode( isset( $r['message'] ) ? $r['message'] : 'Couldn&rsquo;t decline it.' ) ) ), 'Not declined', array( 'back_link' => true ) );
+	}
+	// The list, with WordPress's own "moved to the Trash" notice (and Undo)
+	wp_safe_redirect( admin_url( 'edit.php?post_type=' . $type . '&trashed=1&ids=' . $id ) );
+	exit;
+} );

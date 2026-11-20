@@ -1,0 +1,121 @@
+/*
+ * wp-admin > Hub settings (inc/admin/newsletter-page.php): the form in numbered cards, a live preview of the band
+ * beside it, a save bar that stays in view. The fields themselves are styled by admin/hub-admin.css.
+ */
+
+.hub-settings { max-width: 1240px; }
+.hub-settings__head { margin: 8px 0 18px; }
+.hub-settings__head h1 { margin: 0 0 4px; padding: 0; font-size: 24px; font-weight: 600; }
+.hub-settings__lead { margin: 0 0 14px; color: #50575e; font-size: 14px; }
+.hub-settings__tabs { display: flex; gap: 4px; border-bottom: 1px solid #dcdcde; }
+.hub-settings__tab {
+	display: inline-flex;
+	align-items: center;
+	gap: 6px;
+	margin-bottom: -1px;
+	padding: 9px 14px;
+	border: 1px solid transparent;
+	border-radius: 6px 6px 0 0;
+	color: #50575e;
+	font-weight: 600;
+}
+.hub-settings__tab.is-active { border-color: #dcdcde; border-bottom-color: #f0f0f1; background: #f0f0f1; color: #141414; }
+.hub-settings__tab .dashicons { color: #DF2028; }
+
+/* two columns: the form, and the preview that stays in view */
+.hub-settings__layout {
+	display: grid;
+	grid-template-columns: minmax(0, 1fr) 380px;
+	gap: 24px;
+	align-items: start;
+}
+.hub-settings__main { display: grid; gap: 16px; }
+
+/* a card per section */
+.hub-settings__card {
+	background: #fff;
+	border: 1px solid #dcdcde;
+	border-radius: 10px;
+	box-shadow: 0 1px 2px rgba(0, 0, 0, .04);
+	padding: 18px 20px 22px;
+}
+.hub-settings__card-head { display: flex; gap: 12px; align-items: flex-start; padding-bottom: 4px; }
+.hub-settings__card-head h2 { margin: 2px 0 2px; font-size: 15px; font-weight: 600; }
+.hub-settings__card-head p { margin: 0; color: #646970; font-size: 13px; }
+.hub-settings__step {
+	flex: none;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	width: 26px;
+	height: 26px;
+	border-radius: 50%;
+	background: #FDECED;
+	color: #B8161D;
+	font-weight: 700;
+	font-size: 13px;
+}
+.hub-settings__card .hub-box { margin: 0; padding: 0; border: 0; }
+.hub-settings__card .hub-list { width: 100%; }
+
+/* the preview */
+.hub-settings__side { position: sticky; top: 46px; }
+.hub-settings__preview-wrap {
+	background: #fff;
+	border: 1px solid #dcdcde;
+	border-radius: 10px;
+	padding: 14px;
+	box-shadow: 0 1px 2px rgba(0, 0, 0, .04);
+}
+.hub-settings__preview-label { display: flex; align-items: center; gap: 6px; margin: 0 0 10px; font-weight: 600; color: #141414; }
+.hub-settings__preview-label span:last-child { margin-left: auto; color: #8c8f94; font-weight: 400; font-size: 12px; }
+.hub-settings__preview-label .dashicons { color: #DF2028; }
+
+.hub-nl-preview { border-radius: 8px; overflow: hidden; }
+.hub-nl-preview__band { padding: 22px 20px 20px; background: #141414; color: #fff; }
+.hub-nl-preview__band h3 { margin: 0 0 6px; color: #fff; font-size: 19px; line-height: 1.25; }
+.hub-nl-preview__band > p { margin: 0 0 14px; color: #cfcfcf; font-size: 13px; line-height: 1.5; }
+.hub-nl-preview__eds { margin: 0 0 14px; }
+.hub-nl-preview__eds li { display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 8px; margin: 0 0 8px; font-size: 13px; }
+.hub-nl-preview__eds li span:not(.hub-nl-preview__box) { flex-basis: 100%; padding-left: 24px; color: #a7a7a7; font-size: 12px; }
+.hub-nl-preview__box { flex: none; position: relative; top: 2px; width: 14px; height: 14px; border: 1.5px solid #8c8f94; border-radius: 3px; }
+.hub-nl-preview__box.is-on { border-color: #DF2028; background: #DF2028; }
+.hub-nl-preview__box.is-on::after { content: ""; position: absolute; left: 4px; top: 1px; width: 4px; height: 8px; border: solid #fff; border-width: 0 2px 2px 0; transform: rotate(45deg); }
+.hub-nl-preview__form { display: flex; gap: 8px; }
+.hub-nl-preview__input { flex: 1; min-width: 0; padding: 9px 12px; border-radius: 6px; background: #fff; color: #8c8f94; font-size: 13px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.hub-nl-preview__btn { flex: none; padding: 9px 14px; border-radius: 6px; background: #DF2028; color: #fff; font-weight: 600; font-size: 13px; }
+.hub-nl-preview__off { display: none; margin: 0; padding: 26px 16px; border: 1px dashed #c3c4c7; border-radius: 8px; background: #f6f7f7; color: #50575e; text-align: center; }
+.hub-nl-preview[data-off="1"] .hub-nl-preview__off { display: block; }
+.hub-nl-preview[data-off="1"] .hub-nl-preview__band { display: none; }
+.hub-settings__where { display: flex; gap: 6px; align-items: flex-start; margin: 12px 0 0; color: #646970; font-size: 12px; }
+.hub-settings__where .dashicons { font-size: 16px; width: 16px; height: 16px; color: #8c8f94; }
+.hub-settings__where a { margin-left: auto; white-space: nowrap; }
+
+/* the save bar, always in view at the bottom */
+.hub-settings__bar {
+	grid-column: 1 / -1;
+	position: sticky;
+	bottom: 0;
+	z-index: 5;
+	display: flex;
+	align-items: center;
+	justify-content: flex-end;
+	gap: 14px;
+	margin: 4px -20px 0;
+	padding: 12px 20px;
+	background: rgba(240, 240, 241, .94);
+	border-top: 1px solid #dcdcde;
+	backdrop-filter: blur(4px);
+}
+.hub-settings__bar .button { margin: 0; }
+.hub-settings__dirty { color: #8a4b00; font-weight: 600; }
+.hub-settings__dirty::before { content: "\25CF"; margin-right: 6px; color: #dba617; }
+
+@media (max-width: 1100px) {
+	.hub-settings__layout { grid-template-columns: minmax(0, 1fr); }
+	.hub-settings__side { position: static; order: -1; }
+}
+@media (max-width: 782px) {
+	.hub-settings__card { padding: 14px 14px 18px; }
+	.hub-settings__bar { margin: 4px -10px 0; padding: 10px; }
+}
