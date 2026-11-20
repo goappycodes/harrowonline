@@ -133,7 +133,7 @@ function hub_submission_save( $kind, array $params, array $files, $mode = HUB_WE
 	}
 	if ( 'pending' !== $was ) {
 		$u = get_userdata( $page['account']['id'] );
-		_hub_submission_mail( 'staff', get_option( 'admin_email' ), $u, $kind, $f['title'], $page['by'], admin_url( 'post.php?post=' . $saved . '&action=edit' ), $needs_pay ? 'Basic plan: £15 event listing, not paid yet' : '' );
+		_hub_submission_mail( 'staff', get_option( 'admin_email' ), $u, $kind, $f['title'], $page['by'], admin_url( 'post.php?post=' . $saved . '&action=edit' ), $needs_pay ? 'Basic plan: ' . html_entity_decode( hub_billing_rule_money( hub_billing_items()['event_listing']['amount'] ) ) . ' event listing, not paid yet' : '' );
 	}
 	// A Basic business pays £15 for its event; with online payments off, staff see it's unpaid and get in touch
 	if ( $needs_pay && ! hub_submissions_db_info( $saved )['paid'] && hub_billing_status()['configured'] ) {   // billing module

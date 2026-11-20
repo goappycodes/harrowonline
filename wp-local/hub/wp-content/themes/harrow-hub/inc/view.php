@@ -359,9 +359,9 @@ function hub_view_billing_plans() {
 	$plans    = array(
 		'basic'    => array( 'Basic', 'For any Harrow business. Claim your listing and keep it up to date.', null,
 			array( 'Verified business listing', 'Business details and opening hours', 'One photograph', 'Keep the listing updated yourself' ), '' ),
-		'featured' => array( 'Featured', 'For businesses that want to be seen first and keep customers coming back.', HUB_BILLING_PLANS['featured']['prices'],
+		'featured' => array( 'Featured', 'For businesses that want to be seen first and keep customers coming back.', hub_billing_plans()['featured']['prices'],
 			array( 'Priority placement', 'Social media links', 'Additional photographs', 'Publish Local Offers', 'Add events and classes', 'Featured positions within the Hub' ), '' ),
-		'partner'  => array( 'Local Partner', 'Featured on the Hub, plus a monthly spot in the Daily News and the Facebook Group.', HUB_BILLING_PLANS['partner']['prices'],
+		'partner'  => array( 'Local Partner', 'Featured on the Hub, plus a monthly spot in the Daily News and the Facebook Group.', hub_billing_plans()['partner']['prices'],
 			array( 'One advert each month in the Daily News newsletter', 'One Harrow Online Facebook Group post each month' ), 'Everything in Featured, plus:' ),
 	);
 	$rank = array( 'basic' => 0, 'featured' => 1, 'partner' => 2 );
@@ -562,7 +562,7 @@ function hub_view_submission_notices( array $page, $result ) {
 	}
 	if ( 'pending' === $saved ) {
 		$pay = $page['item'] && $page['item']['needs_pay'] && ! $page['item']['paid']
-			? ' The £15 listing fee is still to pay: online payments aren&rsquo;t switched on yet, so we&rsquo;ll be in touch about it.' : '';
+			? ' The ' . esc_html( hub_billing_rule_money( hub_billing_items()['event_listing']['amount'] ) ) . ' listing fee is still to pay: online payments aren&rsquo;t switched on yet, so we&rsquo;ll be in touch about it.' : '';
 		$box( 'ok', 'check', '<p class="mb-0"><strong>Sent for checking.</strong> We check every ' . esc_html( $kind ) . ' before it goes live, usually within 2 working days, and email you either way.' . $pay . '</p>' );
 	} elseif ( 'draft' === $saved ) {
 		$box( 'ok', 'check', '<p class="mb-0"><strong>Draft saved.</strong> Send it for approval when you&rsquo;re ready.</p>' );
@@ -570,7 +570,7 @@ function hub_view_submission_notices( array $page, $result ) {
 		$box( 'plain', 'info', '<p class="mb-0">Status: <strong>' . esc_html( $page['item']['status_label'] ) . '</strong>' . ( 'pending' === $page['item']['status'] ? '. You can still change it while we check it.' : '.' ) . '</p>' );
 	}
 	if ( 'pay' === $page['access'] && ! $page['item'] && ! $result ) {
-		$box( 'plain', 'info', '<p class="mb-0">On the Basic plan, each event costs <strong>£15</strong>, paid when you send it. Featured and Local Partner include unlimited events. <a href="' . esc_url( hub_url( 'pricing/' ) ) . '">See plans</a></p>' );
+		$box( 'plain', 'info', '<p class="mb-0">On the Basic plan, each event costs <strong>' . esc_html( hub_billing_rule_money( hub_billing_items()['event_listing']['amount'] ) ) . '</strong>, paid when you send it. Featured and Local Partner include unlimited events. <a href="' . esc_url( hub_url( 'pricing/' ) ) . '">See plans</a></p>' );
 	}
 	if ( $result && ! $result['ok'] ) {
 		$items = '';

@@ -173,8 +173,11 @@ local only). In the Claude desktop app, start the **wp-local** preview instead.
   `SMTP_HOST` is set.
 - **Payments** (`app/modules/billing/`, `app/setup/billing.php`) use Stripe Checkout and the Stripe customer
   portal through the official `stripe/stripe-php` library (installed in the theme's `vendor/` by Composer; commit
-  it). Plans: Featured £29/£290 and Local Partner £79/£790 a month/year, with prices including VAT. One-off items
-  (event listing, 7-day feature, sponsor slots) are listed in `app/modules/billing/rules.php`.
+  it). Plans (Featured, Local Partner; monthly or yearly) and one-off items (event listing, 7-day feature,
+  newsletter adverts) are listed in `app/modules/billing/rules.php`; their **prices are set in wp-admin > Hub settings >
+  Prices** (prices include VAT). Saving there sends them to Stripe: a changed amount becomes a new Stripe price that
+  new sign-ups and purchases pay, and businesses already on a plan keep theirs. The amounts in `rules.php` are only
+  the defaults for a site where nobody has saved prices yet.
 - **Keys** go in the `.env` file in the repository root (never committed): `STRIPE_SECRET_KEY`,
   `STRIPE_PUBLISHABLE_KEY`, `STRIPE_WEBHOOK_SECRET`. Use **test** keys (`sk_test_`, `pk_test_`) everywhere except
   live. Without real keys, the payment buttons go to the account billing page with "Online payments aren't
@@ -250,6 +253,9 @@ https://hub.harrowonline.org/hub/ is the launch test site, on SiteGround (the sa
   have. If an old page ever shows, flush it in Site Tools > Speed > Caching > Dynamic Cache.
 
 ## Dev server (Laravel Forge)
+
+> **Retired (20 Nov 2026):** the Forge dev site is no longer used; the test site is SiteGround (above). Its notes stay
+> here for reference. To stop it deploying, turn off push-to-deploy (or delete the site) in Forge.
 
 The same WordPress runs on Laravel Forge (server `appy-dev`, site `harrowwp.on-forge.com`):
 https://harrowwp.on-forge.com/hub/. It deploys from `main` with the committed SQLite database.

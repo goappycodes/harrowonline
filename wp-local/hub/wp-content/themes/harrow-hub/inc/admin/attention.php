@@ -65,7 +65,7 @@ function hub_admin_attention() {
 	) );
 	$items[] = array(
 		'key'    => 'unpaid',
-		'label'  => 'Events with £15 not paid',
+		'label'  => 'Events with the listing fee not paid',
 		'count'  => count( $unpaid ),
 		'url'    => admin_url( 'edit.php?post_type=hub_event&hub_state=unpaid' ),
 		'icon'   => 'dashicons-money-alt',

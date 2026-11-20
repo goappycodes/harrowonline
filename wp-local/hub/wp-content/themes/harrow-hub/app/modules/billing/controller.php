@@ -69,10 +69,82 @@ function hub_billing_status_for_business( $business_id, $mode = HUB_WEB ) {
 		! empty( $owner['id'] ) && '' !== hub_billing_db_customer_id( $owner['id'] )
 	), $mode );
 }
+/** The plans with the prices in force (HUB_BILLING_PLANS' shape): the defaults, with staff's saved prices on top. */
+function hub_billing_plans() {
+	return _hub_billing_prices()[0];
+}
+
+/** The one-off items with the prices in force (HUB_BILLING_ITEMS' shape). */
+function hub_billing_items() {
+	return _hub_billing_prices()[1];
+}
+
+/** Staff (wp-admin > Hub settings > Prices): every price, for the form. { plans: [ { key, name, monthly, annual } ], items: [ { key, name, what, amount, advert } ] } (pence) */
+function hub_billing_prices_for_staff( $mode = HUB_WEB ) {
+	if ( ! current_user_can( 'manage_options' ) ) {
+		return hub_respond_error( 'forbidden', 'Admins only.', $mode, 403 );
+	}
+	$plans = $items = array();
+	foreach ( hub_billing_plans() as $key => $p ) {
+		$plans[] = array( 'key' => $key, 'name' => $p['name'], 'monthly' => $p['prices']['monthly'], 'annual' => $p['prices']['annual'] );
+	}
+	foreach ( hub_billing_items() as $key => $i ) {
+		$items[] = array( 'key' => $key, 'name' => $i['name'], 'what' => html_entity_decode( $i['what'], ENT_QUOTES, 'UTF-8' ), 'amount' => $i['amount'], 'advert' => hub_billing_rule_is_newsletter_advert( $key ) );
+	}
+	return hub_respond( array( 'plans' => $plans, 'items' => $items, 'configured' => _hub_billing_configured(), 'mode' => hub_billing_rule_mode( hub_billing_db_env( 'STRIPE_SECRET_KEY' ) ) ), $mode );
+}
+
+/**
+ * Staff save the prices (pounds as typed, e.g. "29" or "290.00"), then Stripe gets them: a changed amount becomes a
+ * new Stripe price (new sign-ups pay it; existing subscriptions keep theirs). Returns { ok, message, errors: { field }, done[] }.
+ *
+ * @param array $params { plans: { featured: { monthly, annual } ... }, items: { event_listing ... } }
+ */
+function hub_billing_save_prices( array $params, $mode = HUB_WEB ) {
+	if ( ! current_user_can( 'manage_options' ) ) {
+		return hub_respond_error( 'forbidden', 'Admins only.', $mode, 403 );
+	}
+	$saved  = array( 'plans' => array(), 'items' => array() );
+	$errors = array();
+	foreach ( HUB_BILLING_PLANS as $key => $p ) {
+		foreach ( array( 'monthly', 'annual' ) as $per ) {
+			$v = hub_billing_rule_pence( isset( $params['plans'][ $key ][ $per ] ) ? wp_unslash( $params['plans'][ $key ][ $per ] ) : '' );
+			if ( null === $v ) {
+				$errors[ 'plans-' . $key . '-' . $per ] = $p['name'] . ' (' . ( 'monthly' === $per ? 'monthly' : 'yearly' ) . ')';
+				continue;
+			}
+			$saved['plans'][ $key ][ $per ] = $v;
+		}
+	}
+	foreach ( HUB_BILLING_ITEMS as $key => $i ) {
+		$v = hub_billing_rule_pence( isset( $params['items'][ $key ] ) ? wp_unslash( $params['items'][ $key ] ) : '' );
+		if ( null === $v ) {
+			$errors[ 'items-' . $key ] = $i['name'];
+			continue;
+		}
+		$saved['items'][ $key ] = $v;
+	}
+	if ( $errors ) {
+		return hub_respond( array( 'ok' => false, 'message' => 'Nothing was saved. Check these prices (30p to £99,999.99): ' . implode( ', ', $errors ) . '.', 'errors' => $errors, 'done' => array() ), $mode );
+	}
+	hub_billing_db_save_prices( $saved );
+	_hub_billing_prices( true );
+	if ( ! _hub_billing_configured() ) {
+		return hub_respond( array( 'ok' => true, 'message' => 'Prices saved. Stripe isn&rsquo;t set up on this site, so it gets them when the Stripe setup runs.', 'errors' => array(), 'done' => array() ), $mode );
+	}
+	$r = hub_billing_setup();
+	return hub_respond( array(
+		'ok'      => ! empty( $r['ok'] ),
+		'message' => ! empty( $r['ok'] ) ? 'Prices saved and sent to Stripe (' . $r['mode'] . ' mode).' : 'Prices saved on the Hub, but Stripe didn&rsquo;t take them. Try saving again in a minute.',
+		'errors'  => array(),
+		'done'    => isset( $r['done'] ) ? $r['done'] : array(),
+	), $mode );
+}
+
 /** Plans and one-off items with their prices. */
 function hub_billing_catalogue( $mode = HUB_WEB ) {
 	$plans = $items = array();
-	foreach ( HUB_BILLING_PLANS as $key => $p ) {
+	foreach ( hub_billing_plans() as $key => $p ) {
 		$plans[] = array(
 			'key'           => $key,
 			'name'          => $p['name'],
@@ -82,7 +154,7 @@ function hub_billing_catalogue( $mode = HUB_WEB ) {
 			'annual_per_month' => hub_billing_rule_money( (int) round( $p['prices']['annual'] / 12 ) ),
 		);
 	}
-	foreach ( HUB_BILLING_ITEMS as $key => $i ) {
+	foreach ( hub_billing_items() as $key => $i ) {
 		$items[] = array( 'key' => $key, 'name' => $i['name'], 'price' => hub_billing_rule_money( $i['amount'] ), 'what' => html_entity_decode( $i['what'], ENT_QUOTES, 'UTF-8' ) );
 	}
 	return hub_respond( array( 'plans' => $plans, 'items' => $items, 'vat' => 'Prices include VAT' ), $mode );
@@ -299,12 +371,12 @@ function hub_billing_setup( $mode = HUB_WEB ) {
 		return hub_respond( array( 'ok' => false, 'mode' => null, 'done' => array( 'Stripe keys are not set up (.env has placeholders).' ) ), $mode );
 	}
 	$rows = array();
-	foreach ( HUB_BILLING_PLANS as $key => $p ) {
+	foreach ( hub_billing_plans() as $key => $p ) {
 		foreach ( HUB_BILLING_INTERVALS as $interval => $per ) {
 			$rows[] = array( 'product' => $key, 'name' => $p['name'] . ' plan', 'description' => 'Harrow Online Hub ' . $p['name'] . ' plan', 'amount' => $p['prices'][ $interval ], 'interval' => $per, 'lookup_key' => hub_billing_rule_lookup_key( $key, $interval ) );
 		}
 	}
-	foreach ( HUB_BILLING_ITEMS as $key => $i ) {
+	foreach ( hub_billing_items() as $key => $i ) {
 		$rows[] = array( 'product' => $key, 'name' => $i['name'], 'description' => html_entity_decode( $i['what'], ENT_QUOTES, 'UTF-8' ), 'amount' => $i['amount'], 'interval' => null, 'lookup_key' => hub_billing_rule_lookup_key( $key ) );
 	}
 	$portal = array();
@@ -323,6 +395,15 @@ function hub_billing_setup( $mode = HUB_WEB ) {
 }
 
 /* ------------------------------------------------------------------ internal */
+
+/** [ plans, items ] with the prices in force, worked out once per request (again after staff save). */
+function _hub_billing_prices( $refresh = false ) {
+	static $prices = null;
+	if ( null === $prices || $refresh ) {
+		$prices = hub_billing_rule_apply_prices( HUB_BILLING_PLANS, HUB_BILLING_ITEMS, hub_billing_db_saved_prices() );
+	}
+	return $prices;
+}
 
 /** Email the account holder about their plan (see hub_billing_shape_email). Quietly skipped with no user. */
 function _hub_billing_email( $kind, $user_id, $business_id, $plan_key, $amount ) {

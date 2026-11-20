@@ -52,7 +52,7 @@ function hub_submission_admin_box( $post ) {
 	$i = hub_submission_info( $post->ID );
 	echo '<p><strong>' . esc_html( $i['by'] ) . '</strong><br>' . esc_html( $i['email'] ) . '</p>';
 	if ( $i['needs_pay'] ) {
-		echo '<p>' . ( $i['paid'] ? '&check; <strong>£15 event listing paid</strong>' : '<strong style="color:#b32d2e">£15 event listing not paid yet</strong> (Basic plan)' ) . '</p>';
+		echo '<p>' . ( $i['paid'] ? '&check; <strong>Event listing fee paid</strong>' : '<strong style="color:#b32d2e">Event listing fee not paid yet</strong> (Basic plan)' ) . '</p>';
 	}
 	if ( 'pending' === $post->post_status ) {
 		echo '<p class="description">Check it, then <strong>Publish</strong> to put it live, or decline it below. They&rsquo;re emailed either way, unless they turned those emails off.</p>';

@@ -19,6 +19,8 @@
 	color: #50575e;
 	font-weight: 600;
 }
+.hub-settings__tab { text-decoration: none; }
+.hub-settings__tab:hover { color: #141414; }
 .hub-settings__tab.is-active { border-color: #dcdcde; border-bottom-color: #f0f0f1; background: #f0f0f1; color: #141414; }
 .hub-settings__tab .dashicons { color: #DF2028; }
 
@@ -118,4 +120,32 @@
 @media (max-width: 782px) {
 	.hub-settings__card { padding: 14px 14px 18px; }
 	.hub-settings__bar { margin: 4px -10px 0; padding: 10px; }
+}
+
+/* ------------------------------------------------------------------ Hub settings > Prices (inc/admin/prices-page.php) */
+.hub-prices .hub-settings__layout,
+.hub-prices__form { display: grid; gap: 16px; max-width: 900px; }
+.hub-prices__table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+.hub-prices__table th,
+.hub-prices__table td { padding: 10px 12px 10px 0; border-top: 1px solid #f0f0f1; text-align: left; vertical-align: middle; }
+.hub-prices__table thead th { border-top: 0; color: #646970; font-size: 11px; font-weight: 600; letter-spacing: .05em; text-transform: uppercase; }
+.hub-prices__table tbody th { width: 40%; font-weight: 600; }
+.hub-prices__table .hub-cell-sub { display: block; margin-top: 3px; color: #646970; font-weight: 400; font-size: 12px; }
+.hub-price { display: inline-flex; align-items: center; border: 1px solid #8c8f94; border-radius: 6px; background: #fff; overflow: hidden; }
+.hub-price:focus-within { border-color: #DF2028; box-shadow: 0 0 0 1px #DF2028; }
+.hub-price__pound { padding: 0 2px 0 10px; color: #50575e; font-weight: 600; }
+.wp-core-ui .hub-price__input,
+.hub-price__input { width: 96px; min-height: 34px; border: 0 !important; box-shadow: none !important; padding: 4px 10px 4px 2px; font-size: 14px; background: transparent; }
+.hub-price__input.is-bad { background: #fcf0f1; }
+.hub-price__per { margin-left: 8px; color: #646970; font-size: 12px; }
+.hub-prices__hint { color: #00663f; font-size: 12px; }
+.hub-prices__note { display: flex; gap: 8px; margin: 0; color: #50575e; }
+.hub-prices__note .dashicons { color: #8c8f94; }
+.hub-prices__done { margin: 4px 0 8px 18px; list-style: disc; }
+.hub-prices .hub-settings__bar { margin: 0; }
+@media (max-width: 782px) {
+	.hub-prices__table tbody th { width: auto; }
+	.hub-prices__table th, .hub-prices__table td { display: block; border-top: 0; padding: 6px 0; }
+	.hub-prices__table tr { display: block; border-top: 1px solid #f0f0f1; padding: 6px 0; }
+	.hub-prices__table thead { display: none; }
 }
