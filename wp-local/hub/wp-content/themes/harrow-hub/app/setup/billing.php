@@ -35,6 +35,14 @@ add_action( 'template_redirect', function () {
 	exit;
 }, 4 );
 
+/** Launch: no newsletter adverts on the Hub (rules.php); the page and every link to it go to Harrow Online's own. */
+add_action( 'template_redirect', function () {
+	if ( ! HUB_BILLING_NEWSLETTER_ADVERTS && 'advertise/newsletter' === hub_account_request_path() ) {
+		wp_redirect( HUB_BILLING_ADVERTISE_URL, 302 ); // phpcs:ignore WordPress.Security.SafeRedirect -- a fixed address on Harrow Online's own site
+		exit;
+	}
+}, 3 );
+
 /** Private log of payments and invoices (wp-admin > Payments). Written by the billing webhook only. */
 add_action( 'init', function () {
 	register_post_type( 'hub_payment', array(

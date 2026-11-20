@@ -21,6 +21,24 @@ const HUB_BILLING_PLANS = array(
 	'partner'  => array( 'plan' => 'partner', 'name' => 'Local Partner', 'prices' => array( 'monthly' => 7900, 'annual' => 79000 ) ),
 );
 
+/**
+ * Launch switches (launch 26-27 Nov 2026, full launch 1 Dec 2026). Turn back on by setting them to true, then run
+ * the Stripe setup once (php wp-local/hub/stripe-setup-local.php) so the customer portal follows.
+ *   HUB_BILLING_PLAN_CHANGES       false: a business can buy its first plan online, but not switch plan or billing
+ *                                  period afterwards (the portal still updates the card, shows invoices and cancels);
+ *                                  staff change plans on request.
+ *   HUB_BILLING_NEWSLETTER_ADVERTS false: no newsletter adverts on the Hub; /advertise/newsletter/ goes to
+ *                                  HUB_BILLING_ADVERTISE_URL, and adverts can't be bought online.
+ */
+const HUB_BILLING_PLAN_CHANGES       = false;
+const HUB_BILLING_NEWSLETTER_ADVERTS = false;
+const HUB_BILLING_ADVERTISE_URL      = 'https://harrowonline.org/advertise/';
+
+/** True for the one-off items that are newsletter adverts (sponsor_*). */
+function hub_billing_rule_is_newsletter_advert( $item ) {
+	return 0 === strpos( (string) $item, 'sponsor_' );
+}
+
 /** One-off purchases: key => { name, amount, what (shown at checkout) } */
 // Newsletter adverts keep their sponsor_* keys: they're the Stripe price lookup keys (hub_sponsor_daily_day_once...).
 const HUB_BILLING_ITEMS = array(
@@ -67,6 +85,30 @@ function hub_billing_rule_plan_for_status( $plan_key, $status ) {
 		return HUB_BILLING_PLANS[ $plan_key ]['plan'];
 	}
 	return 'basic';
+}
+
+/**
+ * What an invoice was for, from Stripe's billing reason and line descriptions:
+ *   "1 × Featured plan (at £29.00 / month)"            -> "Featured plan"
+ *   plan change ("Remaining time on Local Partner plan after 20 Nov 2026", ...) -> "Plan change: Local Partner plan"
+ */
+function hub_billing_rule_invoice_for( $reason, array $lines ) {
+	$texts = array_map( function ( $l ) { return (string) $l[0]; }, $lines );
+	if ( 'subscription_update' === $reason ) {
+		foreach ( array_reverse( $texts ) as $t ) {
+			if ( preg_match( '/^Remaining time on (.+?) after /', $t, $m ) ) {
+				return 'Plan change: ' . $m[1];
+			}
+		}
+		return 'Plan change';
+	}
+	$t = $texts ? $texts[0] : '';
+	$t = preg_replace( '/^\d+\s*(?:×|x)\s*/u', '', $t );   // "1 × "
+	$t = preg_replace( '/\s*\(at [^)]*\)$/', '', $t );       // " (at £29.00 / month)"
+	if ( count( $texts ) > 1 ) {
+		$t .= ' and ' . ( count( $texts ) - 1 ) . ' more';
+	}
+	return '' !== trim( $t ) ? trim( $t ) : 'Harrow Online Hub';
 }
 
 /** "£29", "£290", "£7.99" */
