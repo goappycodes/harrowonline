@@ -37,4 +37,6 @@ require_once get_template_directory() . '/inc/admin/newsletter-page.php';
 require_once get_template_directory() . '/inc/admin/home-box.php';       // Pages > Home: the homepage's text, links and sections
 require_once get_template_directory() . '/inc/admin/page-text-box.php';  // Pages > What's On (and others): the page's text and panels
 require_once get_template_directory() . '/inc/admin/list-screens.php';   // wp-admin lists: Businesses, Offers, Events, Classes, Pages, Payments, Claims, Users, Categories, Areas
+require_once get_template_directory() . '/inc/admin/glance-box.php';     // wp-admin business screen: At a glance (plan, status, owner, links)
+require_once get_template_directory() . '/inc/admin/tidy-up.php';        // wp-admin: possible duplicate businesses, Unpublish for ones that are over, update notices for admins only
 require_once get_template_directory() . '/inc/admin/attention.php';      // wp-admin: Needs attention on the Dashboard, waiting counts on the menus

@@ -3,6 +3,7 @@
  * Submissions: who sent what. The posts themselves are saved by the offers and events modules; this keeps, on each:
  *   _hub_added_by   the account that sent it
  *   _hub_needs_pay  1 when it's a Basic business's £15 event, _hub_paid 1 once paid (billing webhook)
+ *   _hub_decline_note  what staff wrote when they declined it (sent in the email)
  */
 defined( 'ABSPATH' ) || exit;
 
@@ -19,6 +20,18 @@ function hub_submissions_db_info( $post_id ) {
 		'needs_pay' => (bool) get_post_meta( (int) $post_id, '_hub_needs_pay', true ),
 		'paid'      => (bool) get_post_meta( (int) $post_id, '_hub_paid', true ),
 	) : null;
+}
+
+function hub_submissions_db_decline_note( $post_id ) {
+	return (string) get_post_meta( (int) $post_id, '_hub_decline_note', true );
+}
+
+function hub_submissions_db_set_decline_note( $post_id, $note ) {
+	update_post_meta( (int) $post_id, '_hub_decline_note', (string) $note );
+}
+
+function hub_submissions_db_trash( $post_id ) {
+	return (bool) wp_trash_post( (int) $post_id );
 }
 
 function hub_submissions_db_set_paid( $post_id ) {

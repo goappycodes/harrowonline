@@ -360,8 +360,21 @@ function hub_business_added_declined( $post_id ) {
 	$i = hub_businesses_db_added_info( $post_id );
 	$u = $i ? get_userdata( $i['user'] ) : null;
 	if ( $u ) {
-		_hub_businesses_added_mail( 'declined', $u->user_email, $u, get_the_title( $post_id ), '' );
+		_hub_businesses_added_mail( 'declined', $u->user_email, $u, get_the_title( $post_id ), '', '', hub_businesses_db_decline_note( $post_id ) );
 	}
+}
+
+/** Staff decline a business added from the website, with a note for the person (wp-admin). Returns { ok, message }. */
+function hub_business_added_decline( $post_id, $note, $mode = HUB_WEB ) {
+	if ( ! current_user_can( 'delete_post', (int) $post_id ) ) {
+		return hub_respond_error( 'forbidden', 'You can&rsquo;t decline this.', $mode, 403 );
+	}
+	if ( ! hub_businesses_db_added_info( $post_id ) || 'pending' !== get_post_status( $post_id ) ) {
+		return hub_respond( array( 'ok' => false, 'message' => 'Only a business waiting for review can be declined.' ), $mode );
+	}
+	hub_businesses_db_set_decline_note( $post_id, sanitize_textarea_field( (string) $note ) );
+	$ok = hub_businesses_db_trash( $post_id );   // -> hub_business_added_declined() at the end of the request
+	return hub_respond( array( 'ok' => $ok, 'message' => $ok ? 'Declined and moved to the Trash. They&rsquo;ll get an email with your note.' : 'Couldn&rsquo;t decline it.' ), $mode );
 }
 
 /* ------------------------------------------------------------------ internal */
@@ -468,13 +481,14 @@ function hub_business_set_plan( $id, $plan, $mode = HUB_WEB ) {
 	return hub_respond( _hub_business_build( hub_businesses_db_get( $post->ID ) ), $mode );
 }
 
-function _hub_businesses_added_mail( $kind, $to, WP_User $u, $business, $link, $as_label = '' ) {
+function _hub_businesses_added_mail( $kind, $to, WP_User $u, $business, $link, $as_label = '', $note = '' ) {
 	$mail = hub_businesses_shape_added_email( $kind, array(
 		'first_name'    => (string) $u->first_name,
 		'business'      => html_entity_decode( $business, ENT_QUOTES, 'UTF-8' ),
 		'link'          => $link,
 		'account_email' => $u->user_email,
 		'as_label'      => $as_label,
+		'note'          => $note,
 	) );
 	if ( ! hub_businesses_db_send_email( $to, $mail['subject'], $mail['body'] ) ) {
 		hub_debug_log( 'add business: could not send the ' . $kind . ' email' );

@@ -45,6 +45,7 @@ add_action( 'init', function () {
 		'labels'            => hub_labels( 'Category', 'Categories' ),
 		'public'            => true,
 		'hierarchical'      => false,
+		'meta_box_cb'       => 'post_categories_meta_box',   // a tick list, so a typo can't make a new category
 		'show_admin_column' => true,
 		'show_in_rest'      => false,
 		'rewrite'           => array( 'slug' => 'category', 'with_front' => false ),
@@ -53,6 +54,7 @@ add_action( 'init', function () {
 		'labels'            => hub_labels( 'Area', 'Areas' ),
 		'public'            => true,
 		'hierarchical'      => false,
+		'meta_box_cb'       => 'post_categories_meta_box',   // a tick list, so a typo can't make a new area
 		'show_admin_column' => true,
 		'show_in_rest'      => false,
 		'rewrite'           => array( 'slug' => 'area', 'with_front' => false ),

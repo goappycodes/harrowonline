@@ -48,6 +48,7 @@ function hub_business_added_box( $post ) {
 		echo '<p>Facilities: ' . esc_html( implode( ', ', $i['facility_labels'] ) ) . '</p>';
 	}
 	if ( 'pending' === $post->post_status ) {
-		echo '<p class="description">Check it, then <strong>Publish</strong> to put it live, or <strong>Move to Trash</strong> to decline. They&rsquo;re emailed either way.</p>';
+		echo '<p class="description">Check it, then <strong>Publish</strong> to put it live, or decline it below. They&rsquo;re emailed either way.</p>';
+		hub_review_decline_fields( $post );   // app/setup/submissions.php
 	}
 }

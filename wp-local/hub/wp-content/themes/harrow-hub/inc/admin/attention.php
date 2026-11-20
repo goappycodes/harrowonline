@@ -4,7 +4,8 @@
  * Businesses, Offers, Events and Classes menus (Claims has its own, in app/setup/claims.php).
  *
  *   Claims waiting for a check · businesses, offers, events and classes sent in from the website and in review ·
- *   events whose £15 isn't paid · failed card payments on plans
+ *   events whose £15 isn't paid · live offers and events that are over · possible duplicate businesses ·
+ *   failed card payments on plans
  */
 defined( 'ABSPATH' ) || exit;
 
@@ -18,7 +19,7 @@ const HUB_ADMIN_REVIEW_TYPES = array(
 
 /**
  * Everything waiting, for the box and the menus (once per request):
- *   [ { key, label, count, url, icon, tone, oldest (timestamp or 0) } ]
+ *   [ { key, label, count, url, icon, tone, oldest (timestamp or 0), hint (optional second line) } ]
  */
 function hub_admin_attention() {
 	static $items = null;
@@ -80,6 +81,35 @@ function hub_admin_attention() {
 		'fields'      => 'ids',
 		'meta_query'  => array( array( 'key' => '_hub_subscription', 'value' => '"past_due"', 'compare' => 'LIKE' ) ),
 	) );
+	// Still live but over: offers past their end date, events whose day has gone
+	$today = hub_today()->format( 'Y-m-d' );
+	foreach ( array( 'hub_offer' => array( 'Live offers that have ended', 'dashicons-tag' ), 'hub_event' => array( 'Live events in the past', 'dashicons-calendar-alt' ) ) as $type => $t ) {
+		$ids     = get_posts( array( 'post_type' => $type, 'post_status' => 'publish', 'numberposts' => -1, 'fields' => 'ids', 'meta_query' => array( hub_admin_ended_query( $type, $today ) ) ) );
+		$items[] = array(
+			'key'    => 'ended_' . $type,
+			'label'  => $t[0],
+			'count'  => count( $ids ),
+			'url'    => admin_url( 'edit.php?post_type=' . $type . '&post_status=publish&hub_when=past' ),
+			'icon'   => $t[1],
+			'tone'   => 'grey',
+			'oldest' => 0,
+			'hint'   => 'Tick them, then Bulk actions > Unpublish',
+		);
+	}
+
+	// Businesses that may be listed twice (inc/admin/tidy-up.php)
+	$dupes   = hub_admin_duplicate_groups();
+	$items[] = array(
+		'key'    => 'dupes',
+		'label'  => 'Possible duplicate businesses',
+		'count'  => count( $dupes ),
+		'url'    => admin_url( 'edit.php?post_type=hub_business&hub_dupes=1' ),
+		'icon'   => 'dashicons-admin-page',
+		'tone'   => 'grey',
+		'oldest' => 0,
+		'hint'   => 'Same name or same phone number',
+	);
+
 	$items[] = array(
 		'key'    => 'failed',
 		'label'  => 'Plans with a failed card payment',
@@ -90,6 +120,18 @@ function hub_admin_attention() {
 		'oldest' => 0,
 	);
 	return $items;
+}
+
+/** Meta query: offers whose end date has passed (not those with no end date), or events whose day has passed. */
+function hub_admin_ended_query( $type, $today ) {
+	if ( 'hub_offer' === $type ) {
+		return array(
+			'relation' => 'AND',
+			array( 'key' => '_hub_end', 'value' => '', 'compare' => '!=' ),
+			array( 'key' => '_hub_end', 'value' => $today, 'compare' => '<', 'type' => 'CHAR' ),
+		);
+	}
+	return array( 'key' => '_hub_start', 'value' => $today, 'compare' => '<', 'type' => 'CHAR' );
 }
 
 /** Meta query: events that need the £15 and haven't paid it. */
@@ -132,7 +174,7 @@ function hub_admin_attention_box() {
 		if ( ! $i['count'] ) {
 			continue;
 		}
-		$age = $i['oldest'] ? 'Oldest sent ' . human_time_diff( $i['oldest'], current_time( 'timestamp' ) ) . ' ago' : '';
+		$age = $i['oldest'] ? 'Oldest sent ' . human_time_diff( $i['oldest'], current_time( 'timestamp' ) ) . ' ago' : ( isset( $i['hint'] ) ? $i['hint'] : '' );
 		echo '<li><a href="' . esc_url( $i['url'] ) . '">'
 			. '<span class="hub-attn-icon hub-attn-icon--' . esc_attr( $i['tone'] ) . '"><span class="dashicons ' . esc_attr( $i['icon'] ) . '" aria-hidden="true"></span></span>'
 			. '<span class="hub-attn-text"><span class="hub-attn-label">' . esc_html( $i['label'] ) . '</span>'
