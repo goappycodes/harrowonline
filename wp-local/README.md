@@ -199,6 +199,26 @@ local only). In the Claude desktop app, start the **wp-local** preview instead.
   payments made on the dev server are lost on the next push. Do payment testing locally until staging has its
   own database.
 
+## Test site (SiteGround)
+
+https://hub.harrowonline.org/hub/ is the launch test site, on SiteGround (the same account as harrowonline.org: only
+`~/www/hub.harrowonline.org/` belongs to the Hub).
+
+- **Deploys:** every push to `main` that changes `wp-local/hub/` runs `.github/workflows/deploy-siteground.yml`,
+  which copies the **code only** over SSH (rsync). The site's own SQLite database, uploads, mail log, private claim
+  files, debug log and `.htaccess` are never overwritten or deleted, so accounts and test data made on the site
+  survive deploys. `LOCAL-ADMIN.txt` is never uploaded. Run it by hand from GitHub > Actions > "Deploy to SiteGround
+  test site" > Run workflow.
+- **Secrets** (GitHub > Settings > Secrets and variables > Actions): `SITEGROUND_SSH_KEY` (its public half is the
+  "github-actions-hub-deploy" key in Site Tools > Devs > SSH Keys Manager), `SITEGROUND_SSH_HOST`,
+  `SITEGROUND_SSH_USER`, `SITEGROUND_SSH_PORT`, `SITEGROUND_KNOWN_HOSTS`.
+- **Settings:** `~/www/hub.harrowonline.org/.env` (outside `public_html`), read by `wp-config.php` like the Forge
+  site's. Access rules: `public_html/hub/.htaccess` (the nginx rules of `forge/nginx-hub.conf`, for Apache).
+- **Database:** the deploy never changes it. To put the committed database there (losing the site's own accounts
+  and test data), copy `wp-local/hub/wp-content/database/hub.sqlite` over SSH on purpose.
+- **Cache:** SiteGround's Dynamic Cache only caches sites with its Speed Optimizer plugin, which the Hub doesn't
+  have. If an old page ever shows, flush it in Site Tools > Speed > Caching > Dynamic Cache.
+
 ## Dev server (Laravel Forge)
 
 The same WordPress runs on Laravel Forge (server `appy-dev`, site `harrowwp.on-forge.com`):
