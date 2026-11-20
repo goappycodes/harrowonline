@@ -41,6 +41,16 @@ function hub_icon( $name, $cls = 'ho-icon' ) {
 	return '<svg class="' . $cls . '"><use href="#i-' . $name . '"/></svg>';
 }
 
+/** Every icon in the theme's sprite (assets/img/icons.svg), by name: "food", "medical"… */
+function hub_icon_names() {
+	static $names = null;
+	if ( null === $names ) {
+		$file  = get_template_directory() . '/assets/img/icons.svg';
+		$names = is_readable( $file ) && preg_match_all( '/id="i-([a-z0-9-]+)"/', (string) file_get_contents( $file ), $m ) ? array_values( array_unique( $m[1] ) ) : array();
+	}
+	return $names;
+}
+
 function hub_initials( $name ) {
 	$clean = preg_replace( '/[^\p{L}\p{N} ]/u', ' ', $name );
 	$words = preg_split( '/\s+/', trim( $clean ), -1, PREG_SPLIT_NO_EMPTY );

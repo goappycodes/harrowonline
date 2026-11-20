@@ -39,6 +39,7 @@ local only). In the Claude desktop app, start the **wp-local** preview instead.
 | wp-admin boxes (native meta boxes, no plugin): Business, Offer, Event and Class details, an offer's or class's Business, Hub settings > Newsletter | `harrow-hub/inc/admin/` (script and styles in `harrow-hub/admin/`) |
 | Homepage text, links, tiles and section switches (the Homepage box on the Home page, Pages > Home; empty fields use today's wording) | `harrow-hub/inc/admin/home-box.php`, `harrow-hub/app/modules/home/` |
 | Page text: What's On, Classes and activities, Local Offers and Pricing, their text, links and panels (the Page text box on each of those Pages; Pricing's £ amounts come from `app/modules/billing/rules.php`; empty fields use today's wording). To add a page, see `app/modules/pages/rules.php` | `harrow-hub/inc/admin/page-text-box.php`, `harrow-hub/app/modules/pages/` |
+| A business category's Icon (homepage Popular categories cards) and Intro (under the category page's heading): Businesses > Categories | `harrow-hub/inc/admin/category-fields.php`, `app/modules/categories/` |
 | How pages read those fields | `harrow-hub/app/modules/*/data.php` |
 | Fill the business, offer, event and class fields from the imported data (`php wp-local/hub/fields-migrate-local.php`; `import-local.php` runs it too) | `harrow-hub/inc/fields-migrate.php` |
 | Newsletter band (option `hub_newsletter`) | `harrow-hub/inc/newsletter.php` |

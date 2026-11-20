@@ -1,6 +1,6 @@
 <?php
 /**
- * Categories (taxonomy hub_category): reading from WordPress.
+ * Categories (taxonomy hub_category): reading from and writing to WordPress.
  */
 defined( 'ABSPATH' ) || exit;
 
@@ -21,4 +21,18 @@ function hub_categories_db_meta( WP_Term $term ) {
 		'intro' => (string) get_term_meta( $term->term_id, 'hub_intro', true ),
 		'order' => (int) get_term_meta( $term->term_id, 'hub_order', true ),
 	);
+}
+
+/** Save a category's icon and intro (term meta hub_icon, hub_intro). Empty values are removed. */
+function hub_categories_db_save_meta( $term_id, array $values ) {
+	foreach ( array( 'icon' => 'hub_icon', 'intro' => 'hub_intro' ) as $k => $meta_key ) {
+		if ( ! array_key_exists( $k, $values ) ) {
+			continue;
+		}
+		if ( '' === (string) $values[ $k ] ) {
+			delete_term_meta( $term_id, $meta_key );
+		} else {
+			update_term_meta( $term_id, $meta_key, (string) $values[ $k ] );
+		}
+	}
 }
