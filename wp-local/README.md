@@ -243,6 +243,10 @@ https://hub.harrowonline.org/hub/ is the launch test site, on SiteGround (the sa
   anything that should stay (users, settings, content) into the committed database. Kept on the server: its
   `.htaccess`, private claim files, the mail log and debug log. `LOCAL-ADMIN.txt` is never uploaded. Run it by hand
   from GitHub > Actions > "Deploy to SiteGround test site" > Run workflow.
+- **Stripe on deploy:** the deploy then runs the Stripe setup on the server, so that server's Stripe account (test or
+  live, from its own keys) gets the prices in the committed database and the Hub's portal settings. So change prices
+  locally (Hub settings > Prices), commit the database and merge; never on the test site itself, where the next
+  deploy would put the committed prices back.
 - **Secrets** (GitHub > Settings > Secrets and variables > Actions): `SITEGROUND_SSH_KEY` (its public half is the
   "github-actions-hub-deploy" key in Site Tools > Devs > SSH Keys Manager), `SITEGROUND_SSH_HOST`,
   `SITEGROUND_SSH_USER`, `SITEGROUND_SSH_PORT`, `SITEGROUND_KNOWN_HOSTS`.
