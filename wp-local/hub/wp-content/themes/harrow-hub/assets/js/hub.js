@@ -4,7 +4,8 @@
 (() => {
   "use strict";
   const BASE = document.documentElement.dataset.base || "";
-  const THEME = document.documentElement.dataset.theme || ""; // set by build.py (e.g. "/hub")
+  const THEME = document.documentElement.dataset.theme || "";
+  const API = document.documentElement.dataset.api || ""; // set by build.py (e.g. "/hub")
   const $ = (s, c = document) => c.querySelector(s);
   const $$ = (s, c = document) => Array.from(c.querySelectorAll(s));
   const ICON = (id, cls = "ho-icon") => `<svg class="${cls}"><use href="#i-${id}"/></svg>`;
@@ -229,7 +230,7 @@
         if (c) c.href = `${BASE}/claim/?listing=${hit.k}`;
       }
     };
-    fetch(THEME + "/assets/data/hub-index.json").then((r) => r.json()).then((d) => { IDX = d; check(); }).catch(() => {});
+    fetch(API + "search/index").then((r) => r.json()).then((d) => { IDX = d; check(); }).catch(() => {});
     ["#a-name", "#a-pc"].forEach((s) => { const el = $(s); if (el) el.addEventListener("change", check); });
     // Preview: the browser has already checked the required fields; show the thank-you in place
     addForm.addEventListener("submit", (e) => {
@@ -854,7 +855,7 @@
   /* 10b. Pages opened with ?listing={slug} (claim, report): fill [data-listing-field="n|ad|pc|area|cat|link|claim"] */
   const listingSlug = new URLSearchParams(location.search).get("listing");
   if (listingSlug && $("[data-listing-field]")) {
-    fetch(THEME + "/assets/data/hub-index.json").then((r) => r.json()).then((d) => {
+    fetch(API + "search/index").then((r) => r.json()).then((d) => {
       const x = d.items.find((i) => i.k === listingSlug);
       if (!x) return;
       const vals = { n: x.n, ad: (x.ad || "").trim(), pc: x.pc, area: d.areas[x.a], cat: (d.cats[x.c] || {}).n, link: BASE + "/business/" + x.k + "/" };
@@ -929,7 +930,7 @@
         const top = tier === "premium" || tier === "partner";
         // biz-row--media: a photo or logo, shown on top of the card on phones
         return `<article class="biz-row${top ? " biz-row--featured" : ""}${x.im ? " biz-row--media" : ""}">
-        <div class="ph${x.lg ? " ph--logo" : x.im ? " ph--photo" : ""}">${x.im ? `<img src="${THEME}${esc(x.im)}" alt="" width="1200" height="800" loading="lazy" decoding="async">` : ICON(x.i || "store")}</div>
+        <div class="ph${x.lg ? " ph--logo" : x.im ? " ph--photo" : ""}">${x.im ? `<img src="${esc(x.im)}" alt="" width="1200" height="800" loading="lazy" decoding="async">` : ICON(x.i || "store")}</div>
         <div class="biz-row__main">
           <span class="biz-card__cat">${esc(cat.n || "")}${x.s ? ` · <span class="muted">${esc(x.s)}</span>` : ""}</span>
           <h3 class="biz-row__title"><a href="${BASE}/business/${x.k}/">${nameTick}</a></h3>
@@ -1017,7 +1018,7 @@
     const FEAT = `<span class="badge badge--featured">${ICON("star")}Featured</span>`;
     const SAMPLE = `<span class="badge badge--sample" title="Made-up content for the preview. Removed before launch.">${ICON("alert")}Sample</span>`;
     const media = (x, cls) => x.im ?
-      `<div class="${cls}${x.lg ? " ph--logo" : " ph--photo"}"><img src="${THEME}${esc(x.im)}" alt="" width="1200" height="800" loading="lazy" decoding="async"></div>` :
+      `<div class="${cls}${x.lg ? " ph--logo" : " ph--photo"}"><img src="${esc(x.im)}" alt="" width="1200" height="800" loading="lazy" decoding="async"></div>` :
       `<div class="${cls}">${ICON(x.i || "calendar")}</div>`;
     const eventRow = (x) => {
       const d = new Date(x.d + "T12:00:00");
@@ -1231,7 +1232,7 @@
       else resultsEl.scrollIntoView({ block: "start" });
     });
 
-    fetch(THEME + "/assets/data/hub-index.json").then((r) => r.json()).then((d) => { INDEX = d; if (ALL) prep(); render(); })
+    fetch(API + "search/index").then((r) => r.json()).then((d) => { INDEX = d; if (ALL) prep(); render(); })
       .catch(() => { /* keep the server-rendered first page */ });
   }
 })();

@@ -1,8 +1,10 @@
 <?php
 /**
  * Submissions: offers, events and weekly classes added from the account pages. Each is saved as a draft or as
- * "Pending Review"; staff publish it in wp-admin. Other modules used: account (who is signed in, their plan),
- * offers and events (saving the posts), areas (area names), billing (a Basic business's £15 event).
+ * "Pending Review"; staff publish it in wp-admin, or decline it (to the Trash, with a note), and a declined one can
+ * be changed and sent again. The account pages list them (hub_submissions_list()). Other modules used: account (who
+ * is signed in, their plan), offers and events (saving and reading the posts), areas (area names), billing (a Basic
+ * business's £15 event, the "Feature this" price).
  *
  * Each takes $mode last: HUB_WEB (arrays, the default) or HUB_API (WP_REST_Response). See app/bootstrap.php.
  */
@@ -11,8 +13,10 @@ defined( 'ABSPATH' ) || exit;
 /**
  * What an add/edit page needs:
  *   { kind, state, message, access ('yes' | 'pay' | 'upgrade' | 'no'), account, business (summary) | null, by (business
- *     or organiser name), venue_home ("Name, street, postcode") | '', item { id, status, status_label, url } | null, form }
+ *     or organiser name), venue_home ("Name, street, postcode") | '',
+ *     item { id, status, status_label, url, needs_pay, paid, note (what staff asked to change, or '') } | null, form }
  * state: ready | unconfirmed | not_allowed | upgrade | locked | not_found
+ * A declined one (in the Trash) opens like a draft, with staff's note, to be changed and sent again.
  *
  * @param string $kind   'offer' | 'event' | 'class'
  * @param array  $params { id: one of their own to edit }
@@ -39,10 +43,12 @@ function hub_submission_page( $kind, array $params, $mode = HUB_WEB ) {
 	if ( $id ) {
 		$item = _hub_submission_item( $kind, $id );
 		$info = $item ? hub_submissions_db_info( $id ) : null;
-		if ( ! $item || ! $info || (int) $info['user'] !== (int) $account['id'] || 'trash' === $item['status'] ) {
+		if ( ! $item || ! $info || (int) $info['user'] !== (int) $account['id'] || ! isset( HUB_SUBMISSIONS_STATUS_LABELS[ $item['status'] ] )
+			|| ( 'trash' === $item['status'] && 'declined' !== hub_submissions_rule_state( 'trash', false, hub_submissions_db_times( $id )['trashed_from'] ) ) ) {
 			return hub_respond( array( 'state' => 'not_found', 'message' => 'We couldn&rsquo;t find that ' . $kind . ' in your account.' ) + $out, $mode );
 		}
-		$out['item'] = array( 'id' => $item['id'], 'status' => $item['status'], 'status_label' => HUB_SUBMISSIONS_STATUS_LABELS[ $item['status'] ], 'url' => $item['url'], 'needs_pay' => $info['needs_pay'], 'paid' => $info['paid'] );
+		$note        = in_array( $item['status'], array( 'trash', 'draft' ), true ) ? hub_submissions_db_decline_note( $id ) : '';
+		$out['item'] = array( 'id' => $item['id'], 'status' => $item['status'], 'status_label' => HUB_SUBMISSIONS_STATUS_LABELS[ $item['status'] ], 'url' => $item['url'], 'needs_pay' => $info['needs_pay'], 'paid' => $info['paid'], 'note' => $note );
 		$out['form'] = $item['form'] ? $item['form'] : array();
 		if ( 'publish' === $item['status'] ) {
 			$out['state']   = 'locked';
@@ -110,6 +116,9 @@ function hub_submission_save( $kind, array $params, array $files, $mode = HUB_WE
 	$id       = $item ? (int) $item['id'] : 0;
 	$was      = $item ? $item['status'] : '';
 	$f['image'] = isset( $page['form']['image'] ) ? (string) $page['form']['image'] : '';   // keep the photo they sent before
+	if ( 'trash' === $was ) {
+		hub_submissions_db_untrash( $id );   // declined before: back from the Trash, then saved as a draft or sent again
+	}
 	$saved    = _hub_submission_store( $kind, $id, $status, $f, $page );
 	if ( is_wp_error( $saved ) ) {
 		hub_debug_log( 'submissions: ' . $kind . ' not saved: ' . $saved->get_error_message() );
@@ -126,6 +135,9 @@ function hub_submission_save( $kind, array $params, array $files, $mode = HUB_WE
 	}
 	$needs_pay = 'pay' === $page['access'];
 	hub_submissions_db_mark( $saved, $page['account']['id'], $needs_pay );
+	if ( 'pending' === $status ) {
+		hub_submissions_db_clear_decline_note( $saved );   // sent again: staff's old note is done with
+	}
 
 	$edit = add_query_arg( array( 'id' => $saved, 'saved' => $status ), hub_url( HUB_SUBMISSIONS_KINDS[ $kind ][2] . 'edit/' ) );
 	if ( 'pending' !== $status ) {
@@ -196,7 +208,128 @@ function hub_submission_decline( $post_id, $note, $mode = HUB_WEB ) {
 	return hub_respond( array( 'ok' => $ok, 'message' => $ok ? 'Declined and moved to the Trash. They&rsquo;ll get an email with your note.' : 'Couldn&rsquo;t decline it.' ), $mode );
 }
 
+/**
+ * The signed-in account's offers, events or classes (account/offers/, account/events/, account/classes/): every one it
+ * sent, in every status, and the live ones Harrow Online put on its business listing (shown, not editable here).
+ * What's waiting on the account comes first.
+ *
+ * @param string $kind   'offer' | 'event' | 'class'
+ * @param array  $params { status: live | pending | draft | declined | ended (a tab; every one when empty) }
+ * @return array|WP_REST_Response {
+ *     kind, state (as hub_submission_page(): ready | unconfirmed | upgrade | not_allowed), message (why it can't add one),
+ *     account_type ('business' | 'organiser' | 'admin'), business (its business's name, or ''),
+ *     filter ('' or a state), items: row[] (shape.php; the tab's), total (every tab),
+ *     tabs: [ { key ('' = All), label, count, url, current } ] (All, then each state it has),
+ *     needs_changes (how many are waiting for the account to change them), feature_price ("£15", the "Feature this" price)
+ * }
+ */
+function hub_submissions_list( $kind, array $params, $mode = HUB_WEB ) {
+	if ( ! isset( HUB_SUBMISSIONS_KINDS[ $kind ] ) ) {
+		return hub_respond_error( 'hub_submissions_kind', 'Unknown kind.', $mode );
+	}
+	$page   = hub_submission_page( $kind, array() );
+	$rows   = _hub_submissions_rows( $kind, $page['account'] );
+	$filter = hub_param_slug( $params, 'status' );
+	$filter = isset( HUB_SUBMISSIONS_STATES[ $filter ] ) ? $filter : '';
+	$base   = hub_url( HUB_SUBMISSIONS_KINDS[ $kind ][2] );
+	$counts = array_fill_keys( array_keys( HUB_SUBMISSIONS_STATES ), 0 );
+	foreach ( $rows as $r ) {
+		$counts[ $r['state'] ]++;
+	}
+	$tabs = array( array( 'key' => '', 'label' => 'All', 'count' => count( $rows ), 'url' => $base, 'current' => '' === $filter ) );
+	foreach ( HUB_SUBMISSIONS_STATES as $key => $s ) {
+		if ( $counts[ $key ] || $key === $filter ) {
+			$tabs[] = array( 'key' => $key, 'label' => $s[2], 'count' => $counts[ $key ], 'url' => add_query_arg( 'status', $key, $base ), 'current' => $key === $filter );
+		}
+	}
+	$biz = $page['business'];
+	return hub_respond( array(
+		'kind'          => $kind,
+		'state'         => $page['state'],
+		'message'       => $page['message'],
+		'account_type'  => $page['account']['type'],
+		'business'      => $biz ? html_entity_decode( $biz['name'], ENT_QUOTES, 'UTF-8' ) : '',
+		'filter'        => $filter,
+		'items'         => '' === $filter ? $rows : array_values( wp_list_filter( $rows, array( 'state' => $filter ) ) ),
+		'total'         => count( $rows ),
+		'tabs'          => $tabs,
+		'needs_changes' => count( wp_list_filter( $rows, array( 'needs_changes' => true ) ) ),
+		'feature_price' => hub_billing_rule_money( (int) hub_billing_items()['feature_7days']['amount'] ),   // billing module
+	), $mode );
+}
+
+/**
+ * How many of the signed-in account's offers, events and classes are waiting for it to change them (declined, or
+ * brought back as a draft and not sent yet): { offer, event, class }. For the account menu's red counts.
+ */
+function hub_submissions_needs_changes() {
+	static $out = null;
+	if ( null === $out ) {
+		$out     = array_fill_keys( array_keys( HUB_SUBMISSIONS_KINDS ), 0 );
+		$account = hub_account_current();   // account module
+		if ( $account['signed_in'] ) {
+			foreach ( HUB_SUBMISSIONS_KINDS as $kind => $k ) {
+				foreach ( hub_submissions_db_mine( $k[0], $account['id'], array( 'draft', 'trash' ) ) as $id ) {
+					$t     = hub_submissions_db_times( $id );
+					$state = hub_submissions_rule_state( $t['status'], false, $t['trashed_from'] );
+					if ( '' !== $state && hub_submissions_rule_needs_changes( $state, hub_submissions_db_decline_note( $id ) ) ) {
+						$out[ $kind ]++;
+					}
+				}
+			}
+		}
+	}
+	return $out;
+}
+
 /* ------------------------------------------------------------------ internal */
+
+/** Every row of an account's list (with "_sort" removed), in list order. */
+function _hub_submissions_rows( $kind, array $account ) {
+	if ( ! $account['signed_in'] ) {
+		return array();
+	}
+	$edit = hub_url( HUB_SUBMISSIONS_KINDS[ $kind ][2] . 'edit/' );
+	$rows = array();
+	$seen = array();
+	foreach ( hub_submissions_db_mine( HUB_SUBMISSIONS_KINDS[ $kind ][0], $account['id'] ) as $id ) {
+		$item = _hub_submission_item( $kind, $id );
+		if ( ! $item || ! $item['details'] ) {
+			continue;   // an offer whose business is gone
+		}
+		$t     = hub_submissions_db_times( $id );
+		$over  = 'offer' === $kind ? 'ended' === $item['details']['status'] : ( 'event' === $kind && $item['details']['past'] );
+		$state = hub_submissions_rule_state( $item['status'], $over, $t['trashed_from'] );
+		if ( '' === $state ) {
+			continue;
+		}
+		$note        = in_array( $state, array( 'declined', 'draft' ), true ) ? hub_submissions_db_decline_note( $id ) : '';
+		$rows[]      = hub_submissions_shape_row( $kind, $item['details'], $state, true, $note, $t, add_query_arg( 'id', $id, $edit ) );
+		$seen[ $id ] = true;
+	}
+	// What Harrow Online put on the account's business listing: its offers (live and ended), upcoming events, classes
+	$biz = $account['business'];
+	if ( $biz ) {
+		if ( 'offer' === $kind ) {
+			$o      = hub_offers_for_business( $biz['id'] );   // offers module
+			$listed = array_merge( $o['live'], $o['ended'] );
+		} else {
+			$e      = hub_events_for_business( $biz['id'], array( html_entity_decode( $biz['name'], ENT_QUOTES, 'UTF-8' ) ) );   // events module
+			$listed = 'event' === $kind ? $e['events'] : $e['classes'];
+		}
+		foreach ( $listed as $d ) {
+			if ( ! isset( $seen[ $d['id'] ] ) ) {
+				$over   = 'offer' === $kind && 'ended' === $d['status'];
+				$rows[] = hub_submissions_shape_row( $kind, $d, $over ? 'ended' : 'live', false, '', array( 'saved' => 0, 'declined' => 0 ), '' );
+			}
+		}
+	}
+	usort( $rows, 'hub_submissions_rule_compare' );
+	return array_map( function ( $r ) {
+		unset( $r['_sort'] );
+		return $r;
+	}, $rows );
+}
 function _hub_submission_kind_of( $post_id ) {
 	foreach ( HUB_SUBMISSIONS_KINDS as $kind => $k ) {
 		if ( $k[0] === hub_submissions_db_post_type( $post_id ) ) {
@@ -225,7 +358,8 @@ function _hub_submission_decided( $post_id, $mail, $pref ) {
 		return;
 	}
 	$post = get_post( $post_id );
-	$link = 'live' === $mail ? ( 'offer' === $kind ? hub_url( 'offers/' . $post->post_name . '/' ) : hub_url( 'events/' . $post->post_name . '/' ) ) : hub_url( HUB_SUBMISSIONS_KINDS[ $kind ][2] . 'edit/' );
+	// Live: its page. Declined: its own edit page, to change it and send it again
+	$link = 'live' === $mail ? ( 'offer' === $kind ? hub_url( 'offers/' . $post->post_name . '/' ) : hub_url( 'events/' . $post->post_name . '/' ) ) : add_query_arg( 'id', (int) $post_id, hub_url( HUB_SUBMISSIONS_KINDS[ $kind ][2] . 'edit/' ) );
 	_hub_submission_mail( $mail, $u->user_email, $u, $kind, html_entity_decode( $post->post_title, ENT_QUOTES, 'UTF-8' ), '', $link, 'declined' === $mail ? hub_submissions_db_decline_note( $post_id ) : '' );
 }
 

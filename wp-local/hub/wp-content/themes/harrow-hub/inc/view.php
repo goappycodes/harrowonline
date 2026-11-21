@@ -212,6 +212,16 @@ function hub_view_account_who() {
 		. '<div><strong>' . esc_html( $title ) . '</strong><span>' . esc_html( $sub ) . '</span></div>';
 }
 
+/**
+ * The account menu (parts/account/nav.php), on every account page.
+ *
+ * @param string $current The page it's on: overview | listing | offers | events | classes | newsletter | billing | settings.
+ * @param string $aria    aria-current: 'page' on the page itself, 'true' on a page under it (an add/edit page).
+ */
+function hub_view_account_nav( $current, $aria = 'page' ) {
+	get_template_part( 'parts/account/nav', null, array( 'current' => $current, 'aria' => $aria ) );
+}
+
 /** The dashboard greeting: "Good morning, Sam" and the business with a link to its page. */
 function hub_view_account_hello() {
 	$a    = hub_account_current();
@@ -535,6 +545,9 @@ function hub_view_submission_value( array $page, $name ) {
 		if ( in_array( $name, array( 'no_half_term', 'free_trial' ), true ) ) {
 			return ! empty( $f[ $name ] ) ? '1' : '';
 		}
+		if ( 'term_weeks' === $name && empty( $f['term_weeks'] ) ) {
+			return '';   // saved as 0 when not set: "0" would fail the hidden field's min="1" and block the form
+		}
 		$key = isset( $map[ $name ] ) ? $map[ $name ] : $name;
 		if ( isset( $f[ $key ] ) && is_scalar( $f[ $key ] ) ) {
 			return (string) $f[ $key ];
@@ -566,7 +579,14 @@ function hub_view_submission_notices( array $page, $result ) {
 		$box( 'ok', 'check', '<p class="mb-0"><strong>Sent for checking.</strong> We check every ' . esc_html( $kind ) . ' before it goes live, usually within 2 working days, and email you either way.' . $pay . '</p>' );
 	} elseif ( 'draft' === $saved ) {
 		$box( 'ok', 'check', '<p class="mb-0"><strong>Draft saved.</strong> Send it for approval when you&rsquo;re ready.</p>' );
-	} elseif ( $page['item'] ) {
+	}
+	// Declined (or brought back as a draft and not sent yet): what our team asked to change
+	if ( $page['item'] && ( 'trash' === $page['item']['status'] || '' !== $page['item']['note'] ) && 'pending' !== $saved ) {
+		$note = '' !== $page['item']['note']
+			? '<p><strong>What to change:</strong> ' . nl2br( esc_html( $page['item']['note'] ) ) . '</p>'
+			: '<p>Reply to our email, or email <a href="mailto:hub@harrowonline.org">hub@harrowonline.org</a>, if you&rsquo;re not sure what to change.</p>';
+		$box( 'warn', 'alert', '<p><strong>We couldn&rsquo;t approve this ' . esc_html( $kind ) . ' as it was.</strong></p>' . $note . '<p class="mb-0">Change it below, then send it for approval again.</p>' );
+	} elseif ( $page['item'] && '' === $saved ) {
 		$box( 'plain', 'info', '<p class="mb-0">Status: <strong>' . esc_html( $page['item']['status_label'] ) . '</strong>' . ( 'pending' === $page['item']['status'] ? '. You can still change it while we check it.' : '.' ) . '</p>' );
 	}
 	if ( 'pay' === $page['access'] && ! $page['item'] && ! $result ) {
@@ -591,7 +611,8 @@ function hub_view_submission_action( array $page ) {
 function hub_view_submission_head( array $page ) {
 	$kind   = $page['kind'];
 	$item   = $page['item'];
-	$status = $item ? ' &middot; <span class="status status--' . ( 'publish' === $item['status'] ? 'active' : 'pending' ) . '">' . esc_html( $item['status_label'] ) . '</span>' : '';
+	$pill   = array( 'publish' => 'active', 'trash' => 'rejected' );
+	$status = $item ? ' &middot; <span class="status status--' . ( isset( $pill[ $item['status'] ] ) ? $pill[ $item['status'] ] : 'pending' ) . '">' . esc_html( $item['status_label'] ) . '</span>' : '';
 	$view   = array( 'offer' => array( 'offers/', 'View Local Offers' ), 'event' => array( 'events/', 'View What&rsquo;s On' ), 'class' => array( 'classes/', 'View Classes' ) );
 	echo '<div class="dash-head"><div><h1>Your ' . esc_html( $kind ) . '</h1>'
 		. '<p>' . ( '' !== $page['by'] ? 'For ' . esc_html( $page['by'] ) . '. ' : '' ) . 'We check every ' . esc_html( $kind ) . ' before it goes live, usually within 2 working days.' . $status . '</p></div>'

@@ -8,13 +8,15 @@
  *   hub_business_find_by_name( $name )        the claimed business with this name (event organisers, class providers)
  *   hub_businesses_featured( $limit )         homepage "Featured local businesses"
  *   hub_businesses_newest( $limit )           homepage "Just joined"
+ *   hub_businesses_each( $fn )                every business, a batch at a time (the search index)
  *
  * Each takes $mode last: HUB_WEB (arrays, the default) or HUB_API (WP_REST_Response). See app/bootstrap.php.
  */
 defined( 'ABSPATH' ) || exit;
 
 /**
- * Businesses in directory order (Checked, Verified, then imported; then plan; then name).
+ * Businesses in directory order: Verified by the business, Checked by Harrow Online, then imported from public data;
+ * the plan within each (Featured and Local Partner first); then the imported order, new listings after it.
  *
  * @param array $params {
  *     cat     category slug
@@ -36,6 +38,7 @@ function hub_businesses_list( array $params = array(), $mode = HUB_WEB ) {
 		'exclude' => hub_param_int( $params, 'exclude', 0 ),
 		'limit'   => hub_param_int( $params, 'limit', HUB_BUSINESSES_PAGE_SIZE, 1, 100 ),
 		'offset'  => hub_param_int( $params, 'offset', 0 ),
+		'by_rank' => true,
 	) );
 
 	$indexable = 0;
@@ -51,6 +54,22 @@ function hub_businesses_list( array $params = array(), $mode = HUB_WEB ) {
 		'indexable_total' => $indexable,
 		'filters'         => $filters,
 	), $mode );
+}
+
+/**
+ * Every published business in the business shape, in directory order (as hub_businesses_list()), handed to $each a
+ * batch at a time, so the whole directory (thousands) never sits in memory at once. For the search index.
+ *
+ * @param callable $each Called with each batch: business[].
+ * @return int How many businesses there were.
+ */
+function hub_businesses_each( callable $each, $batch = 250 ) {
+	$ids = hub_businesses_db_query( array( 'by_rank' => true, 'ids_only' => true ) )['posts'];
+	foreach ( array_chunk( $ids, max( 1, (int) $batch ) ) as $chunk ) {
+		$each( array_map( '_hub_business_build', hub_businesses_db_posts( $chunk ) ) );
+		hub_businesses_db_forget( $chunk );
+	}
+	return count( $ids );
 }
 
 /**

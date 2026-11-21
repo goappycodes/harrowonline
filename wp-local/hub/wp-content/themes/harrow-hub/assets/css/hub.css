@@ -1184,6 +1184,8 @@ address { font-style: normal; }
 .table__item .ph { width: 64px; flex: none; border-radius: 8px; }
 .table__item strong { display: block; color: var(--ho-ink); }
 .table__item span { font-size: 13px; color: var(--ho-muted); }
+.table__item .table__note { display: block; margin-top: 4px; color: var(--ho-red-dark); }   /* account lists: what our team asked to change */
+.table__item .table__note strong { display: inline; color: inherit; }
 .table__actions { display: flex; gap: 4px; justify-content: flex-end; white-space: nowrap; }
 .table .reason { margin-top: 4px; font-size: 13px; color: var(--ho-red-dark); }
 @media (max-width: 760px) {

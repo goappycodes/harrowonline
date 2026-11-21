@@ -31,7 +31,8 @@ SITE_ASSETS = ROOT / "site" / "hub" / "assets"
 SKIP = {"news-advertise", "news-article", "news-support"}   # harrowonline.org mock-ups: not part of the Hub's WordPress
 # Templates that now load their data through the theme's controllers (app/modules/): edited by hand, never
 # regenerated from the prototype. Add a page here when its template is converted.
-HAND_EDITED = {"index", "offers", "events", "events-month", "classes", "sign-in", "register", "forgot-password", "claim", "claim-submitted", "add-business"}
+HAND_EDITED = {"index", "offers", "events", "events-month", "classes", "sign-in", "register", "forgot-password", "claim", "claim-submitted", "add-business",
+               "pricing", "privacy", "terms", "data-sources", "advertise-newsletter"}   # page text from wp-admin (app/modules/pages)
 
 ATTR_RE = re.compile(r'((?:href|src|action|poster|data-src|data-href)=")/(?!/)([^"]*)"')
 SRCSET_RE = re.compile(r'(srcset=")([^"]*)"')
@@ -237,6 +238,51 @@ def submission_form(stem, body):
     return body
 
 
+# Account menu: every account page's sidebar becomes the shared one (parts/account/nav.php), with the account's own
+# red counts. Its key is the page the prototype marks current: aria-current "page" on the page itself, "true" below it.
+ACCOUNT_NAV = re.compile(r'  <aside class="dash-nav" aria-label="Account">.*?</aside>', re.S)
+ACCOUNT_NAV_KEYS = {"account": "overview", "account-listing-edit": "listing", "account-offers": "offers", "account-events": "events",
+                    "account-classes": "classes", "account-bookings": "newsletter", "account-billing": "billing", "account-settings": "settings"}
+
+
+def account_nav(stem, body):
+    m = ACCOUNT_NAV.search(body)
+    if not m:
+        return body
+    cur = re.search(r'<a href="/([\w-]+)\.html" aria-current="(page|true)">', m.group(0))
+    assert cur and cur.group(1) in ACCOUNT_NAV_KEYS, stem
+    aria = "" if cur.group(2) == "page" else ", 'true'"
+    return body[:m.start()] + f"  <?php hub_view_account_nav( '{ACCOUNT_NAV_KEYS[cur.group(1)]}'{aria} ); ?>" + body[m.end():]
+
+
+# Account offers / events / classes lists: the sample rows become the account's own (app/modules/submissions,
+# parts/account/list.php): tabs with real counts, every status, or what to do when there are none yet.
+SUBMISSION_LISTS = {"account-offers": "offer", "account-events": "event", "account-classes": "class"}
+SUBMISSION_TABLE = re.compile(r'    <nav class="tabs" aria-label="Filter \w+">.*?</table>\n    </div>\n(?:    <!-- WP:.*?-->\n)?', re.S)
+
+
+def submission_list(stem, body):
+    kind = SUBMISSION_LISTS.get(stem)
+    if not kind:
+        return body
+    body = f"<?php $hub_list = hub_submissions_list( '{kind}', $_GET ); // phpcs:ignore WordPress.Security.NonceVerification ?>\n" + body
+    body, n = SUBMISSION_TABLE.subn("    <?php get_template_part( 'parts/account/list', null, array( 'list' => $hub_list ) ); ?>\n", body, count=1)
+    assert n == 1, stem
+    body = body.replace("<p>Local Offers for Station Road Barbers. ",
+                        "<p>Local Offers<?php echo esc_html( '' !== $hub_list['business'] ? ' for ' . $hub_list['business'] : '' ); ?>. ")
+    body, n = re.subn(r"<strong>&pound;15 for 7 days</strong>", "<strong><?php echo esc_html( $hub_list['feature_price'] ); ?> for 7 days</strong>", body)
+    assert n == 1, stem
+    return body
+
+
+# Search page: "Search 2,609 Harrow businesses" counts the businesses in WordPress, not the prototype's listings
+def live_counts(stem, body):
+    if "{{> gen-count}}" not in body:
+        return body
+    body = "<?php $hub_biz_total = number_format( (int) hub_businesses_list( array( 'limit' => 1 ) )['total'] ); ?>\n" + body
+    return body.replace("{{> gen-count}}", "<?php echo esc_html( $hub_biz_total ); ?>")
+
+
 def write_pages():
     out_dir = THEME / "page-templates"
     out_dir.mkdir(exist_ok=True)
@@ -247,7 +293,7 @@ def write_pages():
             continue
         meta, body = build.parse(page.read_text(encoding="utf-8"))
         path = seo.clean_path(stem)                       # "/claim/submitted/", "/", "/404.html"
-        body = convert_links(nav_placeholders(hub_only(expand(account_swaps(submission_form(stem, body))))))
+        body = convert_links(nav_placeholders(hub_only(expand(live_counts(stem, account_swaps(submission_list(stem, account_nav(stem, submission_form(stem, body)))))))))
         check(stem, body)
         meta_php = ",\n\t".join(f"{php_str(k)} => {php_str(v)}" for k, v in sorted(meta.items()))
         tpl = (f"<?php\n/**\n * {meta.get('title', stem)} (converted from src/pages/{stem}.html).\n * URL: {path}\n */\n"
@@ -277,16 +323,18 @@ def copy_assets():
                 continue
             item.unlink() if item.is_file() else item.rmdir()
     shutil.copytree(SITE_ASSETS, dest, dirs_exist_ok=True)
-    (dest / "data").mkdir(exist_ok=True)
-    shutil.copy2(ROOT / "site" / "hub" / "data" / "hub-index.json", dest / "data" / "hub-index.json")
-    # hub.js: pages come from data-base (the Hub's home URL path); images, icons and data from the theme
+    # hub.js: pages come from data-base (the Hub's home URL path); images and icons from the theme; the search index
+    # (businesses, events, classes, offers) from WordPress, live: GET /wp-json/hub/v1/search/index (app/modules/search),
+    # not the prototype's data/hub-index.json, so what's added or changed in wp-admin shows on the directory pages.
+    # Its images are full URLs (theme assets or uploads).
     js = (dest / "js" / "hub.js").read_text(encoding="utf-8")
     reps = [
         ('const BASE = document.documentElement.dataset.base || ""',
-         'const BASE = document.documentElement.dataset.base || "";\n  const THEME = document.documentElement.dataset.theme || ""'),
+         'const BASE = document.documentElement.dataset.base || "";\n  const THEME = document.documentElement.dataset.theme || "";\n'
+         '  const API = document.documentElement.dataset.api || ""'),
         ("${BASE}/assets/img/icons.svg#i-", "#i-"),
-        ('BASE + "/data/hub-index.json"', 'THEME + "/assets/data/hub-index.json"'),
-        ("${BASE}${esc(x.im)}", "${THEME}${esc(x.im)}"),
+        ('BASE + "/data/hub-index.json"', 'API + "search/index"'),
+        ("${BASE}${esc(x.im)}", "${esc(x.im)}"),
     ]
     for a, b in reps:
         assert a in js, a

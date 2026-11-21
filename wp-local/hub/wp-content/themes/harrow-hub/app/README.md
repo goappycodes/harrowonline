@@ -36,7 +36,8 @@ app/
 │   ├── billing.php        /billing/checkout/ and /billing/portal/ (send to Stripe), Payments log in wp-admin
 │   ├── claims.php         claim pages' sign-in and email link, wp-admin > Claims (review, approve, reject)
 │   ├── add-business.php   /add-business/ sign-in; Pending Review -> Published (owner gets it) or Trash (declined)
-│   └── submissions.php    account offer/event/class forms: saving, Publish or Trash emails, £15 event payment
+│   ├── submissions.php    account offer/event/class forms: saving, Publish or Trash emails, £15 event payment
+│   └── search.php         the search index is built again after a business, offer, event, class, category or area changes
 └── modules/
     ├── businesses/        data.php  rules.php  shape.php  controller.php  routes.php
     ├── events/            one-off events and weekly classes (What's On)
@@ -46,10 +47,12 @@ app/
     ├── account/           sign-in, register, reset, the signed-in account and its business
     ├── billing/           Stripe: checkout, customer portal, webhook (sets the business's plan)
     ├── claims/            claiming a business: proof (email, phone, document), staff approve or reject
-    ├── submissions/       offers, events and classes from the account pages: who may, drafts, Pending Review
+    ├── submissions/       offers, events and classes from the account pages: who may, drafts, Pending Review, the account's lists, declined ones sent again
     ├── home/              the front page: its fields (Homepage box) with the weekend, offers, numbers, featured
     │                      businesses, categories and areas from the other modules
-    └── pages/             page text of the listing pages (Page text box): What's On, Classes, Offers, Pricing, Privacy, Terms, Data sources, Advertise
+    ├── pages/             page text of the listing pages (Page text box): What's On, Classes, Offers, Pricing, Privacy, Terms, Data sources, Advertise
+    └── search/            the index hub.js searches and lists from (Businesses search, category and area pages): every
+                           business, upcoming event, weekly class and live offer, built from the other modules and cached
 parts/                     display only: each part gets arrays in $args and prints them
 ├── account/               settings (the settings page's forms)
 ├── businesses/            row, card, ticker, event-row, profile, profile-imported, directory
@@ -132,15 +135,30 @@ Functions starting with `_hub_` are internal helpers of their module's controlle
 | `GET /wp-json/hub/v1/account/me`; `POST /account/sign-in`, `/account/register`, `/account/reset`, `/account/sign-out` | `hub_account_current()`, `hub_account_sign_in()`, `hub_account_register()`, `hub_account_reset_request()`, `hub_account_sign_out()` |
 | `GET /wp-json/hub/v1/billing/catalogue`, `/billing/status`; `POST /billing/checkout`, `/billing/portal` | `hub_billing_catalogue()`, `hub_billing_status()`, `hub_billing_checkout_plan()` / `_item()`, `hub_billing_portal()` |
 | `POST /wp-json/hub/v1/billing/webhook` (Stripe only, checked by signature) | `hub_billing_webhook()` |
+| `GET /wp-json/hub/v1/submissions/{offer,event,class}?id=`; `POST` the same (signed in) | `hub_submission_page()`, `hub_submission_save()` |
+| `GET /wp-json/hub/v1/submissions/{offer,event,class}/list?status=` (signed in) | `hub_submissions_list()` (the account's own list, every status) |
+| `GET /wp-json/hub/v1/search/index` (ETag; 304 when unchanged) | `hub_search_index()` (every business, upcoming event, weekly class and live offer; `search/shape.php`) |
 
 Content routes are public and read-only. Account and billing routes that need a signed-in user use the permission
 callback (the 4th argument of `hub_route()`). From JavaScript, send WordPress's REST nonce (`X-WP-Nonce`) or the
 request counts as signed out.
 
+## The directory pages and search
+
+The Businesses search page (`/search/`) and the category and area pages are drawn by the server (the first page of
+businesses, from `hub_businesses_list()`), then hub.js takes over (filters, search words, pages, the What's On /
+Classes / Offers tabs) using the search index: `GET /wp-json/hub/v1/search/index` (`app/modules/search/`). The index
+is built from WordPress, so a business added or changed in wp-admin shows straight away, and kept (transient
+`hub_search_index`) until something it lists changes (`app/setup/search.php`) or the day does. Building it takes a
+second or two (every business, a batch at a time); after that it's read from the cache, and browsers that have the
+current version get a 304. Both orders are the same: Verified by the business, Checked by Harrow Online, imported;
+Featured and Local Partner first within each; then the imported order, with new listings after it.
+
+The prototype's `data/hub-index.json` is no longer used by the theme (`tools/build_theme.py` points hub.js at the API).
+
 ## Modules still to move here
 
-- **Search** (`page-templates/search.php` and hub.js) reads the prototype's `assets/data/hub-index.json`; it should
-  move to the API.
-- **Homepage categories and areas**, the categories page, the account pages' forms and lists (listing, offers,
-  events, classes: still the prototype's sample content; only the account name, greeting and billing are real) and the newsletter band
-  (`inc/newsletter.php`) are still old-style.
+- **Homepage categories and areas**, the categories page, the account pages' My listing form and the Overview's
+  "recent activity" box (still the prototype's sample content) and the newsletter band (`inc/newsletter.php`) are
+  still old-style. The account offers, events and classes (forms and lists), the account menu, settings and billing
+  are real.

@@ -23,7 +23,8 @@ function hub_businesses_db_get( $id_or_slug ) {
 /**
  * Published businesses in directory order.
  *
- * @param array $args { cat, area (slugs), exclude (post ID), claimed_only (bool), limit (0 = all), offset }
+ * @param array $args { cat, area (slugs), exclude (post ID), claimed_only (bool), limit (0 = all), offset,
+ *                      by_rank (bool: directory order, below; else the imported order), ids_only (bool: post IDs) }
  * @return array { posts: WP_Post[], total: int }
  */
 function hub_businesses_db_query( array $args ) {
@@ -49,11 +50,47 @@ function hub_businesses_db_query( array $args ) {
 	if ( ! empty( $args['exclude'] ) ) {
 		$q['post__not_in'] = array( (int) $args['exclude'] );
 	}
+	$meta = array();
 	if ( ! empty( $args['claimed_only'] ) ) {
-		$q['meta_query'] = array( array( 'key' => '_hub_tier', 'value' => 'unclaimed', 'compare' => '!=' ) );
+		$meta[] = array( 'key' => '_hub_tier', 'value' => 'unclaimed', 'compare' => '!=' );
+	}
+	if ( ! empty( $args['by_rank'] ) ) {
+		// Directory order: Verified by the business, Checked by Harrow Online, imported; the plan within each (_hub_rank);
+		// then the imported order (_hub_order; new listings after the imported ones). The same order hub.js lists them in.
+		$meta['rank']  = array( 'key' => '_hub_rank', 'type' => 'NUMERIC' );
+		$meta['order'] = array( 'key' => '_hub_order', 'type' => 'NUMERIC' );
+		$q['orderby']  = array( 'rank' => 'ASC', 'order' => 'ASC' );
+		unset( $q['meta_key'] );
+	}
+	if ( $meta ) {
+		$q['meta_query'] = $meta; // phpcs:ignore WordPress.DB.SlowDBQuery
+	}
+	if ( ! empty( $args['ids_only'] ) ) {
+		$q['fields'] = 'ids';
 	}
 	$query = new WP_Query( $q );
 	return array( 'posts' => $query->posts, 'total' => (int) $query->found_posts );
+}
+
+/** Published businesses by post ID, in the order given (unknown IDs are left out). */
+function hub_businesses_db_posts( array $ids ) {
+	$ids = array_map( 'intval', $ids );
+	if ( ! $ids ) {
+		return array();
+	}
+	$posts = get_posts( array( 'post_type' => 'hub_business', 'post_status' => 'publish', 'post__in' => $ids, 'posts_per_page' => -1 ) );
+	$pos   = array_flip( $ids );
+	usort( $posts, function ( $a, $b ) use ( $pos ) {   // (orderby post__in isn't supported by the SQLite database)
+		return $pos[ $a->ID ] <=> $pos[ $b->ID ];
+	} );
+	return $posts;
+}
+
+/** Let go of these businesses' cached posts and fields (going through the whole directory a batch at a time). */
+function hub_businesses_db_forget( array $ids ) {
+	foreach ( $ids as $id ) {
+		clean_post_cache( (int) $id );
+	}
 }
 
 /**

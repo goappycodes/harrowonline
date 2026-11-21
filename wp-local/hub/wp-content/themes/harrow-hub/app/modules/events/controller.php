@@ -335,14 +335,21 @@ function hub_class_save_submission( $id, $status, array $f ) {
 	return hub_events_db_save( 'hub_class', (int) $id, $status, $f['title'], $f['description'], $record, $meta, $f );
 }
 
-/** An event or class sent from the website, any status: { id, status, title, url, form } or null. */
+/** An event or class sent from the website, any status: { id, status, title, url, form, details (event / class shape) } or null. */
 function hub_events_submission( $type, $id ) {
 	$post = hub_events_db_get_any( $type, $id );
 	if ( ! $post ) {
 		return null;
 	}
 	$form = get_post_meta( $post->ID, '_hub_form', true );
-	return array( 'id' => $post->ID, 'status' => $post->post_status, 'title' => hub_plain( $post->post_title ), 'url' => hub_url( 'events/' . $post->post_name . '/' ), 'form' => is_array( $form ) ? $form : null );
+	return array(
+		'id'      => $post->ID,
+		'status'  => $post->post_status,
+		'title'   => hub_plain( $post->post_title ),
+		'url'     => hub_url( 'events/' . $post->post_name . '/' ),
+		'form'    => is_array( $form ) ? $form : null,
+		'details' => 'hub_class' === $type ? _hub_class_build( $post ) : _hub_event_build( $post ),   // in the class / event shape
+	);
 }
 
 /* ------------------------------------------------------------------ internal */

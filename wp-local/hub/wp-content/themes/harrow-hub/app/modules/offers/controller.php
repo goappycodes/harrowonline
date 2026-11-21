@@ -118,14 +118,25 @@ function hub_offer_save_submission( $id, $status, array $f, array $business ) {
 	return hub_offers_db_save( (int) $id, $status, $f['title'], $f['description'], $record, (int) $business['id'], $f );
 }
 
-/** An offer sent from the website, any status: { id, status, title, url, form } or null. */
+/**
+ * An offer sent from the website, any status: { id, status, title, url, form, details } or null. details is the offer
+ * in the offer shape (its end date, featured...), or null when its business is gone.
+ */
 function hub_offer_submission( $id ) {
 	$post = hub_offers_db_get_any( $id );
 	if ( ! $post ) {
 		return null;
 	}
-	$form = get_post_meta( $post->ID, '_hub_form', true );
-	return array( 'id' => $post->ID, 'status' => $post->post_status, 'title' => hub_plain( $post->post_title ), 'url' => hub_url( 'offers/' . $post->post_name . '/' ), 'form' => is_array( $form ) ? $form : null );
+	$form     = get_post_meta( $post->ID, '_hub_form', true );
+	$business = _hub_offers_business( hub_offers_db_business_id( $post->ID ) );
+	return array(
+		'id'      => $post->ID,
+		'status'  => $post->post_status,
+		'title'   => hub_plain( $post->post_title ),
+		'url'     => hub_url( 'offers/' . $post->post_name . '/' ),
+		'form'    => is_array( $form ) ? $form : null,
+		'details' => $business ? _hub_offers_public( _hub_offer_build( $post, $business ) ) : null,
+	);
 }
 
 /* ------------------------------------------------------------------ internal */

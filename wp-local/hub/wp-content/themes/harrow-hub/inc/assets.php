@@ -3,8 +3,13 @@
 defined( 'ABSPATH' ) || exit;
 
 add_action( 'wp_enqueue_scripts', function () {
-	wp_enqueue_style( 'ho-hub', hub_asset( 'css/hub.css' ), array(), HUB_THEME_VERSION );
-	wp_enqueue_script( 'ho-hub', hub_asset( 'js/hub.js' ), array(), HUB_THEME_VERSION, array( 'strategy' => 'defer', 'in_footer' => false ) );
+	// Versioned by the file's date, so browsers fetch the new one after every change (deploys included)
+	$ver = function ( $file ) {
+		$path = get_template_directory() . '/assets/' . $file;
+		return file_exists( $path ) ? (string) filemtime( $path ) : HUB_THEME_VERSION;
+	};
+	wp_enqueue_style( 'ho-hub', hub_asset( 'css/hub.css' ), array(), $ver( 'css/hub.css' ) );
+	wp_enqueue_script( 'ho-hub', hub_asset( 'js/hub.js' ), array(), $ver( 'js/hub.js' ), array( 'strategy' => 'defer', 'in_footer' => false ) );
 	wp_dequeue_style( 'wp-block-library' );
 	wp_dequeue_style( 'global-styles' );
 	wp_dequeue_style( 'classic-theme-styles' );

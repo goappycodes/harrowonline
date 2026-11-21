@@ -60,6 +60,10 @@ local only). In the Claude desktop app, start the **wp-local** preview instead.
   classes without a full import), then commit `hub.sqlite`.
 - **The preview's date:** offers and events are worked out from the option `hub_today` (2026-11-11, the sample
   data's "today"). Delete the option to use the real date.
+- **Businesses search, category and area pages** list from WordPress, live: hub.js reads the search index at
+  `/hub/wp-json/hub/v1/search/index` (`app/modules/search/`), not a data file, so a business added or edited in
+  wp-admin shows there straight away. Order: Verified, Checked, imported; Featured and Local Partner first within
+  each. The index is cached and built again after any content change (a second or two, once).
 - **Check against the prototype:** with the server running, `python tools/compare_theme.py` (hand-written pages) and
   `python tools/compare_content.py` (businesses, categories, areas, offers, events, classes) compare each page's
   content and title with the static build in `site/hub/`.
@@ -124,11 +128,19 @@ local only). In the Claude desktop app, start the **wp-local** preview instead.
   same records as the imported ones (`_hub`), their business link, and a photo for events and classes. Staff review
   them in wp-admin > Offers / Events / Classes > Pending, with a "Sent from the website" box.
   - **Publish:** puts it live.
-  - **Move to Trash:** declines it.
+  - **Decline and email them** (with a note), or **Move to Trash:** declines it. The owner can open it again, see the
+    note, change it and send it again (**Edit and resend**): it comes back out of the Trash as a draft, and the note
+    goes once it's sent. Something staff trash after it went live is gone for the owner too.
 
-  Both email the person, unless they turned those emails off in Settings.
+  Both email the person, unless they turned those emails off in Settings. The "declined" email links to its own edit page.
 
-  The account list pages (`account/offers/` and so on) still show the prototype's sample items.
+  **The account lists** (`/hub/account/offers/`, `/events/`, `/classes/`; `hub_submissions_list()`,
+  `parts/account/list.php`) show everything the account sent, in every status: Not approved (with the note), Draft,
+  Being checked, Live, and Ended (an offer past its end date, an event past its date; classes don't end). The live
+  offers, upcoming events and classes our team put on its business listing are listed too, marked "Added by Harrow
+  Online" (they email us to change those). The tabs count only what's there. With nothing yet, the page says what to
+  do: add one, see plans (Basic businesses: offers and classes), or find or add your business first. The account menu
+  on every account page (`parts/account/nav.php`) shows a red count of the ones waiting for the owner to change them.
 - **Settings** (`/hub/account/settings/`, `parts/account/settings.php`): name; email, which changes only when a
   link sent to the new address is clicked (the login changes with it); password, which needs the current one,
   keeps this device signed in and gets WordPress's "Password changed" email; email choices; newsletter editions,

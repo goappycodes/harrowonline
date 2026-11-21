@@ -106,3 +106,67 @@ function hub_submissions_rule_class_price( $price, $per, $free_trial ) {
 function hub_submissions_rule_lines( $text ) {
 	return array_values( array_filter( array_map( 'trim', preg_split( '/\r?\n/', (string) $text ) ), 'strlen' ) );
 }
+
+/* ------------------------------------------------------------------ the account lists (account/offers/, events/, classes/) */
+
+/**
+ * Where each one stands -> [ its label, its status pill (hub.css .status--*), its tab ], in the tabs' order.
+ *   live      published (and, for offers and events, not over yet)
+ *   pending   sent, waiting for staff to check it
+ *   draft     saved, not sent
+ *   declined  staff declined it (it's in the Trash); it can be changed and sent again
+ *   ended     published, but the offer's end date or the event's date has passed (classes don't end)
+ */
+const HUB_SUBMISSIONS_STATES = array(
+	'live'     => array( 'Live', 'published', 'Live' ),
+	'pending'  => array( 'Being checked', 'pending', 'Being checked' ),
+	'draft'    => array( 'Draft', 'draft', 'Drafts' ),
+	'declined' => array( 'Not approved', 'rejected', 'Not approved' ),
+	'ended'    => array( 'Ended', 'ended', 'Ended' ),
+);
+
+/** The order of the list: what's waiting on the account first. */
+const HUB_SUBMISSIONS_STATE_ORDER = array( 'declined', 'draft', 'pending', 'live', 'ended' );
+
+/**
+ * A post's place in the list, from its status. '' when it isn't listed: something staff took down (trashed from
+ * anything but "pending") is gone for the account too.
+ *
+ * @param bool   $over         the offer's end date or the event's date has passed
+ * @param string $trashed_from the status it had before the Trash
+ */
+function hub_submissions_rule_state( $status, $over, $trashed_from = '' ) {
+	if ( 'trash' === $status ) {
+		return 'pending' === $trashed_from ? 'declined' : '';
+	}
+	if ( 'publish' === $status ) {
+		return $over ? 'ended' : 'live';
+	}
+	return 'pending' === $status ? 'pending' : 'draft';
+}
+
+/** Waiting for the account to change it: declined, or a declined one brought back as a draft and not sent yet. */
+function hub_submissions_rule_needs_changes( $state, $note ) {
+	return 'declined' === $state || ( 'draft' === $state && '' !== (string) $note );
+}
+
+/** List order: by HUB_SUBMISSIONS_STATE_ORDER, then by each row's "_sort" (an event's date, a class's day and time, newest first otherwise). */
+function hub_submissions_rule_compare( array $a, array $b ) {
+	return array( array_search( $a['state'], HUB_SUBMISSIONS_STATE_ORDER, true ), $a['_sort'] )
+		<=> array( array_search( $b['state'], HUB_SUBMISSIONS_STATE_ORDER, true ), $b['_sort'] );
+}
+
+/** "12 Nov" for a timestamp, in UK time (with a non-breaking space, so it never splits across lines). */
+function hub_submissions_rule_day_month( $ts ) {
+	$d = ( new DateTimeImmutable( '@' . (int) $ts ) )->setTimezone( new DateTimeZone( 'Europe/London' ) );
+	return $d->format( 'j' ) . "\u{00A0}" . $d->format( 'M' );
+}
+
+/** "Sat 21 Nov" for a date (Y-m-d), with non-breaking spaces. '' if it isn't one. */
+function hub_submissions_rule_event_day( $ymd ) {
+	if ( ! hub_submissions_rule_is_date( $ymd ) ) {
+		return '';
+	}
+	$d = DateTimeImmutable::createFromFormat( '!Y-m-d', $ymd );
+	return implode( "\u{00A0}", array( $d->format( 'D' ), $d->format( 'j' ), $d->format( 'M' ) ) );
+}
