@@ -13,11 +13,12 @@ hub_set_page( array(
 ) );
 get_header();
 ?>
+<?php $hub_biz_total = number_format( (int) hub_businesses_list( array( 'limit' => 1 ) )['total'] ); ?>
 <nav class="crumbs ho-container" aria-label="Breadcrumb"><ol><li><a href="<?php echo esc_url( hub_url( '' ) ); ?>">Hub</a></li><li><span aria-current="page">Search</span></li></ol></nav>
 
 <header class="page-head ho-container">
   <h1 class="page-head__title">Search the Hub</h1>
-  <p class="page-head__lead mb-5">Search 2,609 Harrow businesses, plus what&rsquo;s on, weekly classes and local offers.</p>
+  <p class="page-head__lead mb-5">Search <?php echo esc_html( $hub_biz_total ); ?> Harrow businesses, plus what&rsquo;s on, weekly classes and local offers.</p>
 
   <div class="searchbar searchbar--inline" role="search">
     <div class="searchbar__field">
@@ -44,7 +45,7 @@ get_header();
     </form>
     <h2 class="ho-sr">Results</h2>
     <div class="toolbar dtoolbar dtoolbar--filters">
-      <div class="dtoolbar__lead"><p class="toolbar__count" data-count><strong>2,609</strong> businesses</p><a class="dtoolbar__key" href="<?php echo esc_url( hub_url( 'pricing/#fb-labels' ) ); ?>"><svg class="ho-icon" aria-hidden="true"><use href="#i-info"/></svg>What the icons mean</a></div>
+      <div class="dtoolbar__lead"><p class="toolbar__count" data-count><strong><?php echo esc_html( $hub_biz_total ); ?></strong> businesses</p><a class="dtoolbar__key" href="<?php echo esc_url( hub_url( 'pricing/#fb-labels' ) ); ?>"><svg class="ho-icon" aria-hidden="true"><use href="#i-info"/></svg>What the icons mean</a></div>
       <div class="dtoolbar__filters" data-biz-filters>
         <label class="fmini"><span class="ho-sr">Business category</span><select id="f-cat" name="cat" form="filters"><option value="">All categories</option><option value="arts-and-entertainment">Arts &amp; Entertainment</option><option value="classes-and-activities">Classes &amp; Activities</option><option value="cleaning-laundry-and-hire">Cleaning, Laundry &amp; Hire</option><option value="construction-and-building-services">Construction &amp; Building Services</option><option value="doctors-dentists-and-clinics">Doctors, Dentists &amp; Clinics</option><option value="education-and-tuition">Education &amp; Tuition</option><option value="events-and-parties">Events, Parties &amp; Catering</option><option value="family-and-childcare">Family &amp; Childcare</option><option value="fashion-and-clothing">Fashion &amp; Clothing</option><option value="finance-and-accountants">Finance &amp; Accountants</option><option value="food-and-drink">Food &amp; Drink</option><option value="food-shops-and-groceries">Food Shops &amp; Groceries</option><option value="hair-and-beauty">Hair &amp; Beauty</option><option value="health-and-wellbeing">Health &amp; Wellbeing</option><option value="home-and-garden">Home &amp; Garden</option><option value="hotels-and-places-to-stay">Hotels &amp; Places to Stay</option><option value="legal-services">Legal Services</option><option value="motoring">Motoring</option><option value="pets">Pets &amp; Vets</option><option value="printing-and-signs">Printing &amp; Signs</option><option value="professional-services">Professional Services</option><option value="property-and-estate-agents">Property &amp; Estate Agents</option><option value="pubs-and-bars">Pubs &amp; Bars</option><option value="restaurants">Restaurants</option><option value="shops">Shops &amp; Specialists</option><option value="sport-and-fitness">Sports &amp; Fitness</option><option value="travel">Travel &amp; Transport</option></select></label>
         <label class="fmini fmini--check"><input type="checkbox" name="web" value="1" form="filters"> Website</label>

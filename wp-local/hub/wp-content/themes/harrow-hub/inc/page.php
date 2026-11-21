@@ -81,10 +81,10 @@ function hub_tab_attr( $item ) {
 	}
 }
 
-/** <html data-base="/hub" data-theme="..."> for hub.js (page links and theme assets). */
+/** <html data-base="/hub" data-theme="..." data-api="..."> for hub.js (page links, theme assets, the Hub API: the search index). */
 function hub_html_attrs() {
 	$base = untrailingslashit( (string) wp_parse_url( home_url( '/' ), PHP_URL_PATH ) );
-	printf( ' data-base="%s" data-theme="%s"', esc_attr( $base ), esc_attr( untrailingslashit( get_template_directory_uri() ) ) );
+	printf( ' data-base="%s" data-theme="%s" data-api="%s"', esc_attr( $base ), esc_attr( untrailingslashit( get_template_directory_uri() ) ), esc_url( rest_url( HUB_API_NAMESPACE . '/' ) ) );
 }
 
 /** <title>: page title + " | Harrow Online Hub" unless it already says Harrow Online (as build.py). Yoast SEO, when active, uses the same (inc/seo.php). */
